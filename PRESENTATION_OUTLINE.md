@@ -32,14 +32,12 @@
 | 2 | Lab Topology & Underlay Walk-Through | 20 min | 0:50 |
 | 3 | Source of Truth: YAML Service Definitions | 15 min | 1:05 |
 | 4 | Lab Exercise 1 — Explore the Topology | 15 min | 1:20 |
-| — | **Break 1** | **10 min** | **1:30** |
-| 5 | Ansible Path: L3VPN Provisioning | 25 min | 1:55 |
-| 6 | Lab Exercise 2 — Provision L3VPN with Ansible | 20 min | 2:15 |
-| — | **Break 2** | **10 min** | **2:25** |
-| 7 | Terraform Path: Declarative L3VPN | 20 min | 2:45 |
-| 8 | Lab Exercise 3 — Provision L3VPN with Terraform | 15 min | 3:00 |
-| 9 | EVPN/VXLAN Extension & Validation | 25 min | 3:25 |
-| 10 | Lab Exercise 4 — EVPN + Validation | 20 min | 3:45 |
+| 5 | Ansible Path: L3VPN Provisioning | 25 min | 1:45 |
+| 6 | Lab Exercise 2 — Provision L3VPN with Ansible | 30 min | 2:15 |
+| 7 | Terraform Path: Declarative L3VPN | 20 min | 2:35 |
+| 8 | Lab Exercise 3 — Provision L3VPN with Terraform | 15 min | 2:50 |
+| 9 | EVPN/VXLAN Extension & Validation | 25 min | 3:15 |
+| 10 | Lab Exercise 4 — EVPN + Validation | 30 min | 3:45 |
 | 11 | Wrap-Up, Q&A & Open Lab | 15 min | 4:00 |
 
 **Total: 240 minutes (4 hours)**
@@ -206,10 +204,6 @@
 
 ---
 
-## BREAK 1 (10 min)
-
----
-
 ## Module 5 — Ansible Path: L3VPN Provisioning (25 min)
 
 **Objective:** Walk through the Ansible playbook that reads YAML and pushes L3VPN config.
@@ -245,7 +239,7 @@
 
 ---
 
-## Module 6 — Lab Exercise 2: Provision L3VPN with Ansible (20 min)
+## Module 6 — Lab Exercise 2: Provision L3VPN with Ansible (30 min)
 
 **Objective:** Attendees provision L3VPN services using Ansible and validate the result.
 
@@ -277,15 +271,15 @@
 
 5. **GitOps workflow:** Use GitLab to deploy Customer C. Clone from local GitLab (`http://localhost:8080`), create a branch, add `customer_c.yml`, commit, push, create a Merge Request in the web UI, wait for the validation pipeline to pass, merge, and watch the deploy pipeline automatically run `ansible-playbook`.
 
+6. **Break It, Fix It:** After Customer C is deployed, have attendees deliberately delete the `rd:` field from `customer_c.yml`, commit, and push. The validation pipeline fails with `AssertionError: Missing fields: ['rd']` and the deploy job does NOT run — the pipeline is a guardrail. Attendees then restore the `rd:` field, push again, watch the pipeline pass, and confirm CUST_C is still on the router.
+
 ### Checkpoint
 - [ ] `make provision-l3vpn` completes without errors
 - [ ] VRF CUST_A and CUST_B appear on both PEs
 - [ ] `make validate` passes all assertions
 - [ ] (GitOps) Customer C deployed via GitLab CI/CD pipeline
-
----
-
-## BREAK 2 (10 min)
+- [ ] (Break It) Pipeline failed on missing `rd:` — deploy did NOT run
+- [ ] (Fix It) Pipeline passed after restoring `rd:` — CUST_C confirmed on router
 
 ---
 
@@ -425,7 +419,7 @@
 
 ---
 
-## Module 10 — Lab Exercise 4: EVPN + Full Validation (20 min)
+## Module 10 — Lab Exercise 4: EVPN + Full Validation (30 min)
 
 **Objective:** Attendees deploy EVPN, run full validation, and test end-to-end connectivity.
 

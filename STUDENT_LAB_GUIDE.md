@@ -527,6 +527,104 @@ show ip vrf
 exit
 ```
 
+#### Step 9: Break It — Introduce a deliberate error
+
+Now let's prove the CI/CD pipeline acts as a **guardrail**. You will
+intentionally break the Customer C YAML file and watch the pipeline catch it.
+
+```bash
+cd ~/sac-lab-gitops
+git checkout main && git pull
+git checkout -b break-customer-c
+```
+
+Edit `customer_c.yml` and **delete the entire `rd:` line**:
+
+```bash
+vi services/l3vpn/vars/customer_c.yml
+```
+
+Remove this line completely:
+```yaml
+rd: "65000:300"
+```
+
+Save the file, then commit and push:
+
+```bash
+git add services/l3vpn/vars/customer_c.yml
+git commit -m "Remove rd field (intentional break)"
+git push -u origin break-customer-c
+```
+
+Create a Merge Request in GitLab:
+1. Open `http://<your-lab-host-ip>:8080`
+2. Click the "Create merge request" banner
+3. Title: "Remove rd field (intentional break)"
+4. Click **Create merge request**
+
+#### Step 10: Watch the pipeline FAIL
+
+1. Click the pipeline icon in the MR (or go to **CI/CD → Pipelines**)
+2. Watch the `validate-l3vpn-yaml` job — it will **fail**
+3. Click on the failed job to see the error log
+
+**Expected error:**
+```
+AssertionError: Missing fields: ['rd']
+```
+
+Now look at the pipeline stages. Notice that the `deploy-l3vpn` job **did NOT
+run**. Because `deploy-l3vpn` depends on `validate-l3vpn-yaml` via `needs:`,
+a validation failure prevents deployment entirely. The pipeline is your
+safety net.
+
+> **This is the point.** A missing field in YAML would cause a broken VRF on
+> your routers. The pipeline caught it before any config was pushed.
+
+#### Step 11: Fix It — Restore the field and redeploy
+
+Go back to your terminal and restore the `rd:` field:
+
+```bash
+vi services/l3vpn/vars/customer_c.yml
+```
+
+Add the `rd:` line back:
+```yaml
+rd: "65000:300"
+```
+
+Commit and push the fix:
+
+```bash
+git add services/l3vpn/vars/customer_c.yml
+git commit -m "Restore rd field (fix intentional break)"
+git push
+```
+
+Now watch the pipeline in GitLab:
+1. Go to **CI/CD → Pipelines** — a new pipeline starts automatically
+2. The `validate-l3vpn-yaml` job passes (green checkmark)
+3. The `deploy-l3vpn` job runs and completes successfully
+
+Merge the MR, then verify on the router:
+
+```bash
+ssh admin@<csr-pe01-ip>
+show ip vrf
+# CUST_C should still be present and intact
+exit
+```
+
+#### Break It / Fix It Checkpoint
+
+- [ ] Pipeline failed with `Missing fields: ['rd']`
+- [ ] `deploy-l3vpn` did NOT run when validation failed
+- [ ] Fix committed and pushed — new pipeline triggered
+- [ ] Pipeline passed after restoring `rd:`
+- [ ] CUST_C VRF confirmed on csr-pe01
+
 > **Key insight:** You never ran `ansible-playbook` manually. You edited a YAML
 > file, pushed it through a review process (MR), and automation handled the rest.
 > This is how production network changes should work — reviewable, auditable,
