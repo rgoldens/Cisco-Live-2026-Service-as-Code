@@ -1,0 +1,40 @@
+# =============================================================================
+# VXLAN Tenant — EVPN Service Definition (Source of Truth)
+# Service as Code Lab — Cisco Live 2026
+# =============================================================================
+
+tenant: CUST_A_DC
+description: "Customer A DC VXLAN/EVPN overlay"
+
+vlans:
+  - id: 100
+    name: CUST_A
+    vni: 10100
+    svi_addresses:
+      n9k-ce01: 192.168.100.1/24
+      n9k-ce02: 192.168.100.2/24
+
+  - id: 200
+    name: CUST_A_DB
+    vni: 10200
+    svi_addresses:
+      n9k-ce01: 192.168.200.1/24
+      n9k-ce02: 192.168.200.2/24
+
+# VTEP loopbacks per switch
+vtep_source:
+  n9k-ce01: loopback1
+  n9k-ce02: loopback1
+
+# BGP EVPN peering (iBGP between CEs)
+evpn_peers:
+  - node: n9k-ce01
+    peer_ip: 10.0.0.22
+    peer_as: 65100
+  - node: n9k-ce02
+    peer_ip: 10.0.0.21
+    peer_as: 65100
+
+# OSPF underlay area
+ospf_area: "0.0.0.0"
+ospf_process: UNDERLAY

@@ -1,0 +1,24 @@
+{# =============================================================================
+   XRd P-Router — BGP Service Template (IOS-XR)
+   Ensures VPNv4/L2VPN EVPN address families are activated for PE neighbors.
+   This template is idempotent — it only adds AF activation if missing.
+
+   Variables expected:
+     - pe_loopbacks : list of PE loopback IPs to reflect routes for
+   ============================================================================= #}
+!
+router bgp 65000
+{% for pe_lo in pe_loopbacks %}
+ !
+ neighbor {{ pe_lo }}
+  remote-as 65000
+  update-source Loopback0
+  address-family vpnv4 unicast
+   route-reflector-client
+  !
+  address-family l2vpn evpn
+   route-reflector-client
+  !
+ !
+{% endfor %}
+!

@@ -1,0 +1,18 @@
+# =============================================================================
+# Group vars: CSR1000v / C8000v PE Routers (IOS-XE)
+# =============================================================================
+
+ansible_network_os: cisco.ios.ios
+ansible_connection: ansible.netcommon.network_cli
+ansible_become: true
+ansible_become_method: enable
+ansible_become_password: "clab@123"
+ansible_ssh_common_args: "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+
+# Default credentials (overridden if needed at host level)
+ansible_user: admin
+ansible_password: admin
+
+# NETCONF alternative (uncomment to use NETCONF instead of CLI)
+# ansible_connection: ansible.netcommon.netconf
+# ansible_port: 830

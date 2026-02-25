@@ -1,0 +1,49 @@
+# =============================================================================
+# Customer A — L3VPN Service Definition (Source of Truth)
+# Service as Code Lab — Cisco Live 2026
+#
+# This YAML file is the single source of truth for CustomerA's L3VPN service.
+# Both Ansible and Terraform consume this definition to provision the service.
+# =============================================================================
+
+customer: CustomerA
+vrf: CUST_A
+rd: "65000:100"
+rt_import: "65000:100"
+rt_export: "65000:100"
+description: "Customer A - Enterprise L3VPN"
+
+# PE-side interface bindings
+pe_interfaces:
+  - node: csr-pe01
+    interface: GigabitEthernet2
+    vrf_ip: 192.168.100.1/24
+    description: "CUST_A CE-facing — toward n9k-ce01"
+    ce_neighbor:
+      ip: 192.168.100.2
+      remote_as: 65100
+
+  - node: csr-pe02
+    interface: GigabitEthernet2
+    vrf_ip: 192.168.200.1/24
+    description: "CUST_A CE-facing — toward n9k-ce02"
+    ce_neighbor:
+      ip: 192.168.200.2
+      remote_as: 65100
+
+# CE-side interface bindings (informational — CE config pushed via EVPN playbook)
+ce_interfaces:
+  - node: n9k-ce01
+    interface: Ethernet1/1
+    ip: 192.168.100.2/24
+    pe_gateway: 192.168.100.1
+
+  - node: n9k-ce02
+    interface: Ethernet1/1
+    ip: 192.168.200.2/24
+    pe_gateway: 192.168.200.1
+
+# Prefixes expected in this VRF (for validation)
+expected_prefixes:
+  - 192.168.100.0/24
+  - 192.168.200.0/24

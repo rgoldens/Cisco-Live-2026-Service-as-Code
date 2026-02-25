@@ -1,0 +1,140 @@
+# =============================================================================
+# Service as Code Lab — Cisco Live 2026
+# Containerlab Topology Definition
+#
+# Topology:  2x XRd P-routers  |  2x CSR1000v/C8000v PEs  |  2x N9Kv CEs  |  1x Linux client
+#
+# To deploy:   sudo containerlab deploy -t topology/sac-lab.yml
+# To destroy:  sudo containerlab destroy -t topology/sac-lab.yml
+# =============================================================================
+
+name: sac-lab
+
+mgmt:
+  network: sac-lab-mgmt
+  ipv4-subnet: 172.20.20.0/24
+
+topology:
+  defaults:
+    labels:
+      lab: sac-lab
+      project: cisco-live-2026
+
+  kinds:
+    cisco_xrd:
+      image: ios-xr/xrd-control-plane:25.1.1
+
+    # -----------------------------------------------------------------------
+    # IOS-XE PE nodes — uncomment ONE of the following two blocks:
+    #
+    # Option A: CSR1000v (default)
+    cisco_csr1000v:
+      image: vrnetlab/cisco_csr1000v:17.03.06    # <-- replace with your image tag
+    #
+    # Option B: Catalyst 8000v — to use this instead, comment out Option A
+    #           above and uncomment the two lines below, then change the PE
+    #           node 'kind' fields from cisco_csr1000v to cisco_c8000v.
+    # cisco_c8000v:
+    #   image: vrnetlab/cisco_c8000v:17.12.01     # <-- replace with your image tag
+    # -----------------------------------------------------------------------
+
+    cisco_n9kv:
+      image: vrnetlab/cisco_n9kv:10.4.3           # <-- replace with your image tag
+      env:
+        # Use n9kv-lite resource profile to keep the lab lightweight.
+        # Bump these if you're using the full n9kv image (default: 10240 / 4).
+        QEMU_MEMORY: "6144"
+        QEMU_SMP: "2"
+
+  nodes:
+    # ===================== P-ROUTER CORE (IOS-XR / XRd) =====================
+    xrd01:
+      kind: cisco_xrd
+      startup-config: ../configs/xrd01.cfg
+      labels:
+        role: p-router
+        region: core
+
+    xrd02:
+      kind: cisco_xrd
+      startup-config: ../configs/xrd02.cfg
+      labels:
+        role: p-router
+        region: core
+
+    # ===================== PE ROUTERS (IOS-XE / CSR1000v) ===================
+    # To switch to Catalyst 8000v, change 'kind' to cisco_c8000v and
+    # uncomment the cisco_c8000v kind block above.
+    csr-pe01:
+      kind: cisco_csr1000v
+      startup-config: ../configs/csr-pe01.cfg
+      labels:
+        role: pe-router
+        region: west
+
+    csr-pe02:
+      kind: cisco_csr1000v
+      startup-config: ../configs/csr-pe02.cfg
+      labels:
+        role: pe-router
+        region: east
+
+    # ===================== CE / DC EDGE (NX-OS / N9Kv) ======================
+    n9k-ce01:
+      kind: cisco_n9kv
+      startup-config: ../configs/n9k-ce01.cfg
+      labels:
+        role: ce-switch
+        region: dc-west
+
+    n9k-ce02:
+      kind: cisco_n9kv
+      startup-config: ../configs/n9k-ce02.cfg
+      labels:
+        role: ce-switch
+        region: dc-east
+
+    # ===================== LINUX TEST CLIENT ================================
+    linux-client:
+      kind: linux
+      image: alpine:latest
+      labels:
+        role: test-endpoint
+      exec:
+        # Assign an IP in the CUST_A VRF subnet reachable via n9k-ce01
+        - ip addr add 192.168.100.10/24 dev eth1
+        - ip route add 192.168.0.0/16 via 192.168.100.1
+
+  # ===========================================================================
+  # LINKS
+  #
+  # Addressing plan:
+  #   P-P core:        10.0.0.0/30  (xrd01 ↔ xrd02)
+  #   P-PE west:       10.0.1.0/30  (xrd01 ↔ csr-pe01)
+  #   P-PE east:       10.0.1.4/30  (xrd02 ↔ csr-pe02)
+  #   PE-PE inter-PE:  10.0.2.0/30  (csr-pe01 ↔ csr-pe02)
+  #   PE-CE west:      10.0.3.0/30  (csr-pe01 ↔ n9k-ce01)
+  #   PE-CE east:      10.0.3.4/30  (csr-pe02 ↔ n9k-ce02)
+  #   CE-CE DC:        10.0.4.0/30  (n9k-ce01 ↔ n9k-ce02)
+  #   CE-Client:       192.168.100.0/24 (n9k-ce01 ↔ linux-client)
+  # ===========================================================================
+  links:
+    # --- P-router core backbone (IS-IS + LDP) ---
+    - endpoints: ["xrd01:Gi0-0-0-0", "xrd02:Gi0-0-0-0"]
+
+    # --- P ↔ PE links ---
+    - endpoints: ["xrd01:Gi0-0-0-1", "csr-pe01:Gi3"]
+    - endpoints: ["xrd02:Gi0-0-0-1", "csr-pe02:Gi3"]
+
+    # --- Inter-PE link ---
+    - endpoints: ["csr-pe01:Gi4", "csr-pe02:Gi4"]
+
+    # --- PE ↔ CE links ---
+    - endpoints: ["csr-pe01:Gi2", "n9k-ce01:Ethernet1/1"]
+    - endpoints: ["csr-pe02:Gi2", "n9k-ce02:Ethernet1/1"]
+
+    # --- DC inter-switch link (EVPN VXLAN underlay) ---
+    - endpoints: ["n9k-ce01:Ethernet1/2", "n9k-ce02:Ethernet1/2"]
+
+    # --- CE ↔ Linux test client ---
+    - endpoints: ["n9k-ce01:Ethernet1/3", "linux-client:eth1"]

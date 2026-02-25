@@ -1,0 +1,18 @@
+# =============================================================================
+# Group vars: N9Kv CE/DC Switches (NX-OS)
+# =============================================================================
+
+ansible_network_os: cisco.nxos.nxos
+ansible_connection: ansible.netcommon.network_cli
+ansible_become: false
+ansible_ssh_common_args: "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+
+# Default credentials
+ansible_user: admin
+ansible_password: admin
+
+# NXAPI alternative (uncomment for NXAPI transport)
+# ansible_connection: ansible.netcommon.httpapi
+# ansible_httpapi_use_ssl: true
+# ansible_httpapi_validate_certs: false
+# ansible_httpapi_port: 443

@@ -1,0 +1,45 @@
+# =============================================================================
+# Deploy EVPN/VXLAN — Ansible Playbook
+# Service as Code Lab — Cisco Live 2026
+#
+# Reads tenant YAML from services/evpn/vars/ and renders + pushes
+# VXLAN/EVPN config to N9Kv CE/DC switches.
+#
+# Usage:
+#   ansible-playbook -i inventory/hosts.yml playbooks/deploy_evpn.yml
+# =============================================================================
+---
+- name: "EVPN/VXLAN Tenant Deployment — CE/DC Switches (NX-OS)"
+  hosts: ce_switches
+  gather_facts: false
+
+  vars:
+    tenant_file: "{{ evpn_vars_dir }}/vxlan_tenant.yml"
+
+  tasks:
+    - name: Load EVPN tenant definition
+      ansible.builtin.include_vars:
+        file: "{{ tenant_file }}"
+
+    - name: Render and apply EVPN/VXLAN config
+      cisco.nxos.nxos_config:
+        src: "{{ evpn_templates_dir }}/n9k_evpn.j2"
+      vars:
+        tenant: "{{ tenant }}"
+        vlans: "{{ vlans }}"
+        vtep_source: "{{ vtep_source }}"
+        evpn_peers: "{{ evpn_peers }}"
+
+    - name: Save NX-OS running config
+      cisco.nxos.nxos_config:
+        save_when: modified
+
+    - name: Verify NVE peers are up
+      cisco.nxos.nxos_command:
+        commands:
+          - show nve peers
+      register: nve_output
+
+    - name: Display NVE peer status
+      ansible.builtin.debug:
+        var: nve_output.stdout_lines

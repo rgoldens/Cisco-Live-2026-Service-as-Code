@@ -1,0 +1,130 @@
+# =============================================================================
+# Validate Services — Ansible Playbook
+# Service as Code Lab — Cisco Live 2026
+#
+# Post-deployment validation:
+#   1. Checks BGP VPNv4 summary on PE routers
+#   2. Checks BGP EVPN summary on CE switches
+#   3. Verifies expected VRF prefixes are present
+#   4. Pings across VRF from linux-client
+#
+# Usage:
+#   ansible-playbook -i inventory/hosts.yml playbooks/validate.yml
+# =============================================================================
+---
+- name: "Validate L3VPN — PE Routers"
+  hosts: pe_routers
+  gather_facts: false
+
+  tasks:
+    - name: Check BGP VPNv4 summary
+      cisco.ios.ios_command:
+        commands:
+          - show bgp vpnv4 unicast all summary
+      register: bgp_vpnv4
+
+    - name: Display BGP VPNv4 summary
+      ansible.builtin.debug:
+        var: bgp_vpnv4.stdout_lines
+
+    - name: Check VRF CUST_A routing table
+      cisco.ios.ios_command:
+        commands:
+          - show ip route vrf CUST_A
+      register: vrf_custa
+
+    - name: Display CUST_A routes
+      ansible.builtin.debug:
+        var: vrf_custa.stdout_lines
+
+    - name: Assert CUST_A prefixes are present
+      ansible.builtin.assert:
+        that:
+          - "'192.168.100.0' in vrf_custa.stdout[0] or '192.168.200.0' in vrf_custa.stdout[0]"
+        fail_msg: "CUST_A VRF routes missing — L3VPN service may not be provisioned"
+        success_msg: "CUST_A VRF routes present"
+      ignore_errors: true
+
+
+- name: "Validate EVPN — CE/DC Switches"
+  hosts: ce_switches
+  gather_facts: false
+
+  tasks:
+    - name: Check BGP L2VPN EVPN summary
+      cisco.nxos.nxos_command:
+        commands:
+          - show bgp l2vpn evpn summary
+      register: bgp_evpn
+
+    - name: Display BGP EVPN summary
+      ansible.builtin.debug:
+        var: bgp_evpn.stdout_lines
+
+    - name: Check NVE peers
+      cisco.nxos.nxos_command:
+        commands:
+          - show nve peers
+      register: nve_peers
+
+    - name: Display NVE peer status
+      ansible.builtin.debug:
+        var: nve_peers.stdout_lines
+
+    - name: Check VXLAN VNI status
+      cisco.nxos.nxos_command:
+        commands:
+          - show vxlan
+      register: vxlan_status
+
+    - name: Display VXLAN status
+      ansible.builtin.debug:
+        var: vxlan_status.stdout_lines
+
+
+- name: "Validate P-Router BGP — Route Reflectors"
+  hosts: p_routers
+  gather_facts: false
+
+  tasks:
+    - name: Check BGP VPNv4 summary on RR
+      cisco.iosxr.iosxr_command:
+        commands:
+          - show bgp vpnv4 unicast summary
+      register: rr_vpnv4
+
+    - name: Display RR BGP VPNv4 summary
+      ansible.builtin.debug:
+        var: rr_vpnv4.stdout_lines
+
+    - name: Assert PE neighbors are established
+      ansible.builtin.assert:
+        that:
+          - "'10.0.0.11' in rr_vpnv4.stdout[0]"
+          - "'10.0.0.12' in rr_vpnv4.stdout[0]"
+        fail_msg: "PE BGP neighbors not established on Route Reflector"
+        success_msg: "All PE BGP neighbors present on RR"
+      ignore_errors: true
+
+
+- name: "Validate End-to-End — Linux Client"
+  hosts: linux
+  gather_facts: false
+
+  tasks:
+    - name: Ping CUST_A gateway from linux-client
+      ansible.builtin.raw: ping -c 3 -W 2 192.168.100.1
+      register: ping_result
+      ignore_errors: true
+
+    - name: Display ping result
+      ansible.builtin.debug:
+        var: ping_result.stdout_lines
+
+    - name: Assert gateway is reachable
+      ansible.builtin.assert:
+        that:
+          - ping_result.rc == 0
+        fail_msg: "Cannot reach CUST_A gateway (192.168.100.1) from linux-client"
+        success_msg: "Linux client can reach CUST_A gateway"
+      ignore_errors: true

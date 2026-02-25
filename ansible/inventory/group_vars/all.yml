@@ -1,0 +1,18 @@
+# =============================================================================
+# Group vars: all hosts
+# =============================================================================
+
+# Paths to service definitions (relative to playbook dir)
+services_dir: "{{ playbook_dir }}/../../services"
+l3vpn_vars_dir: "{{ services_dir }}/l3vpn/vars"
+l3vpn_templates_dir: "{{ services_dir }}/l3vpn/templates"
+evpn_vars_dir: "{{ services_dir }}/evpn/vars"
+evpn_templates_dir: "{{ services_dir }}/evpn/templates"
+
+# BGP AS number used across the SP core
+bgp_as: 65000
+
+# PE loopbacks (used by P-router RR template)
+pe_loopbacks:
+  - 10.0.0.11
+  - 10.0.0.12

@@ -1,0 +1,60 @@
+{# =============================================================================
+   N9Kv CE — EVPN/VXLAN Service Template (NX-OS)
+   Renders VLAN, VNI, NVE, SVI, and BGP EVPN config per tenant.
+
+   Variables expected (from services/evpn/vars/vxlan_tenant.yml):
+     - tenant          : tenant name
+     - vlans           : list of VLAN/VNI definitions
+     - vtep_source     : dict of node → loopback interface
+     - evpn_peers      : list of BGP EVPN peer definitions
+   ============================================================================= #}
+!
+! --- EVPN Tenant: {{ tenant }} ---
+!
+{% for vlan in vlans %}
+vlan {{ vlan.id }}
+  name {{ vlan.name }}
+  vn-segment {{ vlan.vni }}
+!
+{% endfor %}
+!
+{% for vlan in vlans %}
+{% if inventory_hostname in vlan.svi_addresses %}
+interface Vlan{{ vlan.id }}
+  description {{ vlan.name }} Gateway
+  no shutdown
+  ip address {{ vlan.svi_addresses[inventory_hostname] }}
+!
+{% endif %}
+{% endfor %}
+!
+interface nve1
+  no shutdown
+  host-reachability protocol bgp
+  source-interface {{ vtep_source[inventory_hostname] }}
+{% for vlan in vlans %}
+  member vni {{ vlan.vni }}
+    ingress-replication protocol bgp
+{% endfor %}
+!
+router bgp 65100
+{% for peer in evpn_peers %}
+{% if peer.node == inventory_hostname %}
+  neighbor {{ peer.peer_ip }}
+    remote-as {{ peer.peer_as }}
+    update-source loopback0
+    address-family l2vpn evpn
+      send-community
+      send-community extended
+{% endif %}
+{% endfor %}
+!
+evpn
+{% for vlan in vlans %}
+  vni {{ vlan.vni }} l2
+    rd auto
+    route-target import auto
+    route-target export auto
+{% endfor %}
+!
+! --- End EVPN Tenant: {{ tenant }} ---

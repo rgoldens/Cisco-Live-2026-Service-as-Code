@@ -1,0 +1,81 @@
+# =============================================================================
+# Deploy L3VPN — Ansible Playbook
+# Service as Code Lab — Cisco Live 2026
+#
+# Reads customer YAML service definitions from services/l3vpn/vars/ and
+# renders + pushes VRF/BGP config to PE routers via CLI.
+#
+# Usage:
+#   ansible-playbook -i inventory/hosts.yml playbooks/deploy_l3vpn.yml
+#
+# To deploy a single customer:
+#   ansible-playbook ... -e "customer_file=customer_a.yml"
+# =============================================================================
+---
+- name: "L3VPN Service Deployment — PE Routers (IOS-XE)"
+  hosts: pe_routers
+  gather_facts: false
+  vars:
+    customer_files: "{{ lookup('fileglob', l3vpn_vars_dir ~ '/*.yml', wantlist=True) }}"
+
+  tasks:
+    - name: Load all customer service definitions
+      ansible.builtin.include_vars:
+        file: "{{ item }}"
+        name: "svc_{{ item | basename | regex_replace('.yml$', '') }}"
+      loop: "{{ customer_files }}"
+      when: customer_file is not defined
+
+    - name: Load single customer service definition
+      ansible.builtin.include_vars:
+        file: "{{ l3vpn_vars_dir }}/{{ customer_file }}"
+        name: "svc_single"
+      when: customer_file is defined
+
+    - name: Build list of services to deploy
+      ansible.builtin.set_fact:
+        services_to_deploy: >-
+          {{
+            [vars['svc_single']] if customer_file is defined
+            else
+            customer_files | map('basename') | map('regex_replace', '.yml$', '')
+            | map('regex_replace', '^', 'svc_') | map('extract', vars) | list
+          }}
+
+    - name: Render and apply L3VPN config per customer
+      cisco.ios.ios_config:
+        src: "{{ l3vpn_templates_dir }}/csr_pe_l3vpn.j2"
+      vars:
+        customer: "{{ svc.customer }}"
+        vrf: "{{ svc.vrf }}"
+        rd: "{{ svc.rd }}"
+        rt_import: "{{ svc.rt_import }}"
+        rt_export: "{{ svc.rt_export }}"
+        description: "{{ svc.description }}"
+        pe_interfaces: "{{ svc.pe_interfaces }}"
+      loop: "{{ services_to_deploy }}"
+      loop_control:
+        loop_var: svc
+        label: "{{ svc.customer }}"
+
+    - name: Save running config
+      cisco.ios.ios_config:
+        save_when: modified
+
+
+- name: "L3VPN Service Deployment — P-Routers / Route Reflectors (IOS-XR)"
+  hosts: p_routers
+  gather_facts: false
+
+  tasks:
+    - name: Ensure BGP VPNv4 RR config for PE neighbors
+      cisco.iosxr.iosxr_config:
+        src: "{{ l3vpn_templates_dir }}/xrd_p_bgp.j2"
+      vars:
+        pe_loopbacks: "{{ pe_loopbacks }}"
+
+    - name: Commit IOS-XR configuration
+      cisco.iosxr.iosxr_command:
+        commands:
+          - commit
+      ignore_errors: true

@@ -1,0 +1,49 @@
+{# =============================================================================
+   CSR PE — L3VPN Service Template (IOS-XE)
+   Renders VRF + BGP VPNv4 config for a single customer on a PE router.
+
+   Variables expected (from services/l3vpn/vars/customer_X.yml):
+     - customer       : customer name
+     - vrf            : VRF name
+     - rd             : route distinguisher
+     - rt_import      : route-target import
+     - rt_export      : route-target export
+     - description    : service description
+     - pe_interfaces  : list of PE interface bindings (filtered to current node)
+   ============================================================================= #}
+!
+! --- L3VPN Service: {{ customer }} ---
+!
+vrf definition {{ vrf }}
+ rd {{ rd }}
+ route-target export {{ rt_export }}
+ route-target import {{ rt_import }}
+ !
+ address-family ipv4
+ exit-address-family
+!
+{% for pe_intf in pe_interfaces %}
+{% if pe_intf.node == inventory_hostname %}
+interface {{ pe_intf.interface }}
+ description {{ pe_intf.description }}
+ vrf forwarding {{ vrf }}
+ ip address {{ pe_intf.vrf_ip | ansible.utils.ipaddr('address') }} {{ pe_intf.vrf_ip | ansible.utils.ipaddr('netmask') }}
+ no shutdown
+!
+{% endif %}
+{% endfor %}
+!
+router bgp 65000
+{% for pe_intf in pe_interfaces %}
+{% if pe_intf.node == inventory_hostname %}
+ !
+ address-family ipv4 vrf {{ vrf }}
+  redistribute connected
+  neighbor {{ pe_intf.ce_neighbor.ip }} remote-as {{ pe_intf.ce_neighbor.remote_as }}
+  neighbor {{ pe_intf.ce_neighbor.ip }} activate
+  neighbor {{ pe_intf.ce_neighbor.ip }} description {{ customer }}_CE
+ exit-address-family
+{% endif %}
+{% endfor %}
+!
+! --- End L3VPN Service: {{ customer }} ---
