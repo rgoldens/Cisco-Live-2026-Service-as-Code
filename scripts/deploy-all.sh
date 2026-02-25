@@ -18,6 +18,8 @@
 #   ./scripts/deploy-all.sh status        Quick status check (containers running?)
 #   ./scripts/deploy-all.sh setup         Install deps on all hosts
 #   ./scripts/deploy-all.sh update-inventory  Update Ansible inventory on all hosts
+#   ./scripts/deploy-all.sh setup-gitlab   Start GitLab + run bootstrap on all hosts
+#   ./scripts/deploy-all.sh teardown-gitlab  Stop GitLab + purge data on all hosts
 #
 # Options:
 #   -f <file>     Hosts file (default: hosts.txt)
@@ -358,6 +360,63 @@ print(f"Updated inventory with container IPs")
     log_info "Inventory update complete."
 }
 
+cmd_setup_gitlab() {
+    log_info "Setting up GitLab on ${#HOSTS[@]} hosts..."
+
+    for host in "${HOSTS[@]}"; do
+        log_info "Starting GitLab on $host ..."
+
+        # Start GitLab containers
+        ssh_cmd "$host" "cd $REMOTE_DIR && make gitlab-up" \
+            && log_ok "$host — GitLab containers started" \
+            || { log_fail "$host — GitLab containers failed to start"; continue; }
+
+        # Wait for GitLab to become healthy (up to 5 minutes)
+        log_info "$host — Waiting for GitLab to become healthy (up to 5 min)..."
+        local healthy=false
+        for i in $(seq 1 30); do
+            local status
+            status=$(ssh_cmd "$host" "docker inspect --format='{{.State.Health.Status}}' gitlab-ce 2>/dev/null" || echo "unknown")
+            status=$(echo "$status" | tr -d '[:space:]')
+            if [[ "$status" == "healthy" ]]; then
+                healthy=true
+                break
+            fi
+            sleep 10
+        done
+
+        if $healthy; then
+            log_ok "$host — GitLab healthy"
+        else
+            log_warn "$host — GitLab not yet healthy (may need more time)"
+        fi
+
+        # Run the bootstrap script
+        ssh_cmd "$host" "cd $REMOTE_DIR && make gitlab-setup" \
+            && log_ok "$host — GitLab setup complete" \
+            || log_fail "$host — GitLab setup failed"
+
+        echo ""
+    done
+
+    log_info "GitLab setup complete on all hosts."
+}
+
+cmd_teardown_gitlab() {
+    log_info "Tearing down GitLab on ${#HOSTS[@]} hosts..."
+
+    for host in "${HOSTS[@]}"; do
+        log_info "Tearing down GitLab on $host ..."
+
+        ssh_cmd "$host" "cd $REMOTE_DIR && make gitlab-purge" \
+            && log_ok "$host — GitLab torn down" \
+            || log_fail "$host — GitLab teardown failed"
+    done
+
+    echo ""
+    log_info "GitLab teardown complete on all hosts."
+}
+
 # ---------------------------------------------------------------------------
 # Parse options
 # ---------------------------------------------------------------------------
@@ -423,13 +482,27 @@ case "$COMMAND" in
         load_hosts
         cmd_update_inventory
         ;;
+    setup-gitlab)
+        load_hosts
+        cmd_setup_gitlab
+        ;;
+    teardown-gitlab)
+        load_hosts
+        echo -n "This will tear down GitLab (purge data) on ALL ${#HOSTS[@]} hosts. Continue? [y/N] "
+        read -r confirm
+        if [[ "$confirm" =~ ^[Yy]$ ]]; then
+            cmd_teardown_gitlab
+        else
+            log_info "Aborted."
+        fi
+        ;;
     help)
         usage
         ;;
     *)
         log_fail "Unknown command: $COMMAND"
         echo ""
-        echo "Available commands: deploy, deploy-parallel, verify, status, destroy, setup, update-inventory"
+        echo "Available commands: deploy, deploy-parallel, verify, status, destroy, setup, update-inventory, setup-gitlab, teardown-gitlab"
         exit 1
         ;;
 esac

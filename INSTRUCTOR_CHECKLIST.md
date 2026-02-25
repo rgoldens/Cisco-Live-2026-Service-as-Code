@@ -15,9 +15,9 @@
 - [ ] Each host has a public IP or jump host path documented
 - [ ] SSH credentials tested for all 30 hosts (instructor can reach every one)
 - [ ] Each host meets minimum resource requirements:
-  - **CPU:** 12 vCPUs (2x XRd + 2x CSR @ 1 vCPU + 2x N9Kv @ 2 vCPU + headroom)
-  - **RAM:** 24 GB minimum (2x XRd @ 2 GB + 2x CSR @ 3 GB + 2x N9Kv @ 6 GB + OS)
-  - **Disk:** 40 GB free (images + container storage)
+  - **CPU:** 16 vCPUs (2x XRd + 2x CSR @ 1 vCPU + 2x N9Kv @ 2 vCPU + GitLab @ 4 vCPU + headroom)
+  - **RAM:** 32 GB minimum (2x XRd @ 2 GB + 2x CSR @ 3 GB + 2x N9Kv @ 6 GB + GitLab CE @ 8 GB + OS)
+  - **Disk:** 60 GB free (images + container storage + GitLab data)
 
 ### Software installation (all 30 hosts)
 
@@ -83,6 +83,17 @@ docker images | grep -E "xrd|csr|n9kv|alpine"
 - [ ] Image: `alpine:latest` pulled (`docker pull alpine:latest`)
 - [ ] Image tags in `topology/sac-lab.yml` match the actual loaded image names on all hosts
 
+### Pre-pull GitLab images (all 30 hosts)
+
+```bash
+# Pull GitLab CE and Runner images ahead of time to avoid session-day delays
+docker pull gitlab/gitlab-ce:latest
+docker pull gitlab/gitlab-runner:latest
+```
+
+- [ ] Image: `gitlab/gitlab-ce:latest` pulled on all hosts
+- [ ] Image: `gitlab/gitlab-runner:latest` pulled on all hosts
+
 ### Pre-install dependencies (all 30 hosts)
 
 ```bash
@@ -101,6 +112,36 @@ make tf-init
 - [ ] `pip install -r requirements.txt` completes without errors
 - [ ] `make ansible-install` completes (cisco.ios, cisco.iosxr, cisco.nxos, ansible.netcommon, ansible.utils)
 - [ ] `make tf-init` completes (CiscoDevNet/iosxe, CiscoDevNet/iosxr providers cached)
+
+### Pre-start GitLab CE (all 30 hosts)
+
+GitLab CE takes 3-5 minutes to fully initialize on first boot. Pre-starting it at
+T-48h lets you verify it works and ensures the database is already initialized by
+session day.
+
+```bash
+cd ~/sac-lab
+
+# Start GitLab containers
+make gitlab-up
+
+# Wait 3-5 minutes, then verify health
+docker inspect --format='{{.State.Health.Status}}' gitlab-ce
+# Expected: healthy
+
+# Run the full bootstrap (creates users, project, runner, CI)
+make gitlab-setup
+# Expected: "GitLab setup complete!" at the end
+
+# Verify student can access GitLab
+curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/
+# Expected: 200 or 302
+```
+
+- [ ] `make gitlab-up` starts GitLab CE and Runner containers without errors
+- [ ] GitLab CE reaches "healthy" status within 5 minutes
+- [ ] `make gitlab-setup` completes all 10 steps successfully
+- [ ] GitLab web UI accessible at `http://<host-ip>:8080`
 
 ### Student access
 
@@ -222,6 +263,60 @@ make inspect
 - [ ] Destroy + redeploy cycle works cleanly
 - [ ] All adjacencies re-form after fresh deploy
 
+### Smoke-test GitLab + CI/CD pipeline
+
+On the same representative host, test the full GitOps workflow end to end:
+
+```bash
+# 1. Verify GitLab is healthy
+docker inspect --format='{{.State.Health.Status}}' gitlab-ce
+# Expected: healthy
+
+# 2. Log in as student via web UI
+# Open http://<host-ip>:8080 in a browser
+# Login: student / CiscoLive2026!
+# Navigate to: sac-lab project
+
+# 3. Clone the repo as student
+cd /tmp
+git clone http://localhost:8080/student/sac-lab.git sac-lab-test
+cd sac-lab-test
+
+# 4. Create a branch, make a change, push
+git checkout -b test-pipeline
+echo "# test" >> services/l3vpn/vars/customer_a.yml
+git add -A && git commit -m "test pipeline trigger"
+git push -u origin test-pipeline
+
+# 5. Create a Merge Request via API
+curl -s --header "PRIVATE-TOKEN: $(cat ~/.gitlab-student-pat)" \
+  "http://localhost:8080/api/v4/projects/1/merge_requests" \
+  --data "source_branch=test-pipeline&target_branch=main&title=Test Pipeline"
+
+# 6. Merge the MR via API
+MR_IID=$(curl -s --header "PRIVATE-TOKEN: $(cat ~/.gitlab-student-pat)" \
+  "http://localhost:8080/api/v4/projects/1/merge_requests?state=opened" | python3 -c "import sys,json;print(json.load(sys.stdin)[0]['iid'])")
+curl -s --header "PRIVATE-TOKEN: $(cat ~/.gitlab-student-pat)" \
+  -X PUT "http://localhost:8080/api/v4/projects/1/merge_requests/$MR_IID/merge"
+
+# 7. Check pipeline triggered
+sleep 5
+curl -s --header "PRIVATE-TOKEN: $(cat ~/.gitlab-student-pat)" \
+  "http://localhost:8080/api/v4/projects/1/pipelines" | python3 -m json.tool | head -20
+# Expected: at least one pipeline with status "running" or "success"
+
+# 8. Clean up test
+cd ~ && rm -rf /tmp/sac-lab-test
+```
+
+- [ ] GitLab healthy and web UI accessible
+- [ ] Student login works (student / CiscoLive2026!)
+- [ ] Git clone via HTTP on port 8080 works
+- [ ] Push to branch succeeds
+- [ ] Merge Request creation works
+- [ ] Pipeline triggers automatically on merge to main
+- [ ] Pipeline runs validate + deploy stages (deploy may fail if topology is down — that's OK for this test)
+
 ---
 
 ## T-2 Hours — Day-of Setup (All 30 Instances)
@@ -244,6 +339,25 @@ to avoid I/O contention. Use a batch script or parallel SSH tool:
 
 - [ ] `make deploy` initiated on all 30 hosts
 - [ ] Stagger applied if hosts share infrastructure
+
+### Start GitLab on all hosts
+
+If GitLab was stopped after the T-48h smoke test, restart it now:
+
+```bash
+# On each host (or via batch script):
+cd ~/sac-lab && make gitlab-up
+
+# If setup-gitlab.sh was NOT run at T-48h, run it now:
+cd ~/sac-lab && make gitlab-setup
+
+# Or use the batch script:
+./scripts/deploy-all.sh setup-gitlab
+```
+
+- [ ] GitLab CE container running and healthy on all 30 hosts
+- [ ] GitLab Runner registered and active on all 30 hosts
+- [ ] Student user and project exist on all 30 hosts
 
 ### Wait for full boot
 
@@ -352,6 +466,33 @@ ssh admin@<n9k-ce01-ip> "show version | head 5"
 - [ ] BGP VPNv4 neighbors Established on csr-pe01
 - [ ] N9Kv responsive to SSH
 
+### Verify GitLab on instructor instance
+
+```bash
+# 1. GitLab healthy?
+docker inspect --format='{{.State.Health.Status}}' gitlab-ce
+# Expected: healthy
+
+# 2. Runner connected?
+docker exec gitlab-runner gitlab-runner list 2>&1 | head -5
+# Expected: shows registered runner
+
+# 3. Web UI accessible?
+curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/
+# Expected: 200 or 302
+
+# 4. Student can log in?
+curl -s -o /dev/null -w "%{http_code}" \
+  -d "grant_type=password&username=student&password=CiscoLive2026!" \
+  http://localhost:8080/oauth/token
+# Expected: 200
+```
+
+- [ ] GitLab CE healthy on instructor instance
+- [ ] GitLab Runner registered and listed
+- [ ] Web UI accessible at http://localhost:8080
+- [ ] Student login credentials work
+
 ### Fallback readiness
 
 - [ ] One spare pre-deployed host available (can be re-assigned if a student instance fails)
@@ -376,6 +517,9 @@ ssh admin@<n9k-ce01-ip> "show version | head 5"
 | CSR1000v (IOS-XE) | `admin` | `admin` | 22 |
 | N9Kv (NX-OS) | `admin` | `admin` | 22 |
 | Linux client | `root` | *(none)* | docker exec |
+| GitLab CE (root) | `root` | `SaCLab2026!` | HTTP :8080 |
+| GitLab CE (student) | `student` | `CiscoLive2026!` | HTTP :8080 |
+| GitLab SSH | — | — | SSH :2222 |
 
 ### Management Network
 
@@ -425,6 +569,10 @@ make tf-init         — Initialize Terraform
 make tf-plan         — Plan Terraform changes
 make tf-apply        — Apply Terraform changes
 make tf-destroy      — Destroy Terraform resources
+make gitlab-up       — Start GitLab CE + Runner containers
+make gitlab-setup    — Bootstrap GitLab (users, project, runner, CI)
+make gitlab-down     — Stop and remove GitLab containers
+make gitlab-purge    — Stop, remove, and delete GitLab data volumes
 make clean           — Remove state files and clab artifacts
 ```
 
@@ -436,6 +584,8 @@ make clean           — Remove state files and clab artifacts
 | CSR1000v | `cisco_csr1000v` | ~6 min |
 | N9Kv | `cisco_n9kv` | ~5-8 min |
 | Alpine Linux | `linux` | ~5 sec |
+| GitLab CE | `docker` | ~3-5 min (first boot) |
+| GitLab Runner | `docker` | ~10 sec |
 
 **Total time from `make deploy` to all-nodes-ready: ~8-10 minutes**
 
@@ -540,6 +690,95 @@ make inspect
 ansible-playbook -i clab-sac-lab/ansible-inventory.yml ansible/playbooks/deploy_l3vpn.yml
 ```
 
+### 9. GitLab CE not booting / stuck unhealthy
+
+**Symptom:** `docker inspect --format='{{.State.Health.Status}}' gitlab-ce` shows "starting" or "unhealthy" for >5 minutes
+**Diagnose:**
+```bash
+docker logs --tail 50 gitlab-ce
+# Look for: "FATAL" messages, OOM errors, or port conflicts
+docker stats gitlab-ce --no-stream
+# Check memory usage — GitLab CE needs ~4 GB RAM
+```
+**Fix:**
+```bash
+# If OOM: check host has 32 GB total RAM and nothing else is consuming it
+free -h
+
+# If port conflict (8080 or 2222 already in use):
+ss -tlnp | grep -E '8080|2222'
+# Stop the conflicting service or change ports in gitlab/docker-compose.yml
+
+# Nuclear option — full restart:
+make gitlab-purge
+make gitlab-up
+# Wait 3-5 minutes, then:
+make gitlab-setup
+```
+
+### 10. GitLab Runner not registering
+
+**Symptom:** Pipeline stays "pending" forever; runner list is empty
+**Diagnose:**
+```bash
+docker exec gitlab-runner gitlab-runner list 2>&1
+# Expected: at least one runner listed
+
+docker logs --tail 30 gitlab-runner
+# Look for: "ERROR: Registering runner... failed" or connection errors
+```
+**Fix:**
+```bash
+# Runner may have failed to register if GitLab wasn't fully ready
+# Re-run the setup script (it handles runner registration):
+make gitlab-setup
+
+# If that fails, manually register:
+docker exec gitlab-runner gitlab-runner register \
+  --non-interactive \
+  --url http://gitlab-ce:8080 \
+  --token "$(docker exec gitlab-ce gitlab-rails runner "puts Ci::Runner.first.token" 2>/dev/null)" \
+  --executor shell \
+  --description "sac-lab-runner"
+```
+
+### 11. CI/CD pipeline fails
+
+**Symptom:** Pipeline shows "failed" in GitLab UI
+**Diagnose:**
+- Click on the failed job in GitLab UI to see logs
+- Common causes:
+  - `ansible-playbook: command not found` → Python deps not installed on runner
+  - `unreachable` errors → containerlab topology not running or inventory IPs wrong
+  - YAML validation errors → malformed service definition file
+**Fix:**
+```bash
+# If ansible not found on runner:
+pip install -r ~/sac-lab/requirements.txt
+
+# If inventory IPs wrong:
+cd ~/sac-lab && make inspect
+# Update ansible/inventory/hosts.yml with correct IPs, commit, push
+
+# If YAML validation error: fix the YAML file and push again
+```
+
+### 12. Student can't push to GitLab
+
+**Symptom:** `git push` fails with "remote: HTTP Basic: Access denied" or 403
+**Diagnose:**
+```bash
+# Check git credentials are configured:
+git config credential.helper
+cat ~/.git-credentials 2>/dev/null | grep -c 8080
+```
+**Fix:**
+```bash
+# Re-configure git credentials for GitLab:
+git config --global credential.helper store
+echo "http://student:CiscoLive2026!@localhost:8080" > ~/.git-credentials
+```
+
 ---
 
 ## During-Session Emergency Procedures
@@ -570,6 +809,11 @@ ansible-playbook -i clab-sac-lab/ansible-inventory.yml ansible/playbooks/deploy_
 ```bash
 # On all 30 hosts:
 cd ~/sac-lab
+
+# Tear down GitLab (remove containers + data)
+make gitlab-purge
+
+# Destroy containerlab topology
 make destroy
 make clean
 
@@ -577,8 +821,18 @@ make clean
 docker rmi ios-xr/xrd-control-plane:25.1.1
 docker rmi vrnetlab/cisco_csr1000v:<tag>
 docker rmi vrnetlab/cisco_n9kv:<tag>
+docker rmi gitlab/gitlab-ce:latest
+docker rmi gitlab/gitlab-runner:latest
 ```
 
+Or use the batch script:
+
+```bash
+./scripts/deploy-all.sh teardown-gitlab   # Remove GitLab on all hosts
+./scripts/deploy-all.sh destroy           # Destroy containerlab on all hosts
+```
+
+- [ ] GitLab torn down on all 30 hosts (containers + volumes removed)
 - [ ] All 30 labs destroyed
 - [ ] Terraform state and clab artifacts cleaned
 - [ ] VMs deprovisioned (if applicable)

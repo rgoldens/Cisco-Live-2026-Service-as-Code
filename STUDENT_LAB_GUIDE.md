@@ -38,6 +38,21 @@ cd ~/sac-lab
 | N9Kv (n9k-ce01, n9k-ce02) | `admin` | `admin` |
 | Linux client | (use `docker exec`) | n/a |
 
+### GitLab (GitOps Workflow)
+
+Your lab host also runs a local GitLab CE instance for the CI/CD exercises.
+
+| Item | Value |
+|------|-------|
+| GitLab URL | `http://<your-lab-host-ip>:8080` |
+| GitLab username | `student` |
+| GitLab password | `CiscoLive2026!` |
+| Git clone URL | `http://localhost:8080/student/sac-lab.git` |
+| GitLab SSH port | `2222` (not used in this lab — use HTTP) |
+
+> **Note:** Git credentials are pre-configured on your lab host. You can
+> `git clone`, `git push`, and `git pull` without entering your password.
+
 ### Quick Command Reference
 
 ```
@@ -431,39 +446,91 @@ config is already in the desired state, so nothing changes.
 
 ---
 
-### Stretch Goal: Add Customer C
+### GitOps Workflow: Add Customer C via GitLab CI/CD
 
-If you finish early, try adding a new customer:
+Instead of running Ansible manually, let's use the production-realistic GitOps
+workflow: edit YAML → commit → push → Merge Request → CI pipeline deploys.
 
-1. Copy the Customer A definition:
-   ```bash
-   cp services/l3vpn/vars/customer_a.yml services/l3vpn/vars/customer_c.yml
-   ```
+#### Step 1: Clone the lab repo from GitLab
 
-2. Edit the new file:
-   ```bash
-   vi services/l3vpn/vars/customer_c.yml
-   ```
+```bash
+cd ~
+git clone http://localhost:8080/student/sac-lab.git sac-lab-gitops
+cd sac-lab-gitops
+```
 
-   Change:
-   - `customer: CustomerC`
-   - `vrf: CUST_C`
-   - `rd: "65000:300"`
-   - `rt_import: "65000:300"`
-   - `rt_export: "65000:300"`
-   - Update IP addresses to avoid conflicts (e.g., 10.200.1.0/24, 10.200.2.0/24)
+#### Step 2: Create a feature branch
 
-3. Re-run the playbook:
-   ```bash
-   make provision-l3vpn
-   ```
+```bash
+git checkout -b add-customer-c
+```
 
-4. Verify:
-   ```bash
-   ssh admin@<csr-pe01-ip>
-   show ip vrf
-   # You should now see CUST_A, CUST_B, and CUST_C
-   ```
+#### Step 3: Create the Customer C service definition
+
+```bash
+cp services/l3vpn/vars/customer_a.yml services/l3vpn/vars/customer_c.yml
+```
+
+Edit the new file:
+
+```bash
+vi services/l3vpn/vars/customer_c.yml
+```
+
+Change these values:
+- `customer: CustomerC`
+- `vrf: CUST_C`
+- `rd: "65000:300"`
+- `rt_import: "65000:300"`
+- `rt_export: "65000:300"`
+- Update IP addresses to avoid conflicts (e.g., `10.200.1.0/24`)
+
+#### Step 4: Commit and push
+
+```bash
+git add services/l3vpn/vars/customer_c.yml
+git commit -m "Add Customer C L3VPN service"
+git push -u origin add-customer-c
+```
+
+#### Step 5: Create a Merge Request in GitLab
+
+Open your browser to `http://<your-lab-host-ip>:8080` and log in as `student` /
+`CiscoLive2026!`.
+
+1. Navigate to the **sac-lab** project
+2. You should see a banner: "Create merge request" — click it
+3. Title: "Add Customer C L3VPN service"
+4. Click **Create merge request**
+
+#### Step 6: Review the pipeline
+
+Before merging, GitLab CI runs a **validation pipeline** on your branch:
+
+1. Click on the pipeline icon in the MR (or go to **CI/CD → Pipelines**)
+2. Watch the `validate-l3vpn` job run — it checks your YAML for required fields
+3. Wait for it to pass (green checkmark)
+
+#### Step 7: Merge and deploy
+
+1. Back on the MR page, click **Merge**
+2. This triggers the **deploy pipeline** on the `main` branch
+3. Go to **CI/CD → Pipelines** to watch the deploy job
+4. The pipeline runs `ansible-playbook` to push Customer C config to the routers
+
+#### Step 8: Verify
+
+```bash
+ssh admin@<csr-pe01-ip>
+show ip vrf
+# You should now see CUST_A, CUST_B, and CUST_C
+exit
+```
+
+> **Key insight:** You never ran `ansible-playbook` manually. You edited a YAML
+> file, pushed it through a review process (MR), and automation handled the rest.
+> This is how production network changes should work — reviewable, auditable,
+> automated.
 
 ---
 
@@ -716,34 +783,70 @@ exit
 
 ---
 
-### Stretch Goal: Add a VLAN to the EVPN Tenant
+### GitOps Workflow: Add VLAN 300 via GitLab CI/CD
 
-1. Edit the EVPN tenant definition:
-   ```bash
-   vi services/evpn/vars/vxlan_tenant.yml
-   ```
+Use the same GitOps workflow to extend the EVPN tenant.
 
-2. Add a new VLAN under the `vlans` list:
-   ```yaml
-     - id: 300
-       name: CUST_A_APP
-       vni: 10300
-       svi_addresses:
-         n9k-ce01: 192.168.30.1/24
-         n9k-ce02: 192.168.30.2/24
-   ```
+#### Step 1: Create a branch
 
-3. Re-run the EVPN playbook:
-   ```bash
-   make provision-evpn
-   ```
+```bash
+cd ~/sac-lab-gitops
+git checkout main && git pull
+git checkout -b add-evpn-vlan300
+```
 
-4. Verify:
-   ```bash
-   ssh admin@<n9k-ce01-ip>
-   show vxlan
-   # VLAN 300 / VNI 10300 should now appear
-   ```
+#### Step 2: Edit the EVPN tenant definition
+
+```bash
+vi services/evpn/vars/vxlan_tenant.yml
+```
+
+Add a new VLAN under the `vlans` list:
+
+```yaml
+  - id: 300
+    name: CUST_A_APP
+    vni: 10300
+    svi_addresses:
+      n9k-ce01: 192.168.30.1/24
+      n9k-ce02: 192.168.30.2/24
+```
+
+#### Step 3: Commit and push
+
+```bash
+git add services/evpn/vars/vxlan_tenant.yml
+git commit -m "Add VLAN 300 to EVPN tenant"
+git push -u origin add-evpn-vlan300
+```
+
+#### Step 4: Create and merge via GitLab
+
+1. Open `http://<your-lab-host-ip>:8080`
+2. Click the "Create merge request" banner
+3. Title: "Add VLAN 300 to EVPN tenant"
+4. Wait for the validation pipeline to pass
+5. Click **Merge**
+
+#### Step 5: Watch the pipeline deploy
+
+1. Go to **CI/CD → Pipelines**
+2. The `deploy-evpn` job runs automatically
+3. Wait for it to complete (green checkmark)
+
+#### Step 6: Verify
+
+```bash
+ssh admin@<n9k-ce01-ip>
+show vxlan
+# VLAN 300 / VNI 10300 should now appear
+exit
+```
+
+> **Key insight:** Same GitOps workflow, different service type. Whether it's
+> L3VPN or EVPN, the process is identical: branch → edit YAML → MR → merge →
+> automated deploy. The CI/CD pipeline knows which playbook to run based on
+> which files changed.
 
 ---
 
@@ -803,6 +906,39 @@ make redeploy
 2. Check the route: `docker exec clab-sac-lab-linux-client ip route`
 3. Verify n9k-ce01 has the SVI with 192.168.100.1/24
 
+### GitLab: Can't log in to web UI
+
+- Verify GitLab is running: `docker ps | grep gitlab-ce`
+- Check health: `docker inspect --format='{{.State.Health.Status}}' gitlab-ce`
+- If "starting" or "unhealthy", wait 2-3 minutes — GitLab can be slow to boot
+- Credentials: `student` / `CiscoLive2026!`
+
+### GitLab: `git push` fails with "Access denied"
+
+```bash
+# Re-configure git credentials:
+git config --global credential.helper store
+echo "http://student:CiscoLive2026!@localhost:8080" > ~/.git-credentials
+```
+
+Then retry your push.
+
+### GitLab: Pipeline stuck on "pending"
+
+The GitLab Runner may not be registered. Ask the instructor to run:
+
+```bash
+make gitlab-setup
+```
+
+### GitLab: Pipeline fails
+
+1. Click on the failed job in GitLab UI to see the error log
+2. Common causes:
+   - YAML validation error → fix the YAML syntax in your service file
+   - Ansible "unreachable" → containerlab topology may need IP update
+3. Fix the issue, commit, push again — a new pipeline will run automatically
+
 ---
 
 ## What You've Accomplished
@@ -819,9 +955,13 @@ By completing this lab, you have:
    second service type
 5. **Validated** end-to-end connectivity and protocol state using automated
    assertions
-6. **Experienced the SaC mindset:** define services as data, render with
-   templates, push with automation, validate with assertions
+6. **Used a GitOps workflow** to deploy network changes through GitLab — branch,
+   edit YAML, Merge Request, CI/CD pipeline, automated deployment
+7. **Experienced the SaC mindset:** define services as data, render with
+   templates, push with automation, validate with assertions, deliver through
+   CI/CD
 
 The service definitions in `services/` are your source of truth. The
 templates, playbooks, and Terraform configs are your rendering engine.
-The devices are just targets. **Network configuration is code.**
+GitLab CI/CD is your delivery pipeline. The devices are just targets.
+**Network configuration is code.**

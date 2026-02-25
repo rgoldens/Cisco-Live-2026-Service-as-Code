@@ -1,0 +1,133 @@
+# =============================================================================
+# GitLab CE + GitLab Runner — Docker Compose
+# Service as Code Lab — Cisco Live 2026
+#
+# Runs a self-hosted GitLab CE instance and a shell-executor GitLab Runner
+# on each student's lab host alongside the containerlab topology.
+#
+# Usage:
+#   cd gitlab/
+#   docker compose up -d
+#   # Wait 3-5 minutes for GitLab to initialize, then run:
+#   ./setup-gitlab.sh
+#
+# Resource requirements (additional to containerlab topology):
+#   GitLab CE:  4 vCPU, 8 GB RAM, 15 GB disk
+#   Runner:     minimal (runs on host shell)
+#
+# Access:
+#   Web UI:  http://<host-ip>:8080
+#   SSH Git: ssh://git@<host-ip>:2222
+# =============================================================================
+
+services:
+  # ---------------------------------------------------------------------------
+  # GitLab CE
+  # ---------------------------------------------------------------------------
+  gitlab:
+    image: gitlab/gitlab-ce:latest
+    container_name: gitlab
+    hostname: gitlab.local
+    restart: unless-stopped
+    shm_size: '256m'
+
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        # External URL — must match the published port
+        external_url 'http://gitlab.local:8080'
+
+        # SSH on non-standard port
+        gitlab_rails['gitlab_shell_ssh_port'] = 2222
+
+        # Disable services we don't need for this lab to save resources
+        prometheus_monitoring['enable'] = false
+        alertmanager['enable'] = false
+        grafana['enable'] = false
+        node_exporter['enable'] = false
+        redis_exporter['enable'] = false
+        postgres_exporter['enable'] = false
+        pgbouncer_exporter['enable'] = false
+        gitlab_exporter['enable'] = false
+
+        # Reduce Puma workers and memory for lab-sized usage
+        puma['worker_processes'] = 2
+        puma['min_threads'] = 1
+        puma['max_threads'] = 4
+
+        # Reduce Sidekiq concurrency
+        sidekiq['concurrency'] = 5
+
+        # Reduce PostgreSQL resources
+        postgresql['shared_buffers'] = '256MB'
+        postgresql['max_worker_processes'] = 4
+
+        # Disable container registry (not needed for this lab)
+        registry['enable'] = false
+        gitlab_rails['registry_enabled'] = false
+
+        # Disable GitLab Pages (not needed)
+        pages_external_url nil
+        gitlab_pages['enable'] = false
+
+        # Auto-approve initial root password
+        gitlab_rails['initial_root_password'] = 'SaCLab2026!'
+        gitlab_rails['display_initial_root_password'] = true
+
+        # Allow local network requests (needed for webhooks to runner)
+        gitlab_rails['allow_local_requests_from_web_hooks_and_services'] = true
+        gitlab_rails['allow_local_requests_from_system_hooks'] = true
+
+    ports:
+      - "8080:8080"
+      - "8443:443"
+      - "2222:22"
+
+    volumes:
+      - gitlab-config:/etc/gitlab
+      - gitlab-logs:/var/log/gitlab
+      - gitlab-data:/var/opt/gitlab
+
+    networks:
+      - gitlab-net
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/-/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 15
+      start_period: 180s
+
+  # ---------------------------------------------------------------------------
+  # GitLab Runner (shell executor)
+  # ---------------------------------------------------------------------------
+  gitlab-runner:
+    image: gitlab/gitlab-runner:latest
+    container_name: gitlab-runner
+    restart: unless-stopped
+
+    # The runner needs access to the host to execute Ansible/Terraform/Make
+    # against the containerlab topology running on the same host.
+    volumes:
+      - gitlab-runner-config:/etc/gitlab-runner
+      - /var/run/docker.sock:/var/run/docker.sock
+
+      # Mount the lab directory so the runner can access make targets,
+      # playbooks, and service definitions
+      - ${SAC_LAB_DIR:-/root/sac-lab}:/opt/sac-lab:ro
+
+    networks:
+      - gitlab-net
+
+    depends_on:
+      gitlab:
+        condition: service_healthy
+
+volumes:
+  gitlab-config:
+  gitlab-logs:
+  gitlab-data:
+  gitlab-runner-config:
+
+networks:
+  gitlab-net:
+    driver: bridge

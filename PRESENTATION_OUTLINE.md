@@ -91,8 +91,8 @@
 
 3. **The SaC workflow**
    ```
-   YAML Service Definition → Template Engine → Device Config → Validation
-         (human intent)        (Jinja2/HCL)    (push to device)   (assert state)
+   YAML Service Definition → Git (branch + MR) → CI/CD Pipeline → Template Engine → Device Config → Validation
+         (human intent)       (review + approve)   (auto-trigger)    (Jinja2/HCL)    (push to device)   (assert state)
    ```
 
 4. **Why tool-agnostic?**
@@ -275,13 +275,13 @@
    make validate
    ```
 
-5. **Stretch goal:** Create a new customer. Copy `customer_a.yml` to `customer_c.yml`, modify the VRF name, RD/RT, and IP addresses, re-run `make provision-l3vpn`.
+5. **GitOps workflow:** Use GitLab to deploy Customer C. Clone from local GitLab (`http://localhost:8080`), create a branch, add `customer_c.yml`, commit, push, create a Merge Request in the web UI, wait for the validation pipeline to pass, merge, and watch the deploy pipeline automatically run `ansible-playbook`.
 
 ### Checkpoint
 - [ ] `make provision-l3vpn` completes without errors
 - [ ] VRF CUST_A and CUST_B appear on both PEs
 - [ ] `make validate` passes all assertions
-- [ ] (Stretch) Customer C VRF provisioned successfully
+- [ ] (GitOps) Customer C deployed via GitLab CI/CD pipeline
 
 ---
 
@@ -458,7 +458,7 @@
    - RR checks on P-routers
    - End-to-end ping from linux-client
 
-5. **Stretch goal:** Modify the EVPN tenant — add a VLAN 300 with VNI 10300 to `vxlan_tenant.yml`, re-run `make provision-evpn`, verify the new VNI appears.
+5. **GitOps workflow:** Modify the EVPN tenant via GitLab — add VLAN 300 with VNI 10300 to `vxlan_tenant.yml`, commit on a branch, push, create MR, merge, and watch the pipeline deploy automatically. Verify the new VNI appears on the N9Kv switches.
 
 ### Checkpoint
 - [ ] `make provision-evpn` completes without errors
@@ -480,21 +480,25 @@
    - L3VPN and EVPN services defined as YAML
    - Two complete provisioning paths (Ansible + Terraform)
    - Automated validation with assertions
+   - A complete GitOps workflow: GitLab → branch → MR → CI/CD pipeline → automated deployment
 
 2. **The SaC principles to take home:**
    - Define services as data (YAML), not as CLI commands
    - Templates bridge human intent to device syntax
    - Automation engines are interchangeable — pick one, or use both
-   - Version control your service definitions (git)
+   - Version control your service definitions (git) — you did this today
+   - Use Merge Requests for peer review of network changes — you did this today
+   - CI/CD pipelines automate validation and deployment — you did this today
    - Validate after every change (assertions, not eyeballs)
    - "If it's not in the YAML, it doesn't exist"
 
 3. **Where to go next:**
-   - Add git workflows (PR review for network changes)
-   - Add CI/CD pipelines (GitLab CI, GitHub Actions)
+   - Scale GitLab CI/CD with more advanced pipelines (staging → production)
+   - Add approval gates and manual triggers for critical changes
    - Replace flat-file YAML with NetBox or Nautobot as SoT
    - Explore pyATS/Genie for deeper state validation
    - Scale with AWX/Tower or Terraform Cloud
+   - Integrate ChatOps (Slack/Teams notifications on pipeline events)
 
 4. **Open lab time** (remaining minutes)
    - Try the stretch goals if you haven't
@@ -525,14 +529,19 @@ Module 3 (YAML SoT) ─── required for exercises
     │
 Module 4 (Exercise 1: explore) ─── prereq for exercises 2-4
     │
-    ├── Module 5-6 (Ansible path + Exercise 2) ─── standalone
+    ├── Module 5-6 (Ansible path + Exercise 2 + GitOps) ─── standalone
+    │       └── GitOps: branch → MR → CI/CD deploy (replaces stretch goal)
     │
     ├── Module 7-8 (Terraform path + Exercise 3) ─── standalone
     │
-    └── Module 9-10 (EVPN + Exercise 4) ─── standalone (but benefits from 5-6)
+    └── Module 9-10 (EVPN + Exercise 4 + GitOps) ─── standalone (but benefits from 5-6)
+            └── GitOps: branch → MR → CI/CD deploy (replaces stretch goal)
          │
 Module 11 (wrap-up) ─── always last
 ```
+
+**GitLab dependency:** GitLab CE must be running on each host before Modules 6 and 10
+(the GitOps workflow exercises). Run `make gitlab-up && make gitlab-setup` at T-2h.
 
 **For a shorter session (2 hours):** Use Modules 0, 1, 2, 3, 4, 5, 6, 11
 **For Ansible-only (3 hours):** Use Modules 0-6, 9, 10, 11

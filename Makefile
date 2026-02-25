@@ -8,7 +8,8 @@
 .PHONY: help deploy destroy redeploy inspect \
         ansible-install provision-l3vpn provision-evpn validate \
         tf-init tf-plan tf-apply tf-destroy \
-        pip-install clean
+        pip-install clean \
+        gitlab-up gitlab-setup gitlab-down gitlab-purge
 
 TOPOLOGY   := topology/sac-lab.yml
 INVENTORY  := ansible/inventory/hosts.yml
@@ -41,6 +42,12 @@ help: ## Show this help
 	@echo "  make tf-plan         Plan L3VPN changes"
 	@echo "  make tf-apply        Apply L3VPN changes"
 	@echo "  make tf-destroy      Destroy Terraform-managed resources"
+	@echo ""
+	@echo "GitLab (GitOps workflow):"
+	@echo "  make gitlab-up       Start GitLab CE + Runner containers"
+	@echo "  make gitlab-setup    Bootstrap GitLab (users, project, runner, CI)"
+	@echo "  make gitlab-down     Stop and remove GitLab containers"
+	@echo "  make gitlab-purge    Stop, remove, and delete GitLab data volumes"
 	@echo ""
 	@echo "Maintenance:"
 	@echo "  make clean           Remove Terraform state and clab artifacts"
@@ -104,3 +111,18 @@ tf-destroy: ## Destroy Terraform-managed resources
 clean: ## Remove Terraform state and containerlab artifacts
 	rm -rf $(TF_DIR)/.terraform $(TF_DIR)/.terraform.lock.hcl $(TF_DIR)/terraform.tfstate*
 	rm -rf clab-sac-lab
+
+# =============================================================================
+# GITLAB (GitOps workflow)
+# =============================================================================
+gitlab-up: ## Start GitLab CE + Runner containers
+	cd gitlab && docker compose up -d
+
+gitlab-setup: ## Bootstrap GitLab (users, project, runner, CI pipeline)
+	cd gitlab && bash setup-gitlab.sh
+
+gitlab-down: ## Stop and remove GitLab containers (preserves data)
+	cd gitlab && bash teardown-gitlab.sh
+
+gitlab-purge: ## Stop, remove, and delete GitLab data volumes
+	cd gitlab && bash teardown-gitlab.sh --purge

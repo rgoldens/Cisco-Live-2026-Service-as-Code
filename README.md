@@ -37,8 +37,9 @@ This lab teaches the **Service as Code** approach to network operations: define 
 
 ```
 .
-├── Makefile                        # All lab operations (deploy, provision, validate)
+├── Makefile                        # All lab operations (deploy, provision, validate, gitlab)
 ├── requirements.txt                # Python dependencies
+├── .gitlab-ci.yml                  # GitLab CI/CD pipeline (validate + deploy)
 ├── INSTRUCTOR_CHECKLIST.md         # Pre-session setup checklist
 ├── PRESENTATION_OUTLINE.md         # 11-module session outline (4 hours)
 ├── STUDENT_LAB_GUIDE.md            # Step-by-step lab exercises
@@ -88,6 +89,11 @@ This lab teaches the **Service as Code** approach to network operations: define 
 │   ├── terraform.tfvars            # Variable values (mirrors YAML SoT)
 │   ├── l3vpn.tf                    # L3VPN resource definitions
 │   └── outputs.tf                  # Output definitions
+│
+├── gitlab/                         # GitLab CE (GitOps workflow)
+│   ├── docker-compose.yml          # GitLab CE + Runner containers
+│   ├── setup-gitlab.sh             # Bootstrap script (users, project, runner, CI)
+│   └── teardown-gitlab.sh          # Cleanup script (with --purge option)
 │
 └── scripts/
     └── deploy-all.sh               # Batch deployment for 30 instances
@@ -141,6 +147,40 @@ make tf-plan             # Preview changes
 make tf-apply            # Apply L3VPN resources
 ```
 
+### GitOps Workflow (GitLab CI/CD)
+
+Each lab host runs a self-hosted GitLab CE instance with a CI/CD pipeline. The
+full GitOps flow:
+
+```
+Edit YAML → git commit → push → Merge Request → merge → CI pipeline → Ansible deploys
+```
+
+```bash
+# Start GitLab CE + Runner
+make gitlab-up
+
+# Bootstrap: create users, project, runner, push repo
+make gitlab-setup
+
+# Access GitLab web UI
+open http://localhost:8080     # login: student / CiscoLive2026!
+```
+
+**Architecture per lab host:**
+
+```
+Lab Host (per student)
+├── GitLab CE container     (port 8080 HTTP, 2222 SSH)
+├── GitLab Runner container (shell executor)
+└── containerlab topology   (7 network nodes)
+```
+
+The `.gitlab-ci.yml` pipeline:
+- **validate stage:** checks YAML service definitions for required fields
+- **deploy stage:** runs `ansible-playbook` on merge to `main`
+- **smart triggers:** only runs L3VPN or EVPN jobs based on which files changed
+
 ### Add a New Customer
 
 Create a YAML file in `services/l3vpn/vars/`:
@@ -179,6 +219,8 @@ That's it. YAML in, service out.
 | XRd (IOS-XR) | `clab` | `clab@123` |
 | CSR1000v (IOS-XE) | `admin` | `admin` |
 | N9Kv (NX-OS) | `admin` | `admin` |
+| GitLab CE (root) | `root` | `SaCLab2026!` |
+| GitLab CE (student) | `student` | `CiscoLive2026!` |
 
 ## Batch Operations (30 Instances)
 
@@ -187,12 +229,14 @@ For deploying across all 30 attendee hosts:
 ```bash
 # Create a hosts.txt file with one IP per line
 # Then use the batch script:
-./scripts/deploy-all.sh deploy          # Deploy all labs (staggered)
-./scripts/deploy-all.sh verify          # Verify all instances
-./scripts/deploy-all.sh status          # Quick status check
-./scripts/deploy-all.sh destroy         # Tear down all labs
-./scripts/deploy-all.sh setup           # Install deps on all hosts
-./scripts/deploy-all.sh update-inventory # Update Ansible inventory IPs
+./scripts/deploy-all.sh deploy             # Deploy all labs (staggered)
+./scripts/deploy-all.sh verify             # Verify all instances
+./scripts/deploy-all.sh status             # Quick status check
+./scripts/deploy-all.sh destroy            # Tear down all labs
+./scripts/deploy-all.sh setup              # Install deps on all hosts
+./scripts/deploy-all.sh update-inventory   # Update Ansible inventory IPs
+./scripts/deploy-all.sh setup-gitlab       # Start GitLab + bootstrap on all hosts
+./scripts/deploy-all.sh teardown-gitlab    # Tear down GitLab on all hosts
 ```
 
 See `INSTRUCTOR_CHECKLIST.md` for the full pre-session setup procedure.
@@ -201,10 +245,11 @@ See `INSTRUCTOR_CHECKLIST.md` for the full pre-session setup procedure.
 
 | Resource | Minimum |
 |----------|---------|
-| vCPUs | 12 |
-| RAM | 24 GB |
-| Disk | 40 GB |
+| vCPUs | 16 |
+| RAM | 32 GB |
+| Disk | 60 GB |
 
+Includes: 7 containerlab nodes + GitLab CE (~4 GB RAM) + GitLab Runner.
 N9Kv nodes use the `n9kv-lite` profile (6 GB RAM, 2 vCPUs each).
 
 ## Documentation

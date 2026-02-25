@@ -1,0 +1,152 @@
+# =============================================================================
+# GitLab CI/CD Pipeline — Service as Code Lab
+# Cisco Live 2026
+#
+# This pipeline runs automatically when a Merge Request is merged to main.
+# It validates the changed YAML service definitions and then deploys the
+# corresponding services using Ansible.
+#
+# Runner: shell executor on the same host as the containerlab topology.
+# =============================================================================
+
+workflow:
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+      when: always
+    - when: never
+
+stages:
+  - validate
+  - deploy
+
+variables:
+  ANSIBLE_INVENTORY: "ansible/inventory/hosts.yml"
+  ANSIBLE_PLAYBOOKS: "ansible/playbooks"
+  ANSIBLE_HOST_KEY_CHECKING: "False"
+
+default:
+  tags:
+    - shell
+    - sac-lab
+
+# =============================================================================
+# Stage 1: Validate — Lint changed YAML service definitions
+# =============================================================================
+validate-l3vpn-yaml:
+  stage: validate
+  script:
+    - echo "=== Validating L3VPN service definitions ==="
+    - >-
+      for file in services/l3vpn/vars/*.yml; do
+        echo "--- Checking $file ---";
+        python3 -c "
+      import yaml, sys;
+      required = ['customer','vrf','rd','rt_import','rt_export','pe_interfaces'];
+      data = yaml.safe_load(open('$file'));
+      missing = [f for f in required if f not in data];
+      assert not missing, f'Missing fields: {missing}';
+      for i,pe in enumerate(data.get('pe_interfaces',[])):
+        for k in ['node','interface','vrf_ip']:
+          assert k in pe, f'pe_interfaces[{i}] missing: {k}';
+      print(f'PASS: {len(data[\"pe_interfaces\"])} PE bindings validated');
+      ";
+      done
+    - echo "=== L3VPN validation complete ==="
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+      changes:
+        - services/l3vpn/vars/*.yml
+      when: always
+    - if: $CI_COMMIT_BRANCH == "main"
+      when: manual
+      allow_failure: true
+
+validate-evpn-yaml:
+  stage: validate
+  script:
+    - echo "=== Validating EVPN service definitions ==="
+    - >-
+      for file in services/evpn/vars/*.yml; do
+        echo "--- Checking $file ---";
+        python3 -c "
+      import yaml, sys;
+      required = ['tenant','vlans','vtep_source','evpn_peers'];
+      data = yaml.safe_load(open('$file'));
+      missing = [f for f in required if f not in data];
+      assert not missing, f'Missing fields: {missing}';
+      for i,v in enumerate(data.get('vlans',[])):
+        for k in ['id','name','vni']:
+          assert k in v, f'vlans[{i}] missing: {k}';
+      print(f'PASS: {len(data[\"vlans\"])} VLANs validated');
+      ";
+      done
+    - echo "=== EVPN validation complete ==="
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+      changes:
+        - services/evpn/vars/*.yml
+      when: always
+    - if: $CI_COMMIT_BRANCH == "main"
+      when: manual
+      allow_failure: true
+
+# =============================================================================
+# Stage 2: Deploy — Run Ansible playbooks to provision services
+# =============================================================================
+deploy-l3vpn:
+  stage: deploy
+  script:
+    - echo "=== Deploying L3VPN services ==="
+    - ansible-playbook -i $ANSIBLE_INVENTORY $ANSIBLE_PLAYBOOKS/deploy_l3vpn.yml
+    - echo "=== L3VPN deployment complete ==="
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+      changes:
+        - services/l3vpn/vars/*.yml
+        - services/l3vpn/templates/*.j2
+      when: on_success
+    - if: $CI_COMMIT_BRANCH == "main"
+      when: manual
+      allow_failure: true
+  needs:
+    - job: validate-l3vpn-yaml
+      optional: true
+
+deploy-evpn:
+  stage: deploy
+  script:
+    - echo "=== Deploying EVPN/VXLAN services ==="
+    - ansible-playbook -i $ANSIBLE_INVENTORY $ANSIBLE_PLAYBOOKS/deploy_evpn.yml
+    - echo "=== EVPN deployment complete ==="
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+      changes:
+        - services/evpn/vars/*.yml
+        - services/evpn/templates/*.j2
+      when: on_success
+    - if: $CI_COMMIT_BRANCH == "main"
+      when: manual
+      allow_failure: true
+  needs:
+    - job: validate-evpn-yaml
+      optional: true
+
+validate-services:
+  stage: deploy
+  script:
+    - echo "=== Running post-deploy validation ==="
+    - ansible-playbook -i $ANSIBLE_INVENTORY $ANSIBLE_PLAYBOOKS/validate.yml
+    - echo "=== Validation complete ==="
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+      changes:
+        - services/**/*
+      when: on_success
+    - if: $CI_COMMIT_BRANCH == "main"
+      when: manual
+      allow_failure: true
+  needs:
+    - job: deploy-l3vpn
+      optional: true
+    - job: deploy-evpn
+      optional: true
