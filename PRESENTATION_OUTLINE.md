@@ -233,9 +233,56 @@
    ```
 
 5. **Validation playbook** — `ansible/playbooks/validate.yml`
-   - Asserts BGP VPNv4 sessions are established
-   - Checks VRF route table for expected prefixes
-   - Pings from linux-client through the VRF
+    - Asserts BGP VPNv4 sessions are established
+    - Checks VRF route table for expected prefixes
+    - Pings from linux-client through the VRF
+
+---
+
+## Module 5.5 — YANG Schema Validation in GitOps Pipelines (Bonus Content)
+
+**Context:** Before Ansible templates are rendered and configs deployed, the GitLab CI/CD pipeline validates service definitions against a YANG data model — this adds a **schema enforcement layer** that catches errors early.
+
+### Why YANG?
+
+YANG (RFC 6020) is the **standard notation for data models** used by network devices. Rather than reinventing validation, we use Cisco's YANG models to:
+- Define the canonical schema for L3VPN services
+- Enforce constraints (required fields, value patterns, ranges)
+- Provide vendor-aware validation before any device is touched
+
+### How It Works in the Pipeline
+
+```
+1. Student edits YAML service file (customer_c.yml)
+   ↓
+2. Push to GitLab (triggers CI pipeline)
+   ↓
+3. Pipeline Stage 1: validate-yang-l3vpn
+   → Runs: python3 scripts/validate-yang.py services/l3vpn/vars/*.yml
+   → Checks: required fields (customer, vrf, rd, rt_import, rt_export, pe_interfaces)
+   → Validates: field types and patterns (VRF must be uppercase, RD must match ASN:value format)
+   → Result: PASS → proceed to Stage 2 | FAIL → block deployment (hard blocker)
+   ↓
+4. Pipeline Stage 2: validate-l3vpn-yaml (Ansible assertions)
+   → Runs only if YANG validation passes
+   → Checks: business logic (BGP neighbors, prefix assertions, etc.)
+   ↓
+5. Pipeline Stage 3: deploy-l3vpn (Ansible playbook)
+   → Runs only if both YANG and Ansible validations pass
+   → Pushes config to routers
+```
+
+### The Defense-in-Depth Pattern
+
+- **YANG validation** → catches schema errors (missing fields, bad types)
+- **Ansible validation** → catches business logic errors (BGP convergence, routing)
+- **Deploy** → pushes only when all validations pass
+
+This layered approach ensures that both the **intent** (YAML service definition) and the **logic** (BGP peering, route targets) are correct before any device is configured.
+
+### Key Takeaway
+
+In the "Break It, Fix It" exercise coming up, you'll delete the `rd:` field. The pipeline will catch this **before** deployment, showing that YANG validation is your first line of defense. The CI/CD pipeline is a safety net.
 
 ---
 
@@ -271,7 +318,13 @@
 
 5. **GitOps workflow:** Use GitLab to deploy Customer C. Clone from local GitLab (`http://localhost:8080`), create a branch, add `customer_c.yml`, commit, push, create a Merge Request in the web UI, wait for the validation pipeline to pass, merge, and watch the deploy pipeline automatically run `ansible-playbook`.
 
-6. **Break It, Fix It:** After Customer C is deployed, have attendees deliberately delete the `rd:` field from `customer_c.yml`, commit, and push. The validation pipeline fails with `AssertionError: Missing fields: ['rd']` and the deploy job does NOT run — the pipeline is a guardrail. Attendees then restore the `rd:` field, push again, watch the pipeline pass, and confirm CUST_C is still on the router.
+6. **Break It, Fix It:** After Customer C is deployed, have attendees deliberately delete the `rd:` field from `customer_c.yml`, commit, and push. 
+   - The pipeline's **YANG validation stage fails first** with `YANG validation failed` and reports `Missing required field: 'rd'`
+   - The **deploy job never runs** because YANG validation is a hard blocker
+   - Students observe that the pipeline caught the error *before* any device config was touched
+   - Then students restore the `rd:` field, push again, watch YANG validation pass, Ansible validation pass, and deploy run
+   - Confirm CUST_C is on the router
+   - This demonstrates the **defense-in-depth pattern**: YANG schema check → Ansible business logic check → Deploy only if both pass
 
 ### Checkpoint
 - [ ] `make provision-l3vpn` completes without errors

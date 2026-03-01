@@ -16,8 +16,9 @@ workflow:
     - when: never
 
 stages:
-  - validate
-  - deploy
+   - validate-schema
+   - validate
+   - deploy
 
 variables:
   ANSIBLE_INVENTORY: "ansible/inventory/hosts.yml"
@@ -30,12 +31,34 @@ default:
     - sac-lab
 
 # =============================================================================
-# Stage 1: Validate — Lint changed YAML service definitions
+# Stage 1: Validate Schema — YANG model validation (hard blocker)
+# =============================================================================
+validate-yang-l3vpn:
+  stage: validate-schema
+  script:
+    - echo "=== Validating L3VPN services against YANG model ==="
+    - >-
+      for file in services/l3vpn/vars/*.yml; do
+        echo "--- YANG validation: $file ---";
+        python3 scripts/validate-yang.py "$file" || exit 1;
+      done
+    - echo "=== YANG L3VPN validation complete ==="
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+      changes:
+        - services/l3vpn/vars/*.yml
+      when: always
+    - if: $CI_COMMIT_BRANCH == "main"
+      when: manual
+      allow_failure: false
+
+# =============================================================================
+# Stage 2: Validate — Lint changed YAML service definitions
 # =============================================================================
 validate-l3vpn-yaml:
   stage: validate
   script:
-    - echo "=== Validating L3VPN service definitions ==="
+    - echo "=== Validating L3VPN service logic and assertions ==="
     - >-
       for file in services/l3vpn/vars/*.yml; do
         echo "--- Checking $file ---";
@@ -60,6 +83,9 @@ validate-l3vpn-yaml:
     - if: $CI_COMMIT_BRANCH == "main"
       when: manual
       allow_failure: true
+  needs:
+    - job: validate-yang-l3vpn
+      optional: false
 
 validate-evpn-yaml:
   stage: validate

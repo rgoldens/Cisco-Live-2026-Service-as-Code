@@ -563,24 +563,31 @@ Create a Merge Request in GitLab:
 3. Title: "Remove rd field (intentional break)"
 4. Click **Create merge request**
 
-#### Step 10: Watch the pipeline FAIL
+#### Step 10: Watch the pipeline FAIL (YANG validation first, then Ansible)
 
 1. Click the pipeline icon in the MR (or go to **CI/CD → Pipelines**)
-2. Watch the `validate-l3vpn-yaml` job — it will **fail**
-3. Click on the failed job to see the error log
+2. You will see **two** validation stages fail, in order:
 
-**Expected error:**
-```
-AssertionError: Missing fields: ['rd']
-```
+**Stage 1: YANG Schema Validation (`validate-yang-l3vpn`)**
+- This runs **first** and fails immediately
+- Click on the failed job to see the error log
+- **Expected error:**
+  ```
+  ✗ YANG validation failed: services/l3vpn/vars/customer_c.yml
+  
+  Validation errors:
+  
+    • Missing required field: 'rd'
+  ```
+- YANG caught the missing field at the **schema level** — before anything else
 
-Now look at the pipeline stages. Notice that the `deploy-l3vpn` job **did NOT
-run**. Because `deploy-l3vpn` depends on `validate-l3vpn-yaml` via `needs:`,
-a validation failure prevents deployment entirely. The pipeline is your
-safety net.
+**Stage 2: Ansible Validation (`validate-l3vpn-yaml`)**
+- This job depends on YANG passing, so it never runs (it's skipped)
 
-> **This is the point.** A missing field in YAML would cause a broken VRF on
-> your routers. The pipeline caught it before any config was pushed.
+**Stage 3: Deploy (`deploy-l3vpn`)**
+- Also skipped because validation failed
+
+> **This is defense in depth.** YANG caught a schema error (missing required field) before the Ansible assertions even ran. The pipeline is a safety net: no schema errors pass, no code reaches the routers.
 
 #### Step 11: Fix It — Restore the field and redeploy
 
@@ -605,8 +612,12 @@ git push
 
 Now watch the pipeline in GitLab:
 1. Go to **CI/CD → Pipelines** — a new pipeline starts automatically
-2. The `validate-l3vpn-yaml` job passes (green checkmark)
-3. The `deploy-l3vpn` job runs and completes successfully
+2. **Stage 1: YANG validation (`validate-yang-l3vpn`)** — passes (green checkmark)
+   - YANG now sees the `rd:` field and validates successfully
+3. **Stage 2: Ansible validation (`validate-l3vpn-yaml`)** — passes
+   - Ansible assertions all pass
+4. **Stage 3: Deploy (`deploy-l3vpn`)** — runs and completes successfully
+   - Ansible playbook pushes config to routers
 
 Merge the MR, then verify on the router:
 
@@ -619,13 +630,14 @@ exit
 
 #### Break It / Fix It Checkpoint
 
-- [ ] Pipeline failed with `Missing fields: ['rd']`
-- [ ] `deploy-l3vpn` did NOT run when validation failed
+- [ ] **YANG validation failed** with `Missing required field: 'rd'`
+- [ ] **YANG validation is a hard blocker** — Ansible and Deploy jobs were skipped
 - [ ] Fix committed and pushed — new pipeline triggered
-- [ ] Pipeline passed after restoring `rd:`
+- [ ] **YANG validation passed** after restoring `rd:`
+- [ ] **Ansible validation passed**, then **Deploy ran** automatically
 - [ ] CUST_C VRF confirmed on csr-pe01
 
-> **Key insight:** You never ran `ansible-playbook` manually. You edited a YAML
+> **Key insight:** YANG validation happens *first* in the pipeline, catching schema errors before any other validation runs. This demonstrates defense-in-depth: schema validation (YANG) → business logic validation (Ansible) → deployment. The pipeline is a safety net that prevents bad data from reaching your routers.
 > file, pushed it through a review process (MR), and automation handled the rest.
 > This is how production network changes should work — reviewable, auditable,
 > automated.
