@@ -274,6 +274,40 @@ are applied automatically after every deploy.
 
 ---
 
+### 0.2.5 — Terraform Demo Topology (Docker Compose)
+
+A separate Terraform demonstration environment deployed alongside the main ContainerLab topology.
+Uses plain Docker containers (not ContainerLab) to avoid management network conflicts.
+
+**Network:** `terraform-net` Docker bridge — `172.20.21.0/24`
+
+| Container | Image | IP | Role |
+|---|---|---|---|
+| `csr-terraform` | `vrnetlab/vr-csr:16.12.05` | `172.20.21.10` | IOS XE router — Terraform target |
+| `linux-terraform1` | `ghcr.io/hellt/network-multitool` | `172.20.21.20` | Linux client |
+| `linux-terraform2` | `ghcr.io/hellt/network-multitool` | `172.20.21.21` | Linux client |
+
+Deployed at `~/terraform-lab/` via `docker compose up -d`.
+
+**RESTCONF enabled** on `csr-terraform` via Ansible playbook (`enable-restconf.yml`) using
+paramiko transport (same CSR 16.12 legacy KEX workaround as main topology CSRs).
+Verified working: `curl -k -u admin:admin https://172.20.21.10/restconf/data/...`
+
+**Terraform provider:** `CiscoDevNet/iosxe` v0.16.0 installed via filesystem mirror
+(`~/.terraform.d/plugins/`) — server has no internet access to registry.terraform.io.
+`~/.terraformrc` configured with `filesystem_mirror` path.
+
+Key discovery: `CiscoDevNet/iosxe` v0.16.0 defaults to NETCONF. Must set `protocol = "restconf"`
+in the provider block to force RESTCONF/HTTPS transport.
+
+**`terraform apply` succeeded** — applied 2 resources in ~2 seconds via RESTCONF:
+- `iosxe_system.csr_terraform` — hostname set to `csr-terraform`
+- `iosxe_interface_loopback.lo0` — Loopback0 `10.99.99.1/32` with description "Managed by Terraform"
+
+Both changes verified on the CSR via RESTCONF curl queries.
+
+---
+
 ### Files — Version 0.2
 
 | File | Location | Description |
@@ -284,3 +318,13 @@ are applied automatically after every deploy.
 | `ansible.cfg` | server: `~/` | `host_key_checking=False`, `look_for_keys=False` |
 | `set_hostnames.yml` | server: `~/` | Ansible playbook: set NX-OS hostnames |
 | `LTRATO-1001-topology.drawio` | local untracked | Layered topology diagram with 10 nodes and full addressing plan |
+| `terraform-lab/docker-compose.yml` | server: `~/terraform-lab/` | Terraform demo 3-container topology |
+| `terraform-lab/enable-restconf.yml` | server: `~/terraform-lab/` | Ansible: enable RESTCONF on csr-terraform |
+| `terraform-lab/terraform-inventory.yml` | server: `~/terraform-lab/` | Ansible inventory for csr-terraform |
+| `terraform-lab/ansible.cfg` | server: `~/terraform-lab/` | paramiko, look_for_keys=False |
+| `terraform-lab/terraform/main.tf` | server: `~/terraform-lab/terraform/` | Terraform config — hostname + Loopback0 via RESTCONF |
+| `terraform-lab-docker-compose.yml` | local untracked | Local copy of docker-compose |
+| `terraform-main.tf` | local untracked | Local copy of main.tf |
+| `terraform-enable-restconf.yml` | local untracked | Local copy of enable-restconf playbook |
+| `terraform-inventory.yml` | local untracked | Local copy of terraform inventory |
+| `terraform-ansible.cfg` | local untracked | Local copy of terraform ansible.cfg |
