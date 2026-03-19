@@ -160,3 +160,127 @@ including XRd `xr-storage`. Plain `destroy` preserves it. The safe redeploy patt
 | `/etc/ssh/ssh_config.d/clab-LTRATO-1001-passwords.conf` | server | Per-node SSH client config |
 | `/home/cisco/.ssh/id_rsa` + `.pub` | server | RSA key for XRd/CSR |
 | `/home/cisco/.ssh/id_ed25519` + `.pub` | server | ed25519 key for NX-OS/Linux |
+
+---
+
+## Version 0.2
+
+**Date:** 2026-03-19
+
+### Summary
+Expanded topology to 10 nodes (added linux-client3 and linux-client4), installed Ansible
+and Terraform on the lab server, built a full Ansible inventory for all nodes with
+working connectivity, set NX-OS hostnames via Ansible, and integrated hostname
+configuration into the post-deploy pipeline.
+
+---
+
+### 0.2.1 — Automation Tools Installed
+
+Ansible and Terraform installed on `198.18.134.90` (the ContainerLab server).
+Decision: consolidate all automation tools on the single clab server so lab participants
+connect to one IP via VSCode.
+
+| Tool | Version |
+|---|---|
+| Ansible | `core 2.20.3` |
+| Terraform | `v1.14.7` |
+| ansible-pylibssh | `1.4.0` |
+
+`ansible-pylibssh` installed to replace paramiko as the default SSH transport. CSR1000v
+nodes require paramiko (legacy KEX) — see 0.2.3 for details.
+
+---
+
+### 0.2.2 — Topology Expanded to 10 Nodes
+
+Two new Linux client nodes added:
+
+| Node | IP | Connected to |
+|---|---|---|
+| `linux-client3` | `172.20.20.42` | `n9k-ce01:eth4` |
+| `linux-client4` | `172.20.20.43` | `n9k-ce02:eth4` |
+
+`LTRATO-1001.clab.yml` updated with new nodes and links.
+`post-deploy.sh` updated to include `linux-client3` and `linux-client4` in the admin key
+copy loop.
+`/etc/ssh/ssh_config.d/clab-LTRATO-1001-passwords.conf` updated to add new Linux clients
+to the `Host` line.
+
+Lab destroyed (preserving `xr-storage`) and redeployed with the 10-node topology.
+Passwordless SSH verified for all 4 Linux clients (root and admin).
+
+**Full 10-node topology:**
+
+| Node | Kind | Image | Management IP |
+|---|---|---|---|
+| `xrd01` | `cisco_xrd` | `ios-xr/xrd-control-plane:25.4.1` | `172.20.20.10` |
+| `xrd02` | `cisco_xrd` | `ios-xr/xrd-control-plane:25.4.1` | `172.20.20.11` |
+| `csr-pe01` | `cisco_csr1000v` | `vrnetlab/vr-csr:16.12.05` | `172.20.20.20` |
+| `csr-pe02` | `cisco_csr1000v` | `vrnetlab/vr-csr:16.12.05` | `172.20.20.21` |
+| `n9k-ce01` | `cisco_n9kv` | `vrnetlab/vr-n9kv:10.5.4.M` | `172.20.20.30` |
+| `n9k-ce02` | `cisco_n9kv` | `vrnetlab/vr-n9kv:10.5.4.M` | `172.20.20.31` |
+| `linux-client1` | `linux` | `ghcr.io/hellt/network-multitool` | `172.20.20.40` |
+| `linux-client2` | `linux` | `ghcr.io/hellt/network-multitool` | `172.20.20.41` |
+| `linux-client3` | `linux` | `ghcr.io/hellt/network-multitool` | `172.20.20.42` |
+| `linux-client4` | `linux` | `ghcr.io/hellt/network-multitool` | `172.20.20.43` |
+
+---
+
+### 0.2.3 — Ansible Inventory and Connectivity
+
+`inventory.yml` written for all 10 nodes at `/home/cisco/inventory.yml`.
+`ansible.cfg` written at `/home/cisco/ansible.cfg`.
+
+**Key Ansible decisions per node type:**
+
+| Group | Transport | Auth | Notes |
+|---|---|---|---|
+| `xrd` | `network_cli` / libssh | RSA pubkey (`id_rsa`) | Works with pylibssh |
+| `csr` | `network_cli` / **paramiko** | **Password** | CSR 16.12 rejects rsa-sha2 signatures with hard disconnect; use password via paramiko with `look_for_keys=False` (set in `ansible.cfg [paramiko_connection]`) |
+| `nxos` | `network_cli` / libssh | ed25519 pubkey | Legacy KEX args in `ansible_ssh_extra_args` |
+| `linux` | `ssh` | ed25519 pubkey (`id_ed25519`) | No Python — use `raw` module |
+
+All 10 nodes verified reachable via `ansible all -m raw -a 'echo ok'`.
+
+---
+
+### 0.2.4 — NX-OS Hostnames via Ansible
+
+ContainerLab's `startup-config:` does NOT work for vrnetlab-based nodes (NX-OS, CSR).
+The config file is placed in the lab directory but never loaded by the VM.
+
+NX-OS hostnames set via Ansible using `cisco.nxos.nxos_config`.
+Playbook `set_hostnames.yml` written and integrated into `post-deploy.sh` so hostnames
+are applied automatically after every deploy.
+
+`post-deploy.sh` now runs 3 steps:
+1. Re-create `authorized_keys` as `root:root 600`
+2. Copy `authorized_keys` into all 4 Linux container admin home dirs via `docker exec`
+3. Wait for NX-OS health, then run `set_hostnames.yml` via Ansible
+
+---
+
+### Addressing Plan (agreed, not yet configured)
+
+| Block | Purpose |
+|---|---|
+| `10.0.0.0/24` | Loopbacks |
+| `10.1.0.0/24` | SP Core P2P links |
+| `10.2.0.0/24` | PE-CE links |
+| `10.3.0.0/24` | DC inter-CE link |
+| `192.168.1.0/24` | Client west (client1, client3) |
+| `192.168.2.0/24` | Client east (client2, client4) |
+
+---
+
+### Files — Version 0.2
+
+| File | Location | Description |
+|---|---|---|
+| `LTRATO-1001.clab.yml` | server: `~/` | 10-node topology (added client3, client4) |
+| `post-deploy.sh` | server: `~/` | Now also runs set_hostnames.yml (3 steps) |
+| `inventory.yml` | server: `~/` | Ansible inventory for all 10 nodes |
+| `ansible.cfg` | server: `~/` | `host_key_checking=False`, `look_for_keys=False` |
+| `set_hostnames.yml` | server: `~/` | Ansible playbook: set NX-OS hostnames |
+| `LTRATO-1001-topology.drawio` | local untracked | Layered topology diagram with 10 nodes and full addressing plan |
