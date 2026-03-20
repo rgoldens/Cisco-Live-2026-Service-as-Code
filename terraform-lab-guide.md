@@ -115,26 +115,36 @@ cd ~/terraform-lab/terraform
 
 ### Look at the file structure
 
+Run `ls -la` to see the full directory listing with permissions and sizes:
+
 ```bash
 ls -la
 ```
 
-Expected output:
 ```
-main.tf
-modules/
-outputs.tf
-terraform.tfstate
-variables.tf
+total 100
+drwxrwxr-x 4 cisco cisco  4096 Mar 20 18:50 .
+drwxrwxr-x 3 cisco cisco  4096 Mar 19 22:32 ..
+drwxrwxr-x 4 cisco cisco  4096 Mar 19 22:32 .terraform
+-rw-r--r-- 1 cisco cisco  1513 Mar 19 22:33 .terraform.lock.hcl
+-rw-r--r-- 1 cisco cisco  2331 Mar 20 18:51 main.tf
+drwxrwxr-x 4 cisco cisco  4096 Mar 19 22:32 modules
+-rw-r--r-- 1 cisco cisco   807 Mar 19 22:32 outputs.tf
+-rw-rw-r-- 1 cisco cisco   182 Mar 20 19:15 terraform.tfstate
+-rw-rw-r-- 1 cisco cisco 28878 Mar 20 18:48 terraform.tfstate.1774032510.backup
+-rw-rw-r-- 1 cisco cisco 28803 Mar 20 19:15 terraform.tfstate.backup
+-rw-r--r-- 1 cisco cisco  3357 Mar 19 22:32 variables.tf
 ```
+
+Now run `ls modules/` to see what modules are available:
 
 ```bash
 ls modules/
 ```
 
 ```
-docker-infra/
-iosxe-config/
+docker-infra
+iosxe-config
 ```
 
 ### Read the root module
