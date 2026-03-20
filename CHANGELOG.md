@@ -165,13 +165,14 @@ including XRd `xr-storage`. Plain `destroy` preserves it. The safe redeploy patt
 
 ## Version 0.2
 
-**Date:** 2026-03-19
+**Date:** 2026-03-19 → 2026-03-20
 
 ### Summary
-Expanded topology to 10 nodes (added linux-client3 and linux-client4), installed Ansible
-and Terraform on the lab server, built a full Ansible inventory for all nodes with
-working connectivity, set NX-OS hostnames via Ansible, and integrated hostname
-configuration into the post-deploy pipeline.
+Expanded topology to 10 nodes, installed Ansible and Terraform on the lab server, built
+a full Ansible inventory for all nodes, set NX-OS hostnames via Ansible, and built a
+fully Terraform-managed IaC demo environment (modular, two providers, full destroy/apply
+lifecycle validated). Terraform containers set to `restart=no` so students deploy them
+manually — they do not start on server boot.
 
 ---
 
@@ -365,6 +366,29 @@ terraform-lab/terraform/
 **Result:** `Apply complete! Resources: 8 added, 0 changed, 0 destroyed.`
 
 `terraform destroy` also validated: all 5 docker resources cleanly removed.
+
+---
+
+### 0.2.7 — Terraform Containers Do Not Start on Server Boot
+
+By design, the Terraform demo topology is a student exercise — it must be deployed
+manually via `terraform apply`, not started automatically on server boot.
+
+**Change:** All three Terraform containers set to `restart = "no"` in
+`modules/docker-infra/main.tf` (previously `"unless-stopped"`).
+
+| Container | Old restart policy | New restart policy |
+|---|---|---|
+| `csr-terraform` | `unless-stopped` | `no` |
+| `linux-terraform1` | `unless-stopped` | `no` |
+| `linux-terraform2` | `unless-stopped` | `no` |
+
+With `restart = "no"`, Docker will never automatically restart these containers after a
+server reboot. Students must run `terraform apply` from `~/terraform-lab/terraform/` to
+bring the environment up, and `terraform destroy` to tear it down.
+
+The main ContainerLab topology (`LTRATO-1001`) is unaffected — it still auto-starts via
+systemd as before.
 
 ---
 
