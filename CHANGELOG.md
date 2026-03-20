@@ -308,6 +308,66 @@ Both changes verified on the CSR via RESTCONF curl queries.
 
 ---
 
+### 0.2.6 — Terraform IaC Refactor (Modular, Full Lifecycle)
+
+The original docker-compose + Ansible enable-RESTCONF approach (0.2.5) replaced with a
+fully Terraform-managed stack. `terraform apply` now handles everything from container
+creation through IOS XE configuration in a single idempotent lifecycle.
+
+**Providers used:**
+
+| Provider | Version | Purpose |
+|---|---|---|
+| `kreuzwerker/docker` | `3.9.0` | Create Docker network, volume, containers |
+| `CiscoDevNet/iosxe` | `0.16.0` | Configure CSR via RESTCONF |
+
+Both providers installed via filesystem mirror (`~/.terraform.d/plugins/`) — server has
+no internet access to `registry.terraform.io`. `~/.terraformrc` configured with
+`filesystem_mirror` block.
+
+**Module structure:**
+
+```
+terraform-lab/terraform/
+├── main.tf              # root: calls both modules
+├── variables.tf
+├── outputs.tf
+└── modules/
+    ├── docker-infra/    # network, volume, containers, csr_ready provisioner
+    │   ├── main.tf
+    │   ├── variables.tf
+    │   └── outputs.tf
+    └── iosxe-config/    # iosxe_system + iosxe_interface_loopback via RESTCONF
+        ├── main.tf
+        ├── variables.tf
+        └── outputs.tf
+```
+
+**`null_resource.csr_ready` provisioner** — the key engineering challenge:
+- CSR cold boot takes ~7-8 minutes. Provisioner polls RESTCONF until HTTP 200.
+- Every `terraform destroy` wipes the Docker named volume → true cold boot on every `apply`.
+- CSR 16.12 does not accept multi-line commands as a quoted SSH argument string
+  (`Line has invalid autocommand` error).
+- Fix: use `printf 'conf t\n...\n' | sshpass -p ... ssh -T` (pipe stdin, no TTY).
+- Added `-o UserKnownHostsFile=/dev/null` so stale known_hosts entries from prior
+  CSR instances never block SSH (new host key generated every cold boot).
+
+**`terraform apply` lifecycle verified end-to-end:**
+
+1. Docker network `terraform-net` (`172.20.21.0/24`) created
+2. Named volume `csr-terraform-storage` created
+3. `csr-terraform` container started (cold boot)
+4. `linux-terraform1` (`172.20.21.20`) and `linux-terraform2` (`172.20.21.21`) started
+5. `null_resource.csr_ready` provisioner polls → enables RESTCONF via SSH after ~7m18s
+6. `iosxe_system.this` — hostname `csr-terraform` — applied via RESTCONF in 1s
+7. `iosxe_interface_loopback.lo0` — `10.99.99.1/255.255.255.255` — applied via RESTCONF in 1s
+
+**Result:** `Apply complete! Resources: 8 added, 0 changed, 0 destroyed.`
+
+`terraform destroy` also validated: all 5 docker resources cleanly removed.
+
+---
+
 ### Files — Version 0.2
 
 | File | Location | Description |
@@ -318,13 +378,13 @@ Both changes verified on the CSR via RESTCONF curl queries.
 | `ansible.cfg` | server: `~/` | `host_key_checking=False`, `look_for_keys=False` |
 | `set_hostnames.yml` | server: `~/` | Ansible playbook: set NX-OS hostnames |
 | `LTRATO-1001-topology.drawio` | local untracked | Layered topology diagram with 10 nodes and full addressing plan |
-| `terraform-lab/docker-compose.yml` | server: `~/terraform-lab/` | Terraform demo 3-container topology |
-| `terraform-lab/enable-restconf.yml` | server: `~/terraform-lab/` | Ansible: enable RESTCONF on csr-terraform |
-| `terraform-lab/terraform-inventory.yml` | server: `~/terraform-lab/` | Ansible inventory for csr-terraform |
-| `terraform-lab/ansible.cfg` | server: `~/terraform-lab/` | paramiko, look_for_keys=False |
-| `terraform-lab/terraform/main.tf` | server: `~/terraform-lab/terraform/` | Terraform config — hostname + Loopback0 via RESTCONF |
-| `terraform-lab-docker-compose.yml` | local untracked | Local copy of docker-compose |
-| `terraform-main.tf` | local untracked | Local copy of main.tf |
-| `terraform-enable-restconf.yml` | local untracked | Local copy of enable-restconf playbook |
-| `terraform-inventory.yml` | local untracked | Local copy of terraform inventory |
-| `terraform-ansible.cfg` | local untracked | Local copy of terraform ansible.cfg |
+| `terraform-lab/terraform/main.tf` | server: `~/terraform-lab/terraform/` | Root module |
+| `terraform-lab/terraform/variables.tf` | server: `~/terraform-lab/terraform/` | Root variables |
+| `terraform-lab/terraform/outputs.tf` | server: `~/terraform-lab/terraform/` | Root outputs |
+| `terraform-lab/terraform/modules/docker-infra/main.tf` | server | Docker network/containers + csr_ready provisioner |
+| `terraform-lab/terraform/modules/docker-infra/variables.tf` | server | docker-infra variables |
+| `terraform-lab/terraform/modules/docker-infra/outputs.tf` | server | docker-infra outputs |
+| `terraform-lab/terraform/modules/iosxe-config/main.tf` | server | IOS XE hostname + Loopback0 via RESTCONF |
+| `terraform-lab/terraform/modules/iosxe-config/variables.tf` | server | iosxe-config variables |
+| `terraform-lab/terraform/modules/iosxe-config/outputs.tf` | server | iosxe-config outputs |
+| `terraform/` (mirrored) | local: `untracked/terraform/` | Local copies of all Terraform files |
