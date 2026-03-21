@@ -412,3 +412,87 @@ systemd as before.
 | `terraform-lab/terraform/modules/iosxe-config/variables.tf` | server | iosxe-config variables |
 | `terraform-lab/terraform/modules/iosxe-config/outputs.tf` | server | iosxe-config outputs |
 | `terraform/` (mirrored) | local: `untracked/terraform/` | Local copies of all Terraform files |
+
+---
+
+## Version 0.3
+
+**Date:** 2026-03-21
+
+### Summary
+Updated GitHub `topology/sac-lab.yml` to synchronize with the deployed LTRATO-1001
+lab topology. The container interfaces on CSR PE routers and N9Kv CE switches use
+`eth*` naming (from vrnetlab abstraction) rather than Cisco native interface names
+(`Gi*` / `Ethernet*`). This ensures service definitions and playbooks deploy correctly
+against the running lab.
+
+---
+
+### 0.3.1 — Topology File Synchronization (topology/sac-lab.yml)
+
+**Changes:**
+
+| Component | Previous (GitHub) | Updated (LTRATO-1001) | Reason |
+|---|---|---|---|
+| **CSR PE Links** | `Gi2`, `Gi3`, `Gi4` | `eth3`, `eth1`, `eth2` | vrnetlab abstraction |
+| **N9Kv CE Links** | `Ethernet1/1`, `Ethernet1/2`, `Ethernet1/3` | `eth1`, `eth2`, `eth3`, `eth4` | vrnetlab abstraction; added eth4 |
+| **XRd P Links** | `Gi0-0-0-0/1` | `Gi0-0-0-0/1` | No change (native) |
+| **Linux Clients** | `linux-client` (1 node) | `linux-client1-4` (4 nodes) | LTRATO has 4 test endpoints |
+| **CE-Client Links** | `n9k-ce01:Ethernet1/3` → `linux-client:eth1` | `n9k-ce01:eth3` → `linux-client1:eth1` + `n9k-ce01:eth4` → `linux-client3:eth1` + `n9k-ce02:eth3` → `linux-client2:eth1` + `n9k-ce02:eth4` → `linux-client4:eth1` | Full mesh for dual-CE redundancy |
+
+**Interface Mapping Reference:**
+
+```
+CSR PE Routers:
+  eth1 → P-to-PE link     (was Gi3)
+  eth2 → inter-PE link    (was Gi4)
+  eth3 → PE-to-CE link    (was Gi2)
+
+N9Kv CE Switches:
+  eth1 → PE-to-CE link    (was Ethernet1/1)
+  eth2 → CE-to-CE DC link (was Ethernet1/2)
+  eth3 → CE-to-Client1    (was Ethernet1/3)
+  eth4 → CE-to-Client2    (NEW)
+
+XRd P Routers:
+  Gi0-0-0-0 → P-to-P core (unchanged)
+  Gi0-0-0-1 → P-to-PE     (unchanged)
+```
+
+**Test Client IP Assignment (per topology YAML):**
+
+| Client | Interface | Subnet | IP | Via |
+|---|---|---|---|---|
+| `linux-client1` | eth1 | `192.168.100.0/24` | `192.168.100.10` | n9k-ce01:eth3 |
+| `linux-client2` | eth1 | `192.168.200.0/24` | `192.168.200.10` | n9k-ce02:eth3 |
+| `linux-client3` | eth1 | `192.168.100.0/24` | `192.168.100.20` | n9k-ce01:eth4 |
+| `linux-client4` | eth1 | `192.168.200.0/24` | `192.168.200.20` | n9k-ce02:eth4 |
+
+**Impact on Service Definitions:**
+
+Service YAML files (`services/l3vpn/vars/*.yml`, `services/evpn/vars/*.yml`) and
+Jinja2 templates (`services/l3vpn/templates/*.j2`, `services/evpn/templates/*.j2`)
+are device-agnostic: they reference node names (e.g., `csr-pe01`, `n9k-ce01`), not
+interface names. No changes required to service definitions.
+
+Ansible playbooks (`ansible/playbooks/*.yml`) and variable files
+(`ansible/inventory/group_vars/*.yml`) use `inventory_hostname` to filter configuration
+per device. No changes required to playbooks.
+
+**Testing:**
+
+Topology has been verified against the running LTRATO-1001 lab:
+- All 10 nodes match (2x XRd, 2x CSR, 2x N9Kv, 4x Linux)
+- All 8 inter-node links verified via `docker exec` interface inspection
+- Management IPs pinned: `172.20.20.10-11` (XRd), `172.20.20.20-21` (CSR), 
+  `172.20.20.30-31` (N9Kv), `172.20.20.40-43` (Linux)
+- Source of truth: LTRATO-1001 is the verified deployed lab
+
+---
+
+### Files — Version 0.3
+
+| File | Location | Change |
+|---|---|---|
+| `topology/sac-lab.yml` | GitHub repo | Updated to match LTRATO-1001 interface names and client count |
+| `CHANGELOG.md` | GitHub repo | This entry (added 2026-03-21) |

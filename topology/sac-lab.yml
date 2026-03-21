@@ -2,7 +2,8 @@
 # Service as Code Lab — Cisco Live 2026
 # Containerlab Topology Definition
 #
-# Topology:  2x XRd P-routers  |  2x CSR1000v/C8000v PEs  |  2x N9Kv CEs  |  1x Linux client
+# Topology:  2x XRd P-routers  |  2x CSR1000v/C8000v PEs  |  2x N9Kv CEs  |  4x Linux clients
+# Source:    LTRATO-1001 (verified deployed lab)
 #
 # To deploy:   sudo containerlab deploy -t topology/sac-lab.yml
 # To destroy:  sudo containerlab destroy -t topology/sac-lab.yml
@@ -94,8 +95,8 @@ topology:
         role: ce-switch
         region: dc-east
 
-    # ===================== LINUX TEST CLIENT ================================
-    linux-client:
+    # ===================== LINUX TEST CLIENTS ==============================
+    linux-client1:
       kind: linux
       image: alpine:latest
       labels:
@@ -105,36 +106,63 @@ topology:
         - ip addr add 192.168.100.10/24 dev eth1
         - ip route add 192.168.0.0/16 via 192.168.100.1
 
+    linux-client2:
+      kind: linux
+      image: alpine:latest
+      labels:
+        role: test-endpoint
+      exec:
+        # Assign an IP in the CUST_A VRF subnet reachable via n9k-ce02
+        - ip addr add 192.168.200.10/24 dev eth1
+        - ip route add 192.168.0.0/16 via 192.168.200.1
+
+    linux-client3:
+      kind: linux
+      image: alpine:latest
+      labels:
+        role: test-endpoint
+      exec:
+        # Assign an IP in the CUST_A VRF subnet reachable via n9k-ce01
+        - ip addr add 192.168.100.20/24 dev eth1
+        - ip route add 192.168.0.0/16 via 192.168.100.1
+
+    linux-client4:
+      kind: linux
+      image: alpine:latest
+      labels:
+        role: test-endpoint
+      exec:
+        # Assign an IP in the CUST_A VRF subnet reachable via n9k-ce02
+        - ip addr add 192.168.200.20/24 dev eth1
+        - ip route add 192.168.0.0/16 via 192.168.200.1
+
   # ===========================================================================
   # LINKS
   #
-  # Addressing plan:
-  #   P-P core:        10.0.0.0/30  (xrd01 ↔ xrd02)
-  #   P-PE west:       10.0.1.0/30  (xrd01 ↔ csr-pe01)
-  #   P-PE east:       10.0.1.4/30  (xrd02 ↔ csr-pe02)
-  #   PE-PE inter-PE:  10.0.2.0/30  (csr-pe01 ↔ csr-pe02)
-  #   PE-CE west:      10.0.3.0/30  (csr-pe01 ↔ n9k-ce01)
-  #   PE-CE east:      10.0.3.4/30  (csr-pe02 ↔ n9k-ce02)
-  #   CE-CE DC:        10.0.4.0/30  (n9k-ce01 ↔ n9k-ce02)
-  #   CE-Client:       192.168.100.0/24 (n9k-ce01 ↔ linux-client)
+  # Topology: LTRATO-1001 (verified deployed lab)
   # ===========================================================================
   links:
-    # --- P-router core backbone (IS-IS + LDP) ---
-    - endpoints: ["xrd01:Gi0-0-0-0", "xrd02:Gi0-0-0-0"]
+    # P-to-P core link
+    - endpoints: [xrd01:Gi0-0-0-0, xrd02:Gi0-0-0-0]
 
-    # --- P ↔ PE links ---
-    - endpoints: ["xrd01:Gi0-0-0-1", "csr-pe01:Gi3"]
-    - endpoints: ["xrd02:Gi0-0-0-1", "csr-pe02:Gi3"]
+    # xrd01 → csr-pe01
+    - endpoints: [xrd01:Gi0-0-0-1, csr-pe01:eth1]
 
-    # --- Inter-PE link ---
-    - endpoints: ["csr-pe01:Gi4", "csr-pe02:Gi4"]
+    # xrd02 → csr-pe02
+    - endpoints: [xrd02:Gi0-0-0-1, csr-pe02:eth1]
 
-    # --- PE ↔ CE links ---
-    - endpoints: ["csr-pe01:Gi2", "n9k-ce01:Ethernet1/1"]
-    - endpoints: ["csr-pe02:Gi2", "n9k-ce02:Ethernet1/1"]
+    # inter-PE link
+    - endpoints: [csr-pe01:eth2, csr-pe02:eth2]
 
-    # --- DC inter-switch link (EVPN VXLAN underlay) ---
-    - endpoints: ["n9k-ce01:Ethernet1/2", "n9k-ce02:Ethernet1/2"]
+    # PE → CE links
+    - endpoints: [csr-pe01:eth3, n9k-ce01:eth1]
+    - endpoints: [csr-pe02:eth3, n9k-ce02:eth1]
 
-    # --- CE ↔ Linux test client ---
-    - endpoints: ["n9k-ce01:Ethernet1/3", "linux-client:eth1"]
+    # DC link between CEs
+    - endpoints: [n9k-ce01:eth2, n9k-ce02:eth2]
+
+    # CE → Linux client links
+    - endpoints: [n9k-ce01:eth3, linux-client1:eth1]
+    - endpoints: [n9k-ce02:eth3, linux-client2:eth1]
+    - endpoints: [n9k-ce01:eth4, linux-client3:eth1]
+    - endpoints: [n9k-ce02:eth4, linux-client4:eth1]
