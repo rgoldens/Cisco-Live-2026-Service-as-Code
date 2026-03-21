@@ -33,16 +33,16 @@ terraform {
 provider "iosxe" {
   alias    = "pe01"
   host     = var.pe_hosts["csr-pe01"]
-  username = var.device_username
-  password = var.device_password
+  username = var.device_username_iosxe
+  password = var.device_password_iosxe
   insecure = true
 }
 
 provider "iosxe" {
   alias    = "pe02"
   host     = var.pe_hosts["csr-pe02"]
-  username = var.device_username
-  password = var.device_password
+  username = var.device_username_iosxe
+  password = var.device_password_iosxe
   insecure = true
 }
 
@@ -52,15 +52,15 @@ provider "iosxe" {
 provider "iosxr" {
   alias    = "p01"
   host     = var.p_hosts["xrd01"]
-  username = var.device_username
-  password = var.device_password
+  username = var.device_username_iosxr
+  password = var.device_password_iosxr
   insecure = true
 }
 
 provider "iosxr" {
   alias    = "p02"
   host     = var.p_hosts["xrd02"]
-  username = var.device_username
-  password = var.device_password
+  username = var.device_username_iosxr
+  password = var.device_password_iosxr
   insecure = true
 }
