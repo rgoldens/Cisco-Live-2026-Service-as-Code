@@ -392,6 +392,32 @@ systemd as before.
 
 ---
 
+### 0.2.8 — Stale Terraform Resources Cleaned Up
+
+**Date:** 2026-03-21
+
+After loading the 0.2.7 checkpoint, two orphaned Docker resources were found on the server
+left over from a previous `terraform destroy` run (destroy removes containers but can
+leave the volume and network behind):
+
+| Resource | Name |
+|---|---|
+| Docker volume | `csr-terraform-storage` |
+| Docker network | `terraform-net` |
+
+Both removed manually:
+
+```
+docker volume rm csr-terraform-storage
+docker network rm terraform-net
+```
+
+Server is now in the clean baseline state expected at the start of the student
+Terraform lab guide (Part 2 — "Confirm nothing is running yet"). A fresh
+`terraform apply` will cold-boot the CSR from a new volume.
+
+---
+
 ### Files — Version 0.2
 
 | File | Location | Description |
