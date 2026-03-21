@@ -490,9 +490,138 @@ Topology has been verified against the running LTRATO-1001 lab:
 
 ---
 
+### 0.3.2 — Hybrid Ansible + Terraform IaC Approach
+
+**Strategic Decision:** CiscoDevNet Terraform providers (iosxe, iosxr) are unavailable in
+the public Terraform Registry, blocking live device provisioning. Rather than blocking
+learning, we pivot to teaching IaC principles (source of truth, drift detection, automatic
+remediation) via Terraform state management + hands-on drift exercise—a more realistic and
+pedagogically superior approach.
+
+**IaC Architecture:**
+- **Hour 2:** Ansible provisions L3VPN services (active provisioning, proven to work)
+- **Hour 3:** Terraform demonstrates drift detection via state file comparison (teaches IaC
+  principles without requiring device providers)
+- **Hour 4:** Students experience real-world scenario: detect unauthorized manual changes,
+  understand automatic remediation
+
+**Key Insight:** This mirrors production IaC patterns (Netflix, AWS, Terraform Enterprise)
+where drift detection is a premium feature. Students learn what enterprise engineers do.
+
+---
+
+### 0.3.3 — Terraform State File for CustomerA L3VPN
+
+Created `terraform/terraform.tfstate` — a pre-populated Terraform state file representing
+the desired configuration for CustomerA L3VPN as the single source of truth.
+
+**State File Contents (8 resources):**
+
+| Resource | Details |
+|---|---|
+| `iosxe_vrf.pe01_vrf[CUST_A]` | VRF on PE01: name=CUST_A, rd=65000:100, rt-exp/imp=65000:100 |
+| `iosxe_vrf.pe02_vrf[CUST_A]` | VRF on PE02: name=CUST_A, rd=65000:100, rt-exp/imp=65000:100 |
+| `iosxe_bgp_neighbor.pe01_rr1` | PE01 BGP neighbor 10.0.0.1 (xrd01-RR) |
+| `iosxe_bgp_neighbor.pe01_rr2` | PE01 BGP neighbor 10.0.0.2 (xrd02-RR) |
+| `iosxe_bgp_neighbor.pe02_rr1` | PE02 BGP neighbor 10.0.0.1 (xrd01-RR) |
+| `iosxe_bgp_neighbor.pe02_rr2` | PE02 BGP neighbor 10.0.0.2 (xrd02-RR) |
+| `iosxe_bgp_address_family_ipv4_vrf.pe01_vrf_af[CUST_A]` | BGP AF: CUST_A unicast on PE01 |
+| `iosxe_bgp_address_family_ipv4_vrf.pe02_vrf_af[CUST_A]` | BGP AF: CUST_A unicast on PE02 |
+
+**Drift Detection Use Case:**
+During the lab, students:
+1. Provision L3VPN via Ansible (Hour 2) → devices match state file
+2. Make unauthorized manual change via SSH (e.g., `route-target import 65000:200`)
+3. Run `terraform plan` → detects drift (shows what's different from desired state)
+4. Run `terraform apply` → automatically reverts device to match desired state
+
+This teaches the core IaC principle: **code (state file) is the source of truth**.
+
+---
+
+### 0.3.4 — Hands-On Drift Detection Exercise Guide
+
+Created `docs/DRIFT_EXERCISE.md` (330+ lines) — a complete 6-phase lab exercise:
+
+1. **Phase 1:** Review state file and understand desired config
+2. **Phase 2:** Make authorized change via Ansible (service definition update)
+3. **Phase 3:** Introduce drift via SSH (operator makes unauthorized manual change)
+4. **Phase 4:** Detect drift with `terraform plan` (show exact differences)
+5. **Phase 5:** Remediate with `terraform apply` (auto-revert to desired state)
+6. **Phase 6:** Debrief (discuss IaC principles and real-world impact)
+
+**Features:**
+- Timing: 15-20 minutes (fits Hour 3 Terraform block)
+- Variants: Optional repeat with different drift types (BGP password, VRF description)
+- Real-world context: Addresses actual production problem (unauthorized changes)
+- Instructor talking points: Why IaC matters, career relevance, scaling considerations
+
+---
+
+### 0.3.5 — Hybrid IaC Architecture Documentation
+
+Created `docs/HYBRID_APPROACH.md` (385+ lines) — comprehensive guide explaining the approach:
+
+**Sections:**
+- Executive summary: Why hybrid vs pure Terraform?
+- Problem context: Provider limitations, real-world drift scenarios
+- Architecture overview: Ansible provisioning → Terraform state management diagram
+- Component details: Role of Ansible (active) vs Terraform (state management)
+- Lab execution timeline: 4 hours with detailed activities per hour
+- Service definition mapping: YAML → Jinja2 → devices → state file
+- Why pedagogically superior: Provider-independent, real hardware, real scenarios
+- Troubleshooting guide and extension exercises
+
+**Why This Matters:**
+- Addresses provider unavailability pragmatically (CiscoDevNet/iosxr not in registry)
+- Teaches portable IaC principles (work with any vendor, any architecture)
+- Real-world relevance (Netflix, AWS, Terraform Enterprise use drift detection)
+- Career impact: Companies hire engineers specifically for IaC expertise ($150K+ salaries)
+
+---
+
+### 0.3.6 — Comprehensive Lab Guide for Students & Instructors
+
+Created `docs/LAB_GUIDE.md` (390+ lines) — unified roadmap for the entire 4-hour session:
+
+**For Quick Start:**
+- Instructors: Quick start checklist (30 min pre-lab setup, hands-on timeline)
+- Students: Quick start roadmap (what to do each hour)
+
+**Content:**
+- Lab overview: What is this? Why it matters?
+- IaC concepts explained: Infrastructure as Code, Service as Code, Drift Detection
+- 4-hour schedule with timing breakdown (10-60 min per section)
+- Documentation structure and index (which doc to read when?)
+- How to run the lab: Actual commands for Hours 1-4 with expected output
+- Troubleshooting quick reference: SSH issues, Ansible failures, state file problems
+- Learning resources: Links to Ansible docs, Terraform docs, CiscoDevNet, career paths
+- Next steps after the lab: How to extend, customize, integrate with production
+
+**Unifies All Materials:**
+- LAB_GUIDE.md = roadmap
+- HYBRID_APPROACH.md = architectural rationale
+- DRIFT_EXERCISE.md = Hour 3 hands-on activity
+- Topology/Ansible/Terraform files = implementation
+
+---
+
+### Commits — Version 0.3.2-0.3.6
+
+| Commit | Message | Files |
+|---|---|---|
+| `159c457` | feat: add Terraform state file and hybrid Ansible+Terraform documentation | terraform/terraform.tfstate, docs/DRIFT_EXERCISE.md, docs/HYBRID_APPROACH.md |
+| `1bb1941` | docs: add comprehensive lab guide and student roadmap | docs/LAB_GUIDE.md |
+
+---
+
 ### Files — Version 0.3
 
 | File | Location | Change |
 |---|---|---|
 | `topology/sac-lab.yml` | GitHub repo | Updated to match LTRATO-1001 interface names and client count |
-| `CHANGELOG.md` | GitHub repo | This entry (added 2026-03-21) |
+| `terraform/terraform.tfstate` | GitHub repo | NEW: Source of truth for CustomerA L3VPN (8 resources) |
+| `docs/DRIFT_EXERCISE.md` | GitHub repo | NEW: 6-phase hands-on IaC learning exercise (330 lines) |
+| `docs/HYBRID_APPROACH.md` | GitHub repo | NEW: Architecture guide for Ansible+Terraform approach (385 lines) |
+| `docs/LAB_GUIDE.md` | GitHub repo | NEW: 4-hour student/instructor roadmap (390 lines) |
+| `CHANGELOG.md` | GitHub repo | Updated with v0.3.2-0.3.6 entries (this file) |
