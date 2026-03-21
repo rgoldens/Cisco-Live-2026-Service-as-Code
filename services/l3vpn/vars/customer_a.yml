@@ -16,7 +16,7 @@ description: "Customer A - Enterprise L3VPN"
 # PE-side interface bindings
 pe_interfaces:
   - node: csr-pe01
-    interface: GigabitEthernet2
+    interface: GigabitEthernet3
     vrf_ip: 192.168.100.1/24
     description: "CUST_A CE-facing — toward n9k-ce01"
     ce_neighbor:
@@ -24,7 +24,7 @@ pe_interfaces:
       remote_as: 65100
 
   - node: csr-pe02
-    interface: GigabitEthernet2
+    interface: GigabitEthernet3
     vrf_ip: 192.168.200.1/24
     description: "CUST_A CE-facing — toward n9k-ce02"
     ce_neighbor:

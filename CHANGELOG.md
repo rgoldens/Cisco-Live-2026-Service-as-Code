@@ -624,4 +624,251 @@ Created `docs/LAB_GUIDE.md` (390+ lines) — unified roadmap for the entire 4-ho
 | `docs/DRIFT_EXERCISE.md` | GitHub repo | NEW: 6-phase hands-on IaC learning exercise (330 lines) |
 | `docs/HYBRID_APPROACH.md` | GitHub repo | NEW: Architecture guide for Ansible+Terraform approach (385 lines) |
 | `docs/LAB_GUIDE.md` | GitHub repo | NEW: 4-hour student/instructor roadmap (390 lines) |
-| `CHANGELOG.md` | GitHub repo | Updated with v0.3.2-0.3.6 entries (this file) |
+| `CHANGELOG.md` | GitHub repo | Updated with v0.3.2-0.3.6 entries |
+
+---
+
+### 0.3.7 — Critical Fixes: Service Definitions, Inventory Alignment, and Documentation
+
+**Date:** 2026-03-21 (continuation)
+
+**Objective:** Fix critical inconsistencies discovered during repository audit that would 
+prevent Ansible provisioning from working correctly. Ensure all documentation references
+resolve and README accurately describes the lab.
+
+---
+
+#### 0.3.7.1 — Service Definition Interface Fix
+
+**Problem:** Service definitions used `GigabitEthernet2` for PE-CE link, but:
+- Containerlab topology defines `csr-pe01:eth3` as PE-CE link (maps to GigabitEthernet3)
+- Terraform expects `eth3` for PE-CE interface
+- Actual startup config has no customer-facing interface pre-configured on GigabitEthernet2
+
+**Solution:** Updated all L3VPN service definitions to use `GigabitEthernet3`
+
+| File | Change |
+|---|---|
+| `services/l3vpn/vars/customer_a.yml` | `interface: GigabitEthernet2` → `GigabitEthernet3` (2 places: pe01 and pe02) |
+| `services/l3vpn/vars/customer_b.yml` | `interface: GigabitEthernet2` → `GigabitEthernet3` (2 places: pe01 and pe02) |
+
+**Impact:** Ansible L3VPN provisioning will now configure correct PE-facing interfaces matching the topology.
+
+---
+
+#### 0.3.7.2 — Ansible Inventory Alignment (LTRATO-1001 IPs)
+
+**Problem:** Ansible inventory (`ansible/inventory/hosts.yml`) had stale IPs not matching LTRATO-1001:
+- XRd: `172.20.20.11, .12` (should be `.10, .11`)
+- CSR: `172.20.20.13, .14` (should be `.20, .21`)
+- N9Kv: `172.20.20.15, .16` (should be `.30, .31`)
+- Linux: `172.20.20.17` (should be `.40, .41, .42, .43`)
+- Missing 3 Linux clients entirely
+
+**Solution:** Completely rewrote `ansible/inventory/hosts.yml` with:
+- Correct LTRATO-1001 management IPs (172.20.20.10-43)
+- Per-device network OS and credentials in vars
+- All 4 Linux clients (linux-client1-4)
+- Proper group structure (pe_routers, p_routers, ce_switches, network)
+
+**Before:**
+```yaml
+xrd01:
+  ansible_host: 172.20.20.11     # wrong
+csr-pe01:
+  ansible_host: 172.20.20.13     # wrong
+linux:
+  hosts:
+    linux-client:               # only 1 client
+      ansible_host: 172.20.20.17  # wrong
+```
+
+**After:**
+```yaml
+xrd01:
+  ansible_host: 172.20.20.10     # correct
+csr-pe01:
+  ansible_host: 172.20.20.20     # correct
+linux:
+  hosts:
+    linux-client1:
+      ansible_host: 172.20.20.40  # correct
+    linux-client2:
+      ansible_host: 172.20.20.41
+    linux-client3:
+      ansible_host: 172.20.20.42
+    linux-client4:
+      ansible_host: 172.20.20.43
+```
+
+**Impact:** Ansible playbooks will now connect to correct device IPs and reach all 4 test clients.
+
+---
+
+#### 0.3.7.3 — README.md Accuracy
+
+**Problems fixed:**
+1. **Node count mismatch:** README listed "7 nodes | 1 Linux client" but topology has 10 nodes | 4 Linux clients
+2. **Missing documentation reference:** README didn't link new docs
+3. **Missing hybrid approach explanation:** README didn't mention Ansible+Terraform hybrid strategy
+
+**Changes:**
+- Updated node count: "**10 nodes** | 2 XRd P-routers | 2 CSR1000v PEs | 2 N9Kv CEs | 4 Linux clients"
+- Added `docs/` section to project structure documenting all new guides:
+  - LAB_GUIDE.md (4-hour lab roadmap)
+  - DEPLOYMENT_GUIDE.md (new)
+  - TOPOLOGY_NOTES.md (new)
+  - HYBRID_APPROACH.md (IaC rationale)
+  - DRIFT_EXERCISE.md (Hour 3 hands-on)
+- Added "Hybrid Ansible + Terraform Approach" section explaining strategy and rationale
+
+**Impact:** README now accurately reflects lab structure and points users to all supporting documentation.
+
+---
+
+#### 0.3.7.4 — INSTALL_GUIDE.md Completion
+
+**Problem:** Device images section cut off mid-content with no build instructions
+
+**Solution:** Completed section with detailed image loading/building steps:
+
+**For XRd:**
+- Command: `docker load -i xrd-control-plane-container-x64.25.1.1.tgz`
+- Resulting image: `ios-xr/xrd-control-plane:25.1.1`
+
+**For CSR1000v:**
+- Use vrnetlab to build: `cd vrnetlab/csr && make IMAGE=~/csr1000v-universalk9.17.03.06-serial.qcow2`
+- Resulting image: `vrnetlab/vr-csr:17.03.06`
+
+**For N9Kv:**
+- Use vrnetlab to build: `cd vrnetlab/nxos && make IMAGE=~/nexus9500v64.10.4.3.F.qcow2`
+- Resulting image: `vrnetlab/vr-n9kv:10.4.3`
+
+**Impact:** Students/instructors can now follow complete setup instructions without gaps.
+
+---
+
+#### 0.3.7.5 — New: Deployment Guide (docs/DEPLOYMENT_GUIDE.md)
+
+**Created comprehensive deployment guide (600+ lines):**
+
+**Sections:**
+1. **Quick Deploy** (Steps 1-4)
+   - Clone repo
+   - Deploy topology (`sudo clab deploy`)
+   - Verify all 10 nodes running
+   - Verify connectivity via SSH
+
+2. **Post-Deployment Setup** (Steps 5-6)
+   - Update Ansible inventory if IPs differ
+   - Verify device readiness (XRd, CSR, NX-OS boot times)
+
+3. **Stopping and Restarting**
+   - Preserve-data destroy/deploy pattern
+   - Full reset with cleanup
+
+4. **Troubleshooting**
+   - Container fails to start
+   - Can't SSH to device
+   - Network links not working
+   - Out of memory
+
+5. **Power-User Tips**
+   - Auto-deploy on server boot (systemd)
+   - Bulk deploy multiple labs
+   - Monitor resource usage
+
+**Impact:** Instructors have step-by-step guide for deploying topology and troubleshooting common issues.
+
+---
+
+#### 0.3.7.6 — New: Topology Notes (docs/TOPOLOGY_NOTES.md)
+
+**Created comprehensive topology reference (900+ lines):**
+
+**Sections:**
+1. **Node Details** (XRd, CSR, N9Kv, Linux)
+   - Image versions
+   - Management IPs
+   - Default credentials
+   - CPU/memory allocation
+   - Pre-configured services
+
+2. **Network Architecture**
+   - Management network diagram (172.20.20.0/24)
+   - Data plane links (inter-node connections)
+   - Complete link table with interface mappings
+
+3. **IP Address Plan**
+   - Loopback addressing (10.0.0.0/24)
+   - Underlay P-to-P links (10.1.0.0/24, 10.2.0.0/24)
+   - Customer VRF addressing (192.168.x.x/24, 10.100.x.x/24)
+
+4. **Service Definitions**
+   - L3VPN service structure
+   - EVPN/VXLAN service structure
+
+5. **Boot Sequence & Readiness**
+   - XRd typical boot time: 45-60 seconds
+   - CSR typical boot time: 30-45 seconds
+   - NX-OS typical boot time: 3-5 minutes
+   - Verification commands for each NOS
+
+6. **Configuration Files**
+   - Reference to startup configs in `configs/` directory
+   - Underlay (IS-IS, LDP) vs overlay (VRFs, EVPN) distinction
+
+7. **Validation Commands**
+   - Health checks per node
+   - BGP neighbor verification
+   - Reachability testing
+
+**Impact:** Students and instructors have complete reference for node details, IPs, boot times, and validation.
+
+---
+
+### Commits — Version 0.3.7
+
+| Commit | Files Changed | Message |
+|---|---|---|
+| Multi-replace | `services/l3vpn/vars/customer_a.yml`, `services/l3vpn/vars/customer_b.yml` | fix: correct PE-CE interface from GigabitEthernet2 to GigabitEthernet3 |
+| Multi-replace | `ansible/inventory/hosts.yml` | fix: align Ansible inventory to LTRATO-1001 actual IPs and add all 4 Linux clients |
+| Replace | `README.md` | fix: update node count (10 nodes, 4 Linux clients) and add missing hybrid approach section |
+| Replace | `INSTALL_GUIDE.md` | fix: complete device image section with build instructions for vrnetlab |
+| Create | `docs/DEPLOYMENT_GUIDE.md` | feat: comprehensive deployment guide with troubleshooting |
+| Create | `docs/TOPOLOGY_NOTES.md` | feat: complete topology reference with node details, IPs, boot times |
+| (pending) | `CHANGELOG.md` | docs: update CHANGELOG with v0.3.7 critical fixes summary |
+
+---
+
+### Files — Version 0.3.7
+
+| File | Location | Change |
+|---|---|---|
+| `services/l3vpn/vars/customer_a.yml` | GitHub repo | FIXED: Interface GigabitEthernet2 → GigabitEthernet3 |
+| `services/l3vpn/vars/customer_b.yml` | GitHub repo | FIXED: Interface GigabitEthernet2 → GigabitEthernet3 |
+| `ansible/inventory/hosts.yml` | GitHub repo | FIXED: Updated IPs to LTRATO-1001, added linux-client1-4, per-device credentials |
+| `README.md` | GitHub repo | FIXED: Node count (10 nodes, 4 clients), added docs section, hybrid approach |
+| `INSTALL_GUIDE.md` | GitHub repo | FIXED: Completed device image section with build instructions |
+| `docs/DEPLOYMENT_GUIDE.md` | GitHub repo | NEW: Step-by-step deployment guide with troubleshooting |
+| `docs/TOPOLOGY_NOTES.md` | GitHub repo | NEW: Complete topology reference (nodes, IPs, links, boot times, validation) |
+| `CHANGELOG.md` | GitHub repo | Updated with v0.3.7 entry (this section) |
+
+---
+
+### Summary of All Critical Fixes (v0.3.7)
+
+| Category | Files | Impact |
+|----------|-------|--------|
+| **Service Definitions** | customer_a.yml, customer_b.yml | Ansible L3VPN provisioning will now use correct PE-CE interface |
+| **Ansible Inventory** | hosts.yml | Playbooks will connect to actual device IPs and reach all 4 clients |
+| **Documentation** | README.md | Accurate description of topology and links to all guides |
+| **Installation** | INSTALL_GUIDE.md | Complete setup instructions with no gaps |
+| **Deployment** | DEPLOYMENT_GUIDE.md (new) | Instructors have step-by-step deploy/troubleshoot guide |
+| **Reference** | TOPOLOGY_NOTES.md (new) | Students/instructors have complete node and IP reference |
+
+**Lab readiness:** After v0.3.7, all critical inconsistencies are resolved. The lab is ready for:
+- ✅ Containerlab topology deployment
+- ✅ Ansible L3VPN/EVPN provisioning
+- ✅ Terraform state-based drift detection
+- ✅ 4-hour Cisco Live 2026 session

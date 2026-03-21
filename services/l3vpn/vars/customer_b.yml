@@ -12,7 +12,7 @@ description: "Customer B - SMB L3VPN"
 
 pe_interfaces:
   - node: csr-pe01
-    interface: GigabitEthernet2
+    interface: GigabitEthernet3
     vrf_ip: 10.100.1.1/24
     description: "CUST_B CE-facing — toward n9k-ce01"
     ce_neighbor:
@@ -20,7 +20,7 @@ pe_interfaces:
       remote_as: 65100
 
   - node: csr-pe02
-    interface: GigabitEthernet2
+    interface: GigabitEthernet3
     vrf_ip: 10.100.2.1/24
     description: "CUST_B CE-facing — toward n9k-ce02"
     ce_neighbor:

@@ -48,11 +48,38 @@ You need three Cisco virtual device images. These are **not included** in the
 lab files because they require a Cisco license. Ask your Cisco account team or
 check your CML (Cisco Modeling Labs) instance for:
 
-1. **XRd** — filename looks like: `xrd-control-plane-container-x64.25.1.1.tgz`
-2. **CSR1000v** — filename looks like: `csr1000v-universalk9.17.03.06-serial.qcow2`
-3. **N9Kv** — filename looks like: `nexus9500v64.10.4.3.F.qcow2`
+1. **XRd (IOS-XR)** — Container image for Core/Route Reflector role
+   - **Filename:** `xrd-control-plane-container-x64.25.1.1.tgz` (or newer)
+   - **What you need:** The `.tgz` container archive
+   - **Load onto server:** `docker load -i xrd-control-plane-container-x64.25.1.1.tgz`
+   - **Resulting image:** `ios-xr/xrd-control-plane:25.1.1`
 
-You'll load these onto the server in Step 5.
+2. **CSR1000v (IOS-XE)** — Virtual router for PE role
+   - **Filename:** `csr1000v-universalk9.17.03.06-serial.qcow2` (or newer 16.x-17.x series)
+   - **What you need:** The `.qcow2` disk image
+   - **Build container:** Use [vrnetlab](https://github.com/hellt/vrnetlab) to build: 
+     ```bash
+     cd vrnetlab/csr
+     make IMAGE=~/csr1000v-universalk9.17.03.06-serial.qcow2
+     ```
+   - **Resulting image:** `vrnetlab/vr-csr:17.03.06`
+
+3. **Nexus 9Kv (NX-OS)** — Virtual switch for CE role
+   - **Filename:** `nexus9500v64.10.4.3.F.qcow2` (or newer 10.x series)
+   - **What you need:** The `.qcow2` disk image
+   - **Build container:** Use [vrnetlab](https://github.com/hellt/vrnetlab) to build:
+     ```bash
+     cd vrnetlab/nxos
+     make IMAGE=~/nexus9500v64.10.4.3.F.qcow2
+     ```
+   - **Resulting image:** `vrnetlab/vr-n9kv:10.4.3`
+
+After building, verify with:
+```bash
+docker images | grep -E "xrd-control-plane|vr-csr|vr-n9kv"
+```
+
+**Note:** If building CML images takes too long, pre-built images are sometimes available on CML instances or Cisco DevNet.
 
 ---
 

@@ -8,6 +8,17 @@ This lab teaches the **Service as Code** approach to network operations: define 
 
 **Session:** 4 hours | **Attendees:** 30 (individual lab instances)
 
+## Hybrid Ansible + Terraform Approach
+
+This lab uses a **hybrid IaC strategy** combining Ansible (active provisioning) and Terraform (state management & drift detection):
+
+- **Hour 2:** Ansible provisions services (L3VPN, EVPN) to real device containers — proven, agentless, works with all vendors
+- **Hour 3-4:** Terraform demonstrates **drift detection** using state files as source of truth — students see how unauthorized manual changes are detected and automatically remediated
+
+**Why hybrid?** This teaches real-world IaC principles (source of truth, drift detection, automatic remediation) without requiring unavailable device providers. See [docs/HYBRID_APPROACH.md](docs/HYBRID_APPROACH.md) for the complete architecture.
+
+**Key insight:** In production, drift happens naturally when operators make emergency fixes. IaC tools catch it. This lab exercises that scenario hands-on.
+
 ### Topology
 
 ```
@@ -31,12 +42,19 @@ This lab teaches the **Service as Code** approach to network operations: define 
             └───────────┘
 ```
 
-**7 nodes** | 2 XRd P-routers | 2 CSR1000v PEs | 2 N9Kv CEs | 1 Linux client
+**7 nodes** | 2 XRd P-routers | 2 CSR1000v PEs | 2 N9Kv CEs | 4 Linux clients
 
 ## Project Structure
 
 ```
 .
+├── docs/                          # Student and instructor guides
+│   ├── LAB_GUIDE.md                # 4-hour lab roadmap and quick start
+│   ├── DEPLOYMENT_GUIDE.md         # How to deploy topology and prepare lab
+│   ├── TOPOLOGY_NOTES.md           # Node details, IPs, interface mappings
+│   ├── HYBRID_APPROACH.md          # Ansible+Terraform architecture rationale
+│   └── DRIFT_EXERCISE.md           # Hands-on drift detection exercise (Hour 3)
+│
 ├── Makefile                        # All lab operations (deploy, provision, validate, gitlab)
 ├── requirements.txt                # Python dependencies
 ├── .gitlab-ci.yml                  # GitLab CI/CD pipeline (validate + deploy)
