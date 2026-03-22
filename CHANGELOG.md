@@ -17,6 +17,17 @@ for all nodes, and auto-start on server boot configured via systemd.
 
 ---
 
+## Version 0.1
+
+**Date:** 2026-03-17
+
+### Summary
+Initial build of the LTRATO-1001 ContainerLab topology on the dCLOUD server.
+All images deployed and validated, base topology wired, passwordless SSH working
+for all nodes, and auto-start on server boot configured via systemd.
+
+---
+
 ### 0.1.1 — Images Uploaded and Validated
 
 All NOS images loaded onto the ContainerLab server and confirmed stable.
@@ -898,3 +909,77 @@ linux:
 - ✅ Ansible L3VPN/EVPN provisioning
 - ✅ Terraform state-based drift detection
 - ✅ 4-hour Cisco Live 2026 session
+
+---
+
+### 0.3.8 — Exercise Restructuring & GitOps Workflow Exercise
+
+**Date:** 2026-03-22
+
+**Summary:** Restructured lab exercises for 4-hour Cisco Live 2026 session. Updated exercise overview from 7 to 8 exercises. Renamed Exercise 1 to focus on topology exploration (15 min, instead of deployment). Added Exercise 8 "GitOps Workflow & Source of Truth" (30 min) teaching Git-driven orchestration and drift detection via Ansible.
+
+**Impact:** Lab now has 210 minutes of sequential, hands-on exercises + 30-minute buffer = 240 minutes (4 hours). Students see two complementary "source of truth" approaches: Terraform state file (Exercises 5-7) and Git-driven Ansible (Exercise 8).
+
+**Updated Exercise Table:**
+
+| # | Exercise | Time | Change |
+|---|----------|------|--------|
+| **0** | Lab Readiness Verification | 15 min | Pre-flight checks |
+| **1** | Explore & Understand Deployed Topology | 15 min | **Renamed** (was "Deploy Topology") |
+| **2** | Provision CustomerA L3VPN | 30 min | Unchanged |
+| **3** | Provision CustomerB L3VPN | 25 min | Unchanged |
+| **4** | End-to-End Validation | 20 min | Unchanged |
+| **5** | Terraform State Management | 25 min | Unchanged |
+| **6** | Drift Detection & Auto-Remediation | 30 min | Unchanged |
+| **7** | Configuration Modification & Re-apply | 20 min | Unchanged |
+| **8** | GitOps Workflow & Source of Truth | 30 min | **NEW** |
+
+**Exercise 8 Learning Objectives:**
+- Understand Git as single source of truth (contrasts with Terraform state file)
+- Detect configuration drift: running config vs Git YAML
+- Use Ansible to enforce consistency and auto-sync
+- Understand GitOps principles (Netflix, Google, AWS use this model)
+- Learn why infrastructure config should live in Git (audit trail,rollback, visibility)
+
+**Exercise 8 Structure (30 minutes):**
+1. Review source of truth (Git vs running config) — 5 min
+2. Make a change in Git (add field to customer_a.yml) — 5 min
+3. Detect drift (running config doesn't have the change yet) — 5 min
+4. Discuss GitOps principles & career context — 2 min
+5. Enforce sync with Ansible (re-run playbook) — 5 min
+6. Verify drift resolved (config now matches Git) — 3 min
+7. Compare with Terraform approach (instructor-led) — 5 min
+8. Optional: Simulate bad practice (direct device config, re-sync) — 5 min
+
+**Commits — Version 0.3.8:**
+
+| Commit | Files | Message |
+|---|---|---|
+| Latest | `docs/HANDS-ON_EXERCISES.md` | feat: restructure for 15-min intro + 225-min exercises; add Exercise 8: GitOps |
+
+**Files — Version 0.3.8:**
+
+| File | Location | Change |
+|---|---|---|
+| `docs/HANDS-ON_EXERCISES.md` | GitHub repo | **UPDATED:** Exercise overview: renamed Ex 1, added Ex 8 (1200+ lines) |
+| `CHANGELOG.md` | GitHub repo | **UPDATED:** Added v0.3.8 section (exercise restructuring) |
+
+**Impact Summary (v0.3.8):**
+
+**For students:**
+- ✅ Exercise 1 focuses on understanding pre-deployed topology (no wait-for-boot)
+- ✅ Exercise 8 teaches Git-driven orchestration and GitOps philosophy
+- ✅ See two complementary IaC approaches: Terraform state (5-7) vs Git+Ansible (8)
+- ✅ Better engagement: 210 min exercises + 30 min buffer = 240 min session
+
+**For instructors:**
+- ✅ Smoother exercise flow: readiness → explore → provision → validate → Terraform drift → Ansible drift
+- ✅ Can teach both IaC paradigms compellingly in one session
+- ✅ Highlights that production uses both approaches together
+
+**Lab readiness:** After v0.3.8, ready for Cisco Live 2026 delivery:
+- ✅ 8 sequential exercises covering topology, Ansible provisioning, Terraform state, drift detection (2 models), GitOps
+- ✅ 15-minute presentation script (INSTRUCTOR_SLIDES.md)
+- ✅ Pre-lab reading assignments (TOPOLOGY_NOTES.md, HYBRID_APPROACH.md)
+- ✅ Complete documentation: DEPLOYMENT_GUIDE.md, troubleshooting in all exercises
+- ✅ 240 minutes of content for 30 attendees (4-hour session)
