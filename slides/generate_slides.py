@@ -43,7 +43,7 @@ def badge(d):
 
 
 def slide_num(d, n):
-    d.text((W - 36, H - 28), f"{n}/5", font=font(16), fill=GREY_MD, anchor="rm")
+    d.text((W - 36, H - 28), f"{n}/6", font=font(16), fill=GREY_MD, anchor="rm")
 
 
 def pill(d, x, y, w, h, fill, r=10):
@@ -736,6 +736,174 @@ def slide5():
     print("  slide-05-topology.png")
 
 
+# ══════════════════════════════════════════════════════════════════════════════
+# SLIDE 6 — Infrastructure Drift
+# Same topology layout as slide 5, but linux-terraform2 box has a red X drawn
+# over it to show it was manually deleted — illustrating configuration drift.
+# ══════════════════════════════════════════════════════════════════════════════
+def slide6():
+    img, d = new_slide()
+    teal_bar(d)
+    badge(d)
+    slide_num(d, 6)
+    header_no_subtitle(d, "Infrastructure Drift")
+
+    # ── Outer border panel ───────────────────────────────────────────────────
+    PX, PY = 40, 128
+    PW, PH = W - 80, H - 160
+    d.rounded_rectangle([PX, PY, PX + PW, PY + PH], radius=14, outline=BORDER, width=2)
+
+    # ── Docker bridge label bar at top of panel ──────────────────────────────
+    BRX, BRY = PX + 16, PY + 14
+    BRW, BRH = PW - 32, 44
+    pill(d, BRX, BRY, BRW, BRH, TEAL_DK, r=8)
+    cx_text(
+        d,
+        W // 2,
+        BRY + 10,
+        "Docker bridge network:  terraform-net  (172.20.21.0/24)",
+        font(17, bold=True),
+        WHITE,
+    )
+
+    # ── Horizontal bus line ───────────────────────────────────────────────────
+    bus_y = BRY + BRH + 30
+    bus_x1 = PX + 80
+    bus_x2 = PX + PW - 80
+    d.rectangle([(bus_x1, bus_y - 3), (bus_x2, bus_y + 3)], fill=TEAL_DK)
+    # gateway dot on bus
+    gw_x = W // 2
+    d.ellipse([(gw_x - 7, bus_y - 7), (gw_x + 7, bus_y + 7)], fill=TEAL)
+    cx_text(d, gw_x, bus_y - 22, "gateway  172.20.21.1", font(12), GREY_MD)
+
+    # ── Layout constants ──────────────────────────────────────────────────────
+    ICON_H = 72
+    ICON_GAP = 8
+    CW, CH = 230, 148
+    CGAP = 40
+    total_cw = 3 * CW + 2 * CGAP
+    ctx = (W - total_cw) // 2
+    icon_top = bus_y + 14
+    cty = icon_top + ICON_H + ICON_GAP
+
+    containers = [
+        (
+            TEAL,
+            "router",
+            "csr-terraform",
+            "vrnetlab/vr-csr:16.12.05",
+            "172.20.21.10",
+            "Cisco IOS XE 16.12",
+            False,
+        ),
+        (
+            GREEN,
+            "server",
+            "linux-terraform1",
+            "hellt/network-multitool",
+            "172.20.21.20",
+            "Linux client 1",
+            False,
+        ),
+        (
+            GREEN,
+            "server",
+            "linux-terraform2",
+            "hellt/network-multitool",
+            "172.20.21.21",
+            "Linux client 2",
+            True,  # <-- manually deleted → draw red X
+        ),
+    ]
+
+    RED = "#e85151"
+
+    for i, (color, icon_type, name, image, ip, role, deleted) in enumerate(containers):
+        bx = ctx + i * (CW + CGAP)
+        mid = bx + CW // 2
+
+        # vertical drop-line: bus → icon area → box
+        drop_color = RED if deleted else TEAL_DK
+        d.rectangle([(mid - 2, bus_y + 3), (mid + 2, cty)], fill=drop_color)
+
+        # ── Icon ──────────────────────────────────────────────────────────────
+        icon_cy = icon_top + ICON_H // 2
+        icon_color = RED if deleted else color
+        if icon_type == "router":
+            draw_router_icon(d, mid, icon_cy, 58, icon_color)
+        else:
+            draw_server_icon(d, mid, icon_cy, 58, 64, icon_color)
+
+        # ── Container info box ────────────────────────────────────────────────
+        box_fill = "#1a0505" if deleted else PANEL
+        box_accent = RED if deleted else color
+        pill(d, bx, cty, CW, CH, box_fill, r=10)
+        d.rounded_rectangle([bx, cty, bx + CW, cty + 5], radius=4, fill=box_accent)
+
+        cx_text(d, mid, cty + 12, name, font(14, bold=True), WHITE)
+        d.rectangle([(bx + 16, cty + 36), (bx + CW - 16, cty + 38)], fill=BORDER)
+        cx_text(d, mid, cty + 46, ip, font(17, bold=True), box_accent)
+        cx_text(d, mid, cty + 76, role, font(13), GREY_LT)
+
+        # image pill at bottom
+        img_pill_y = cty + CH - 30
+        pill(d, bx + 14, img_pill_y, CW - 28, 22, BG, r=5)
+        cx_text(d, mid, img_pill_y + 4, image, font(11), GREY_MD)
+
+        # ── Big red X over deleted container ─────────────────────────────────
+        if deleted:
+            # Extend X slightly above box to include icon area
+            x0 = bx + 10
+            y0 = icon_top + 4
+            x1 = bx + CW - 10
+            y1 = cty + CH - 4
+            lw = 9  # line width (simulate with thick rects via polygon)
+            # Draw two diagonal lines using thick lines (series of filled rects)
+            import math
+
+            def thick_line(d, ax, ay, bx2, by2, width, fill):
+                dx, dy = bx2 - ax, by2 - ay
+                length = math.hypot(dx, dy)
+                if length == 0:
+                    return
+                ux, uy = dy / length, -dx / length  # perpendicular unit vector
+                hw = width / 2
+                pts = [
+                    (ax + ux * hw, ay + uy * hw),
+                    (ax - ux * hw, ay - uy * hw),
+                    (bx2 - ux * hw, by2 - uy * hw),
+                    (bx2 + ux * hw, by2 + uy * hw),
+                ]
+                d.polygon(pts, fill=fill)
+
+            thick_line(d, x0, y0, x1, y1, lw, RED)
+            thick_line(d, x1, y0, x0, y1, lw, RED)
+
+            # "DELETED" label below the X lines, inside the box
+            cx_text(d, mid, cty + CH - 50, "DELETED", font(14, bold=True), RED)
+
+    # ── Drift explanation callout ──────────────────────────────────────────────
+    cx_b, cy_b = PX + 24, PY + PH - 68
+    cw_b, ch_b = 460, 56
+    pill(d, cx_b, cy_b, cw_b, ch_b, BG, r=8)
+    d.rounded_rectangle([cx_b, cy_b, cx_b + cw_b, cy_b + 4], radius=3, fill=RED)
+    d.text(
+        (cx_b + 14, cy_b + 10),
+        "Drift detected:",
+        font=font(13, bold=True),
+        fill=RED,
+    )
+    d.text(
+        (cx_b + 14, cy_b + 32),
+        "linux-terraform2 was manually removed outside Terraform",
+        font=font(12),
+        fill=GREY_LT,
+    )
+
+    img.save(os.path.join(OUT_DIR, "slide-06-drift.png"))
+    print("  slide-06-drift.png")
+
+
 if __name__ == "__main__":
     print("Generating slides...")
     slide1()
@@ -743,4 +911,5 @@ if __name__ == "__main__":
     slide3()
     slide4()
     slide5()
+    slide6()
     print("Done.")
