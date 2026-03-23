@@ -6,6 +6,11 @@
 
 ## What Is Terraform?
 
+![What Is Terraform?](slides/slide-01-what-is-terraform.png)
+![The Terraform Workflow](slides/slide-02-workflow.png)
+![Key Concepts](slides/slide-03-key-concepts.png)
+![What This Lab Builds](slides/slide-04-what-we-build.png)
+
 Terraform is an open-source Infrastructure as Code (IaC) tool created by HashiCorp. It
 lets you define your infrastructure — servers, networks, routers, firewalls, cloud
 resources — in plain text configuration files, and then deploy, modify, or destroy that

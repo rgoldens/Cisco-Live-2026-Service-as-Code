@@ -1,0 +1,483 @@
+#!/usr/bin/env python3
+"""
+Generate 4 Cisco DevNet dark-themed slides for the Terraform lab guide.
+Output: slides/slide-01-what-is-terraform.png  through  slide-04-what-we-build.png
+"""
+
+from PIL import Image, ImageDraw, ImageFont
+import os
+
+FONT_DIR = "/System/Library/Fonts/Supplemental"
+OUT_DIR = os.path.dirname(os.path.abspath(__file__))
+
+W, H = 1200, 675
+
+BG = "#0d1117"
+PANEL = "#161b22"
+BORDER = "#21262d"
+TEAL = "#00bceb"
+TEAL_DK = "#007fa3"
+WHITE = "#ffffff"
+GREY_LT = "#c9d1d9"
+GREY_MD = "#8b949e"
+ORANGE = "#f0883e"
+GREEN = "#3fb950"
+
+
+def font(size, bold=False):
+    p = os.path.join(FONT_DIR, "Arial Bold.ttf" if bold else "Arial.ttf")
+    return ImageFont.truetype(p, size)
+
+
+def new_slide():
+    img = Image.new("RGB", (W, H), BG)
+    return img, ImageDraw.Draw(img)
+
+
+def teal_bar(d):
+    d.rectangle([(0, 0), (W, 6)], fill=TEAL)
+
+
+def badge(d):
+    d.text((28, 18), "LTRATO-1001  |  Terraform Lab", font=font(17), fill=TEAL)
+
+
+def slide_num(d, n):
+    d.text((W - 36, H - 28), f"{n}/4", font=font(16), fill=GREY_MD, anchor="rm")
+
+
+def pill(d, x, y, w, h, fill, r=10):
+    d.rounded_rectangle([x, y, x + w, y + h], radius=r, fill=fill)
+
+
+def cx_text(d, cx, y, text, fnt, color):
+    bb = d.textbbox((0, 0), text, font=fnt)
+    d.text((cx - (bb[2] - bb[0]) // 2, y), text, font=fnt, fill=color)
+
+
+def header_with_subtitle(d, title, subtitle):
+    """Returns y just below divider (always 152)."""
+    d.text((60, 46), title, font=font(52, bold=True), fill=WHITE)
+    d.text((62, 114), subtitle, font=font(21), fill=GREY_LT)
+    d.rectangle([(60, 150), (W - 60, 152)], fill=BORDER)
+    return 152
+
+
+def header_no_subtitle(d, title):
+    """Returns y just below divider (always 118)."""
+    d.text((60, 46), title, font=font(52, bold=True), fill=WHITE)
+    d.rectangle([(60, 116), (W - 60, 118)], fill=BORDER)
+    return 118
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# SLIDE 1 — What Is Terraform?
+# 2×2 card grid.  div_y=152 → cards start at y=164, height=230 each, gap=16
+# Row 1: y=164..394   Row 2: y=410..640   → bottom edge 640, fine within H=675
+# ══════════════════════════════════════════════════════════════════════════════
+def slide1():
+    img, d = new_slide()
+    teal_bar(d)
+    badge(d)
+    slide_num(d, 1)
+    header_with_subtitle(
+        d,
+        "What Is Terraform?",
+        "Open-source Infrastructure as Code (IaC) tool by HashiCorp",
+    )
+
+    cards = [
+        (
+            GREEN,
+            "Reproducible",
+            [
+                "Same config = same environment, every time.",
+                "No more hand-crafted 'snowflake' servers.",
+                "Run it again — get the exact same result.",
+            ],
+        ),
+        (
+            TEAL,
+            "Version-Controlled",
+            [
+                "Infrastructure lives in git alongside your code.",
+                "Every change is tracked, reviewable, reversible.",
+                "Roll back the same way you roll back app code.",
+            ],
+        ),
+        (
+            ORANGE,
+            "Safe to Change",
+            [
+                "terraform plan shows the exact diff first.",
+                "Add / change / destroy counts are explicit.",
+                "Nothing touches real infra until you say yes.",
+            ],
+        ),
+        (
+            GREEN,
+            "Easy to Clean Up",
+            [
+                "terraform destroy removes everything it made,",
+                "in the correct dependency order.",
+                "No orphaned resources. No manual teardown.",
+            ],
+        ),
+    ]
+
+    CW, CH = 558, 228
+    GAP_X, GAP_Y = 24, 16
+    START_X = (W - (2 * CW + GAP_X)) // 2  # = 19
+    START_Y = 164
+
+    for i, (color, title, lines) in enumerate(cards):
+        col, row = i % 2, i // 2
+        cx = START_X + col * (CW + GAP_X)
+        cy = START_Y + row * (CH + GAP_Y)
+
+        pill(d, cx, cy, CW, CH, PANEL, r=12)
+        d.rounded_rectangle([cx, cy, cx + CW, cy + 5], radius=3, fill=color)
+        d.text((cx + 20, cy + 16), title, font=font(20, bold=True), fill=WHITE)
+        d.rectangle([(cx + 20, cy + 50), (cx + CW - 20, cy + 52)], fill=BORDER)
+        for j, line in enumerate(lines):
+            d.text((cx + 20, cy + 62 + j * 30), line, font=font(17), fill=GREY_LT)
+
+    img.save(os.path.join(OUT_DIR, "slide-01-what-is-terraform.png"))
+    print("  slide-01-what-is-terraform.png")
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# SLIDE 2 — The Terraform Workflow
+# 5 boxes.  div_y=118 → boxes start at y=130, height=480 → bottom 610
+# ══════════════════════════════════════════════════════════════════════════════
+def slide2():
+    img, d = new_slide()
+    teal_bar(d)
+    badge(d)
+    slide_num(d, 2)
+    header_no_subtitle(d, "The Terraform Workflow")
+
+    steps = [
+        (
+            "Write",
+            GREY_MD,
+            [
+                "Define resources",
+                "in .tf config files.",
+                "HCL is readable by",
+                "humans & machines.",
+            ],
+            "main.tf\nvariables.tf\noutputs.tf",
+        ),
+        (
+            "init",
+            TEAL,
+            [
+                "Download provider",
+                "plugins.",
+                "Run once per project",
+                "or new provider.",
+            ],
+            "$ terraform init",
+        ),
+        (
+            "plan",
+            TEAL,
+            [
+                "Preview every change",
+                "before it happens.",
+                "Shows +add /~change",
+                "/−destroy counts.",
+            ],
+            "$ terraform plan",
+        ),
+        (
+            "apply",
+            GREEN,
+            [
+                "Create or update",
+                "real infrastructure.",
+                "Confirm with 'yes'",
+                "after reviewing plan.",
+            ],
+            "$ terraform apply",
+        ),
+        (
+            "destroy",
+            ORANGE,
+            [
+                "Remove everything",
+                "Terraform created.",
+                "Correct order,",
+                "nothing left behind.",
+            ],
+            "$ terraform destroy",
+        ),
+    ]
+
+    N = len(steps)
+    BW = 196
+    GAP = 14
+    sy = 130
+    BH = (H - 50) - sy  # 495px — fills slide to footer
+    total_w = N * BW + (N - 1) * GAP
+    sx = (W - total_w) // 2
+
+    for i, (cmd, color, lines, example) in enumerate(steps):
+        bx = sx + i * (BW + GAP)
+
+        pill(d, bx, sy, BW, BH, PANEL, r=12)
+        d.rounded_rectangle([bx, sy, bx + BW, sy + 5], radius=3, fill=color)
+
+        # Step label pill near top
+        lbl = f"terraform {cmd}" if cmd != "Write" else "Write"
+        pill(d, bx + 14, sy + 14, BW - 28, 40, BG, r=6)
+        cx_text(d, bx + BW // 2, sy + 22, lbl, font(15, bold=True), color)
+
+        d.rectangle([(bx + 14, sy + 62), (bx + BW - 14, sy + 64)], fill=BORDER)
+
+        # Description lines
+        for j, line in enumerate(lines):
+            cx_text(d, bx + BW // 2, sy + 76 + j * 30, line, font(15), GREY_LT)
+
+        # Step number as large faint background accent in middle
+        num_str = str(i + 1)
+        num_fnt = font(96, bold=True)
+        bb = d.textbbox((0, 0), num_str, font=num_fnt)
+        nw = bb[2] - bb[0]
+        mid_y = sy + 200
+        # Blend color toward panel bg for a subtle watermark effect (15% color, 85% panel)
+        r0, g0, b0 = tuple(int(color.lstrip("#")[k : k + 2], 16) for k in (0, 2, 4))
+        pr, pg, pb = tuple(int(PANEL.lstrip("#")[k : k + 2], 16) for k in (0, 2, 4))
+        faint = "#{:02x}{:02x}{:02x}".format(
+            (r0 * 15 + pr * 85) // 100,
+            (g0 * 15 + pg * 85) // 100,
+            (b0 * 15 + pb * 85) // 100,
+        )
+        d.text((bx + (BW - nw) // 2, mid_y), num_str, font=num_fnt, fill=faint)
+
+        # Example code pill pinned to bottom
+        ex_lines = example.split("\n")
+        ex_h = len(ex_lines) * 26 + 20
+        ex_y = sy + BH - ex_h - 16
+        pill(d, bx + 10, ex_y, BW - 20, ex_h, BG, r=8)
+        for j, eline in enumerate(ex_lines):
+            cx_text(
+                d, bx + BW // 2, ex_y + 10 + j * 26, eline, font(14, bold=True), color
+            )
+
+        if i < N - 1:
+            ax = bx + BW + 2
+            ay = sy + BH // 2
+            d.polygon([(ax, ay - 7), (ax + GAP, ay), (ax, ay + 7)], fill=GREY_MD)
+
+    d.text(
+        (60, H - 38),
+        "Always run plan before apply — see exactly what changes before anything is touched.",
+        font=font(16),
+        fill=GREY_MD,
+    )
+
+    img.save(os.path.join(OUT_DIR, "slide-02-workflow.png"))
+    print("  slide-02-workflow.png")
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# SLIDE 3 — Key Concepts
+# 4 cards.  div_y=118 → cards start at y=130, height=500 → bottom 630
+# ══════════════════════════════════════════════════════════════════════════════
+def slide3():
+    img, d = new_slide()
+    teal_bar(d)
+    badge(d)
+    slide_num(d, 3)
+    header_no_subtitle(d, "Key Concepts")
+
+    concepts = [
+        (
+            TEAL,
+            "Provider",
+            ["A plugin that knows how to", "talk to a specific platform."],
+            ["This lab uses:", "  kreuzwerker/docker", "  CiscoDevNet/iosxe"],
+            "terraform {",
+            "  required_providers {",
+            "    iosxe = {",
+            '      source = "CiscoDevNet/iosxe"',
+            "    }",
+            "  }",
+            "}",
+        ),
+        (
+            GREEN,
+            "Resource",
+            ["A single piece of infra", "managed by Terraform."],
+            ["Examples:", "  docker_container", "  iosxe_interface_loopback"],
+            'resource "iosxe_interface_loopback" "lo0" {',
+            "  name        = 0",
+            '  description = "Managed by TF"',
+            "}",
+        ),
+        (
+            ORANGE,
+            "State File",
+            ["Terraform's memory —", "records what it deployed."],
+            ["Stored in:", "  terraform.tfstate", "  Never edit by hand"],
+            "# After apply:",
+            "$ cat terraform.tfstate",
+            '  "hostname": "csr-terraform"',
+            '  "address":  "10.99.99.1"',
+        ),
+        (
+            TEAL,
+            "Module",
+            ["A reusable group of", "resources packaged together."],
+            ["This lab uses:", "  docker-infra", "  iosxe-config"],
+            'module "iosxe_config" {',
+            '  source   = "./modules/iosxe-config"',
+            "  hostname = var.hostname",
+            "}",
+        ),
+    ]
+
+    CW, CH = 248, 495
+    GAP = 26
+    total_w = 4 * CW + 3 * GAP
+    sx = (W - total_w) // 2
+    sy = 130
+
+    for i, (color, title, body, detail, *code_lines) in enumerate(concepts):
+        cx = sx + i * (CW + GAP)
+
+        pill(d, cx, sy, CW, CH, PANEL, r=12)
+        d.rounded_rectangle([cx, sy, cx + CW, sy + 5], radius=3, fill=color)
+
+        cx_text(d, cx + CW // 2, sy + 16, title, font(22, bold=True), color)
+        d.rectangle([(cx + 16, sy + 52), (cx + CW - 16, sy + 54)], fill=BORDER)
+
+        for j, line in enumerate(body):
+            cx_text(d, cx + CW // 2, sy + 64 + j * 30, line, font(17), GREY_LT)
+
+        # Detail pill (label + examples)
+        detail_y = sy + 148
+        detail_h = 120
+        pill(d, cx + 12, detail_y, CW - 24, detail_h, BG, r=8)
+        for j, line in enumerate(detail):
+            d.text((cx + 24, detail_y + 10 + j * 26), line, font=font(15), fill=GREY_MD)
+
+        # Code example pill pinned to bottom
+        ex_h = len(code_lines) * 22 + 20
+        ex_y = sy + CH - ex_h - 14
+        pill(d, cx + 12, ex_y, CW - 24, ex_h, BG, r=8)
+        for j, line in enumerate(code_lines):
+            d.text(
+                (cx + 20, ex_y + 10 + j * 22),
+                line,
+                font=font(12, bold=True),
+                fill=color,
+            )
+
+    img.save(os.path.join(OUT_DIR, "slide-03-key-concepts.png"))
+    print("  slide-03-key-concepts.png")
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# SLIDE 4 — What This Lab Builds
+# ══════════════════════════════════════════════════════════════════════════════
+def slide4():
+    img, d = new_slide()
+    teal_bar(d)
+    badge(d)
+    slide_num(d, 4)
+    header_no_subtitle(d, "What This Lab Builds")
+
+    # ── Left: file list ────────────────────────────────────────────────────
+    lx, ly = 52, 132
+    d.text((lx, ly), "Terraform Config", font=font(20, bold=True), fill=TEAL)
+
+    tf_files = [
+        ("main.tf", "Root — wires modules together"),
+        ("variables.tf", "Input values with defaults"),
+        ("outputs.tf", "Printed after apply"),
+        ("modules/", "docker-infra  +  iosxe-config"),
+    ]
+    ROW_H = 68
+    for i, (fname, desc) in enumerate(tf_files):
+        fy = ly + 42 + i * ROW_H
+        pill(d, lx, fy, 350, 58, PANEL, r=8)
+        d.text((lx + 14, fy + 10), fname, font=font(17, bold=True), fill=WHITE)
+        d.text((lx + 14, fy + 32), desc, font=font(14), fill=GREY_MD)
+
+    # ── Arrow ──────────────────────────────────────────────────────────────
+    ftop = ly + 42
+    fbot = ly + 42 + 4 * ROW_H
+    ay = (ftop + fbot) // 2
+    ax1, ax2 = 418, 570
+    d.rectangle([(ax1, ay - 3), (ax2 - 14, ay + 3)], fill=TEAL)
+    d.polygon([(ax2 - 16, ay - 12), (ax2, ay), (ax2 - 16, ay + 12)], fill=TEAL)
+    cx_text(d, (ax1 + ax2) // 2, ay - 36, "terraform apply", font(16, bold=True), TEAL)
+    cx_text(d, (ax1 + ax2) // 2, ay + 12, "RESTCONF", font(14), GREY_MD)
+
+    # ── Right: Docker topology ─────────────────────────────────────────────
+    rx, ry = 585, 120
+    NW, NH = W - rx - 20, H - ry - 18
+    pill(d, rx, ry, NW, NH, PANEL, r=14)
+    d.rounded_rectangle([rx, ry, rx + NW, ry + 5], radius=3, fill=TEAL_DK)
+    d.text(
+        (rx + 18, ry + 16),
+        "Docker bridge: terraform-net  (172.20.21.0/24)",
+        font=font(16, bold=True),
+        fill=TEAL,
+    )
+
+    containers = [
+        (TEAL, "csr-terraform", "IOS XE 16.12", "172.20.21.10", "Terraform\ntarget"),
+        (
+            GREEN,
+            "linux-terraform1",
+            "network-multitool",
+            "172.20.21.20",
+            "Linux\nclient",
+        ),
+        (
+            GREEN,
+            "linux-terraform2",
+            "network-multitool",
+            "172.20.21.21",
+            "Linux\nclient",
+        ),
+    ]
+    CW, CH, CGAP = 166, 170, 16
+    ctx = rx + (NW - (3 * CW + 2 * CGAP)) // 2
+    cty = ry + 52
+
+    bus_y = cty + CH + 20
+    bus_x1 = ctx + CW // 2
+    bus_x2 = ctx + 2 * (CW + CGAP) + CW // 2
+    d.rectangle([(bus_x1, bus_y - 2), (bus_x2, bus_y + 2)], fill=BORDER)
+
+    for i, (color, name, image, ip, role) in enumerate(containers):
+        bx = ctx + i * (CW + CGAP)
+        mid = bx + CW // 2
+        pill(d, bx, cty, CW, CH, BG, r=10)
+        d.rounded_rectangle([bx, cty, bx + CW, cty + 5], radius=3, fill=color)
+        d.rectangle([(mid - 1, cty + CH), (mid + 1, bus_y)], fill=BORDER)
+        cx_text(d, mid, cty + 14, name, font(13, bold=True), WHITE)
+        cx_text(d, mid, cty + 36, image, font(12), GREY_MD)
+        cx_text(d, mid, cty + 62, ip, font(13, bold=True), color)
+        for j, rl in enumerate(role.split("\n")):
+            cx_text(d, mid, cty + 96 + j * 22, rl, font(12), GREY_MD)
+
+    for j, item in enumerate(["hostname → csr-terraform", "Loopback0 → 10.99.99.1/32"]):
+        cx_text(d, ctx + CW // 2, bus_y + 16 + j * 26, item, font(14), TEAL)
+
+    img.save(os.path.join(OUT_DIR, "slide-04-what-we-build.png"))
+    print("  slide-04-what-we-build.png")
+
+
+if __name__ == "__main__":
+    print("Generating slides...")
+    slide1()
+    slide2()
+    slide3()
+    slide4()
+    print("Done.")
