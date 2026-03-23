@@ -64,5 +64,5 @@ deployed so it knows what to add, change, or remove on the next run.
 
 ---
 
-!!! tip "Up next"
+!!! next "Up next"
     Continue to [Lab Topology](topology.md) to see what this lab builds.

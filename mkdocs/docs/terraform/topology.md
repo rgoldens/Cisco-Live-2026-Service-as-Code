@@ -19,5 +19,5 @@ separate Docker bridge network and does not interfere with the LTRATO-1001 nodes
 
 ---
 
-!!! tip "Up next"
+!!! next "Up next"
     Continue to [Prerequisites](prerequisites.md) to confirm your tools are ready.

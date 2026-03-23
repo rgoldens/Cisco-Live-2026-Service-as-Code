@@ -318,5 +318,5 @@ of one resource entry so you understand what Terraform is storing:
 
 ---
 
-!!! tip "Up next"
+!!! next "Up next"
     Continue to [Part 4 — Infrastructure Drift](part4-drift.md) to see how Terraform detects and fixes unauthorized changes.

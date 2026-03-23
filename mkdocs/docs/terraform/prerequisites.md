@@ -19,5 +19,5 @@ All Terraform files are in: **`~/terraform-lab/terraform/`**
 
 ---
 
-!!! tip "Up next"
+!!! next "Up next"
     Continue to [Part 1 — Explore the Configuration](part1-explore.md) to read through the Terraform files.

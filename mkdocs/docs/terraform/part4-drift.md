@@ -138,5 +138,5 @@ it means your infrastructure is exactly where you left it.
 
 ---
 
-!!! tip "Up next"
+!!! next "Up next"
     Continue to [Part 5 — Tear Down](part5-teardown.md) to cleanly destroy all resources before moving on.

@@ -110,5 +110,5 @@ In this lab you:
 
 ---
 
-!!! tip "Up next"
+!!! next "Up next"
     Head to the [Quick Reference](quick-reference.md) for a handy command cheat sheet, or return to the [Home](../index.md) page.

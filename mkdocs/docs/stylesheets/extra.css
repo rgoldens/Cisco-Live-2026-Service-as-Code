@@ -1,0 +1,22 @@
+/* Custom "next" admonition — red with a right-arrow icon */
+:root {
+  --md-admonition-icon--next: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>');
+}
+
+.md-typeset .admonition.next,
+.md-typeset details.next {
+  border-color: rgb(211, 47, 47);
+}
+
+.md-typeset .next > .admonition-title,
+.md-typeset .next > summary {
+  background-color: rgba(211, 47, 47, 0.1);
+  font-weight: 700;
+}
+
+.md-typeset .next > .admonition-title::before,
+.md-typeset .next > summary::before {
+  background-color: rgb(211, 47, 47);
+  -webkit-mask-image: var(--md-admonition-icon--next);
+          mask-image: var(--md-admonition-icon--next);
+}

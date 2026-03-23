@@ -157,5 +157,5 @@ Press `Ctrl+C` to stop following the logs.
 
 ---
 
-!!! tip "Up next"
+!!! next "Up next"
     Continue to [Part 3 — Verify the Deployment](part3-verify.md) to confirm everything is running correctly.

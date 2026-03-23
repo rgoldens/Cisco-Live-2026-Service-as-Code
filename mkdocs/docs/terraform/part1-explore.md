@@ -192,5 +192,5 @@ If you see `Terraform has been successfully initialized!` you are ready to proce
 
 ---
 
-!!! tip "Up next"
+!!! next "Up next"
     Continue to [Part 2 — Plan and Deploy](part2-deploy.md) to run your first `terraform plan` and `terraform apply`.
