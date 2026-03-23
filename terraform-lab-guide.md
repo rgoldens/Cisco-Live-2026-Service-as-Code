@@ -34,11 +34,15 @@ In a network engineering context, Terraform is increasingly used to:
 
 ![The Terraform Workflow](slides/slide-02-workflow.png)
 
-```
-Write config  →  terraform init  →  terraform plan  →  terraform apply  →  terraform destroy
-(define what      (download          (preview what      (make it real)      (clean it all up)
- you want)         providers)         will change)
-```
+| Step | Command | What it does |
+|---|---|---|
+| 1 | **Write** | Define your infrastructure in `.tf` config files using HCL. Describe *what* you want — Terraform figures out *how* to build it. |
+| 2 | `terraform init` | Downloads and installs the provider plugins your configuration requires. Run once per project, or whenever you add a new provider. |
+| 3 | `terraform plan` | Compares your config against the current state and previews every change — additions, modifications, and deletions — before anything is touched. |
+| 4 | `terraform apply` | Executes the plan and creates or updates real infrastructure to match your configuration. |
+| 5 | `terraform destroy` | Removes every resource Terraform created, in the correct dependency order, leaving nothing behind. |
+
+> **Key rule:** always run `terraform plan` before `terraform apply` — you see exactly what will change before committing to it.
 
 ### Key concepts
 
