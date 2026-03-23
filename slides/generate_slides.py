@@ -318,7 +318,8 @@ def slide3():
             "Resource",
             ["A single piece of infra", "managed by Terraform."],
             ["Examples:", "  docker_container", "  iosxe_interface_loopback"],
-            'resource "iosxe_interface_loopback" "lo0" {',
+            'resource "iosxe_interface_loopback"',
+            '         "lo0" {',
             "  name        = 0",
             '  description = "Managed by TF"',
             "}",
@@ -371,14 +372,14 @@ def slide3():
             d.text((cx + 24, detail_y + 10 + j * 26), line, font=font(15), fill=GREY_MD)
 
         # Code example pill pinned to bottom
-        ex_h = len(code_lines) * 22 + 20
+        ex_h = len(code_lines) * 20 + 20
         ex_y = sy + CH - ex_h - 14
         pill(d, cx + 12, ex_y, CW - 24, ex_h, BG, r=8)
         for j, line in enumerate(code_lines):
             d.text(
-                (cx + 20, ex_y + 10 + j * 22),
+                (cx + 20, ex_y + 10 + j * 20),
                 line,
-                font=font(12, bold=True),
+                font=font(11, bold=True),
                 fill=color,
             )
 
