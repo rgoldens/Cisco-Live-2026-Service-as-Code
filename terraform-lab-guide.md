@@ -571,6 +571,8 @@ show running-config | include hostname
 hostname csr-terraform
 ```
 
+Now verify that Loopback0 was created with the correct IP and description:
+
 ```
 show interfaces Loopback0
 ```
