@@ -149,6 +149,22 @@ drwxrwxr-x 4 cisco cisco  4096 Mar 19 22:32 modules
 -rw-r--r-- 1 cisco cisco  3357 Mar 19 22:32 variables.tf
 ```
 
+> **Why are there state files already?**
+> On a brand-new Terraform project, `terraform.tfstate` would not exist until after the
+> first `terraform apply`. The state files you see here exist because this lab environment
+> was pre-tested and then cleaned up with `terraform destroy` before you received it.
+>
+> - `terraform.tfstate` (183 bytes) — after `terraform destroy` completes, Terraform writes
+>   a near-empty state file rather than deleting it. The 183-byte size tells you it contains
+>   only the format header — no resources are tracked. You can confirm this with
+>   `terraform show`, which will print `The state file is empty`.
+> - `terraform.tfstate.backup` — a copy of the full state from the last `apply`, saved
+>   automatically by Terraform when `destroy` ran.
+> - `terraform.tfstate.1774032510.backup` — an older backup from a prior run.
+>
+> You will see this same pattern yourself at the end of Part 5 after you run
+> `terraform destroy`.
+
 Here is what each file does:
 
 | File / Directory | Purpose |
@@ -159,7 +175,8 @@ Here is what each file does:
 | `modules/` | Folder containing the two sub-modules |
 | `.terraform/` | Terraform's internal directory — provider plugins live here |
 | `.terraform.lock.hcl` | Records the exact provider versions in use (like a lock file) |
-| `terraform.tfstate` | Terraform's memory — records everything it has deployed |
+| `terraform.tfstate` | Terraform's memory — currently empty (post-destroy residue). Will be populated after `terraform apply` |
+| `terraform.tfstate.backup` | Automatic backup of the previous state, saved when `destroy` ran |
 
 Now run `ls modules/` to see what modules are available:
 
