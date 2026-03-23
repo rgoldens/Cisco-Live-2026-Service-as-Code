@@ -1,6 +1,6 @@
 # Part 4 — Infrastructure Drift
 
-![Infrastructure Drift](../../slides/slide-06-drift.png)
+![Infrastructure Drift](../slides/slide-06-drift.png)
 
 **Infrastructure drift** is what happens when the real state of your infrastructure no
 longer matches what Terraform expects based on its state file. This is one of the most

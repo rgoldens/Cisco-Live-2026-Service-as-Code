@@ -1,7 +1,7 @@
 # Lab Topology
 
-![What This Lab Builds](../../slides/slide-04-what-we-build.png)
-![Lab Topology](../../slides/slide-05-topology.png)
+![What This Lab Builds](../slides/slide-04-what-we-build.png)
+![Lab Topology](../slides/slide-05-topology.png)
 
 This Terraform lab runs **independently** of the main ContainerLab topology. It uses a
 separate Docker bridge network and does not interfere with the LTRATO-1001 nodes.

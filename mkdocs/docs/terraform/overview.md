@@ -2,7 +2,7 @@
 
 ## What Is Terraform?
 
-![What Is Terraform?](../../slides/slide-01-what-is-terraform.png)
+![What Is Terraform?](../slides/slide-01-what-is-terraform.png)
 
 Terraform is an open-source Infrastructure as Code (IaC) tool created by HashiCorp. It
 lets you define your infrastructure — servers, networks, routers, firewalls, cloud
@@ -28,7 +28,7 @@ In a network engineering context, Terraform is increasingly used to:
 
 ### The Terraform Workflow
 
-![The Terraform Workflow](../../slides/slide-02-workflow.png)
+![The Terraform Workflow](../slides/slide-02-workflow.png)
 
 | Step | Command | What it does |
 |---|---|---|
@@ -44,7 +44,7 @@ In a network engineering context, Terraform is increasingly used to:
 
 ### Key Concepts
 
-![Key Concepts](../../slides/slide-03-key-concepts.png)
+![Key Concepts](../slides/slide-03-key-concepts.png)
 
 **Provider** — a plugin that knows how to talk to a specific platform. This lab uses two:
 
