@@ -127,21 +127,33 @@ Run `ls -la` to see the full directory listing with permissions and sizes:
 ls -la
 ```
 
-> Expected output:
+> Expected output (timestamps and sizes may differ slightly — that is normal):
 ```
 total 100
-drwxrwxr-x 4 cisco cisco  4096 Mar 20 18:50 .
+drwxrwxr-x 4 cisco cisco  4096 Mar 22 17:48 .
 drwxrwxr-x 3 cisco cisco  4096 Mar 19 22:32 ..
 drwxrwxr-x 4 cisco cisco  4096 Mar 19 22:32 .terraform
 -rw-r--r-- 1 cisco cisco  1513 Mar 19 22:33 .terraform.lock.hcl
 -rw-r--r-- 1 cisco cisco  2331 Mar 20 18:51 main.tf
 drwxrwxr-x 4 cisco cisco  4096 Mar 19 22:32 modules
 -rw-r--r-- 1 cisco cisco   807 Mar 19 22:32 outputs.tf
--rw-rw-r-- 1 cisco cisco   182 Mar 20 19:15 terraform.tfstate
+-rw-rw-r-- 1 cisco cisco   183 Mar 22 17:48 terraform.tfstate
 -rw-rw-r-- 1 cisco cisco 28878 Mar 20 18:48 terraform.tfstate.1774032510.backup
--rw-rw-r-- 1 cisco cisco 28803 Mar 20 19:15 terraform.tfstate.backup
+-rw-rw-r-- 1 cisco cisco 28804 Mar 22 17:48 terraform.tfstate.backup
 -rw-r--r-- 1 cisco cisco  3357 Mar 19 22:32 variables.tf
 ```
+
+Here is what each file does:
+
+| File / Directory | Purpose |
+|---|---|
+| `main.tf` | Root module — ties the two sub-modules together |
+| `variables.tf` | All input variables with their default values |
+| `outputs.tf` | Values printed to the screen after `terraform apply` |
+| `modules/` | Folder containing the two sub-modules |
+| `.terraform/` | Terraform's internal directory — provider plugins live here |
+| `.terraform.lock.hcl` | Records the exact provider versions in use (like a lock file) |
+| `terraform.tfstate` | Terraform's memory — records everything it has deployed |
 
 Now run `ls modules/` to see what modules are available:
 
@@ -161,10 +173,17 @@ iosxe-config
 cat main.tf
 ```
 
-This file ties the two modules together. Notice:
-- The `provider "iosxe"` block points at the CSR IP (`172.20.21.10`) and uses `protocol = "restconf"`
-- `module "iosxe_config"` has `depends_on = [module.docker_infra]` — Terraform will not
-  attempt any RESTCONF calls until the Docker infrastructure (and CSR readiness) is complete
+This is the entry point for the entire lab. Read through it and notice:
+
+- The `terraform { required_providers { ... } }` block declares which providers this
+  configuration needs — `kreuzwerker/docker` and `CiscoDevNet/iosxe`.
+- The `provider "iosxe"` block tells the IOS XE provider where to connect: it points at
+  `172.20.21.10` (the CSR container) and uses `protocol = "restconf"`.
+- The two `module` blocks pull in the sub-modules from the `modules/` folder.
+- `module "iosxe_config"` has `depends_on = [module.docker_infra]` — this tells Terraform
+  to finish **all** docker-infra work (including waiting for the CSR to boot) before
+  attempting any RESTCONF configuration. Without this, Terraform might try to configure
+  the router before it has even started up.
 
 ### Read the variables
 
@@ -172,15 +191,22 @@ This file ties the two modules together. Notice:
 cat variables.tf
 ```
 
-All values have defaults — no user input required. Key defaults:
+Each `variable` block defines an input to the configuration. All of them have `default`
+values, so no manual input is required — Terraform uses the defaults automatically.
 
-| Variable | Default |
-|---|---|
-| `csr_ip` | `172.20.21.10` |
-| `csr_username` / `csr_password` | `admin` / `admin` |
-| `csr_hostname` | `csr-terraform` |
-| `loopback_ip` | `10.99.99.1` |
-| `linux1_ip` / `linux2_ip` | `172.20.21.20` / `172.20.21.21` |
+Key defaults:
+
+| Variable | Default | What it controls |
+|---|---|---|
+| `csr_ip` | `172.20.21.10` | IP address assigned to the CSR container |
+| `csr_username` / `csr_password` | `admin` / `admin` | Login credentials for the CSR |
+| `csr_hostname` | `csr-terraform` | Hostname Terraform will configure on the CSR |
+| `loopback_ip` | `10.99.99.1` | IP address for Loopback0 |
+| `linux1_ip` / `linux2_ip` | `172.20.21.20` / `172.20.21.21` | IPs for the Linux containers |
+
+> You will also see an `authorized_keys` variable with two long SSH public keys. These
+> are pre-loaded keys that allow the lab server to SSH into the Linux containers without
+> a password. You do not need to modify them.
 
 ### Read the docker-infra module
 
@@ -188,10 +214,15 @@ All values have defaults — no user input required. Key defaults:
 cat modules/docker-infra/main.tf
 ```
 
-Find the `null_resource.csr_ready` block. This is the most interesting part — a
-provisioner that polls RESTCONF every 10 seconds (up to 15 minutes) until the CSR has
-fully booted, then enables RESTCONF via SSH. The CSR takes approximately 7-8 minutes to
-complete its cold boot from a fresh volume.
+This module creates the Docker network, the storage volume, and the three containers.
+Scroll down to find the `null_resource.csr_ready` block near the bottom. This is where
+Terraform waits for the CSR to boot:
+
+- It runs a shell script (`local-exec` provisioner) that polls the CSR's RESTCONF API
+  every 10 seconds.
+- If RESTCONF is not responding yet, it also tries to enable it over SSH.
+- Once RESTCONF responds with HTTP 200, the script exits and Terraform proceeds.
+- The CSR takes approximately **7-8 minutes** to complete its cold boot from a fresh volume.
 
 ### Read the iosxe-config module
 
@@ -199,9 +230,13 @@ complete its cold boot from a fresh volume.
 cat modules/iosxe-config/main.tf
 ```
 
-Two resources:
-- `iosxe_system.this` — sets the hostname via RESTCONF
-- `iosxe_interface_loopback.lo0` — creates Loopback0 via RESTCONF
+This module is simple — just two resources:
+- `iosxe_system.this` — sends a RESTCONF call to set the hostname to `csr-terraform`
+- `iosxe_interface_loopback.lo0` — sends a RESTCONF call to create Loopback0 with IP
+  `10.99.99.1/32`
+
+These two resources only run after `module.docker_infra` is fully complete (due to the
+`depends_on` in `main.tf`).
 
 ### Read the outputs
 
@@ -209,7 +244,8 @@ Two resources:
 cat outputs.tf
 ```
 
-After `terraform apply`, these values will be printed to the terminal.
+After `terraform apply` finishes, these five values will be printed to the terminal so
+you can see a summary of what was deployed.
 
 ### Initialize Terraform
 
@@ -282,87 +318,18 @@ anything**.
 terraform plan
 ```
 
-> Expected output:
+> **Heads up:** The full output is verbose — Terraform lists every single attribute of
+> every resource it plans to create, most of which say `(known after apply)` because the
+> values won't exist until the resource is actually created. **Scroll past the details and
+> focus on the summary lines at the very bottom.**
+>
+> `(known after apply)` simply means "Terraform will fill this in once the resource
+> exists." For example, a container's ID is not known until Docker creates it.
+
+The summary at the bottom of your output should look like this:
+
+> Expected output (bottom of the plan):
 ```
-Terraform used the selected providers to generate the following execution
-plan. Resource actions are indicated with the following symbols:
-  + create
-
-Terraform will perform the following actions:
-
-  # module.docker_infra.docker_container.csr will be created
-  + resource "docker_container" "csr" {
-      + image                                       = "vrnetlab/vr-csr:16.12.05"
-      + name                                        = "csr-terraform"
-      + privileged                                  = true
-      + restart                                     = "no"
-      ...
-      + networks_advanced {
-          + ipv4_address = "172.20.21.10"
-          + name         = "terraform-net"
-        }
-      + volumes {
-          + container_path = "/mnt/flash"
-          + volume_name    = "csr-terraform-storage"
-        }
-    }
-
-  # module.docker_infra.docker_container.linux1 will be created
-  + resource "docker_container" "linux1" {
-      + image = "ghcr.io/hellt/network-multitool"
-      + name  = "linux-terraform1"
-      ...
-      + networks_advanced {
-          + ipv4_address = "172.20.21.20"
-          + name         = "terraform-net"
-        }
-    }
-
-  # module.docker_infra.docker_container.linux2 will be created
-  + resource "docker_container" "linux2" {
-      + image = "ghcr.io/hellt/network-multitool"
-      + name  = "linux-terraform2"
-      ...
-      + networks_advanced {
-          + ipv4_address = "172.20.21.21"
-          + name         = "terraform-net"
-        }
-    }
-
-  # module.docker_infra.docker_network.terraform_net will be created
-  + resource "docker_network" "terraform_net" {
-      + driver = "bridge"
-      + name   = "terraform-net"
-      + ipam_config {
-          + subnet = "172.20.21.0/24"
-        }
-    }
-
-  # module.docker_infra.docker_volume.csr_storage will be created
-  + resource "docker_volume" "csr_storage" {
-      + name = "csr-terraform-storage"
-    }
-
-  # module.docker_infra.null_resource.csr_ready will be created
-  + resource "null_resource" "csr_ready" {
-      + triggers = {
-          + "csr_container_id" = (known after apply)
-        }
-    }
-
-  # module.iosxe_config.iosxe_interface_loopback.lo0 will be created
-  + resource "iosxe_interface_loopback" "lo0" {
-      + description       = "Managed by Terraform"
-      + ipv4_address      = "10.99.99.1"
-      + ipv4_address_mask = "255.255.255.255"
-      + name              = 0
-    }
-
-  # module.iosxe_config.iosxe_system.this will be created
-  + resource "iosxe_system" "this" {
-      + hostname = "csr-terraform"
-    }
-
 Plan: 8 to add, 0 to change, 0 to destroy.
 
 Changes to Outputs:
@@ -376,7 +343,8 @@ Note: You didn't use the -out option to save this plan, so Terraform can't
 guarantee to take exactly these actions if you run "terraform apply" now.
 ```
 
-The 8 resources are:
+The `Plan: 8 to add` means Terraform is planning to create 8 resources:
+
 1. `module.docker_infra.docker_network.terraform_net` — the bridge network
 2. `module.docker_infra.docker_volume.csr_storage` — CSR persistent storage volume
 3. `module.docker_infra.docker_container.csr` — the CSR container
@@ -394,19 +362,20 @@ The 8 resources are:
 terraform apply -auto-approve
 ```
 
-> In the lab, use `-auto-approve` to skip the confirmation prompt. In production
-> environments, always omit this flag and review the plan before typing `yes`.
+> The `-auto-approve` flag skips the interactive confirmation prompt. In the lab we use
+> it to save time. In a production environment, always omit this flag — Terraform will
+> print the plan and ask you to type `yes` before making any changes.
 
 **What happens next (in order):**
 
-1. Docker network `terraform-net` is created (2s)
-2. CSR storage volume is created (0s)
-3. All three containers start simultaneously (1s each)
+1. Docker network `terraform-net` is created (~2s)
+2. CSR storage volume is created (~0s)
+3. All three containers start simultaneously (~1s each)
 4. The `null_resource.csr_ready` provisioner begins — it polls RESTCONF every 10 seconds
    while waiting for the CSR to boot. **This takes approximately 7-8 minutes.**
-   Do not interrupt it.
-5. Once the CSR is ready and RESTCONF is enabled, the iosxe provider connects and
-   applies the hostname and Loopback0 in about 1 second each.
+   You will see `Still creating...` messages ticking by — this is normal. Do not interrupt it.
+5. Once the CSR is ready, Terraform applies the hostname and Loopback0 via RESTCONF
+   (~1 second each).
 
 While waiting, open a second terminal and watch the CSR boot progress:
 
@@ -422,10 +391,13 @@ Startup complete in: 0:07:XX
 
 Press `Ctrl+C` to stop following the logs.
 
-Output (key lines — the `null_resource.csr_ready` loop output is suppressed because
-the provisioner uses a sensitive variable for the CSR password):
+> **Why is the provisioner output suppressed?** The `csr_password` variable is marked
+> `sensitive = true` in `variables.tf`. Terraform automatically suppresses the output of
+> any provisioner that uses a sensitive variable to avoid accidentally printing passwords
+> to the screen. That is why you see `(output suppressed due to sensitive value in config)`
+> instead of the polling loop messages.
 
-> Expected output:
+> Expected output (key lines):
 ```
 module.docker_infra.docker_volume.csr_storage: Creating...
 module.docker_infra.docker_network.terraform_net: Creating...
@@ -460,6 +432,9 @@ linux1_ip = "172.20.21.20"
 linux2_ip = "172.20.21.21"
 loopback0 = "10.99.99.1/255.255.255.255"
 ```
+
+> The hex IDs (like `[id=cf2b394afde8...]`) will be different on your run — they are
+> Docker container IDs generated at creation time.
 
 ---
 
@@ -569,6 +544,10 @@ curl -sk -u admin:admin \
 
 ### SSH into the CSR and verify
 
+The CSR is an older IOS XE image that uses legacy SSH algorithms. The extra flags below
+tell your SSH client to allow those older algorithms — without them the connection will
+be refused.
+
 ```bash
 ssh -o KexAlgorithms=+diffie-hellman-group14-sha1 \
     -o HostKeyAlgorithms=+ssh-rsa \
@@ -577,7 +556,11 @@ ssh -o KexAlgorithms=+diffie-hellman-group14-sha1 \
 
 Password: `admin`
 
-Once logged in, run the following commands at the IOS XE prompt:
+> If prompted with `Are you sure you want to continue connecting (yes/no)?`, type `yes`
+> and press Enter.
+
+Once logged in, you will see the IOS XE prompt (`csr-terraform#`). Run the following
+commands:
 
 ```
 show running-config | include hostname
@@ -620,11 +603,21 @@ Type `exit` to leave the CSR.
 
 ### SSH into a Linux container and verify
 
+> **Before connecting:** If you have connected to `172.20.21.20` before (from a previous
+> lab run), clear the old host key first to avoid an SSH error:
+>
+> ```bash
+> ssh-keygen -f ~/.ssh/known_hosts -R 172.20.21.20
+> ```
+
 ```bash
 ssh root@172.20.21.20
 ```
 
 Password: `root`
+
+> If prompted with `Are you sure you want to continue connecting (yes/no)?`, type `yes`
+> and press Enter.
 
 Once logged in:
 
@@ -634,14 +627,18 @@ hostname
 
 > Expected output:
 ```
-cf2b394afde8
+0591fa78ea57
 ```
+
+> **Note:** The hostname is the short container ID, not `linux-terraform1`. This is
+> normal — the Terraform config does not explicitly set a hostname inside the container,
+> so Docker uses the container ID by default. Your container ID will be different.
 
 ```
 ip addr show eth0
 ```
 
-> Expected output:
+> Expected output (interface number and MAC address will differ on your system):
 ```
 59: eth0@if60: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default
     link/ether 02:42:ac:14:15:14 brd ff:ff:ff:ff:ff:ff link-netnsid 0
@@ -649,27 +646,35 @@ ip addr show eth0
        valid_lft forever preferred_lft forever
 ```
 
-> The hostname shown is the container ID — this is normal for Docker containers that
-> have not had their hostname explicitly set in the Terraform config.
+The important line is `inet 172.20.21.20/24` — that confirms the container has the
+correct IP address on the `terraform-net` network.
 
-Type `exit` to leave.
+Type `exit` to leave the Linux container and return to the lab server.
 
 ---
 
 ## Part 4 — Infrastructure Drift
 
 **Infrastructure drift** is what happens when the real state of your infrastructure no
-longer matches the state Terraform expects. This can happen when:
+longer matches what Terraform expects based on its state file. This is one of the most
+common real-world problems in infrastructure management.
 
-- Someone manually deletes or modifies a resource outside of Terraform
-- A container crashes and is removed by Docker
-- An engineer makes a "quick fix" directly on a device instead of through the IaC pipeline
+Drift can happen when:
 
-Terraform's ability to detect and correct drift is one of its most powerful features.
+- Someone manually deletes or modifies a resource outside of Terraform ("I'll just fix it
+  quickly in the CLI...")
+- A container crashes and is removed automatically by Docker
+- An engineer makes a "quick fix" directly on a device instead of going through the IaC
+  pipeline
+
+In a traditional environment, drift often goes unnoticed until something breaks.
+Terraform can **detect** it and **fix** it automatically.
 
 ### Step 1 — Simulate drift: manually delete a container
 
-Without touching Terraform, directly remove `linux-terraform2` using Docker:
+We are going to pretend to be a colleague who deleted a container by hand, bypassing
+Terraform entirely. Without touching any Terraform files, directly remove
+`linux-terraform2` using Docker:
 
 ```bash
 docker rm -f linux-terraform2
@@ -698,51 +703,31 @@ configuration.
 
 ### Step 3 — Detect drift with terraform plan
 
-Run `terraform plan` to let Terraform compare the real world against its state:
+Run `terraform plan`. Terraform will first **refresh** its state by checking the actual
+state of every resource against what is recorded in `terraform.tfstate`. When it finds
+that `linux-terraform2` no longer exists, it will add it to the plan as something that
+needs to be re-created:
 
 ```bash
 terraform plan
 ```
 
-> Expected output:
+Look for this in the output summary at the bottom:
+
+> Expected output (bottom of the plan):
 ```
-module.docker_infra.docker_volume.csr_storage: Refreshing state... [id=csr-terraform-storage]
-module.docker_infra.docker_network.terraform_net: Refreshing state... [id=d1921eb1ab7e...]
-module.docker_infra.docker_container.linux1: Refreshing state... [id=cf2b394afde8...]
-module.docker_infra.docker_container.linux2: Refreshing state... [id=5d90d3868ae6...]
-module.docker_infra.docker_container.csr: Refreshing state... [id=8fdc981b800e...]
-module.docker_infra.null_resource.csr_ready: Refreshing state... [id=8057386960410116714]
-module.iosxe_config.iosxe_interface_loopback.lo0: Refreshing state... [id=Cisco-IOS-XE-native:native/interface/Loopback=0]
-module.iosxe_config.iosxe_system.this: Refreshing state... [id=Cisco-IOS-XE-native:native]
-
-Terraform used the selected providers to generate the following execution
-plan. Resource actions are indicated with the following symbols:
-  + create
-
-Terraform will perform the following actions:
-
-  # module.docker_infra.docker_container.linux2 will be created
-  + resource "docker_container" "linux2" {
-      + image = "ghcr.io/hellt/network-multitool"
-      + name  = "linux-terraform2"
-      ...
-      + networks_advanced {
-          + ipv4_address = "172.20.21.21"
-          + name         = "terraform-net"
-        }
-    }
-
 Plan: 1 to add, 0 to change, 0 to destroy.
 ```
 
 > **Terraform found the drift.** It knows `linux-terraform2` should exist (it's in the
-> state file) but doesn't (it's not running). Only the missing container needs to be
-> re-created — everything else matches.
+> state file) but doesn't (it's not running in Docker). Only the missing container needs
+> to be re-created — everything else matches, so Terraform leaves it alone.
 
 ### Step 4 — Remediate drift with terraform apply
 
-Because RESTCONF is already active on the CSR, only the missing container is re-created.
-The entire remediation completes in under 1 second:
+Run `terraform apply -auto-approve`. Because the CSR is already running and RESTCONF is
+already active, Terraform only needs to re-create the one missing container. This
+completes in under 2 seconds:
 
 ```bash
 terraform apply -auto-approve
@@ -763,6 +748,9 @@ linux1_ip = "172.20.21.20"
 linux2_ip = "172.20.21.21"
 loopback0 = "10.99.99.1/255.255.255.255"
 ```
+
+> Notice that Terraform only created **1** resource — it did not touch the CSR,
+> linux-terraform1, the network, or the volume. It only fixed exactly what was missing.
 
 ### Step 5 — Confirm all three containers are running again
 
@@ -787,24 +775,17 @@ at their original age — it was just recreated.
 terraform plan
 ```
 
-> Expected output:
+> Expected output (bottom of the plan):
 ```
-module.docker_infra.docker_volume.csr_storage: Refreshing state... [id=csr-terraform-storage]
-module.docker_infra.docker_network.terraform_net: Refreshing state... [id=d1921eb1ab7e...]
-module.docker_infra.docker_container.linux1: Refreshing state... [id=cf2b394afde8...]
-module.docker_infra.docker_container.csr: Refreshing state... [id=8fdc981b800e...]
-module.docker_infra.docker_container.linux2: Refreshing state... [id=a3d3c8160a11...]
-module.docker_infra.null_resource.csr_ready: Refreshing state... [id=8057386960410116714]
-module.iosxe_config.iosxe_interface_loopback.lo0: Refreshing state... [id=Cisco-IOS-XE-native:native/interface/Loopback=0]
-module.iosxe_config.iosxe_system.this: Refreshing state... [id=Cisco-IOS-XE-native:native]
-
 No changes. Your infrastructure matches the configuration.
 
 Terraform has compared your real infrastructure against your configuration
 and found no differences, so no changes are needed.
 ```
 
-This is the Terraform "all clear" — the real world matches the desired state exactly.
+This is the Terraform "all clear." The real world matches the desired state exactly.
+In a production IaC pipeline, seeing `No changes` when you run `plan` is the goal —
+it means your infrastructure is exactly where you left it.
 
 ---
 
@@ -820,28 +801,31 @@ ContainerLab topology needs.
 > always omit this flag and review the destruction plan carefully before confirming.
 
 Terraform destroys resources in the correct dependency order — IOS XE config first, then
-containers, then the network and volume:
+containers, then the network and volume.
+
+> **Heads up:** Just like `plan` and `apply`, the `destroy` output is verbose — it lists
+> every attribute being removed. Scroll to the bottom to see the final summary.
 
 ```bash
 terraform destroy -auto-approve
 ```
 
-> Expected output:
+> Expected output (key lines):
 ```
-module.iosxe_config.iosxe_interface_loopback.lo0: Destroying... [id=Cisco-IOS-XE-native:native/interface/Loopback=0]
-module.iosxe_config.iosxe_system.this: Destroying... [id=Cisco-IOS-XE-native:native]
+module.iosxe_config.iosxe_interface_loopback.lo0: Destroying...
+module.iosxe_config.iosxe_system.this: Destroying...
 module.iosxe_config.iosxe_interface_loopback.lo0: Destruction complete after 3s
-module.iosxe_config.iosxe_system.this: Destruction complete after 8s
-module.docker_infra.null_resource.csr_ready: Destroying... [id=8057386960410116714]
+module.iosxe_config.iosxe_system.this: Destruction complete after 6s
+module.docker_infra.null_resource.csr_ready: Destroying...
 module.docker_infra.null_resource.csr_ready: Destruction complete after 0s
-module.docker_infra.docker_container.linux2: Destroying... [id=a3d3c8160a11...]
-module.docker_infra.docker_container.linux1: Destroying... [id=cf2b394afde8...]
-module.docker_infra.docker_container.csr: Destroying... [id=8fdc981b800e...]
-module.docker_infra.docker_container.linux1: Destruction complete after 1s
+module.docker_infra.docker_container.linux1: Destroying...
+module.docker_infra.docker_container.linux2: Destroying...
+module.docker_infra.docker_container.csr: Destroying...
 module.docker_infra.docker_container.linux2: Destruction complete after 1s
+module.docker_infra.docker_container.linux1: Destruction complete after 1s
 module.docker_infra.docker_container.csr: Destruction complete after 1s
-module.docker_infra.docker_volume.csr_storage: Destroying... [id=csr-terraform-storage]
-module.docker_infra.docker_network.terraform_net: Destroying... [id=d1921eb1ab7e...]
+module.docker_infra.docker_volume.csr_storage: Destroying...
+module.docker_infra.docker_network.terraform_net: Destroying...
 module.docker_infra.docker_volume.csr_storage: Destruction complete after 2s
 module.docker_infra.docker_network.terraform_net: Destruction complete after 2s
 
