@@ -475,8 +475,72 @@ def slide4():
 
 
 # ══════════════════════════════════════════════════════════════════════════════
+# Icon helpers
+# ══════════════════════════════════════════════════════════════════════════════
+def draw_router_icon(d, cx, cy, size, color):
+    """Cisco-style router: filled circle body + 4 directional stubs."""
+    r = size // 2
+    # body circle
+    d.ellipse([(cx - r, cy - r), (cx + r, cy + r)], fill=color)
+    # highlight ring inside
+    ri = r - 4
+    d.ellipse(
+        [(cx - ri, cy - ri), (cx + ri, cy + ri)],
+        outline=BG,
+        width=2,
+    )
+    # 4 port stubs: top, bottom, left, right
+    stub = size // 3
+    sw = max(3, size // 10)
+    # top stub
+    d.rectangle([(cx - sw, cy - r - stub), (cx + sw, cy - r + 2)], fill=color)
+    d.ellipse(
+        [(cx - sw - 2, cy - r - stub - 4), (cx + sw + 2, cy - r - stub + 4)], fill=color
+    )
+    # bottom stub
+    d.rectangle([(cx - sw, cy + r - 2), (cx + sw, cy + r + stub)], fill=color)
+    d.ellipse(
+        [(cx - sw - 2, cy + r + stub - 4), (cx + sw + 2, cy + r + stub + 4)], fill=color
+    )
+    # left stub
+    d.rectangle([(cx - r - stub, cy - sw), (cx - r + 2, cy + sw)], fill=color)
+    d.ellipse(
+        [(cx - r - stub - 4, cy - sw - 2), (cx - r - stub + 4, cy + sw + 2)], fill=color
+    )
+    # right stub
+    d.rectangle([(cx + r - 2, cy - sw), (cx + r + stub, cy + sw)], fill=color)
+    d.ellipse(
+        [(cx + r + stub - 4, cy - sw - 2), (cx + r + stub + 4, cy + sw + 2)], fill=color
+    )
+
+
+def draw_server_icon(d, cx, cy, w, h, color):
+    """Server rack: outer rectangle + 3 horizontal drive-bay stripes."""
+    x0, y0 = cx - w // 2, cy - h // 2
+    # outer chassis
+    d.rounded_rectangle([x0, y0, x0 + w, y0 + h], radius=4, outline=color, width=2)
+    # inner fill (dark)
+    d.rounded_rectangle([x0 + 2, y0 + 2, x0 + w - 2, y0 + h - 2], radius=3, fill=PANEL)
+    # 3 drive bay stripes
+    stripe_h = max(4, (h - 16) // 5)
+    gap = (h - 8 - 3 * stripe_h) // 4
+    for i in range(3):
+        sy = y0 + 8 + i * (stripe_h + gap)
+        d.rounded_rectangle(
+            [x0 + 8, sy, x0 + w - 8, sy + stripe_h],
+            radius=2,
+            fill=color,
+        )
+        # small LED dot on right
+        led_x = x0 + w - 14
+        led_cy = sy + stripe_h // 2
+        d.ellipse([(led_x - 3, led_cy - 3), (led_x + 3, led_cy + 3)], fill=BG)
+
+
+# ══════════════════════════════════════════════════════════════════════════════
 # SLIDE 5 — Lab Topology
 # Full-slide network diagram: Docker bridge + 3 containers + RESTCONF callout
+# Icons: router (CSR) and server (Linux containers) drawn above each box
 # ══════════════════════════════════════════════════════════════════════════════
 def slide5():
     img, d = new_slide()
@@ -504,109 +568,111 @@ def slide5():
     )
 
     # ── Horizontal bus line ───────────────────────────────────────────────────
-    bus_y = BRY + BRH + 50
+    bus_y = BRY + BRH + 30
     bus_x1 = PX + 80
     bus_x2 = PX + PW - 80
     d.rectangle([(bus_x1, bus_y - 3), (bus_x2, bus_y + 3)], fill=TEAL_DK)
     # gateway dot on bus
     gw_x = W // 2
     d.ellipse([(gw_x - 7, bus_y - 7), (gw_x + 7, bus_y + 7)], fill=TEAL)
-    cx_text(d, gw_x, bus_y - 26, "gateway  172.20.21.1", font(13), GREY_MD)
+    cx_text(d, gw_x, bus_y - 22, "gateway  172.20.21.1", font(12), GREY_MD)
 
-    # ── Three container boxes ─────────────────────────────────────────────────
+    # ── Layout constants ──────────────────────────────────────────────────────
+    ICON_H = 56  # vertical space reserved for icon above each box
+    ICON_GAP = 6  # gap between bottom of icon and top of box
+    CW, CH = 230, 150
+    CGAP = 40
+    total_cw = 3 * CW + 2 * CGAP
+    ctx = (W - total_cw) // 2
+    icon_top = bus_y + 18  # icons start here
+    cty = icon_top + ICON_H + ICON_GAP  # boxes start here
+
     containers = [
         (
             TEAL,
+            "router",
             "csr-terraform",
             "vrnetlab/vr-csr:16.12.05",
             "172.20.21.10",
             "Cisco IOS XE 16.12",
-            "Terraform target",
         ),
         (
             GREEN,
+            "server",
             "linux-terraform1",
             "hellt/network-multitool",
             "172.20.21.20",
-            "network-multitool",
             "Linux client 1",
         ),
         (
             GREEN,
+            "server",
             "linux-terraform2",
             "hellt/network-multitool",
             "172.20.21.21",
-            "network-multitool",
             "Linux client 2",
         ),
     ]
 
-    CW, CH = 230, 175
-    CGAP = 40
-    total_cw = 3 * CW + 2 * CGAP
-    ctx = (W - total_cw) // 2
-    cty = bus_y + 40
-
-    for i, (color, name, image, ip, desc, role) in enumerate(containers):
+    for i, (color, icon_type, name, image, ip, role) in enumerate(containers):
         bx = ctx + i * (CW + CGAP)
         mid = bx + CW // 2
 
-        # vertical drop-line from bus
+        # vertical drop-line: bus → icon area → box
         d.rectangle([(mid - 2, bus_y + 3), (mid + 2, cty)], fill=TEAL_DK)
 
-        # container box
-        pill(d, bx, cty, CW, CH, PANEL, r=10)
-        d.rounded_rectangle([bx, cty, bx + CW, cty + 6], radius=4, fill=color)
+        # ── Icon ──────────────────────────────────────────────────────────────
+        icon_cy = icon_top + ICON_H // 2
+        if icon_type == "router":
+            draw_router_icon(d, mid, icon_cy, 44, color)
+        else:
+            draw_server_icon(d, mid, icon_cy, 52, 44, color)
 
-        cx_text(d, mid, cty + 14, name, font(15, bold=True), WHITE)
-        d.rectangle([(bx + 16, cty + 40), (bx + CW - 16, cty + 42)], fill=BORDER)
-        cx_text(d, mid, cty + 52, ip, font(18, bold=True), color)
-        cx_text(d, mid, cty + 82, desc, font(13), GREY_MD)
-        cx_text(d, mid, cty + 106, role, font(13), GREY_LT)
+        # ── Container info box ────────────────────────────────────────────────
+        pill(d, bx, cty, CW, CH, PANEL, r=10)
+        d.rounded_rectangle([bx, cty, bx + CW, cty + 5], radius=4, fill=color)
+
+        cx_text(d, mid, cty + 12, name, font(14, bold=True), WHITE)
+        d.rectangle([(bx + 16, cty + 36), (bx + CW - 16, cty + 38)], fill=BORDER)
+        cx_text(d, mid, cty + 46, ip, font(17, bold=True), color)
+        cx_text(d, mid, cty + 76, role, font(13), GREY_LT)
 
         # image pill at bottom
-        img_pill_y = cty + CH - 36
-        pill(d, bx + 14, img_pill_y, CW - 28, 26, BG, r=5)
-        cx_text(d, mid, img_pill_y + 5, image, font(11), GREY_MD)
+        img_pill_y = cty + CH - 30
+        pill(d, bx + 14, img_pill_y, CW - 28, 22, BG, r=5)
+        cx_text(d, mid, img_pill_y + 4, image, font(11), GREY_MD)
 
-    # ── RESTCONF callout arrow from CSR box ───────────────────────────────────
+    # ── "managed by Terraform" badge on CSR box ───────────────────────────────
     csr_mid = ctx + CW // 2
-    csr_bot = cty + CH
+    pill(d, ctx + 10, cty + CH - 58, CW - 20, 22, TEAL_DK, r=5)
+    cx_text(
+        d, csr_mid, cty + CH - 53, "managed by Terraform", font(11, bold=True), WHITE
+    )
 
-    # callout box bottom-left
-    cx_b, cy_b = PX + 24, PY + PH - 80
-    cw_b, ch_b = 310, 62
+    # ── RESTCONF callout ──────────────────────────────────────────────────────
+    csr_bot = cty + CH
+    cx_b, cy_b = PX + 24, PY + PH - 68
+    cw_b, ch_b = 340, 56
     pill(d, cx_b, cy_b, cw_b, ch_b, BG, r=8)
     d.rounded_rectangle([cx_b, cy_b, cx_b + cw_b, cy_b + 4], radius=3, fill=TEAL)
     d.text(
-        (cx_b + 14, cy_b + 12),
+        (cx_b + 14, cy_b + 10),
         "Terraform configures via RESTCONF:",
-        font=font(14, bold=True),
+        font=font(13, bold=True),
         fill=TEAL,
     )
     d.text(
-        (cx_b + 14, cy_b + 34),
+        (cx_b + 14, cy_b + 32),
         "hostname → csr-terraform  |  Loopback0 → 10.99.99.1/32",
-        font=font(13),
+        font=font(12),
         fill=GREY_LT,
     )
 
-    # dashed arrow from CSR box bottom to callout
+    # dashed arrow from CSR box bottom → callout
     ax, ay1, ay2 = csr_mid, csr_bot + 4, cy_b
     for seg_y in range(ay1, ay2, 10):
         d.rectangle([(ax - 1, seg_y), (ax + 1, min(seg_y + 6, ay2))], fill=TEAL)
     d.polygon([(ax - 8, ay2 + 2), (ax + 8, ay2 + 2), (ax, ay2 - 10)], fill=TEAL)
-
-    # ── "managed by Terraform" badge on CSR box ───────────────────────────────
-    pill(d, ctx + 10, cty + CH - 68, CW - 20, 24, TEAL_DK, r=5)
-    cx_text(
-        d,
-        ctx + CW // 2,
-        cty + CH - 63,
-        "managed by Terraform",
-        font(12, bold=True),
-        WHITE,
-    )
 
     img.save(os.path.join(OUT_DIR, "slide-05-topology.png"))
     print("  slide-05-topology.png")
