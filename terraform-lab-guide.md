@@ -7,9 +7,6 @@
 ## What Is Terraform?
 
 ![What Is Terraform?](slides/slide-01-what-is-terraform.png)
-![The Terraform Workflow](slides/slide-02-workflow.png)
-![Key Concepts](slides/slide-03-key-concepts.png)
-![What This Lab Builds](slides/slide-04-what-we-build.png)
 
 Terraform is an open-source Infrastructure as Code (IaC) tool created by HashiCorp. It
 lets you define your infrastructure — servers, networks, routers, firewalls, cloud
@@ -35,6 +32,8 @@ In a network engineering context, Terraform is increasingly used to:
 
 ### The Terraform workflow
 
+![The Terraform Workflow](slides/slide-02-workflow.png)
+
 ```
 Write config  →  terraform init  →  terraform plan  →  terraform apply  →  terraform destroy
 (define what      (download          (preview what      (make it real)      (clean it all up)
@@ -42,6 +41,8 @@ Write config  →  terraform init  →  terraform plan  →  terraform apply  �
 ```
 
 ### Key concepts
+
+![Key Concepts](slides/slide-03-key-concepts.png)
 
 **Provider** — a plugin that knows how to talk to a specific platform. This lab uses two:
 - `kreuzwerker/docker` — creates Docker containers and networks
@@ -60,6 +61,9 @@ deployed so it knows what to add, change, or remove on the next run.
 ---
 
 ## Lab Topology
+
+![What This Lab Builds](slides/slide-04-what-we-build.png)
+![Lab Topology](slides/slide-05-topology.png)
 
 This Terraform lab runs **independently** of the main ContainerLab topology. It uses a
 separate Docker bridge network and does not interfere with the LTRATO-1001 nodes.

@@ -43,7 +43,7 @@ def badge(d):
 
 
 def slide_num(d, n):
-    d.text((W - 36, H - 28), f"{n}/4", font=font(16), fill=GREY_MD, anchor="rm")
+    d.text((W - 36, H - 28), f"{n}/5", font=font(16), fill=GREY_MD, anchor="rm")
 
 
 def pill(d, x, y, w, h, fill, r=10):
@@ -474,10 +474,149 @@ def slide4():
     print("  slide-04-what-we-build.png")
 
 
+# ══════════════════════════════════════════════════════════════════════════════
+# SLIDE 5 — Lab Topology
+# Full-slide network diagram: Docker bridge + 3 containers + RESTCONF callout
+# ══════════════════════════════════════════════════════════════════════════════
+def slide5():
+    img, d = new_slide()
+    teal_bar(d)
+    badge(d)
+    slide_num(d, 5)
+    header_no_subtitle(d, "Lab Topology")
+
+    # ── Outer border panel ───────────────────────────────────────────────────
+    PX, PY = 40, 128
+    PW, PH = W - 80, H - 160
+    d.rounded_rectangle([PX, PY, PX + PW, PY + PH], radius=14, outline=BORDER, width=2)
+
+    # ── Docker bridge label bar at top of panel ──────────────────────────────
+    BRX, BRY = PX + 16, PY + 14
+    BRW, BRH = PW - 32, 44
+    pill(d, BRX, BRY, BRW, BRH, TEAL_DK, r=8)
+    cx_text(
+        d,
+        W // 2,
+        BRY + 10,
+        "Docker bridge network:  terraform-net  (172.20.21.0/24)",
+        font(17, bold=True),
+        WHITE,
+    )
+
+    # ── Horizontal bus line ───────────────────────────────────────────────────
+    bus_y = BRY + BRH + 50
+    bus_x1 = PX + 80
+    bus_x2 = PX + PW - 80
+    d.rectangle([(bus_x1, bus_y - 3), (bus_x2, bus_y + 3)], fill=TEAL_DK)
+    # gateway dot on bus
+    gw_x = W // 2
+    d.ellipse([(gw_x - 7, bus_y - 7), (gw_x + 7, bus_y + 7)], fill=TEAL)
+    cx_text(d, gw_x, bus_y - 26, "gateway  172.20.21.1", font(13), GREY_MD)
+
+    # ── Three container boxes ─────────────────────────────────────────────────
+    containers = [
+        (
+            TEAL,
+            "csr-terraform",
+            "vrnetlab/vr-csr:16.12.05",
+            "172.20.21.10",
+            "Cisco IOS XE 16.12",
+            "Terraform target",
+        ),
+        (
+            GREEN,
+            "linux-terraform1",
+            "hellt/network-multitool",
+            "172.20.21.20",
+            "network-multitool",
+            "Linux client 1",
+        ),
+        (
+            GREEN,
+            "linux-terraform2",
+            "hellt/network-multitool",
+            "172.20.21.21",
+            "network-multitool",
+            "Linux client 2",
+        ),
+    ]
+
+    CW, CH = 230, 175
+    CGAP = 40
+    total_cw = 3 * CW + 2 * CGAP
+    ctx = (W - total_cw) // 2
+    cty = bus_y + 40
+
+    for i, (color, name, image, ip, desc, role) in enumerate(containers):
+        bx = ctx + i * (CW + CGAP)
+        mid = bx + CW // 2
+
+        # vertical drop-line from bus
+        d.rectangle([(mid - 2, bus_y + 3), (mid + 2, cty)], fill=TEAL_DK)
+
+        # container box
+        pill(d, bx, cty, CW, CH, PANEL, r=10)
+        d.rounded_rectangle([bx, cty, bx + CW, cty + 6], radius=4, fill=color)
+
+        cx_text(d, mid, cty + 14, name, font(15, bold=True), WHITE)
+        d.rectangle([(bx + 16, cty + 40), (bx + CW - 16, cty + 42)], fill=BORDER)
+        cx_text(d, mid, cty + 52, ip, font(18, bold=True), color)
+        cx_text(d, mid, cty + 82, desc, font(13), GREY_MD)
+        cx_text(d, mid, cty + 106, role, font(13), GREY_LT)
+
+        # image pill at bottom
+        img_pill_y = cty + CH - 36
+        pill(d, bx + 14, img_pill_y, CW - 28, 26, BG, r=5)
+        cx_text(d, mid, img_pill_y + 5, image, font(11), GREY_MD)
+
+    # ── RESTCONF callout arrow from CSR box ───────────────────────────────────
+    csr_mid = ctx + CW // 2
+    csr_bot = cty + CH
+
+    # callout box bottom-left
+    cx_b, cy_b = PX + 24, PY + PH - 80
+    cw_b, ch_b = 310, 62
+    pill(d, cx_b, cy_b, cw_b, ch_b, BG, r=8)
+    d.rounded_rectangle([cx_b, cy_b, cx_b + cw_b, cy_b + 4], radius=3, fill=TEAL)
+    d.text(
+        (cx_b + 14, cy_b + 12),
+        "Terraform configures via RESTCONF:",
+        font=font(14, bold=True),
+        fill=TEAL,
+    )
+    d.text(
+        (cx_b + 14, cy_b + 34),
+        "hostname → csr-terraform  |  Loopback0 → 10.99.99.1/32",
+        font=font(13),
+        fill=GREY_LT,
+    )
+
+    # dashed arrow from CSR box bottom to callout
+    ax, ay1, ay2 = csr_mid, csr_bot + 4, cy_b
+    for seg_y in range(ay1, ay2, 10):
+        d.rectangle([(ax - 1, seg_y), (ax + 1, min(seg_y + 6, ay2))], fill=TEAL)
+    d.polygon([(ax - 8, ay2 + 2), (ax + 8, ay2 + 2), (ax, ay2 - 10)], fill=TEAL)
+
+    # ── "managed by Terraform" badge on CSR box ───────────────────────────────
+    pill(d, ctx + 10, cty + CH - 68, CW - 20, 24, TEAL_DK, r=5)
+    cx_text(
+        d,
+        ctx + CW // 2,
+        cty + CH - 63,
+        "managed by Terraform",
+        font(12, bold=True),
+        WHITE,
+    )
+
+    img.save(os.path.join(OUT_DIR, "slide-05-topology.png"))
+    print("  slide-05-topology.png")
+
+
 if __name__ == "__main__":
     print("Generating slides...")
     slide1()
     slide2()
     slide3()
     slide4()
+    slide5()
     print("Done.")
