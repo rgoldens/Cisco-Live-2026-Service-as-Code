@@ -1,0 +1,54 @@
+site_name: "LTRATO-1001 — Terraform Lab Guide"
+site_description: "Infrastructure as Code with Terraform and Cisco IOS XE — Cisco Live 2026"
+site_author: "Cisco Live 2026"
+docs_dir: docs
+site_dir: site
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: teal
+      accent: cyan
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: teal
+      accent: cyan
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - navigation.footer
+    - content.code.copy
+    - content.code.annotate
+    - toc.integrate
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - tables
+  - toc:
+      permalink: true
+
+nav:
+  - Home: index.md
+  - Terraform Lab:
+    - Overview: terraform/overview.md
+    - Lab Topology: terraform/topology.md
+    - Prerequisites: terraform/prerequisites.md
+    - "Part 1 — Explore the Configuration": terraform/part1-explore.md
+    - "Part 2 — Plan and Deploy": terraform/part2-deploy.md
+    - "Part 3 — Verify the Deployment": terraform/part3-verify.md
+    - "Part 4 — Infrastructure Drift": terraform/part4-drift.md
+    - "Part 5 — Tear Down": terraform/part5-teardown.md
+    - Quick Reference: terraform/quick-reference.md
