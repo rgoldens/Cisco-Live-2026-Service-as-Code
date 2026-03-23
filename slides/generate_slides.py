@@ -475,66 +475,117 @@ def slide4():
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# Icon helpers
+# Icon helpers  — classic Cisco network diagram style
 # ══════════════════════════════════════════════════════════════════════════════
 def draw_router_icon(d, cx, cy, size, color):
-    """Cisco-style router: filled circle body + 4 directional stubs."""
-    r = size // 2
-    # body circle
-    d.ellipse([(cx - r, cy - r), (cx + r, cy + r)], fill=color)
-    # highlight ring inside
-    ri = r - 4
-    d.ellipse(
-        [(cx - ri, cy - ri), (cx + ri, cy + ri)],
-        outline=BG,
-        width=2,
+    """Classic Cisco router: filled cylinder (ellipse cap + body + base ellipse)
+    with 4 white directional arrows on the top face."""
+    rw = size  # half-width of ellipse
+    rh = size // 4  # half-height of ellipse (flat disc)
+    body_h = size // 2  # height of the cylindrical body
+
+    top_y = cy - body_h // 2  # vertical centre of top ellipse
+    bot_y = cy + body_h // 2  # vertical centre of bottom ellipse
+
+    # ── cylinder body (left/right sides + fill) ──────────────────────────────
+    # filled rectangle for the body sides
+    d.rectangle([(cx - rw, top_y), (cx + rw, bot_y)], fill=color)
+
+    # bottom ellipse (drawn first so top overlaps it)
+    d.ellipse([(cx - rw, bot_y - rh), (cx + rw, bot_y + rh)], fill=color)
+    # slight darker rim on bottom edge for depth
+    d.arc([(cx - rw, bot_y - rh), (cx + rw, bot_y + rh)], 0, 180, fill=PANEL, width=2)
+
+    # top ellipse — slightly lighter tint blended toward white for 3-D look
+    # blend color 70 % + white 30 %
+    r0, g0, b0 = tuple(int(color.lstrip("#")[k : k + 2], 16) for k in (0, 2, 4))
+    lighter = "#{:02x}{:02x}{:02x}".format(
+        min(255, (r0 * 70 + 255 * 30) // 100),
+        min(255, (g0 * 70 + 255 * 30) // 100),
+        min(255, (b0 * 70 + 255 * 30) // 100),
     )
-    # 4 port stubs: top, bottom, left, right
-    stub = size // 3
-    sw = max(3, size // 10)
-    # top stub
-    d.rectangle([(cx - sw, cy - r - stub), (cx + sw, cy - r + 2)], fill=color)
-    d.ellipse(
-        [(cx - sw - 2, cy - r - stub - 4), (cx + sw + 2, cy - r - stub + 4)], fill=color
-    )
-    # bottom stub
-    d.rectangle([(cx - sw, cy + r - 2), (cx + sw, cy + r + stub)], fill=color)
-    d.ellipse(
-        [(cx - sw - 2, cy + r + stub - 4), (cx + sw + 2, cy + r + stub + 4)], fill=color
-    )
-    # left stub
-    d.rectangle([(cx - r - stub, cy - sw), (cx - r + 2, cy + sw)], fill=color)
-    d.ellipse(
-        [(cx - r - stub - 4, cy - sw - 2), (cx - r - stub + 4, cy + sw + 2)], fill=color
-    )
-    # right stub
-    d.rectangle([(cx + r - 2, cy - sw), (cx + r + stub, cy + sw)], fill=color)
-    d.ellipse(
-        [(cx + r + stub - 4, cy - sw - 2), (cx + r + stub + 4, cy + sw + 2)], fill=color
-    )
+    d.ellipse([(cx - rw, top_y - rh), (cx + rw, top_y + rh)], fill=lighter)
+    # rim outline on top face
+    d.ellipse([(cx - rw, top_y - rh), (cx + rw, top_y + rh)], outline=color, width=2)
+
+    # ── 4 directional arrows on top face (N/S/E/W) ───────────────────────────
+    al = size // 5  # arrow arm length
+    aw = max(2, size // 14)  # arm width
+    tip = size // 8  # arrowhead size
+
+    def arrow(dx, dy):
+        """Draw one arrow from centre outward in direction (dx,dy)."""
+        ax1, ay1 = cx, top_y
+        ax2 = cx + dx * al
+        ay2 = top_y + dy * (rh * al // (rw if dx == 0 else al))  # project onto ellipse
+        # use flat coords on the ellipse face
+        ax2 = cx + dx * (al - tip)
+        ay2 = top_y + dy * int((rh / rw) * (al - tip))
+        # shaft
+        d.line([(ax1, ay1), (ax2, ay2)], fill=PANEL, width=aw)
+        # arrowhead triangle
+        # perpendicular offset for triangle base
+        px = int(dy * tip * 0.6)
+        py = int(-dx * tip * 0.6 * (rh / rw))
+        tip_x = cx + dx * al
+        tip_y = top_y + dy * int((rh / rw) * al)
+        d.polygon(
+            [
+                (tip_x, tip_y),
+                (ax2 + px, ay2 + py),
+                (ax2 - px, ay2 - py),
+            ],
+            fill=PANEL,
+        )
+
+    arrow(1, 0)  # E
+    arrow(-1, 0)  # W
+    arrow(0, 1)  # S (down on ellipse face)
+    arrow(0, -1)  # N (up on ellipse face)
 
 
 def draw_server_icon(d, cx, cy, w, h, color):
-    """Server rack: outer rectangle + 3 horizontal drive-bay stripes."""
-    x0, y0 = cx - w // 2, cy - h // 2
-    # outer chassis
-    d.rounded_rectangle([x0, y0, x0 + w, y0 + h], radius=4, outline=color, width=2)
-    # inner fill (dark)
-    d.rounded_rectangle([x0 + 2, y0 + 2, x0 + w - 2, y0 + h - 2], radius=3, fill=PANEL)
-    # 3 drive bay stripes
-    stripe_h = max(4, (h - 16) // 5)
-    gap = (h - 8 - 3 * stripe_h) // 4
-    for i in range(3):
-        sy = y0 + 8 + i * (stripe_h + gap)
-        d.rounded_rectangle(
-            [x0 + 8, sy, x0 + w - 8, sy + stripe_h],
-            radius=2,
-            fill=color,
-        )
-        # small LED dot on right
-        led_x = x0 + w - 14
-        led_cy = sy + stripe_h // 2
-        d.ellipse([(led_x - 3, led_cy - 3), (led_x + 3, led_cy + 3)], fill=BG)
+    """Classic Cisco workstation / server icon:
+    monitor (rounded rect with screen bezel) + base + keyboard tray."""
+    # ── monitor body ──────────────────────────────────────────────────────────
+    mon_w = w
+    mon_h = int(h * 0.58)
+    mx, my = cx - mon_w // 2, cy - h // 2
+
+    # outer bezel
+    d.rounded_rectangle([mx, my, mx + mon_w, my + mon_h], radius=5, fill=color)
+    # screen inset
+    pad = max(4, mon_w // 10)
+    d.rounded_rectangle(
+        [mx + pad, my + pad, mx + mon_w - pad, my + mon_h - pad], radius=3, fill=PANEL
+    )
+
+    # ── neck / stand ─────────────────────────────────────────────────────────
+    neck_w = max(6, mon_w // 6)
+    neck_h = int(h * 0.12)
+    neck_x = cx - neck_w // 2
+    neck_y = my + mon_h
+    d.rectangle([(neck_x, neck_y), (neck_x + neck_w, neck_y + neck_h)], fill=color)
+
+    # ── base platform ─────────────────────────────────────────────────────────
+    base_w = int(mon_w * 0.75)
+    base_h = int(h * 0.10)
+    base_x = cx - base_w // 2
+    base_y = neck_y + neck_h
+    d.rounded_rectangle(
+        [base_x, base_y, base_x + base_w, base_y + base_h], radius=3, fill=color
+    )
+
+    # ── keyboard tray ─────────────────────────────────────────────────────────
+    kb_w = int(mon_w * 0.85)
+    kb_h = int(h * 0.10)
+    kb_x = cx - kb_w // 2
+    kb_y = base_y + base_h + 2
+    d.rounded_rectangle([kb_x, kb_y, kb_x + kb_w, kb_y + kb_h], radius=2, fill=color)
+    # key row lines
+    for col in range(1, 5):
+        lx = kb_x + col * kb_w // 5
+        d.rectangle([(lx, kb_y + 2), (lx + 1, kb_y + kb_h - 2)], fill=PANEL)
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -578,13 +629,13 @@ def slide5():
     cx_text(d, gw_x, bus_y - 22, "gateway  172.20.21.1", font(12), GREY_MD)
 
     # ── Layout constants ──────────────────────────────────────────────────────
-    ICON_H = 56  # vertical space reserved for icon above each box
-    ICON_GAP = 6  # gap between bottom of icon and top of box
-    CW, CH = 230, 150
+    ICON_H = 72  # vertical space reserved for icon above each box
+    ICON_GAP = 8  # gap between bottom of icon and top of box
+    CW, CH = 230, 148
     CGAP = 40
     total_cw = 3 * CW + 2 * CGAP
     ctx = (W - total_cw) // 2
-    icon_top = bus_y + 18  # icons start here
+    icon_top = bus_y + 14  # icons start here
     cty = icon_top + ICON_H + ICON_GAP  # boxes start here
 
     containers = [
@@ -624,9 +675,9 @@ def slide5():
         # ── Icon ──────────────────────────────────────────────────────────────
         icon_cy = icon_top + ICON_H // 2
         if icon_type == "router":
-            draw_router_icon(d, mid, icon_cy, 44, color)
+            draw_router_icon(d, mid, icon_cy, 58, color)
         else:
-            draw_server_icon(d, mid, icon_cy, 52, 44, color)
+            draw_server_icon(d, mid, icon_cy, 58, 64, color)
 
         # ── Container info box ────────────────────────────────────────────────
         pill(d, bx, cty, CW, CH, PANEL, r=10)
