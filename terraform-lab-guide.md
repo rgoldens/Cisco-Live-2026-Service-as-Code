@@ -675,6 +675,107 @@ correct IP address on the `terraform-net` network.
 
 Type `exit` to leave the Linux container and return to the lab server.
 
+### Inspect the state file
+
+Everything is deployed and verified. Before moving on, take a few minutes to look at
+what Terraform actually recorded — the state file is what makes every subsequent
+`plan`, `apply`, and `destroy` possible.
+
+#### View the human-readable state with terraform show
+
+```bash
+terraform show
+```
+
+Terraform reads `terraform.tfstate` and formats it for humans. The output lists every
+resource it manages, with all the attribute values recorded at creation time. The output
+is verbose — scroll through your terminal to see all 8 resources.
+
+Here is the first resource as an example of what to look for:
+
+> Expected output (first resource — your `id` values will differ):
+```
+# module.docker_infra.docker_network.terraform_net:
+resource "docker_network" "terraform_net" {
+    driver                  = "bridge"
+    id                      = "d1921eb1ab7e8f3c2a4b..."
+    internal                = false
+    name                    = "terraform-net"
+
+    ipam_config {
+        gateway = "172.20.21.1"
+        subnet  = "172.20.21.0/24"
+    }
+}
+
+# (remaining 7 resources follow — scroll to see docker_volume, docker_container x3,
+#  null_resource, iosxe_system, and iosxe_interface_loopback)
+```
+
+> Notice the `id` field — this is a real runtime value that did not exist anywhere in
+> your `.tf` files. Terraform recorded it the moment Docker created the network. Every
+> resource has an `id` like this that Terraform uses to track and manage it going forward.
+
+#### View the raw state file
+
+```bash
+cat terraform.tfstate
+```
+
+The state file is plain JSON. You do not need to read all of it — here is the structure
+of one resource entry so you understand what Terraform is storing:
+
+> Expected output (trimmed — the `docker_network` resource entry):
+```json
+{
+  "version": 4,
+  "terraform_version": "1.14.7",
+  "resources": [
+    {
+      "module": "module.docker_infra",
+      "mode": "managed",
+      "type": "docker_network",
+      "name": "terraform_net",
+      "instances": [
+        {
+          "attributes": {
+            "driver": "bridge",
+            "id": "d1921eb1ab7e8f3c2a4b...",
+            "name": "terraform-net",
+            "ipam_config": [
+              {
+                "gateway": "172.20.21.1",
+                "subnet": "172.20.21.0/24"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    ...
+  ]
+}
+```
+
+> **What the state file is doing for you:**
+>
+> - **Every `plan` reads it first.** Terraform compares this file against your `.tf`
+>   configuration to calculate exactly what needs to change. If they match — `No changes`.
+>   If something is missing or different — Terraform shows you what it will fix.
+>
+> - **It is how drift gets detected.** If a resource exists in this file but has been
+>   deleted outside of Terraform, the next `plan` will flag it for recreation. You will
+>   see this in action in Part 4.
+>
+> - **It is how `destroy` knows what to remove.** Terraform reads this file to get the
+>   complete list of everything it created — container IDs, network IDs, volume names —
+>   and removes exactly those resources, nothing more.
+>
+> - **Never edit it by hand.** If you manually change a value in this file, Terraform's
+>   view of the world will be wrong and subsequent operations will behave unpredictably.
+>   If you ever need to manipulate state directly, use the `terraform state` subcommands
+>   (`terraform state list`, `terraform state show`, `terraform state rm`).
+
 ---
 
 ## Part 4 — Infrastructure Drift
