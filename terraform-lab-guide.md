@@ -68,24 +68,6 @@ deployed so it knows what to add, change, or remove on the next run.
 This Terraform lab runs **independently** of the main ContainerLab topology. It uses a
 separate Docker bridge network and does not interfere with the LTRATO-1001 nodes.
 
-```
-  ┌──────────────────────────────────────────────────────────────────┐
-  │  Docker bridge: terraform-net  (172.20.21.0/24)                  │
-  │                                                                  │
-  │          ┌─────────────────────────────────────────┐             │
-  │          │        eth0 (172.20.21.1 gateway)        │             │
-  │          └──────────┬──────────────┬───────────────┘             │
-  │                     │              │               │             │
-  │              eth0   │       eth0   │        eth0   │             │
-  │                     │              │               │             │
-  │  ┌──────────────────┴──┐  ┌────────┴───────┐  ┌───┴────────────┐ │
-  │  │   csr-terraform     │  │ linux-         │  │ linux-         │ │
-  │  │   IOS XE 16.12      │  │ terraform1     │  │ terraform2     │ │
-  │  │   172.20.21.10      │  │ 172.20.21.20   │  │ 172.20.21.21   │ │
-  │  └─────────────────────┘  └────────────────┘  └────────────────┘ │
-  └──────────────────────────────────────────────────────────────────┘
-```
-
 | Container | Image | IP | Role |
 |---|---|---|---|
 | `csr-terraform` | `vrnetlab/vr-csr:16.12.05` | `172.20.21.10` | Cisco IOS XE router — Terraform target |
