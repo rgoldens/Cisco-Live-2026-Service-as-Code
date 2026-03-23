@@ -161,10 +161,9 @@ Now run `ls modules/` to see what modules are available:
 ls modules/
 ```
 
-> Expected output:
+> Expected output (may appear side by side or on separate lines depending on your terminal width — both are correct):
 ```
-docker-infra
-iosxe-config
+docker-infra  iosxe-config
 ```
 
 ### Read the root module
