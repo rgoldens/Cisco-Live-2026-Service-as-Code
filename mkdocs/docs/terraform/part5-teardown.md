@@ -107,3 +107,8 @@ In this lab you:
     Drift is detectable and correctable. The same configuration file that built this lab
     today will build the exact same lab tomorrow, next week, or on a completely different
     server.
+
+---
+
+!!! tip "Up next"
+    Head to the [Quick Reference](quick-reference.md) for a handy command cheat sheet, or return to the [Home](../index.md) page.

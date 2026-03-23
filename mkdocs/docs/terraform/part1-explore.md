@@ -189,3 +189,8 @@ terraform init
     ```
 
 If you see `Terraform has been successfully initialized!` you are ready to proceed to [Part 2](part2-deploy.md).
+
+---
+
+!!! tip "Up next"
+    Continue to [Part 2 — Plan and Deploy](part2-deploy.md) to run your first `terraform plan` and `terraform apply`.

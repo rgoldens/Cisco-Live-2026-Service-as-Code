@@ -136,4 +136,7 @@ This is the Terraform "all clear." The real world matches the desired state exac
 In a production IaC pipeline, seeing `No changes` when you run `plan` is the goal —
 it means your infrastructure is exactly where you left it.
 
-Continue to [Part 5 — Tear Down](part5-teardown.md).
+---
+
+!!! tip "Up next"
+    Continue to [Part 5 — Tear Down](part5-teardown.md) to cleanly destroy all resources before moving on.

@@ -316,4 +316,7 @@ of one resource entry so you understand what Terraform is storing:
       If you ever need to manipulate state directly, use the `terraform state` subcommands
       (`terraform state list`, `terraform state show`, `terraform state rm`).
 
-Continue to [Part 4 — Infrastructure Drift](part4-drift.md).
+---
+
+!!! tip "Up next"
+    Continue to [Part 4 — Infrastructure Drift](part4-drift.md) to see how Terraform detects and fixes unauthorized changes.

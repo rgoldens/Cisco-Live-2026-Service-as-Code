@@ -16,3 +16,8 @@ separate Docker bridge network and does not interfere with the LTRATO-1001 nodes
 
 - Hostname → `csr-terraform`
 - Loopback0 → `10.99.99.1/32` (description: "Managed by Terraform")
+
+---
+
+!!! tip "Up next"
+    Continue to [Prerequisites](prerequisites.md) to confirm your tools are ready.

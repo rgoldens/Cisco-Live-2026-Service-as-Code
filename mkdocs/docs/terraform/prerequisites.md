@@ -16,3 +16,8 @@ The lab server already has everything pre-installed and initialized:
     download needed.
 
 All Terraform files are in: **`~/terraform-lab/terraform/`**
+
+---
+
+!!! tip "Up next"
+    Continue to [Part 1 — Explore the Configuration](part1-explore.md) to read through the Terraform files.

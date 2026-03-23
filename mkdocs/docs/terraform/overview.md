@@ -61,3 +61,8 @@ deployed so it knows what to add, change, or remove on the next run.
 
 - `docker-infra` — handles the Docker network, storage volume, and containers
 - `iosxe-config` — handles IOS XE device configuration via RESTCONF
+
+---
+
+!!! tip "Up next"
+    Continue to [Lab Topology](topology.md) to see what this lab builds.

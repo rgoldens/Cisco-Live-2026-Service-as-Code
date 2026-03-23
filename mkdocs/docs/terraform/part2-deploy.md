@@ -155,4 +155,7 @@ Press `Ctrl+C` to stop following the logs.
     The hex IDs (like `[id=cf2b394afde8...]`) will be different on your run — they are
     Docker container IDs generated at creation time.
 
-Continue to [Part 3 — Verify the Deployment](part3-verify.md).
+---
+
+!!! tip "Up next"
+    Continue to [Part 3 — Verify the Deployment](part3-verify.md) to confirm everything is running correctly.
