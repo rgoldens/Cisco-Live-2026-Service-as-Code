@@ -39,6 +39,17 @@ In a network engineering context, Terraform is increasingly used to:
 | 1 | **Write** | Define your infrastructure in `.tf` config files using HCL. Describe *what* you want — Terraform figures out *how* to build it. |
 | 2 | `terraform init` | Downloads and installs the provider plugins your configuration requires. Run once per project, or whenever you add a new provider. |
 | 3 | `terraform plan` | Compares your config against the current state and previews every change — additions, modifications, and deletions — before anything is touched. |
+| 4 | `terraform apply` | Executes the plan and creates or updates real infrastructure to match your configuration. **Loop back to Write → plan → apply for every subsequent change.** |
+| — | `terraform destroy` | Teardown only — removes every resource Terraform created when you are done with the environment. Not a routine step after every apply. |
+
+> **The real lifecycle is a loop:** Write → plan → apply → Write → plan → apply, repeating with every change. `terraform destroy` is a separate decommission operation — not a routine next step after every apply.
+
+
+| Step | Command | What it does |
+|---|---|---|
+| 1 | **Write** | Define your infrastructure in `.tf` config files using HCL. Describe *what* you want — Terraform figures out *how* to build it. |
+| 2 | `terraform init` | Downloads and installs the provider plugins your configuration requires. Run once per project, or whenever you add a new provider. |
+| 3 | `terraform plan` | Compares your config against the current state and previews every change — additions, modifications, and deletions — before anything is touched. |
 | 4 | `terraform apply` | Executes the plan and creates or updates real infrastructure to match your configuration. |
 | 5 | `terraform destroy` | Removes every resource Terraform created, in the correct dependency order, leaving nothing behind. |
 

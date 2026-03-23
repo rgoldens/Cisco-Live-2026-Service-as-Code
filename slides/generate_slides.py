@@ -272,8 +272,14 @@ def slide2():
             d.polygon([(ax, ay - 7), (ax + GAP, ay), (ax, ay + 7)], fill=GREY_MD)
 
     d.text(
-        (60, H - 38),
-        "Always run plan before apply — see exactly what changes before anything is touched.",
+        (60, H - 52),
+        "The write \u2192 plan \u2192 apply cycle repeats with every change.",
+        font=font(16),
+        fill=GREY_MD,
+    )
+    d.text(
+        (60, H - 30),
+        "terraform destroy is a separate teardown operation, not a routine next step.",
         font=font(16),
         fill=GREY_MD,
     )
