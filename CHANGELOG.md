@@ -474,6 +474,32 @@ Updated `LTRATO-1001.clab.yml` to match revised topology diagram.
 
 ---
 
+### 0.2.9.2 — SSH Verification: All 10 Nodes Confirmed
+
+**Date:** 2026-03-25
+
+Passwordless SSH verified for all nodes in the freshly-deployed topology. CSR nodes
+require legacy KEX — verified via ContainerLab hostname (picks up `/etc/ssh/ssh_config.d/clab-LTRATO-1001-passwords.conf`).
+
+| Node | Hostname | User | Result |
+|---|---|---|---|
+| `xrd01` | `clab-LTRATO-1001-xrd01` | `clab` | ✅ IOS XR 25.4.1 |
+| `xrd02` | `clab-LTRATO-1001-xrd02` | `clab` | ✅ IOS XR 25.4.1 |
+| `csr-pe01` | `clab-LTRATO-1001-csr-pe01` | `admin` | ✅ IOS XE 16.12.05 |
+| `csr-pe02` | `clab-LTRATO-1001-csr-pe02` | `admin` | ✅ IOS XE 16.12.05 |
+| `n9k-ce01` | `clab-LTRATO-1001-n9k-ce01` | `admin` | ✅ NX-OS 10.5(4) |
+| `n9k-ce02` | `clab-LTRATO-1001-n9k-ce02` | `admin` | ✅ NX-OS 10.5(4) |
+| `linux-client1` | `clab-LTRATO-1001-linux-client1` | `root` + `admin` | ✅ Both users |
+| `linux-client2` | `clab-LTRATO-1001-linux-client2` | `root` + `admin` | ✅ Both users |
+| `linux-client3` | `clab-LTRATO-1001-linux-client3` | `root` + `admin` | ✅ Both users |
+| `linux-client4` | `clab-LTRATO-1001-linux-client4` | `root` + `admin` | ✅ Both users |
+
+**Note:** CSR nodes must be accessed by ContainerLab hostname (not IP) so that the legacy
+KEX/hostkey settings in the custom SSH config are applied. Direct IP SSH to CSR will fail
+without explicit `-o KexAlgorithms=+diffie-hellman-group14-sha1` flags.
+
+---
+
 ### Files — Version 0.2
 
 | File | Location | Description |
