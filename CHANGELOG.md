@@ -1162,3 +1162,42 @@ Updated all topology link endpoints with ContainerLab `alias` labels so that Top
 | `~/LTRATO-1001.clab.yml` | Server (`198.18.134.90`) | **UPDATED:** Pushed alias-annotated topology |
 | `~/LTRATO-1001.clab.yml.annotations.json` | Server (`198.18.134.90`) | **UPDATED:** Pushed corrected annotations |
 | `CHANGELOG.md` | GitHub repo | **UPDATED:** Added v0.4.0 section |
+
+---
+
+### 0.4.1 — TopoViewer Fix: Revert Bad Alias Syntax, Use aliasEndpointAnnotations
+
+**Date:** 2026-03-25
+
+**Summary:**
+The `node:interface:alias` endpoint syntax used in v0.4.0 is NOT valid ContainerLab YAML. The TopoViewer extension parsed the third colon-separated token as a new phantom node ID, causing a stray "Core" cloud icon to appear and all link lines to route incorrectly to the top-left corner.
+
+**Fix:**
+- Reverted all YAML endpoints back to standard `node:interface` two-token format
+- Moved interface display name mappings into `aliasEndpointAnnotations` in the annotations JSON, which is the correct TopoViewer mechanism for this
+- Reverted CSR `interfacePattern` back to `Gi{n}`
+
+**aliasEndpointAnnotations added:**
+
+| Endpoint ID | Display alias |
+|---|---|
+| `csr-pe01:eth1` | `GigabitEthernet2` |
+| `csr-pe01:eth3` | `GigabitEthernet4` |
+| `csr-pe02:eth1` | `GigabitEthernet2` |
+| `csr-pe02:eth3` | `GigabitEthernet4` |
+| `n9k-ce01:eth1` | `Ethernet1/1` |
+| `n9k-ce01:eth3` | `Ethernet1/3` |
+| `n9k-ce01:eth4` | `Ethernet1/4` |
+| `n9k-ce02:eth1` | `Ethernet1/1` |
+| `n9k-ce02:eth3` | `Ethernet1/3` |
+| `n9k-ce02:eth4` | `Ethernet1/4` |
+
+**Files — Version 0.4.1:**
+
+| File | Location | Change |
+|---|---|---|
+| `untracked/LTRATO-1001.clab.yml` | Local (untracked) | **REVERTED:** Endpoints back to `node:interface` format |
+| `untracked/LTRATO-1001.clab.yml.annotations.json` | Local (untracked) | **UPDATED:** `aliasEndpointAnnotations` added; `interfacePattern` reverted |
+| `~/LTRATO-1001.clab.yml` | Server (`198.18.134.90`) | **UPDATED:** Clean topology pushed |
+| `~/LTRATO-1001.clab.yml.annotations.json` | Server (`198.18.134.90`) | **UPDATED:** Annotations with alias mappings pushed |
+| `CHANGELOG.md` | GitHub repo | **UPDATED:** Added v0.4.1 section |
