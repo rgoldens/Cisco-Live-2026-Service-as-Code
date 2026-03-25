@@ -1086,3 +1086,44 @@ linux:
 - ✅ Pre-lab reading assignments (TOPOLOGY_NOTES.md, HYBRID_APPROACH.md)
 - ✅ Complete documentation: DEPLOYMENT_GUIDE.md, troubleshooting in all exercises
 - ✅ 240 minutes of content for 30 attendees (4-hour session)
+
+---
+
+### 0.3.9 — TopoViewer Annotations Fix (Layered Layout, Icons, Groups)
+
+**Date:** 2026-03-25
+
+**Summary:**
+Replaced the stale TopoViewer annotations file on the server with a fully corrected version. The previous file (`~/LTRATO-1001.clab.yml.annotations.json`) contained only raw/unordered positions with no icons or group assignments — the result of prior manual drag-and-drop. The corrected file establishes:
+
+- A clean 4-row layered layout matching the reference topology diagram
+- Correct built-in icons per node type (`pe` for XRd/CSR, `switch` for N9K, `client` for Linux)
+- Four named, color-coded group bands (`core`, `pe-ce-edge`, `dc`, `clients`) with proper `groupStyleAnnotations`
+- Preserved `interfacePattern` values for XRd and CSR nodes
+
+**Changes made:**
+- Wrote new `untracked/LTRATO-1001.clab.yml.annotations.json` locally
+- Pushed to server: `~/LTRATO-1001.clab.yml.annotations.json`
+
+**Node layout (x, y):**
+
+| Node | x | y | Icon | Group |
+|---|---|---|---|---|
+| xrd01 | 250 | 100 | pe | core |
+| xrd02 | 950 | 100 | pe | core |
+| csr-pe01 | 250 | 340 | pe | pe-ce-edge |
+| csr-pe02 | 950 | 340 | pe | pe-ce-edge |
+| n9k-ce01 | 250 | 580 | switch | dc |
+| n9k-ce02 | 950 | 580 | switch | dc |
+| linux-client1 | 100 | 820 | client | clients |
+| linux-client2 | 380 | 820 | client | clients |
+| linux-client3 | 820 | 820 | client | clients |
+| linux-client4 | 1100 | 820 | client | clients |
+
+**Files — Version 0.3.9:**
+
+| File | Location | Change |
+|---|---|---|
+| `untracked/LTRATO-1001.clab.yml.annotations.json` | Local (untracked) | **NEW:** Corrected annotations with layout, icons, and groups |
+| `~/LTRATO-1001.clab.yml.annotations.json` | Server (`198.18.134.90`) | **UPDATED:** Replaced stale file with corrected version |
+| `CHANGELOG.md` | GitHub repo | **UPDATED:** Added v0.3.9 section |
