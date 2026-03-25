@@ -441,6 +441,38 @@ ContainerLab upgraded on the server from `0.74.1` to `0.74.3`.
 
 ---
 
+### 0.2.9.3 — TopoViewer Graph Annotations Added
+
+**Date:** 2026-03-25
+
+Added `graph-*` labels to all 10 nodes in `LTRATO-1001.clab.yml` to control the
+ContainerLab VS Code extension's TopoViewer visualization.
+
+| Label | Purpose |
+|---|---|
+| `graph-posX` / `graph-posY` | Fixed node positions on the canvas |
+| `graph-icon` | Node icon shape (`pe`, `switch`, `client`) |
+| `graph-group` | Visual grouping band (`core`, `pe-ce-edge`, `dc`, `clients`) |
+
+**Node layout:**
+
+| Node | X | Y | Icon | Group |
+|---|---|---|---|---|
+| `xrd01` | 250 | 100 | `pe` | `core` |
+| `xrd02` | 950 | 100 | `pe` | `core` |
+| `csr-pe01` | 250 | 340 | `pe` | `pe-ce-edge` |
+| `csr-pe02` | 950 | 340 | `pe` | `pe-ce-edge` |
+| `n9k-ce01` | 250 | 580 | `switch` | `dc` |
+| `n9k-ce02` | 950 | 580 | `switch` | `dc` |
+| `linux-client1` | 100 | 820 | `client` | `clients` |
+| `linux-client2` | 380 | 820 | `client` | `clients` |
+| `linux-client3` | 820 | 820 | `client` | `clients` |
+| `linux-client4` | 1100 | 820 | `client` | `clients` |
+
+Updated topology pushed to server. Reload the TopoViewer in VS Code to see the new layout.
+
+---
+
 ### 0.2.9.1 — Topology Redesign: Remove Inter-PE and DC Links, Rewire Linux Clients
 
 **Date:** 2026-03-25
