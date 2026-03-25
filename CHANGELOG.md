@@ -1270,3 +1270,31 @@ Two visual overlap issues fixed in the TopoViewer layout:
 | `~/LTRATO-1001.clab.yml` | Server (`198.18.134.90`) | **UPDATED:** Pushed |
 | `~/LTRATO-1001.clab.yml.annotations.json` | Server (`198.18.134.90`) | **UPDATED:** Pushed |
 | `CHANGELOG.md` | GitHub repo | **UPDATED:** Added v0.4.3 section |
+
+---
+
+### 0.4.4 — TopoViewer: Separate Nexus Interface Labels via edgeAnnotations
+
+**Date:** 2026-03-25
+
+**Summary:**
+Node position changes (v0.4.3) are only applied on a fresh deploy — the running lab's `topology-data.json` is used for positions instead. The correct in-place fix for overlapping Nexus interface labels is `edgeAnnotations` with different `endpointLabelOffset` values. Each pair of Nexus→client edges now has a different offset so their source-end labels (`Ethernet1/3` vs `Ethernet1/4`) land at different distances along the line and no longer overlap.
+
+**Root cause:** Two edges sharing the same source node (n9k-ce01 or n9k-ce02) had labels placed at the same default offset (20px), making them stack on top of each other.
+
+**Fix:** Added `edgeAnnotations` to the annotations JSON:
+
+| Edge | Offset | Effect |
+|---|---|---|
+| `n9k-ce01:Ethernet1/3` → `linux-client1:eth1` | 5 | Label very close to Nexus (top) |
+| `n9k-ce01:Ethernet1/4` → `linux-client2:eth1` | 30 | Label further along edge (bottom) |
+| `n9k-ce02:Ethernet1/3` → `linux-client3:eth1` | 5 | Label very close to Nexus (top) |
+| `n9k-ce02:Ethernet1/4` → `linux-client4:eth1` | 30 | Label further along edge (bottom) |
+
+**Files — Version 0.4.4:**
+
+| File | Location | Change |
+|---|---|---|
+| `untracked/LTRATO-1001.clab.yml.annotations.json` | Local (untracked) | **UPDATED:** `edgeAnnotations` added with per-edge offsets |
+| `~/LTRATO-1001.clab.yml.annotations.json` | Server (`198.18.134.90`) | **UPDATED:** Pushed |
+| `CHANGELOG.md` | GitHub repo | **UPDATED:** Added v0.4.4 section |
