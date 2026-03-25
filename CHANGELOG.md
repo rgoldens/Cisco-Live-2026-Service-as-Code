@@ -441,6 +441,39 @@ ContainerLab upgraded on the server from `0.74.1` to `0.74.3`.
 
 ---
 
+### 0.2.9.1 — Topology Redesign: Remove Inter-PE and DC Links, Rewire Linux Clients
+
+**Date:** 2026-03-25
+
+Updated `LTRATO-1001.clab.yml` to match revised topology diagram.
+
+**Links removed (2):**
+
+| Link | Reason |
+|---|---|
+| `csr-pe01:eth2 ↔ csr-pe02:eth2` | Inter-PE direct link removed |
+| `n9k-ce01:eth2 ↔ n9k-ce02:eth2` | DC inter-CE link removed |
+
+**Client links rewired (2):**
+
+| Client | Old connection | New connection |
+|---|---|---|
+| `linux-client2` | `n9k-ce02:eth3` | `n9k-ce01:eth4` |
+| `linux-client3` | `n9k-ce01:eth4` | `n9k-ce02:eth3` |
+
+**Resulting client layout:**
+
+| Client | CE | Interface | Mgmt IP |
+|---|---|---|---|
+| `linux-client1` | `n9k-ce01` (west) | `eth3` | `172.20.20.40` |
+| `linux-client2` | `n9k-ce01` (west) | `eth4` | `172.20.20.41` |
+| `linux-client3` | `n9k-ce02` (east) | `eth3` | `172.20.20.42` |
+| `linux-client4` | `n9k-ce02` (east) | `eth4` | `172.20.20.43` |
+
+`post-deploy.sh` is unaffected — it references containers by name, not by link or IP.
+
+---
+
 ### Files — Version 0.2
 
 | File | Location | Description |
