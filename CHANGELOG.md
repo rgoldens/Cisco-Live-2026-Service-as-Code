@@ -429,6 +429,18 @@ Terraform lab guide (Part 2 — "Confirm nothing is running yet"). A fresh
 
 ---
 
+### 0.2.9 — ContainerLab Upgraded to 0.74.3
+
+**Date:** 2026-03-25
+
+ContainerLab upgraded on the server from `0.74.1` to `0.74.3`.
+
+| Component | Previous | New |
+|---|---|---|
+| ContainerLab | `0.74.1` | `0.74.3` |
+
+---
+
 ### Files — Version 0.2
 
 | File | Location | Description |
