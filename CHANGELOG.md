@@ -1353,3 +1353,29 @@ All four Nexus→client edge offsets reset to equal value (50).
 | `~/LTRATO-1001.clab.yml` | Server (`198.18.134.90`) | **UPDATED:** Pushed |
 | `~/LTRATO-1001.clab.yml.annotations.json` | Server (`198.18.134.90`) | **UPDATED:** Pushed |
 | `CHANGELOG.md` | GitHub repo | **UPDATED:** Added v0.4.6 section |
+
+---
+
+### 0.4.7 — TopoViewer: Push Downward Interface Labels Clear of Node Hostnames
+
+**Date:** 2026-03-25
+
+**Summary:**
+The downward-facing interface labels on `xrd01`, `xrd02`, `csr-pe01`, and `csr-pe02` were overlapping the hostname text below each node icon. Added `edgeAnnotations` with offset=55 on the four downward edges so their source-end labels are pushed further along the line, clearing the hostname.
+
+**Edges adjusted:**
+
+| Edge | Offset | Label moved |
+|---|---|---|
+| `xrd01:Gi0-0-0-1` → `csr-pe01:GigabitEthernet2` | 55 | `Gi0-0-0-1` off xrd01 |
+| `xrd02:Gi0-0-0-1` → `csr-pe02:GigabitEthernet2` | 55 | `Gi0-0-0-1` off xrd02 |
+| `csr-pe01:GigabitEthernet4` → `n9k-ce01:Eth1/1` | 55 | `GigabitEthernet4` off csr-pe01 |
+| `csr-pe02:GigabitEthernet4` → `n9k-ce02:Eth1/1` | 55 | `GigabitEthernet4` off csr-pe02 |
+
+**Files — Version 0.4.7:**
+
+| File | Location | Change |
+|---|---|---|
+| `untracked/LTRATO-1001.clab.yml.annotations.json` | Local (untracked) | **UPDATED:** `edgeAnnotations` added for 4 downward edges |
+| `~/LTRATO-1001.clab.yml.annotations.json` | Server (`198.18.134.90`) | **UPDATED:** Pushed |
+| `CHANGELOG.md` | GitHub repo | **UPDATED:** Added v0.4.7 section |
