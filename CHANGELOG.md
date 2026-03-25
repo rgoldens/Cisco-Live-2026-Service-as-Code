@@ -1326,3 +1326,30 @@ All four Nexus→client edge offsets reset to equal value (50).
 | `untracked/LTRATO-1001.clab.yml.annotations.json` | Local (untracked) | **UPDATED:** Client positions symmetrized; edge offsets equalized |
 | `~/LTRATO-1001.clab.yml.annotations.json` | Server (`198.18.134.90`) | **UPDATED:** Pushed |
 | `CHANGELOG.md` | GitHub repo | **UPDATED:** Added v0.4.5 section |
+
+---
+
+### 0.4.6 — TopoViewer: Shorten N9Kv Interface Labels to Eth1/x
+
+**Date:** 2026-03-25
+
+**Summary:**
+`Ethernet1/3` and `Ethernet1/4` labels were still slightly overlapping on the Nexus nodes due to label width. Shortened all N9Kv interface aliases to the abbreviated NX-OS form (`Eth1/1`, `Eth1/3`, `Eth1/4`) for consistent, compact display. ContainerLab accepts these abbreviations natively.
+
+**Changes:**
+
+| Old alias | New alias |
+|---|---|
+| `Ethernet1/1` | `Eth1/1` |
+| `Ethernet1/3` | `Eth1/3` |
+| `Ethernet1/4` | `Eth1/4` |
+
+**Files — Version 0.4.6:**
+
+| File | Location | Change |
+|---|---|---|
+| `untracked/LTRATO-1001.clab.yml` | Local (untracked) | **UPDATED:** N9Kv endpoints shortened to `Eth1/x` |
+| `untracked/LTRATO-1001.clab.yml.annotations.json` | Local (untracked) | **UPDATED:** `edgeAnnotations` keys and `aliasEndpointAnnotations` updated to match |
+| `~/LTRATO-1001.clab.yml` | Server (`198.18.134.90`) | **UPDATED:** Pushed |
+| `~/LTRATO-1001.clab.yml.annotations.json` | Server (`198.18.134.90`) | **UPDATED:** Pushed |
+| `CHANGELOG.md` | GitHub repo | **UPDATED:** Added v0.4.6 section |
