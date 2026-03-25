@@ -1238,3 +1238,35 @@ Investigation revealed that `aliasEndpointAnnotations` in the annotations JSON i
 | `untracked/LTRATO-1001.clab.yml` | Local (untracked) | **UPDATED:** Endpoints use native interface aliases |
 | `~/LTRATO-1001.clab.yml` | Server (`198.18.134.90`) | **UPDATED:** Native alias YAML pushed |
 | `CHANGELOG.md` | GitHub repo | **UPDATED:** Added v0.4.2 section |
+
+---
+
+### 0.4.3 — TopoViewer Layout: Fix Overlapping Interface Labels
+
+**Date:** 2026-03-25
+
+**Summary:**
+Two visual overlap issues fixed in the TopoViewer layout:
+1. **Nexus `Ethernet1/3` / `Ethernet1/4` labels overlap** — the two downward links from each Nexus node had interface labels that stacked on top of each other. Fixed by increasing vertical gap between the DC and Clients rows and spreading clients horizontally further apart.
+2. **CSR `GigabitEthernet4` overlaps hostname** — the bottom interface label clipped into the node hostname text. Fixed by moving CSR nodes slightly lower within their group box.
+
+**Position changes:**
+
+| Node | Old posY | New posY | Notes |
+|---|---|---|---|
+| `csr-pe01`, `csr-pe02` | 340 | 370 | More room for GigabitEthernet4 label below icon |
+| `n9k-ce01`, `n9k-ce02` | 580 | 620 | More vertical gap from clients |
+| `linux-client1` | 820 | 900 | More gap from Nexus |
+| `linux-client2` | 820 | 900 | Spread right (posX 380→420) |
+| `linux-client3` | 820 | 900 | Spread left (posX 820→760) |
+| `linux-client4` | 820 | 900 | Spread right (posX 1100→1140) |
+
+**Files — Version 0.4.3:**
+
+| File | Location | Change |
+|---|---|---|
+| `untracked/LTRATO-1001.clab.yml` | Local (untracked) | **UPDATED:** Node positions adjusted |
+| `untracked/LTRATO-1001.clab.yml.annotations.json` | Local (untracked) | **UPDATED:** Node positions and group heights adjusted |
+| `~/LTRATO-1001.clab.yml` | Server (`198.18.134.90`) | **UPDATED:** Pushed |
+| `~/LTRATO-1001.clab.yml.annotations.json` | Server (`198.18.134.90`) | **UPDATED:** Pushed |
+| `CHANGELOG.md` | GitHub repo | **UPDATED:** Added v0.4.3 section |
