@@ -1201,3 +1201,40 @@ The `node:interface:alias` endpoint syntax used in v0.4.0 is NOT valid Container
 | `~/LTRATO-1001.clab.yml` | Server (`198.18.134.90`) | **UPDATED:** Clean topology pushed |
 | `~/LTRATO-1001.clab.yml.annotations.json` | Server (`198.18.134.90`) | **UPDATED:** Annotations with alias mappings pushed |
 | `CHANGELOG.md` | GitHub repo | **UPDATED:** Added v0.4.1 section |
+
+---
+
+### 0.4.2 — TopoViewer Fix: Use ContainerLab Native Interface Aliases in YAML
+
+**Date:** 2026-03-25
+
+**Summary:**
+Investigation revealed that `aliasEndpointAnnotations` in the annotations JSON is dead code in VS Code extension v0.24.2 — it is parsed but never applied to edge rendering. The TopoViewer reads link labels **directly from the YAML endpoint strings**. The correct fix is to use ContainerLab's native interface alias feature (available since v0.56.0): write the real device interface name directly in the YAML, and ContainerLab transparently maps it to the Linux `ethN` name internally.
+
+**Fix:**
+- Updated all CSR1000v and N9Kv endpoint strings in `LTRATO-1001.clab.yml` to use native interface aliases instead of `ethN` names
+- No redeploy required — TopoViewer reads the YAML file directly
+- No changes to the annotations JSON
+
+**Interface alias mappings applied:**
+
+| Old YAML endpoint | New YAML endpoint | Linux interface |
+|---|---|---|
+| `csr-pe01:eth1` | `csr-pe01:GigabitEthernet2` | `eth1` |
+| `csr-pe01:eth3` | `csr-pe01:GigabitEthernet4` | `eth3` |
+| `csr-pe02:eth1` | `csr-pe02:GigabitEthernet2` | `eth1` |
+| `csr-pe02:eth3` | `csr-pe02:GigabitEthernet4` | `eth3` |
+| `n9k-ce01:eth1` | `n9k-ce01:Ethernet1/1` | `eth1` |
+| `n9k-ce01:eth3` | `n9k-ce01:Ethernet1/3` | `eth3` |
+| `n9k-ce01:eth4` | `n9k-ce01:Ethernet1/4` | `eth4` |
+| `n9k-ce02:eth1` | `n9k-ce02:Ethernet1/1` | `eth1` |
+| `n9k-ce02:eth3` | `n9k-ce02:Ethernet1/3` | `eth3` |
+| `n9k-ce02:eth4` | `n9k-ce02:Ethernet1/4` | `eth4` |
+
+**Files — Version 0.4.2:**
+
+| File | Location | Change |
+|---|---|---|
+| `untracked/LTRATO-1001.clab.yml` | Local (untracked) | **UPDATED:** Endpoints use native interface aliases |
+| `~/LTRATO-1001.clab.yml` | Server (`198.18.134.90`) | **UPDATED:** Native alias YAML pushed |
+| `CHANGELOG.md` | GitHub repo | **UPDATED:** Added v0.4.2 section |
