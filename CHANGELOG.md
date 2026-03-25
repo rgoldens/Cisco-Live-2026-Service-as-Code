@@ -1361,21 +1361,60 @@ All four Nexus→client edge offsets reset to equal value (50).
 **Date:** 2026-03-25
 
 **Summary:**
-The downward-facing interface labels on `xrd01`, `xrd02`, `csr-pe01`, and `csr-pe02` were overlapping the hostname text below each node icon. Added `edgeAnnotations` with offset=55 on the four downward edges so their source-end labels are pushed further along the line, clearing the hostname.
+The downward-facing interface labels on `xrd01`, `xrd02`, `csr-pe01`, and `csr-pe02` were overlapping the hostname text below each node icon. Added `edgeAnnotations` with offset=55 on the four downward edges so their source-end labels are pushed further along the line, clearing the hostname. Offset subsequently tuned to **37** after user feedback that 55 placed labels too far down the edge.
 
 **Edges adjusted:**
 
-| Edge | Offset | Label moved |
+| Edge | Final Offset | Label moved |
 |---|---|---|
-| `xrd01:Gi0-0-0-1` → `csr-pe01:GigabitEthernet2` | 55 | `Gi0-0-0-1` off xrd01 |
-| `xrd02:Gi0-0-0-1` → `csr-pe02:GigabitEthernet2` | 55 | `Gi0-0-0-1` off xrd02 |
-| `csr-pe01:GigabitEthernet4` → `n9k-ce01:Eth1/1` | 55 | `GigabitEthernet4` off csr-pe01 |
-| `csr-pe02:GigabitEthernet4` → `n9k-ce02:Eth1/1` | 55 | `GigabitEthernet4` off csr-pe02 |
+| `xrd01:Gi0-0-0-1` → `csr-pe01:GigabitEthernet2` | 37 | `Gi0-0-0-1` off xrd01 |
+| `xrd02:Gi0-0-0-1` → `csr-pe02:GigabitEthernet2` | 37 | `Gi0-0-0-1` off xrd02 |
+| `csr-pe01:GigabitEthernet4` → `n9k-ce01:Eth1/1` | 37 | `GigabitEthernet4` off csr-pe01 |
+| `csr-pe02:GigabitEthernet4` → `n9k-ce02:Eth1/1` | 37 | `GigabitEthernet4` off csr-pe02 |
 
 **Files — Version 0.4.7:**
 
 | File | Location | Change |
 |---|---|---|
-| `untracked/LTRATO-1001.clab.yml.annotations.json` | Local (untracked) | **UPDATED:** `edgeAnnotations` added for 4 downward edges |
+| `untracked/LTRATO-1001.clab.yml.annotations.json` | Local (untracked) | **UPDATED:** `edgeAnnotations` added for 4 downward edges; offset tuned to 37 |
 | `~/LTRATO-1001.clab.yml.annotations.json` | Server (`198.18.134.90`) | **UPDATED:** Pushed |
 | `CHANGELOG.md` | GitHub repo | **UPDATED:** Added v0.4.7 section |
+
+---
+
+### 0.4.8 — TopoViewer: XRd Interface Labels Cannot Use Slash Notation (Investigation Result)
+
+**Date:** 2026-03-25
+
+**Summary:**
+Investigated whether XRd endpoint names could be changed from `Gi0-0-0-0` / `Gi0-0-0-1` (dashes, as ContainerLab creates them) to `Gi0/0/0/0` / `Gi0/0/0/1` (slashes, as the router CLI shows) for cleaner TopoViewer label display.
+
+**Finding:** Not possible. ContainerLab enforces a hard validation pattern for XRd interfaces:
+
+> *"cisco XRd interface name %q doesn't match the required pattern. XRd interfaces should be named as Gi0-0-0-X where X is the interface number"*
+
+The binary rejects any name that doesn't match `^Gi0-0-0-\d+$`. The ContainerLab XRd docs also explicitly state: *"It is not yet possible to manually assign interface mapping rules in containerlab for XRd nodes."*
+
+Unlike CSR1000v and N9Kv (which support native interface aliases), XRd interface names in the YAML **must** use dashes. The `aliasEndpointAnnotations` mechanism in the annotations JSON is dead code in VS Code extension v0.24.2 and cannot override the display.
+
+**Decision:** XRd interface labels remain as `Gi0-0-0-0` and `Gi0-0-0-1` in TopoViewer. No file changes required.
+
+**Current interface label state (final):**
+
+| Link | Source label | Target label | Status |
+|---|---|---|---|
+| xrd01 ↔ xrd02 (P-to-P) | `Gi0-0-0-0` | `Gi0-0-0-0` | Accepted — ContainerLab limitation |
+| xrd01 → csr-pe01 | `Gi0-0-0-1` | `GigabitEthernet2` | Accepted — ContainerLab limitation |
+| xrd02 → csr-pe02 | `Gi0-0-0-1` | `GigabitEthernet2` | Accepted — ContainerLab limitation |
+| csr-pe01 → n9k-ce01 | `GigabitEthernet4` | `Eth1/1` | Correct |
+| csr-pe02 → n9k-ce02 | `GigabitEthernet4` | `Eth1/1` | Correct |
+| n9k-ce01 → linux-client1 | `Eth1/3` | `eth1` | Correct |
+| n9k-ce01 → linux-client2 | `Eth1/4` | `eth1` | Correct |
+| n9k-ce02 → linux-client3 | `Eth1/3` | `eth1` | Correct |
+| n9k-ce02 → linux-client4 | `Eth1/4` | `eth1` | Correct |
+
+**Files — Version 0.4.8:**
+
+| File | Location | Change |
+|---|---|---|
+| `CHANGELOG.md` | GitHub repo | **UPDATED:** Added v0.4.8 investigation result |
