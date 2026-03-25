@@ -1127,3 +1127,38 @@ Replaced the stale TopoViewer annotations file on the server with a fully correc
 | `untracked/LTRATO-1001.clab.yml.annotations.json` | Local (untracked) | **NEW:** Corrected annotations with layout, icons, and groups |
 | `~/LTRATO-1001.clab.yml.annotations.json` | Server (`198.18.134.90`) | **UPDATED:** Replaced stale file with corrected version |
 | `CHANGELOG.md` | GitHub repo | **UPDATED:** Added v0.3.9 section |
+
+---
+
+### 0.4.0 — TopoViewer Interface Aliases (Show Real Device Interface Names)
+
+**Date:** 2026-03-25
+
+**Summary:**
+Updated all topology link endpoints with ContainerLab `alias` labels so that TopoViewer displays the actual device interface names a student would see on the CLI, rather than the container-internal `ethN` names.
+
+**Interface mapping discovered:**
+
+| Node type | Container iface | Device iface |
+|---|---|---|
+| CSR1000v (vrnetlab) | `eth1` | `GigabitEthernet2` |
+| CSR1000v (vrnetlab) | `eth3` | `GigabitEthernet4` |
+| N9K (vrnetlab) | `eth1` | `Ethernet1/1` |
+| N9K (vrnetlab) | `eth3` | `Ethernet1/3` |
+| N9K (vrnetlab) | `eth4` | `Ethernet1/4` |
+| XRd | `Gi0-0-0-0` | `GigabitEthernet0/0/0/0` (native name; ContainerLab uses dashes) |
+| Linux | `eth1` | `eth1` (no alias needed) |
+
+**Syntax used:** `node:container-interface:alias` in the `endpoints` list (ContainerLab 0.74.3+).
+
+**Also updated:** `interfacePattern` in `LTRATO-1001.clab.yml.annotations.json` for CSR nodes changed from `Gi{n}` to `GigabitEthernet{n}`.
+
+**Files — Version 0.4.0:**
+
+| File | Location | Change |
+|---|---|---|
+| `untracked/LTRATO-1001.clab.yml` | Local (untracked) | **UPDATED:** All links rewritten with interface aliases |
+| `untracked/LTRATO-1001.clab.yml.annotations.json` | Local (untracked) | **UPDATED:** CSR `interfacePattern` corrected |
+| `~/LTRATO-1001.clab.yml` | Server (`198.18.134.90`) | **UPDATED:** Pushed alias-annotated topology |
+| `~/LTRATO-1001.clab.yml.annotations.json` | Server (`198.18.134.90`) | **UPDATED:** Pushed corrected annotations |
+| `CHANGELOG.md` | GitHub repo | **UPDATED:** Added v0.4.0 section |
