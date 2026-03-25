@@ -1298,3 +1298,31 @@ Node position changes (v0.4.3) are only applied on a fresh deploy — the runnin
 | `untracked/LTRATO-1001.clab.yml.annotations.json` | Local (untracked) | **UPDATED:** `edgeAnnotations` added with per-edge offsets |
 | `~/LTRATO-1001.clab.yml.annotations.json` | Server (`198.18.134.90`) | **UPDATED:** Pushed |
 | `CHANGELOG.md` | GitHub repo | **UPDATED:** Added v0.4.4 section |
+
+---
+
+### 0.4.5 — TopoViewer: Symmetric Client Positions for Level Interface Labels
+
+**Date:** 2026-03-25
+
+**Summary:**
+The `endpointLabelOffset` approach moves labels along the edge direction, so on asymmetric diagonal edges the labels land at different Y positions regardless of offset value. The correct fix is to make the two edges from each Nexus node geometrically symmetric by positioning the two client nodes equidistant (±70px) on either side of their parent Nexus node horizontally. With symmetric angles, equal offsets produce labels at the same Y level.
+
+**Position changes in annotations JSON:**
+
+| Node | Old x | New x | Notes |
+|---|---|---|---|
+| `linux-client1` | 60 | 85 | Symmetric around n9k-ce01 (x=155) |
+| `linux-client2` | 280 | 225 | Symmetric around n9k-ce01 (x=155) |
+| `linux-client3` | 430 | 455 | Symmetric around n9k-ce02 (x=525) |
+| `linux-client4` | 620 | 595 | Symmetric around n9k-ce02 (x=525) |
+
+All four Nexus→client edge offsets reset to equal value (50).
+
+**Files — Version 0.4.5:**
+
+| File | Location | Change |
+|---|---|---|
+| `untracked/LTRATO-1001.clab.yml.annotations.json` | Local (untracked) | **UPDATED:** Client positions symmetrized; edge offsets equalized |
+| `~/LTRATO-1001.clab.yml.annotations.json` | Server (`198.18.134.90`) | **UPDATED:** Pushed |
+| `CHANGELOG.md` | GitHub repo | **UPDATED:** Added v0.4.5 section |
