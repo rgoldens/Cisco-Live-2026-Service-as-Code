@@ -1516,3 +1516,73 @@ All interfaces confirmed up/up with correct IP addresses:
 | `~/LTRATO-1001.clab.yml` | Server (`198.18.134.90`) | **UPDATED:** N9K endpoints `Eth1/x` → `Ethernet1/x` |
 | `~/LTRATO-1001.clab.yml.annotations.json` | Server (`198.18.134.90`) | **UPDATED:** Edge keys and alias annotations updated to `Ethernet1/x` |
 | `CHANGELOG.md` | GitHub repo | **UPDATED:** Added v0.4.9 section |
+
+---
+
+### 0.4.10 — All 5 P2P Links Verified: ICMP Reachability 100%
+
+**Date:** 2026-03-25
+
+**Summary:**
+All 5 point-to-point links in the LTRATO-1001 lab are now fully operational — bidirectional ICMP reachability confirmed at 100% across every link. Root cause was a missing QEMU socket bridge in vrnetlab-based containers (CSR1000v and N9Kv): the ContainerLab TC/tuntap data-plane setup was never applied, leaving each container's `ethN` veth disconnected from the QEMU VM's virtual NIC.
+
+---
+
+#### Root Cause
+
+ContainerLab 0.74.3 is supposed to establish a tuntap+TC ingress redirect bridge between container veth interfaces and QEMU's `-netdev socket,listen=:PORT` ports. This setup was not applied for any vrnetlab node in this lab. As a result:
+
+- `eth1` (GigabitEthernet2 / Ethernet1/1) and `eth3` (GigabitEthernet4) in each container were up at L2 but had no path to the QEMU VM
+- The old `socat INTERFACE:eth1 TCP:127.0.0.1:10001` approach connected at TCP level but did not forward frames — QEMU's socket mode requires a 4-byte big-endian length header before each raw Ethernet frame; plain socat does not add this framing
+
+---
+
+#### Fix: Python QEMU Socket Bridge
+
+A Python 3 bridge script (`/tmp/qemu-bridge.py`) was written and deployed into each vrnetlab container. The script:
+
+1. Opens a raw `AF_PACKET` socket bound to the target interface (`eth1` or `eth3`)
+2. Connects to QEMU's TCP socket port (`127.0.0.1:10001` or `10003`)
+3. Bidirectionally forwards frames:
+   - **eth → QEMU:** prepend 4-byte big-endian frame length before sending
+   - **QEMU → eth:** strip 4-byte length header, inject raw frame into interface
+4. Runs in two threads (one per direction); handles SIGTERM/SIGINT gracefully
+
+**Deployment per container:**
+
+| Container | Bridge instances |
+|---|---|
+| `csr-pe01` | `eth1 → 10001` (GigabitEthernet2), `eth3 → 10003` (GigabitEthernet4) |
+| `csr-pe02` | `eth1 → 10001` (GigabitEthernet2), `eth3 → 10003` (GigabitEthernet4) |
+| `n9k-ce01` | `eth1 → 10001` (Ethernet1/1) |
+| `n9k-ce02` | `eth1 → 10001` (Ethernet1/1) |
+
+Stale `socat` processes that had previously connected to QEMU ports were killed before starting the Python bridges (socat held the QEMU connection but could not forward frames due to missing framing).
+
+---
+
+#### Ping Verification Results
+
+Verified via `ansible-playbook -i ~/inventory.yml ~/ping-check.yml` (bidirectional, each node pings its P2P neighbors):
+
+| Link | Direction | Result |
+|---|---|---|
+| xrd01 ↔ xrd02 (`10.0.0.0/30`) | xrd01 → xrd02 | 100% (3/3) |
+| xrd01 ↔ xrd02 (`10.0.0.0/30`) | xrd02 → xrd01 | 100% (3/3) |
+| xrd01 → csr-pe01 (`10.1.0.4/30`) | xrd01 → 10.1.0.6 | 100% (3/3) |
+| xrd01 → csr-pe01 (`10.1.0.4/30`) | csr-pe01 → 10.1.0.5 | 100% (3/3) |
+| xrd02 → csr-pe02 (`10.1.0.8/30`) | xrd02 → 10.1.0.10 | 100% (3/3) |
+| xrd02 → csr-pe02 (`10.1.0.8/30`) | csr-pe02 → 10.1.0.9 | 100% (3/3) |
+| csr-pe01 → n9k-ce01 (`10.2.0.0/30`) | csr-pe01 → 10.2.0.2 | 100% (3/3) |
+| csr-pe01 → n9k-ce01 (`10.2.0.0/30`) | n9k-ce01 → 10.2.0.1 | 100% (3/3) |
+| csr-pe02 → n9k-ce02 (`10.2.0.4/30`) | csr-pe02 → 10.2.0.6 | 100% (3/3) |
+| csr-pe02 → n9k-ce02 (`10.2.0.4/30`) | n9k-ce02 → 10.2.0.5 | 100% (3/3) |
+
+---
+
+**Files — Version 0.4.10:**
+
+| File | Location | Change |
+|---|---|---|
+| `/tmp/qemu-bridge.py` | Server (`198.18.134.90`) | **NEW:** Python QEMU socket bridge script |
+| `CHANGELOG.md` | GitHub repo | **UPDATED:** Added v0.4.10 section |
