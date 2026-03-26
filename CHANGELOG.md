@@ -1589,6 +1589,109 @@ Verified via `ansible-playbook -i ~/inventory.yml ~/ping-check.yml` (bidirection
 
 ---
 
+## Version 0.4.13
+
+**Date:** 2026-03-26
+
+### Summary
+
+Resolved persistent `No existing session` failures in the CSR Ansible post-deploy
+pipeline by identifying and fixing two root-cause bugs in the systemd service
+environment. Refactored post-deploy into two separate services to decouple fast
+tasks (N9K hostnames, QEMU bridges) from the slow CSR IP configuration, eliminating
+the 60-minute service timeout race. Full end-to-end simulated reboot test passed
+with zero manual intervention.
+
+---
+
+### 0.4.13 — Root Cause: systemd WorkingDirectory defaults to `/`
+
+When a systemd service runs a script that invokes `ansible-playbook`, Ansible
+searches for `ansible.cfg` starting from the **current working directory**. When no
+`WorkingDirectory=` is set in the unit file, systemd defaults to `/`. This means
+Ansible never finds `/home/cisco/ansible.cfg`, falls back to built-in defaults, and
+runs with `host_key_checking=True` and no `host_key_auto_add`. The resulting host-key
+verification failure manifests as the paramiko error `No existing session`.
+
+**Fix:** Add `WorkingDirectory=/home/cisco` to both service unit files so Ansible
+always finds the project `ansible.cfg`.
+
+This was the root cause of all `No existing session` failures observed across
+multiple sessions and ~117 retry attempts.
+
+---
+
+### 0.4.13 — Root Cause: systemd sets `HOME=/root` regardless of `export HOME=...` in script
+
+A secondary bug: when a systemd service runs with `User=root`, systemd injects
+`HOME=/root` into the process environment at the OS level (`/proc/<pid>/environ`).
+An `export HOME=/home/cisco` inside the shell script does **not** override the
+process-level environment seen by child processes like Ansible/paramiko, which
+read SSH config paths relative to `HOME`.
+
+**Fix:** Add `Environment=HOME=/home/cisco` to the `[Service]` section of both
+unit files. This sets HOME at the systemd process level before the script is invoked.
+
+---
+
+### 0.4.13 — New Architecture: Split post-deploy into two services
+
+The previous single `containerlab-post-deploy.service` had to accommodate both
+fast tasks (N9K hostnames, QEMU bridges — ~5 min) and slow tasks (CSR IPs — 42–60+
+min from container cold start). This required a 3600-second timeout ceiling that
+was still not reliable.
+
+**New design: two services chained by `Requires=`/`After=`:**
+
+| Service | Tasks | Timeout |
+|---|---|---|
+| `containerlab-post-deploy.service` | Fix authorized_keys, copy keys to Linux containers, set N9K hostnames (Ansible), start QEMU bridges | `TimeoutStartSec=600` (10 min) |
+| `containerlab-csr-ip.service` | Apply CSR and N9K IP addresses via Ansible | `TimeoutStartSec=infinity` (no ceiling) |
+
+`containerlab-csr-ip.service` sets `Type=simple` with `Restart=on-failure` and runs
+`/home/cisco/csr-ip-retry.sh`, which loops **indefinitely** every 30 seconds until
+both `n9k-ip-config.yml` and `csr-ip-config.yml` report `failed=0`.
+
+---
+
+### 0.4.13 — New script: `csr-ip-retry.sh`
+
+New script `/home/cisco/csr-ip-retry.sh` replaces the CSR retry block inside
+`post-deploy.sh`. Key differences:
+
+- **Infinite loop** — no attempt ceiling. Loops every 30s until Ansible reports success.
+- Runs `n9k-ip-config.yml` first (completes quickly once N9K is up), then `csr-ip-config.yml`.
+- Exits `0` when both playbooks succeed, causing `containerlab-csr-ip.service` to
+  transition to `inactive (dead)` with `status=0/SUCCESS`.
+
+---
+
+### 0.4.13 — Simulated Reboot Test Results
+
+Full simulated reboot test (stop all 3 services → restart in order) passed:
+
+| Service | Result | Duration |
+|---|---|---|
+| `containerlab-labs.service` | `active (exited)` — lab deployed | ~2 min |
+| `containerlab-post-deploy.service` | `active (exited)` — N9K hostnames + QEMU bridges | ~6 min (N9K boot ~4–5 min) |
+| `containerlab-csr-ip.service` | `inactive (dead)` `status=0/SUCCESS` — all IPs applied | attempt 1 succeeded (CSR already warm) |
+
+Connectivity verified via `ping-check.yml`: all 6 nodes, 0 failures.
+
+---
+
+**Files — Version 0.4.13:**
+
+| File | Location | Change |
+|---|---|---|
+| `/home/cisco/post-deploy.sh` | Server (`198.18.134.90`) | **UPDATED:** Removed CSR IP config block; now handles steps 1–4 only |
+| `/home/cisco/csr-ip-retry.sh` | Server (`198.18.134.90`) | **NEW:** Infinite-retry loop for CSR + N9K IP config |
+| `/etc/systemd/system/containerlab-post-deploy.service` | Server (`198.18.134.90`) | **UPDATED:** `TimeoutStartSec=600`, `WorkingDirectory=/home/cisco`, `Environment=HOME=/home/cisco` |
+| `/etc/systemd/system/containerlab-csr-ip.service` | Server (`198.18.134.90`) | **NEW:** `TimeoutStartSec=infinity`, `WorkingDirectory=/home/cisco`, `Environment=HOME=/home/cisco`, `Restart=on-failure` |
+| `CHANGELOG.md` | GitHub repo | **UPDATED:** Added v0.4.13 section |
+
+---
+
 ## Version 0.4.12
 
 **Date:** 2026-03-26
