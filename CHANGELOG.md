@@ -1589,6 +1589,76 @@ Verified via `ansible-playbook -i ~/inventory.yml ~/ping-check.yml` (bidirection
 
 ---
 
+## Version 0.4.12
+
+**Date:** 2026-03-26
+
+### Summary
+
+Replaced Docker health check waits with `run_playbook_with_retry` logic in
+`post-deploy.sh`. Increased CSR retry count to 90 attempts (45 min) and raised
+`TimeoutStartSec` to 3600 (60 min) in the systemd service file, based on observed
+CSR boot time of ~42 minutes from container start.
+
+---
+
+### 0.4.12 — CSR Boot Time Discovery
+
+A simulated reboot test (destroy + redeploy) revealed that `vrnetlab/vr-csr:16.12.05`
+containers take **~42 minutes** from container cold start before their VTY/SSH stacks
+accept Ansible `network_cli`/paramiko sessions. TCP port 22 opens much earlier (~2 min)
+but IOS XE immediately closes connections with `No existing session` until its full
+initialization is complete.
+
+Timeline observed during this test:
+- `04:31:34` — CSR containers started by `containerlab-labs.service`
+- `04:31:46` — `containerlab-post-deploy.service` started
+- `04:36`–`05:11` — CSR retries every 30s, all fail with `No existing session`
+- `05:11:46` — service killed by systemd timeout (`TimeoutStartSec=2400`)
+- `05:13` — CSR SSH accessible manually (42 min after container start)
+
+Contrast: **N9K** (`vrnetlab/vr-n9kv:10.5.4.M`) was accessible within ~3–4 minutes
+and `set_hostnames.yml` succeeded on attempt 3 in this run.
+
+---
+
+### 0.4.12 — post-deploy.sh: Retry Logic for CSR
+
+**Previous behaviour:** `run_playbook_with_retry` defaulted to 20 attempts (10 min).
+For CSR, which can take 42+ minutes, this was far too few.
+
+**Fix:** Pass explicit attempt count to `run_playbook_with_retry` for CSR:
+```bash
+run_playbook_with_retry "csr-ip-config.yml" /home/cisco/csr-ip-config.yml 90
+```
+90 × 30s = 45 minutes of retries — covers the observed 42-minute worst case with
+headroom. N9K retry count left at the default 20 (N9K boots in ~4 min).
+
+---
+
+### 0.4.12 — systemd service: TimeoutStartSec increased to 3600
+
+The service file `/etc/systemd/system/containerlab-post-deploy.service` was updated:
+
+| Setting | Old value | New value |
+|---|---|---|
+| `TimeoutStartSec` | `1800` (30 min) | `3600` (60 min) |
+
+This gives the service enough runway to wait out even a 42+ minute CSR boot plus
+N9K startup time and Ansible execution overhead.
+
+---
+
+**Files — Version 0.4.12:**
+
+| File | Location | Change |
+|---|---|---|
+| `/home/cisco/post-deploy.sh` | Server (`198.18.134.90`) | **UPDATED:** CSR retry count raised to 90 |
+| `/etc/systemd/system/containerlab-post-deploy.service` | Server (`198.18.134.90`) | **UPDATED:** `TimeoutStartSec=3600` |
+| `CHANGELOG.md` | GitHub repo | **UPDATED:** Added v0.4.12 section |
+
+---
+
 ## Version 0.4.11
 
 **Date:** 2026-03-26
