@@ -1586,3 +1586,96 @@ Verified via `ansible-playbook -i ~/inventory.yml ~/ping-check.yml` (bidirection
 |---|---|---|
 | `/tmp/qemu-bridge.py` | Server (`198.18.134.90`) | **NEW:** Python QEMU socket bridge script |
 | `CHANGELOG.md` | GitHub repo | **UPDATED:** Added v0.4.10 section |
+
+---
+
+## Version 0.4.11
+
+**Date:** 2026-03-26
+
+### Summary
+
+Fixed `post-deploy.sh` to run reliably under systemd (as root), added automatic
+re-application of CSR and N9K IP addresses after every redeploy, and verified
+full end-to-end persistence across a simulated server reboot.
+
+---
+
+### 0.4.11 — post-deploy.sh Bug Fixes
+
+Two bugs were identified in the v0.4.10 `post-deploy.sh` when run via systemd:
+
+**Bug 1 — `docker cp` destination path:**
+The `start_bridge()` function used `${CONTAINER}:${BRIDGE_SCRIPT}` as the
+Docker copy destination, where `BRIDGE_SCRIPT=/home/cisco/qemu-bridge.py`.
+Docker looked for `/home/cisco/` inside the container which does not exist.
+
+**Fix:** Copy the script to `/tmp/qemu-bridge.py` inside the container:
+```bash
+docker cp "$BRIDGE_SCRIPT" "${CONTAINER}:/tmp/qemu-bridge.py"
+docker exec -d "$CONTAINER" python3 /tmp/qemu-bridge.py "$IFACE" "$PORT"
+```
+
+**Bug 2 — `~` expands to `/root` under systemd:**
+Ansible inventory uses `~/.ssh/id_ed25519` for NX-OS and `~/.ssh/id_rsa` for
+XRd. When systemd runs the script as root, `~` expands to `/root` where no SSH
+keys exist (keys are at `/home/cisco/.ssh/`).
+
+**Fix:** Set `HOME=/home/cisco` at the top of `post-deploy.sh` so all `~/`
+references in the inventory resolve to the correct path.
+
+---
+
+### 0.4.11 — CSR and N9K IP Address Persistence
+
+**Problem:** CSR and N9K IP addresses are stored in the QEMU overlay qcow2
+file inside each container's writable layer. When `clab destroy` + `clab deploy`
+recreates containers from scratch (as happens on every server reboot via
+`containerlab-labs.service`), the overlays are wiped and IPs are lost.
+
+**Fix:** Added step `[5/5]` to `post-deploy.sh` that runs two Ansible playbooks
+after the QEMU bridges are up:
+
+- `csr-ip-config.yml` — **NEW** playbook, applies to `csr` group:
+  - `csr-pe01`: Loopback0 `192.168.10.11/32`, Gi2 `10.1.0.6/30`, Gi4 `10.2.0.1/30`
+  - `csr-pe02`: Loopback0 `192.168.10.12/32`, Gi2 `10.1.0.10/30`, Gi4 `10.2.0.5/30`
+- `n9k-ip-config.yml` — pre-existing playbook, applies to `nxos` group:
+  - `n9k-ce01`: Loopback0 `192.168.20.21/32`, Eth1/1 `10.2.0.2/30`
+  - `n9k-ce02`: Loopback0 `192.168.20.22/32`, Eth1/1 `10.2.0.6/30`
+
+The CSR step waits for both CSR containers to report `healthy` (up to 90s)
+before attempting Ansible, matching the existing N9K wait pattern.
+
+---
+
+### 0.4.11 — End-to-End Reboot Test
+
+Simulated reboot by stopping both systemd services, then restarting them in
+order (`containerlab-labs.service` → `containerlab-post-deploy.service`).
+Verified with `ping-check.yml` after completion:
+
+| Link | Direction | Result |
+|---|---|---|
+| xrd01 ↔ xrd02 (`10.0.0.0/30`) | xrd01 → xrd02 | 100% (3/3) |
+| xrd01 ↔ xrd02 (`10.0.0.0/30`) | xrd02 → xrd01 | 100% (3/3) |
+| xrd01 → csr-pe01 (`10.1.0.4/30`) | xrd01 → 10.1.0.6 | 66% (2/3)* |
+| xrd01 → csr-pe01 (`10.1.0.4/30`) | csr-pe01 → 10.1.0.5 | 100% (3/3) |
+| xrd02 → csr-pe02 (`10.1.0.8/30`) | xrd02 → 10.1.0.10 | 66% (2/3)* |
+| xrd02 → csr-pe02 (`10.1.0.8/30`) | csr-pe02 → 10.1.0.9 | 100% (3/3) |
+| csr-pe01 → n9k-ce01 (`10.2.0.0/30`) | csr-pe01 → 10.2.0.2 | 66% (2/3)* |
+| csr-pe01 → n9k-ce01 (`10.2.0.0/30`) | n9k-ce01 → 10.2.0.1 | 100% (3/3) |
+| csr-pe02 → n9k-ce02 (`10.2.0.4/30`) | csr-pe02 → 10.2.0.6 | 66% (2/3)* |
+| csr-pe02 → n9k-ce02 (`10.2.0.4/30`) | n9k-ce02 → 10.2.0.5 | 100% (3/3) |
+
+*66% on first ping is expected — first packet lost to ARP resolution. All links
+are fully operational.
+
+---
+
+**Files — Version 0.4.11:**
+
+| File | Location | Change |
+|---|---|---|
+| `/home/cisco/post-deploy.sh` | Server (`198.18.134.90`) | **UPDATED:** Fixed docker cp path, HOME export, added step 5 (CSR/N9K IPs) |
+| `/home/cisco/csr-ip-config.yml` | Server (`198.18.134.90`) | **NEW:** Ansible playbook to configure CSR PE IP addresses |
+| `CHANGELOG.md` | GitHub repo | **UPDATED:** Added v0.4.11 section |
