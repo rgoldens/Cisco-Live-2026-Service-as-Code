@@ -1418,3 +1418,101 @@ Unlike CSR1000v and N9Kv (which support native interface aliases), XRd interface
 | File | Location | Change |
 |---|---|---|
 | `CHANGELOG.md` | GitHub repo | **UPDATED:** Added v0.4.8 investigation result |
+
+---
+
+### 0.4.9 — IP Addressing Configured on All Nodes; N9K Alias Regression Fixed; Full Lab Redeployed
+
+**Date:** 2026-03-25
+
+**Summary:**
+Configured IP addresses on all 6 network nodes (xrd01, xrd02, csr-pe01, csr-pe02, n9k-ce01, n9k-ce02) per the IP address plan. Fixed a ContainerLab 0.74.3 regression that rejected abbreviated N9K interface names. Redeployed the full 10-node lab. Verified all IPs after boot.
+
+---
+
+#### IP Address Plan Applied
+
+**Loopbacks:**
+
+| Node | Interface | Address |
+|---|---|---|
+| xrd01 | Loopback0 | `192.168.0.1/32` |
+| xrd02 | Loopback0 | `192.168.0.2/32` |
+| csr-pe01 | Loopback0 | `192.168.10.11/32` |
+| csr-pe02 | Loopback0 | `192.168.10.12/32` |
+| n9k-ce01 | Loopback0 | `192.168.20.21/32` |
+| n9k-ce02 | Loopback0 | `192.168.20.22/32` |
+
+**Point-to-Point Links:**
+
+| Link | Node | Interface | Address |
+|---|---|---|---|
+| xrd01 ↔ xrd02 | xrd01 | `Gi0/0/0/0` | `10.0.0.1/30` |
+| xrd01 ↔ xrd02 | xrd02 | `Gi0/0/0/0` | `10.0.0.2/30` |
+| xrd01 → csr-pe01 | xrd01 | `Gi0/0/0/1` | `10.1.0.5/30` |
+| xrd01 → csr-pe01 | csr-pe01 | `GigabitEthernet2` | `10.1.0.6/30` |
+| xrd02 → csr-pe02 | xrd02 | `Gi0/0/0/1` | `10.1.0.9/30` |
+| xrd02 → csr-pe02 | csr-pe02 | `GigabitEthernet2` | `10.1.0.10/30` |
+| csr-pe01 → n9k-ce01 | csr-pe01 | `GigabitEthernet4` | `10.2.0.1/30` |
+| csr-pe01 → n9k-ce01 | n9k-ce01 | `Ethernet1/1` | `10.2.0.2/30` |
+| csr-pe02 → n9k-ce02 | csr-pe02 | `GigabitEthernet4` | `10.2.0.5/30` |
+| csr-pe02 → n9k-ce02 | n9k-ce02 | `Ethernet1/1` | `10.2.0.6/30` |
+
+---
+
+#### Persistence Strategy per Node Type
+
+- **XRd:** Config written into `xrd01-startup.cfg` / `xrd02-startup.cfg` on server `~/`. ContainerLab loads these as `first-boot.cfg` on every deploy. Persists across destroy/redeploy.
+- **CSR1000v:** `startup-config` not applicable for vrnetlab nodes. Persistence via `copy running-config startup-config` inside the VM, which writes to the Docker named volume (NVRAM emulation). Config survives container restart but **is lost if the Docker volume is deleted** (e.g., `containerlab destroy --cleanup` or manual `docker volume rm`). Needs re-application after full cleanup redeploy.
+- **N9Kv:** Same vrnetlab constraint as CSR. Config applied via `cisco.nxos.nxos_config` Ansible module with `save_when: always`. Same persistence and loss conditions apply.
+
+---
+
+#### N9K Interface Alias Regression Fix
+
+**Problem:** ContainerLab 0.74.3 introduced stricter interface name validation for N9K (vrnetlab) nodes. The abbreviated endpoint names (`Eth1/1`, `Eth1/3`, `Eth1/4`) used since v0.4.6 were accepted at deploy time but caused `destroy` to fail with:
+
+```
+"Eth1/1" does not match regexp "(?:Ethernet|Et)\s?1/(?P<port>\d+)"
+```
+
+**Fix:** All N9K endpoint names in `LTRATO-1001.clab.yml` reverted from `Eth1/x` to `Ethernet1/x` (full form). Corresponding edge keys and alias annotations in `LTRATO-1001.clab.yml.annotations.json` updated to match.
+
+**Note:** TopoViewer interface labels for N9K now display as `Ethernet1/1`, `Ethernet1/3`, `Ethernet1/4` (longer than previous `Eth1/x`). Functional correctness takes priority over label brevity.
+
+---
+
+#### Verification Results (post-redeploy)
+
+All interfaces confirmed up/up with correct IP addresses:
+
+| Node | Interface | Expected IP | Status |
+|---|---|---|---|
+| xrd01 | Loopback0 | `192.168.0.1` | Up/Up |
+| xrd01 | Gi0/0/0/0 | `10.0.0.1` | Up/Up |
+| xrd01 | Gi0/0/0/1 | `10.1.0.5` | Up/Up |
+| xrd02 | Loopback0 | `192.168.0.2` | Up/Up |
+| xrd02 | Gi0/0/0/0 | `10.0.0.2` | Up/Up |
+| xrd02 | Gi0/0/0/1 | `10.1.0.9` | Up/Up |
+| csr-pe01 | Loopback0 | `192.168.10.11` | Up/Up |
+| csr-pe01 | GigabitEthernet2 | `10.1.0.6` | Up/Up |
+| csr-pe01 | GigabitEthernet4 | `10.2.0.1` | Up/Up |
+| csr-pe02 | Loopback0 | `192.168.10.12` | Up/Up |
+| csr-pe02 | GigabitEthernet2 | `10.1.0.10` | Up/Up |
+| csr-pe02 | GigabitEthernet4 | `10.2.0.5` | Up/Up |
+| n9k-ce01 | Loopback0 | `192.168.20.21` | Up/Up |
+| n9k-ce01 | Ethernet1/1 | `10.2.0.2` | Up/Up |
+| n9k-ce02 | Loopback0 | `192.168.20.22` | Up/Up |
+| n9k-ce02 | Ethernet1/1 | `10.2.0.6` | Up/Up |
+
+---
+
+**Files — Version 0.4.9:**
+
+| File | Location | Change |
+|---|---|---|
+| `xrd01-startup.cfg` | Server (`198.18.134.90`) | **UPDATED:** Added Loopback0, Gi0/0/0/0, Gi0/0/0/1 IP config |
+| `xrd02-startup.cfg` | Server (`198.18.134.90`) | **UPDATED:** Added Loopback0, Gi0/0/0/0, Gi0/0/0/1 IP config |
+| `~/LTRATO-1001.clab.yml` | Server (`198.18.134.90`) | **UPDATED:** N9K endpoints `Eth1/x` → `Ethernet1/x` |
+| `~/LTRATO-1001.clab.yml.annotations.json` | Server (`198.18.134.90`) | **UPDATED:** Edge keys and alias annotations updated to `Ethernet1/x` |
+| `CHANGELOG.md` | GitHub repo | **UPDATED:** Added v0.4.9 section |
