@@ -2083,3 +2083,31 @@ started and are alive via `/proc` scan.
 |---|---|---|
 | `/home/cisco/post-deploy.sh` | Server (`198.18.134.90`) | **UPDATED:** N9K now starts eth1+eth3+eth4 bridges (was eth1 only) |
 | `CHANGELOG.md` | GitHub repo | **UPDATED:** Added v0.4.17 section |
+
+---
+
+### 0.4.18 — `feature interface-vlan` Made Persistent on Both N9Ks
+
+**Date:** 2026-03-27
+**File:** `/home/cisco/set_hostnames.yml` (server `198.18.134.90`)
+
+`feature interface-vlan` is required on NX-OS before students can create SVIs.
+Previously students had to enable it manually before applying their lab config.
+
+**Change:** Added a second task to `set_hostnames.yml` that enables
+`feature interface-vlan` on both N9K CE nodes after every deploy. This playbook
+is called by `post-deploy.sh` step 3 on every boot, so the feature is always
+pre-enabled when students log in.
+
+Students now only need to configure:
+- `vlan <id>` + SVI (`interface Vlan<id>` / `ip address`) 
+- Access ports (`interface Ethernet1/3`, `Ethernet1/4`)
+
+**Verified:** Playbook runs idempotently (`ok=2 changed=0` on second run).
+
+**Files — Version 0.4.18:**
+
+| File | Location | Change |
+|---|---|---|
+| `/home/cisco/set_hostnames.yml` | Server (`198.18.134.90`) | **UPDATED:** Added task to enable `feature interface-vlan` on both N9Ks |
+| `CHANGELOG.md` | GitHub repo | **UPDATED:** Added v0.4.18 section |
