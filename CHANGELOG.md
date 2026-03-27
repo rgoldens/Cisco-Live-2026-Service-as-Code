@@ -1589,6 +1589,102 @@ Verified via `ansible-playbook -i ~/inventory.yml ~/ping-check.yml` (bidirection
 
 ---
 
+## Version 0.4.15
+
+**Date:** 2026-03-27
+
+### Summary
+
+Fixed QEMU bridge reliability for vrnetlab CSR and N9K nodes. The root cause was
+that `qemu-bridge.py` (v1) exited permanently when QEMU's TCP socket dropped during
+IOS XE bootstrap — which occurs because vrnetlab's `launch.py` restarts the QEMU
+process when bootstrap times out. Additionally, QEMU's `-netdev socket,listen=:PORT`
+only accepts one TCP connection per process lifetime, so any probe connection
+consumed the only allowed connection, causing the bridge to fail silently.
+
+The bridge script was rewritten (v2) to use `ss -tlnp` for port readiness detection
+(no probe connection) and an outer reconnect loop that waits for the port to reappear
+in LISTEN state after each QEMU restart. The `post-deploy.sh` kill/liveness logic
+was also updated to use host-level `/proc/*/cgroup` scanning instead of `docker exec
+ps`, which cannot see processes started via `docker exec -d`.
+
+---
+
+### 0.4.15 — Root Cause: QEMU TCP Socket Drops on vrnetlab Bootstrap Restart
+
+vrnetlab's `launch.py` restarts the QEMU process during IOS XE bootstrap when:
+- SSH is up but console is silent after `spins > 3000`
+- A KVM error is encountered
+
+When QEMU restarts, all TCP socket ports (10001, 10003, etc.) are closed and
+re-opened. The v1 bridge received a `ConnectionError("QEMU socket closed")` on
+the dead socket and exited permanently with no retry.
+
+Additionally, QEMU's `-netdev socket,listen=:PORT` only calls `accept()` once per
+QEMU process lifetime — a probe/test connection to check readiness consumes the
+one allowed connection. The old `wait_for_qemu_port()` function used
+`socket.create_connection()` as a readiness probe, which silently consumed the
+connection before the bridge could connect.
+
+---
+
+### 0.4.15 — Fix: qemu-bridge.py v2 (Reconnect Loop + ss-Based Port Wait)
+
+**File:** `/home/cisco/qemu-bridge.py` (server `198.18.134.90`)
+
+Key changes from v1:
+- **Port readiness check:** Uses `ss -tlnp | grep :PORT` (checks LISTEN state)
+  instead of `socket.create_connection()` — does not consume QEMU's one accept()
+- **Outer reconnect loop:** When the QEMU socket closes, the bridge waits for the
+  port to reappear in LISTEN state, then reconnects — survives unlimited QEMU restarts
+- **Raw AF_PACKET socket:** Kept open across reconnects; only the TCP connection
+  to QEMU is re-established
+- **Exit condition:** Only exits on SIGTERM/SIGINT — never exits due to QEMU restart
+
+---
+
+### 0.4.15 — Fix: post-deploy.sh — Host-Level Bridge Kill and Liveness Check
+
+**File:** `/home/cisco/post-deploy.sh` (server `198.18.134.90`)
+
+The `kill_container_bridges()` function now scans `/proc/*/cgroup` on the host to
+find bridge PIDs belonging to a container, rather than using `docker exec ps`.
+`docker exec ps` cannot see processes started via `docker exec -d` (different PID
+namespace entry point).
+
+The `start_bridge()` liveness check uses the same host-level `/proc/*/cgroup` scan,
+matching both the container ID and the interface name in the process cmdline.
+
+---
+
+### 0.4.15 — Verified Behavior
+
+All 6 post-deploy bridges confirmed alive after redeploy:
+
+| Container | Interface | QEMU Port | Status |
+|---|---|---|---|
+| `csr-pe01` | eth1 | 10001 | alive (reconnect loop active during bootstrap) |
+| `csr-pe01` | eth3 | 10003 | ESTAB |
+| `csr-pe02` | eth1 | 10001 | alive (reconnect loop active during bootstrap) |
+| `csr-pe02` | eth3 | 10003 | ESTAB |
+| `n9k-ce01` | eth1 | 10001 | ESTAB |
+| `n9k-ce02` | eth1 | 10001 | ESTAB |
+
+CSR eth1 bridges remain in reconnect loop during IOS XE bootstrap (expected — QEMU
+restarts multiple times). They establish connection once IOS XE fully boots.
+
+---
+
+**Files — Version 0.4.15:**
+
+| File | Location | Change |
+|---|---|---|
+| `/home/cisco/qemu-bridge.py` | Server (`198.18.134.90`) | **UPDATED:** v2 — reconnect loop, ss-based port wait, no probe connection |
+| `/home/cisco/post-deploy.sh` | Server (`198.18.134.90`) | **UPDATED:** host-level /proc/cgroup bridge kill and liveness check |
+| `CHANGELOG.md` | GitHub repo | **UPDATED:** Added v0.4.15 section |
+
+---
+
 ## Version 0.4.14
 
 **Date:** 2026-03-27
