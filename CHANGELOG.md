@@ -2004,3 +2004,45 @@ are fully operational.
 | `/home/cisco/post-deploy.sh` | Server (`198.18.134.90`) | **UPDATED:** Fixed docker cp path, HOME export, added step 5 (CSR/N9K IPs) |
 | `/home/cisco/csr-ip-config.yml` | Server (`198.18.134.90`) | **NEW:** Ansible playbook to configure CSR PE IP addresses |
 | `CHANGELOG.md` | GitHub repo | **UPDATED:** Added v0.4.11 section |
+
+---
+
+### 0.4.16 — Fix: `kill_container_bridges()` Interface-Scoped (Prevents eth1 Bridge Death)
+
+**Date:** 2026-03-27
+**File:** `/home/cisco/post-deploy.sh` (server `198.18.134.90`)
+
+**Root cause discovered:** `kill_container_bridges()` previously killed **all** bridges
+for a container regardless of interface. When `start_bridge()` was called sequentially:
+
+1. `start_bridge csr-pe01 eth1 10001` → kills all csr-pe01 bridges, starts eth1 ✓
+2. `start_bridge csr-pe01 eth3 10003` → **kills ALL csr-pe01 bridges** (including the eth1
+   just started), then starts eth3 ✗
+
+Result: after post-deploy.sh completed, csr-pe01 and csr-pe02 had only eth3 bridges
+running — eth1 bridges were killed by the eth3 `start_bridge()` call.
+
+**Fix:** `kill_container_bridges()` now accepts `<container_name> <iface>` as arguments
+and filters killed PIDs by **both** container ID (via `/proc/*/cgroup`) and interface name
+(via cmdline match on `qemu-bridge*<IFACE>`). Only the stale bridge for the specific
+interface being (re)started is killed; sibling bridges for the same container are
+left untouched.
+
+**Verified:** Restarted `containerlab-post-deploy.service` and confirmed all 6 bridges
+start and remain alive:
+
+| Container | Interface | QEMU Port | Result |
+|---|---|---|---|
+| `csr-pe01` | eth1 | 10001 | Started (alive) |
+| `csr-pe01` | eth3 | 10003 | Started (alive) |
+| `csr-pe02` | eth1 | 10001 | Started (alive) |
+| `csr-pe02` | eth3 | 10003 | Started (alive) |
+| `n9k-ce01` | eth1 | 10001 | Started (alive) |
+| `n9k-ce02` | eth1 | 10001 | Started (alive) |
+
+**Files — Version 0.4.16:**
+
+| File | Location | Change |
+|---|---|---|
+| `/home/cisco/post-deploy.sh` | Server (`198.18.134.90`) | **UPDATED:** `kill_container_bridges()` now interface-scoped — takes `<container> <iface>` and only kills bridges matching that specific interface |
+| `CHANGELOG.md` | GitHub repo | **UPDATED:** Added v0.4.16 section |
