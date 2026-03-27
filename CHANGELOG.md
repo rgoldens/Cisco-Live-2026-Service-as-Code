@@ -2156,3 +2156,73 @@ Split the bottom three topology layers into left/right group boxes in the VS Cod
 | `/home/cisco/LTRATO-1001.clab.yml` | Server (`198.18.134.90`) | **UPDATED:** `graph-group` labels split into west/east for bottom 3 layers |
 | `/home/cisco/LTRATO-1001.clab.yml.annotations.json` | Server (`198.18.134.90`) | **UPDATED:** Fully rewritten with 7 split group boxes for TopoViewer |
 | `CHANGELOG.md` | GitHub repo | **UPDATED:** Added v0.4.19 section |
+
+---
+
+### 0.4.20 — IS-IS + SR-MPLS Underlay: Full Build and Verification
+
+**Date:** 2026-03-28
+
+IS-IS + SR-MPLS underlay IGP fully built, deployed, and verified across all 5 nodes. All loopback-to-loopback reachability confirmed at 100% from xrd01.
+
+#### Design
+
+3-area IS-IS topology with SR-MPLS replacing LDP:
+
+| Node | IS-IS Area(s) | Level | SR Prefix-SID Index |
+|---|---|---|---|
+| xrd01 | 49.0001 + 49.0002 | L1/L2 ABR | 1 |
+| xrd02 | 49.0001 + 49.0003 | L1/L2 ABR | 2 |
+| csr-pe01 | 49.0002 | L1 only | 11 |
+| csr-pe02 | 49.0003 | L1 only | 12 |
+| n9k-ce01 | 49.0002 | L1 only | — (no SR) |
+| n9k-ce02 | 49.0003 | L1 only | — (no SR) |
+
+- xrd01/xrd02 carry dual NET addresses to act as L1/L2 ABRs between the backbone area and the PE/CE edge areas
+- SR-MPLS on IOS-XE 16.12 uses `connected-prefix-sid-map` (not `isis prefix-sid index` on interface — that syntax does not exist on 16.12)
+- N9K 9300v virtual platform does not support SR-MPLS data plane; IS-IS is used for underlay reachability only
+
+#### IS-IS Adjacencies — All Up
+
+| Link | Type | State |
+|---|---|---|
+| xrd01 ↔ xrd02 | L2 | Up |
+| xrd01 ↔ csr-pe01 | L1 | Up |
+| xrd02 ↔ csr-pe02 | L1 | Up |
+| csr-pe01 ↔ n9k-ce01 | L1 | Up |
+| csr-pe02 ↔ n9k-ce02 | L1 | Up |
+
+#### Loopback-to-Loopback Reachability — All 100%
+
+Verified from xrd01 Loopback0 (192.168.0.1) sourced pings:
+
+| Destination | IP | Result |
+|---|---|---|
+| xrd02 | 192.168.0.2 | 100% |
+| csr-pe01 | 192.168.10.11 | 100% |
+| csr-pe02 | 192.168.10.12 | 100% |
+| n9k-ce01 | 192.168.20.21 | 100% |
+| n9k-ce02 | 192.168.20.22 | 100% |
+
+#### Bug Fixed — CSR Gi4 Missing IS-IS
+
+igp-csr.yml originally only enabled IS-IS on GigabitEthernet2 (toward XRd). GigabitEthernet4 (toward N9K CE) was not included, causing csr-pe01 n9k-ce01 and csr-pe02 n9k-ce02 adjacencies to never form. Fixed by adding a Gi4 IS-IS task to igp-csr.yml and re-running the playbook.
+
+#### BGP Design Decision
+
+BGP is not pre-configured — it is a student task. The agreed design for students to implement:
+
+- AS 65000: xrd01 + xrd02 (SP Core, iBGP VPNv4 peer between them)
+- AS 65001: csr-pe01 + csr-pe02 (PE-CE Edge, eBGP VPNv4 toward XRd core)
+- N9K CEs: eBGP in VRF toward CSR PEs (separate student CE-PE task)
+
+**Files — Version 0.4.20:**
+
+| File | Location | Change |
+|---|---|---|
+| /home/cisco/xrd01-startup.cfg | Server (198.18.134.90) | UPDATED: IS-IS CORE + SR-MPLS + dual NET (49.0001+49.0002) |
+| /home/cisco/xrd02-startup.cfg | Server (198.18.134.90) | UPDATED: IS-IS CORE + SR-MPLS + dual NET (49.0001+49.0003) |
+| /home/cisco/igp-csr.yml | Server (198.18.134.90) | NEW + FIXED: IS-IS L1 + SR-MPLS on CSR PEs; Gi4 IS-IS added |
+| /home/cisco/igp-n9k.yml | Server (198.18.134.90) | NEW: IS-IS L1 on N9K CE nodes |
+| /home/cisco/csr-ip-retry.sh | Server (198.18.134.90) | UPDATED: Added igp-n9k.yml and igp-csr.yml calls |
+| CHANGELOG.md | GitHub repo | UPDATED: Added v0.4.20 section |
