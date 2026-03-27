@@ -2046,3 +2046,40 @@ start and remain alive:
 |---|---|---|
 | `/home/cisco/post-deploy.sh` | Server (`198.18.134.90`) | **UPDATED:** `kill_container_bridges()` now interface-scoped — takes `<container> <iface>` and only kills bridges matching that specific interface |
 | `CHANGELOG.md` | GitHub repo | **UPDATED:** Added v0.4.16 section |
+
+---
+
+### 0.4.17 — N9K eth3/eth4 Bridges Added to post-deploy.sh (Persistent Across Reboots)
+
+**Date:** 2026-03-27
+**File:** `/home/cisco/post-deploy.sh` (server `198.18.134.90`)
+
+Previously, N9K eth3 (Ethernet1/3) and eth4 (Ethernet1/4) bridges were started
+manually — they did not survive server reboots. Students could not reach the linux
+clients until the instructor manually started those bridges.
+
+**Change:** `post-deploy.sh` now starts three bridges per N9K node (eth1, eth3, eth4)
+instead of one. This makes all 10 bridges fully automatic on every boot/deploy:
+
+| Container | Interface | QEMU Port | NX-OS Interface |
+|---|---|---|---|
+| `csr-pe01` | eth1 | 10001 | GigabitEthernet2 |
+| `csr-pe01` | eth3 | 10003 | GigabitEthernet4 |
+| `csr-pe02` | eth1 | 10001 | GigabitEthernet2 |
+| `csr-pe02` | eth3 | 10003 | GigabitEthernet4 |
+| `n9k-ce01` | eth1 | 10001 | Ethernet1/1 |
+| `n9k-ce01` | eth3 | 10003 | Ethernet1/3 |
+| `n9k-ce01` | eth4 | 10004 | Ethernet1/4 |
+| `n9k-ce02` | eth1 | 10001 | Ethernet1/1 |
+| `n9k-ce02` | eth3 | 10003 | Ethernet1/3 |
+| `n9k-ce02` | eth4 | 10004 | Ethernet1/4 |
+
+**Verified:** Restarted `containerlab-post-deploy.service` and confirmed all 10 bridges
+started and are alive via `/proc` scan.
+
+**Files — Version 0.4.17:**
+
+| File | Location | Change |
+|---|---|---|
+| `/home/cisco/post-deploy.sh` | Server (`198.18.134.90`) | **UPDATED:** N9K now starts eth1+eth3+eth4 bridges (was eth1 only) |
+| `CHANGELOG.md` | GitHub repo | **UPDATED:** Added v0.4.17 section |
