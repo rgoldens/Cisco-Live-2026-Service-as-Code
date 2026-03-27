@@ -1589,6 +1589,62 @@ Verified via `ansible-playbook -i ~/inventory.yml ~/ping-check.yml` (bidirection
 
 ---
 
+## Version 0.4.14
+
+**Date:** 2026-03-27
+
+### Summary
+
+Added persistent eth1 IP address configuration for all four Linux client containers.
+Alpine containers have no persistent network config, so IPs are applied via `docker exec`
+in `post-deploy.sh` (step 5) after every ContainerLab deploy. Verified across both
+a manual run and a full service-driven redeploy cycle.
+
+---
+
+### 0.4.14 — Linux Client eth1 IP Addresses
+
+**Topology wiring (from `LTRATO-1001.clab.yml`):**
+
+| Client | eth1 peer | IP assigned |
+|---|---|---|
+| `linux-client1` | `n9k-ce01 Ethernet1/3` | `23.23.23.1/24` |
+| `linux-client2` | `n9k-ce01 Ethernet1/4` | `23.23.23.2/24` |
+| `linux-client3` | `n9k-ce02 Ethernet1/3` | `34.34.34.1/24` |
+| `linux-client4` | `n9k-ce02 Ethernet1/4` | `34.34.34.2/24` |
+
+**Why `docker exec` instead of a config file:**
+Alpine Linux (`ghcr.io/hellt/network-multitool`) containers are stateless —
+their filesystem is recreated on every `clab deploy`. There is no persistent
+`/etc/network/interfaces`. The only reliable approach is to apply IPs via
+`docker exec ip addr add` in the post-deploy script, which runs automatically
+after every deploy.
+
+**Implementation:** New step 5 in `/home/cisco/post-deploy.sh`:
+```bash
+docker exec clab-LTRATO-1001-linux-client1 ip addr flush dev eth1
+docker exec clab-LTRATO-1001-linux-client1 ip addr add 23.23.23.1/24 dev eth1
+# (repeated for clients 2, 3, 4)
+```
+The `ip addr flush dev eth1` before each add makes the step idempotent (safe to
+re-run without creating duplicate addresses).
+
+**Verified:**
+- IPs applied correctly on first manual run
+- IPs restored automatically after a full `systemctl stop/start` redeploy cycle
+  (`containerlab-post-deploy.service` — `active (exited)` → all four IPs present)
+
+---
+
+**Files — Version 0.4.14:**
+
+| File | Location | Change |
+|---|---|---|
+| `/home/cisco/post-deploy.sh` | Server (`198.18.134.90`) | **UPDATED:** Added step 5 — Linux client eth1 IP config |
+| `CHANGELOG.md` | GitHub repo | **UPDATED:** Added v0.4.14 section |
+
+---
+
 ## Version 0.4.13
 
 **Date:** 2026-03-26
