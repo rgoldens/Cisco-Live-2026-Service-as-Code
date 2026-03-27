@@ -2111,3 +2111,48 @@ Students now only need to configure:
 |---|---|---|
 | `/home/cisco/set_hostnames.yml` | Server (`198.18.134.90`) | **UPDATED:** Added task to enable `feature interface-vlan` on both N9Ks |
 | `CHANGELOG.md` | GitHub repo | **UPDATED:** Added v0.4.18 section |
+
+---
+
+### 0.4.19 — TopoViewer Layout: Split West/East Group Boxes
+
+**Date:** 2026-03-27
+
+Split the bottom three topology layers into left/right group boxes in the VS Code ContainerLab TopoViewer, to match the reference draw.io diagram.
+
+**Background:** The VS Code ContainerLab extension (v0.24.2) controls group box rendering exclusively via `~/LTRATO-1001.clab.yml.annotations.json` on the server — not via `graph-group` labels in the topology YAML or Docker container labels. This file was fully rewritten to implement the new layout.
+
+**Changes:**
+
+1. **`LTRATO-1001.clab.yml` — `graph-group` labels updated** (cosmetic, does not affect rendering):
+   - `pe-ce-edge` → `pe-ce-edge-west` (csr-pe01) / `pe-ce-edge-east` (csr-pe02)
+   - `dc` → `dc-west` (n9k-ce01) / `dc-east` (n9k-ce02)
+   - `clients` → `clients-west` (linux-client1/2) / `clients-east` (linux-client3/4)
+   - `core` unchanged (both xrd nodes together)
+
+2. **`LTRATO-1001.clab.yml.annotations.json` — fully rewritten** with 7 group boxes:
+   - `core` — full-width "SP Core" group containing xrd01 + xrd02
+   - `pe-ce-edge-west` — left PE/CE group containing csr-pe01
+   - `pe-ce-edge-east` — right PE/CE group containing csr-pe02
+   - `dc-west` — left DC group containing n9k-ce01
+   - `dc-east` — right DC group containing n9k-ce02
+   - `clients-west` — left Clients group containing linux-client1 + linux-client2
+   - `clients-east` — right Clients group containing linux-client3 + linux-client4
+   - All `edgeAnnotations` and `aliasEndpointAnnotations` preserved unchanged
+   - Verified correct rendering in VS Code TopoViewer
+
+3. **Incidental full lab redeploy** — A `systemctl stop docker` command run during a label-patching investigation caused all containers to be lost (this server uses the containerd backend; no `/var/lib/docker/containers/` config files exist). Full `containerlab deploy --reconfigure` was run, followed by manual restart of `containerlab-post-deploy.service` and `containerlab-csr-ip.service`. Lab verified healthy post-redeploy (all 10 containers running, all post-deploy steps complete, all P2P pings passing).
+
+4. **Session notes — SVI IP correction** (notes only, no server change):
+   - N9K SVI IPs corrected in session notes from `.253` to `.254`:
+     - n9k-ce01: `23.23.23.254/24`
+     - n9k-ce02: `34.34.34.254/24`
+   - This is student-applied config and was never persisted on the server.
+
+**Files — Version 0.4.19:**
+
+| File | Location | Change |
+|---|---|---|
+| `/home/cisco/LTRATO-1001.clab.yml` | Server (`198.18.134.90`) | **UPDATED:** `graph-group` labels split into west/east for bottom 3 layers |
+| `/home/cisco/LTRATO-1001.clab.yml.annotations.json` | Server (`198.18.134.90`) | **UPDATED:** Fully rewritten with 7 split group boxes for TopoViewer |
+| `CHANGELOG.md` | GitHub repo | **UPDATED:** Added v0.4.19 section |
