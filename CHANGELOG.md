@@ -2304,3 +2304,32 @@ Design change: adopted Inter-AS Option A (back-to-back VRFs) for the L3VPN topol
 | /home/cisco/igp-csr.yml | Server (198.18.134.90) | REWRITTEN: Now removes all IS-IS and SR-MPLS from CSR PEs |
 | /home/cisco/igp-n9k.yml | Server (198.18.134.90) | REWRITTEN: Now removes IS-IS and feature isis from N9K CEs |
 | CHANGELOG.md | GitHub repo | UPDATED: Added v0.4.22 section |
+
+---
+
+### 0.4.23 — Fix: igp-n9k.yml and igp-csr.yml Idempotency
+
+**Date:** 2026-03-28
+
+Fixed idempotency bugs in `igp-n9k.yml` and `igp-csr.yml` that caused `containerlab-csr-ip.service` to loop indefinitely after a server reboot.
+
+**Root cause:** NX-OS rejects `no ip router isis CORE` under an interface if `feature isis` is already disabled — it returns `% Invalid command at '^' marker`. IOS similarly rejects `no router isis CORE` if the process does not exist. Neither was handled, so both playbooks failed on every retry.
+
+**Fix:**
+
+- `igp-n9k.yml`: Replaced all interface-level IS-IS removal tasks with a single `no feature isis` task. On NX-OS this is fully idempotent — it silently succeeds whether the feature is enabled or already disabled, and removes all associated IS-IS config in one shot.
+- `igp-csr.yml`: Added `ignore_errors: yes` to all five tasks (interface-level removals, `no router isis CORE`, and `no segment-routing mpls`). IOS returns errors for `no` commands on config that no longer exists; `ignore_errors` makes the playbook idempotent across reboots.
+
+**Verification:**
+- `containerlab-csr-ip.service` exited `status=0/SUCCESS` on first retry after fix
+- xrd01 ↔ xrd02: IS-IS L2 adjacency still Up (1 neighbor, Gi0/0/0/0)
+- csr-pe01 / csr-pe02: `show run | include isis|segment-routing` returns empty
+- n9k-ce01 / n9k-ce02: `feature isis` all 16 instances disabled
+
+**Files — Version 0.4.23:**
+
+| File | Location | Change |
+|---|---|---|
+| /home/cisco/igp-n9k.yml | Server (198.18.134.90) | FIXED: Replaced interface-level tasks with single idempotent `no feature isis` |
+| /home/cisco/igp-csr.yml | Server (198.18.134.90) | FIXED: Added `ignore_errors: yes` to all removal tasks |
+| CHANGELOG.md | GitHub repo | UPDATED: Added v0.4.23 section |
