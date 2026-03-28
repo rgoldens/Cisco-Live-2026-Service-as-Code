@@ -2268,3 +2268,39 @@ Restructured the VS Code ContainerLab TopoViewer layout to match the updated ref
 | /home/cisco/LTRATO-1001.clab.yml | Server (198.18.134.90) | UPDATED: n9k graph-group labels changed to pe-ce-edge-west/east |
 | /home/cisco/LTRATO-1001.clab.yml.annotations.json | Server (198.18.134.90) | UPDATED: dc boxes removed, PE-CE Edge boxes enlarged, n9k nodes merged in |
 | CHANGELOG.md | GitHub repo | UPDATED: Added v0.4.21 section |
+
+---
+
+### 0.4.22 — Inter-AS Option A: IS-IS Removed from CSR PEs and N9K CEs
+
+**Date:** 2026-03-28
+
+Design change: adopted Inter-AS Option A (back-to-back VRFs) for the L3VPN topology. In this model, the XRd SP core (AS 65000) and the CSR PE edge (AS 65001) connect via plain IP links with no IS-IS or MPLS label exchange between them. Each AS terminates the VPN independently. IS-IS now runs only on the XRd backbone (xrd01 ↔ xrd02 via Gi0/0/0/0, L2-only, area 49.0001).
+
+**IS-IS scope after this change:**
+
+| Node | IS-IS | Change |
+|---|---|---|
+| xrd01 | L2-only, area 49.0001, Gi0/0/0/0 only | Second NET (49.0002) removed; Gi0/0/0/1 removed; is-type changed to level-2-only |
+| xrd02 | L2-only, area 49.0001, Gi0/0/0/0 only | Second NET (49.0003) removed; Gi0/0/0/1 removed; is-type changed to level-2-only |
+| csr-pe01 | None | IS-IS process CORE and SR-MPLS fully removed |
+| csr-pe02 | None | IS-IS process CORE and SR-MPLS fully removed |
+| n9k-ce01 | None | IS-IS process CORE and feature isis fully removed |
+| n9k-ce02 | None | IS-IS process CORE and feature isis fully removed |
+
+**Student task:** Students configure eBGP per-VRF between CSR PEs and XRd core (Gi2), and eBGP in VRF between N9K CEs and CSR PEs (Gi4).
+
+**Verification:**
+- xrd01 ↔ xrd02: L2 adjacency Up (1 adjacency each, Gi0/0/0/0 only)
+- CSR PEs: `show isis neighbors` returns empty (no process)
+- N9K CEs: `feature isis` disabled on all 16 instances
+
+**Files — Version 0.4.22:**
+
+| File | Location | Change |
+|---|---|---|
+| /home/cisco/xrd01-startup.cfg | Server (198.18.134.90) | UPDATED: Single NET, level-2-only, Gi0/0/0/1 removed from IS-IS |
+| /home/cisco/xrd02-startup.cfg | Server (198.18.134.90) | UPDATED: Single NET, level-2-only, Gi0/0/0/1 removed from IS-IS |
+| /home/cisco/igp-csr.yml | Server (198.18.134.90) | REWRITTEN: Now removes all IS-IS and SR-MPLS from CSR PEs |
+| /home/cisco/igp-n9k.yml | Server (198.18.134.90) | REWRITTEN: Now removes IS-IS and feature isis from N9K CEs |
+| CHANGELOG.md | GitHub repo | UPDATED: Added v0.4.22 section |
