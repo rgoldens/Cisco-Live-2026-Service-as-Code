@@ -2226,3 +2226,45 @@ BGP is not pre-configured — it is a student task. The agreed design for studen
 | /home/cisco/igp-n9k.yml | Server (198.18.134.90) | NEW: IS-IS L1 on N9K CE nodes |
 | /home/cisco/csr-ip-retry.sh | Server (198.18.134.90) | UPDATED: Added igp-n9k.yml and igp-csr.yml calls |
 | CHANGELOG.md | GitHub repo | UPDATED: Added v0.4.20 section |
+
+---
+
+### 0.4.21 — TopoViewer Layout: N9K CE Nodes Merged into PE-CE Edge Boxes
+
+**Date:** 2026-03-28
+
+Restructured the VS Code ContainerLab TopoViewer layout to match the updated reference diagram. The N9K CE nodes (n9k-ce01, n9k-ce02) are now inside the PE-CE Edge group boxes alongside their upstream CSR PE routers. The separate "Data Center" group boxes have been removed.
+
+**Changes:**
+
+1. **`LTRATO-1001.clab.yml.annotations.json` — rewritten:**
+   - Removed `dc-west` and `dc-east` group boxes entirely
+   - Renamed `PE / CE Edge` → `PE-CE Edge` on both west and east boxes
+   - Increased height of `pe-ce-edge-west` and `pe-ce-edge-east` boxes from 180 to 390 to contain both CSR PE and N9K CE nodes
+   - `n9k-ce01` groupId changed: `dc-west` → `pe-ce-edge-west`; y position moved to 500
+   - `n9k-ce02` groupId changed: `dc-east` → `pe-ce-edge-east`; y position moved to 500
+   - `clients-west` and `clients-east` boxes moved up (y 700 → 680); linux-client node y positions adjusted to 750
+   - Group level of clients boxes updated: 4 → 3 (dc layer removed)
+   - All edge annotations, alias annotations, and edge label offsets preserved unchanged
+
+2. **`LTRATO-1001.clab.yml` — `graph-group` labels updated:**
+   - `n9k-ce01`: `dc-west` → `pe-ce-edge-west`
+   - `n9k-ce02`: `dc-east` → `pe-ce-edge-east`
+
+**Final group structure (5 boxes, was 7):**
+
+| Group | Contents |
+|---|---|
+| SP Core | xrd01, xrd02 |
+| PE-CE Edge (west) | csr-pe01, n9k-ce01 |
+| PE-CE Edge (east) | csr-pe02, n9k-ce02 |
+| Clients (west) | linux-client1, linux-client2 |
+| Clients (east) | linux-client3, linux-client4 |
+
+**Files — Version 0.4.21:**
+
+| File | Location | Change |
+|---|---|---|
+| /home/cisco/LTRATO-1001.clab.yml | Server (198.18.134.90) | UPDATED: n9k graph-group labels changed to pe-ce-edge-west/east |
+| /home/cisco/LTRATO-1001.clab.yml.annotations.json | Server (198.18.134.90) | UPDATED: dc boxes removed, PE-CE Edge boxes enlarged, n9k nodes merged in |
+| CHANGELOG.md | GitHub repo | UPDATED: Added v0.4.21 section |
