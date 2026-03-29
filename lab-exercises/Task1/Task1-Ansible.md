@@ -166,50 +166,191 @@ all:                          # Everyone in my contacts
           phone: "172.20.20.31"   # Their phone number
 ```
 
-**YOUR TASK:**
-1. Open `lab-exercises/Task1/inventory/hosts_template.yml`
-2. Look for `THIS_IP_FOR_N9K_CE01` - replace with actual IP
-3. Look for `THIS_IP_FOR_N9K_CE02` - replace with actual IP
+---
 
-**WHERE to find the IPs:**
-Management IPs are in your lab topology:
-- n9k-ce01: Look for the Orange switch on the RED side → IP is 172.20.20.30
-- n9k-ce02: Look for the Orange switch on the PURPLE side → IP is 172.20.20.31
+## 📋 EXACT TASK: Fill in Inventory IPs
 
-**Completed inventory should look like:**
-```yaml
-nxos:
-  hosts:
-    n9k-ce01:
-      ansible_host: 172.20.20.30   # ← This is WHERE Ansible connects
-    n9k-ce02:
-      ansible_host: 172.20.20.31   # ← This is WHERE Ansible connects
+**Step 1: Open the template file**
+
+```bash
+cat lab-exercises/Task1/inventory/hosts_template.yml
 ```
 
-**Verification step - WHY we do this:**
+**What you'll see:**
+```yaml
+---
+all:
+  children:
+    nxos:
+      vars:
+        ansible_connection: network_cli
+        ansible_network_os: cisco.nxos.nxos
+        ansible_user: admin
+        ansible_ssh_private_key_file: ~/.ssh/id_ed25519
+      hosts:
+        n9k-ce01:
+          ansible_host: THIS_IP_FOR_N9K_CE01          ← FIND THIS LINE
+        n9k-ce02:
+          ansible_host: THIS_IP_FOR_N9K_CE02          ← FIND THIS LINE
+```
+
+---
+
+**Step 2: Edit the inventory file**
+
+Open this file in your text editor:
+```bash
+nano lab-exercises/Task1/inventory/hosts_template.yml
+# or
+code lab-exercises/Task1/inventory/hosts_template.yml
+# or
+vim lab-exercises/Task1/inventory/hosts_template.yml
+```
+
+---
+
+**Step 3: Find and Replace #1 - RED Switch IP**
+
+**Find:** 
+```
+          ansible_host: THIS_IP_FOR_N9K_CE01
+```
+
+**Replace with:**
+```
+          ansible_host: 172.20.20.30
+```
+
+**Exact before/after:**
+
+BEFORE:
+```yaml
+        n9k-ce01:
+          ansible_host: THIS_IP_FOR_N9K_CE01
+```
+
+AFTER:
+```yaml
+        n9k-ce01:
+          ansible_host: 172.20.20.30
+```
+
+---
+
+**Step 4: Find and Replace #2 - PURPLE Switch IP**
+
+**Find:** 
+```
+          ansible_host: THIS_IP_FOR_N9K_CE02
+```
+
+**Replace with:**
+```
+          ansible_host: 172.20.20.31
+```
+
+**Exact before/after:**
+
+BEFORE:
+```yaml
+        n9k-ce02:
+          ansible_host: THIS_IP_FOR_N9K_CE02
+```
+
+AFTER:
+```yaml
+        n9k-ce02:
+          ansible_host: 172.20.20.31
+```
+
+---
+
+**Step 5: Save the file**
+
+- **nano:** Press `Ctrl+O`, then Enter to save, then `Ctrl+X` to exit
+- **code:** Press `Ctrl+S` to save
+- **vim:** Press `Esc`, then `:wq` and Enter to save
+
+---
+
+**Step 6: Verify your changes**
+
+```bash
+# Display the file to confirm changes
+cat lab-exercises/Task1/inventory/hosts_template.yml
+```
+
+**What you should see (CORRECT):**
+```yaml
+---
+all:
+  children:
+    nxos:
+      vars:
+        ansible_connection: network_cli
+        ansible_network_os: cisco.nxos.nxos
+        ansible_user: admin
+        ansible_ssh_private_key_file: ~/.ssh/id_ed25519
+      hosts:
+        n9k-ce01:
+          ansible_host: 172.20.20.30         ✅ CORRECT
+        n9k-ce02:
+          ansible_host: 172.20.20.31         ✅ CORRECT
+```
+
+**What would be WRONG:**
+```yaml
+        n9k-ce01:
+          ansible_host: THIS_IP_FOR_N9K_CE01  ❌ WRONG - didn't replace
+```
+
+OR
+
+```yaml
+        n9k-ce01:
+          ansible_host: 172.20.20.31          ❌ WRONG - swapped IPs
+```
+
+---
+
+**Step 7: Copy edited file to proper location**
+
+```bash
+# Copy your edited template to the actual inventory location
+cp lab-exercises/Task1/inventory/hosts_template.yml lab-exercises/Task1/inventory/hosts.yml
+```
+
+---
+
+**Step 8: Test Ansible can read the inventory**
+
 ```bash
 cd lab-exercises/Task1
-ansible all -i inventory/hosts_reference.yml --list-hosts
+
+# List all hosts Ansible found
+ansible all -i inventory/hosts.yml --list-hosts
 ```
 
-**What this command does:**
-- `ansible` = Run Ansible command
-- `all` = Look at all devices (don't filter)
-- `-i inventory/hosts_reference.yml` = Use THIS inventory file
-- `--list-hosts` = Just show me the device names (don't do anything yet)
-
-**Expected output:**
+**What you should see (CORRECT OUTPUT):**
 ```
-n9k-ce01
-n9k-ce02
+  hosts (2):
+    n9k-ce01
+    n9k-ce02
 ```
 
-**If you get an error:** "No hosts matched" means the inventory has wrong IPs or format.
+**If you see ERROR instead (WRONG):**
+```
+ERROR! Unable to parse this as an YAML file. Found undefined variable: 'THIS_IP_FOR_N9K_CE01'
+```
+↑ This means you didn't replace the IPs. Go back to Step 3-4 and fix them.
+
+---
 
 **Key learning:**
 - Inventory = Phonebook for your lab devices
 - Ansible doesn't *know* your devices exist until you tell it via inventory
 - Every Ansible command needs to point to an inventory file (`-i` flag)
+- IPs must be EXACT - typos break everything
 
 ---
 
@@ -221,13 +362,13 @@ n9k-ce02
 
 ```bash
 cd lab-exercises/Task1
-ansible all -i inventory/hosts_reference.yml -m ping
+ansible all -i inventory/hosts.yml -m ping
 ```
 
 **What this command does line by line:**
 - `ansible` = Run Ansible
 - `all` = Against all devices in the inventory
-- `-i inventory/hosts_reference.yml` = Using this inventory file
+- `-i inventory/hosts.yml` = Using this inventory file
 - `-m ping` = Use the PING module (not ICMP ping, but Ansible's ping)
 
 **Ansible's "ping" explained:**
@@ -237,7 +378,10 @@ Ansible's ping module doesn't use network pings. Instead, it:
 3. Says "hello" via the network module
 4. Expects "pong" back
 
-**Expected output:**
+---
+
+### EXPECTED OUTPUT (CORRECT ✅)
+
 ```
 n9k-ce01 | SUCCESS => {
     "changed": false,
@@ -249,16 +393,57 @@ n9k-ce02 | SUCCESS => {
 }
 ```
 
-**If you see "UNREACHABLE":**
-- ❌ Inventory IP is wrong → Fix IP in hosts_template.yml
-- ❌ SSH key missing → Check ~/.ssh/id_ed25519 exists
-- ❌ Device is powered off → Check containers are running: `docker ps`
+**What each line means:**
+- `n9k-ce01 | SUCCESS` = Device responded, connection works
+- `"ping": "pong"` = Device said hello back
+- `"changed": false` = No changes made (just tested connectivity)
+
+---
+
+### INCORRECT OUTPUT (WRONG ❌)
+
+**If you see this:**
+```
+n9k-ce01 | UNREACHABLE! => {
+    "msg": "Failed to connect to the host via ssh: Permission denied (publickey).
+         Timeout waiting for prompt (unable to open shell)."
+}
+```
+
+**This means:**
+- Inventory IP is wrong, OR
+- SSH key missing, OR
+- Device is powered off
+
+---
+
+**If you see this:**
+```
+ERROR! Unable to parse this as an YAML file. Found undefined variable: 'THIS_IP_FOR_N9K_CE01'
+```
+
+**This means:**
+- You didn't replace the IP placeholders
+- Go back to STEP 1A and fill in 172.20.20.30 and 172.20.20.31
+
+---
+
+**If you see this:**
+```
+[WARNING]: No inventory was parsed. No inventory plugin or parse plugin matched the requirements
+```
+
+**This means:**
+- Wrong file path (not pointing to correct inventory file)
+- Use: `-i inventory/hosts.yml` (not hosts_template.yml)
+
+---
 
 **Key learning:** Before running playbooks, always test basic connectivity. This saves hours of debugging!
 
 ---
 
-### STEP 2: Create and Understand Variables File (15 minutes)
+### STEP 2: Create Variables File (15 minutes)
 
 **WHAT you're doing:** Defining reusable values (VLAN IDs, port names) that multiple playbooks can use
 
@@ -308,20 +493,39 @@ inventory/
 ```
 
 **How Ansible finds variables:**
-1. You run: `ansible-playbook -i inventory/hosts_reference.yml playbook.yml`
+1. You run: `ansible-playbook -i inventory/hosts.yml playbook.yml`
 2. Ansible reads inventory file
 3. Identifies device group: `nxos`
 4. Looks for: `inventory/group_vars/nxos.yml` ← automatically!
 5. Loads all variables from that file
 
-**YOUR TASK:**
-1. Create directory: `inventory/group_vars/` (if missing)
-2. Create file: `inventory/group_vars/nxos.yml`
-3. Copy contents from `group_vars_nxos_template.yml`
-4. Verify format is correct (YAML syntax - spacing matters!)
+---
 
-**What should be in your variables file:**
+## 🎯 EXACT STEP-BY-STEP
+
+### Step 1: Create the group_vars directory (if missing)
+
+```bash
+mkdir -p lab-exercises/Task1/inventory/group_vars
+```
+
+**What this does:**
+- `-p` = Create parent directories if needed
+- Creates: `lab-exercises/Task1/inventory/group_vars/` folder
+
+---
+
+### Step 2: Check the template file
+
+```bash
+cat lab-exercises/Task1/inventory/group_vars_nxos_template.yml
+```
+
+**What you should see:**
 ```yaml
+---
+# VLAN Configuration Variables
+
 red_vlan:
   id: 10
   name: "RED_CLIENTS"
@@ -339,21 +543,102 @@ purple_vlan:
     - Ethernet1/4
 ```
 
-**What each part means:**
-- `red_vlan:` = Starting a data structure called "red_vlan"
-- `id: 10` = VLAN ID number
-- `name: "RED_CLIENTS"` = Human-readable VLAN name
-- `ports:` = List of ports in this VLAN
-- `- Ethernet1/3` = First port in the list
+---
 
-**Why this structure:**
-When your playbook needs "RED VLAN ID", it uses `{{ red_vlan.id }}` which equals `10`.
-When it needs "PURPLE VLAN ID", it uses `{{ purple_vlan.id }}` which equals `20`.
+### Step 3: Copy the template to the actual location
+
+```bash
+cp lab-exercises/Task1/inventory/group_vars_nxos_template.yml \
+   lab-exercises/Task1/inventory/group_vars/nxos.yml
+```
+
+**What this does:**
+- Copies the template file
+- Places it in the correct location
+- Renames it to `nxos.yml` (Ansible looks for this file)
+
+---
+
+### Step 4: Verify the file was created correctly
+
+```bash
+cat lab-exercises/Task1/inventory/group_vars/nxos.yml
+```
+
+**What you should see (CORRECT ✅):**
+```yaml
+---
+# VLAN Configuration Variables
+
+red_vlan:
+  id: 10
+  name: "RED_CLIENTS"
+  description: "RED clients (client1 and client2)"
+  ports:
+    - Ethernet1/3
+    - Ethernet1/4
+
+purple_vlan:
+  id: 20
+  name: "PURPLE_CLIENTS"
+  description: "PURPLE clients (client3 and client4)"
+  ports:
+    - Ethernet1/3
+    - Ethernet1/4
+```
+
+---
+
+### Step 5: Verify Ansible can read the file
+
+```bash
+python3 -c "import yaml; yaml.safe_load(open('lab-exercises/Task1/inventory/group_vars/nxos.yml'))" && echo "✅ Variables file OK"
+```
+
+**What you should see (CORRECT ✅):**
+```
+✅ Variables file OK
+```
+
+**If you see ERROR (WRONG ❌):**
+```
+yaml.scanner.ScannerError: mapping values are not allowed here
+```
+
+This means:
+- YAML indentation is wrong (must be 2 spaces, not tabs)
+- Check the file again - copy exactly from template
+
+---
+
+### Step 6: View directory structure to confirm everything
+
+```bash
+tree lab-exercises/Task1/inventory/
+```
+
+**What you should see (CORRECT ✅):**
+```
+lab-exercises/Task1/inventory/
+├── group_vars
+│   └── nxos.yml                  ← ✅ This file should exist
+├── group_vars_nxos_reference.yml
+├── group_vars_nxos_template.yml
+├── hosts.yml                      ← ✅ This file (you created from template)
+├── hosts_reference.yml
+└── hosts_template.yml
+```
+
+**If you can't see `group_vars/nxos.yml` (WRONG ❌):**
+- Go back to Step 3 and copy the file again
+- Make sure file is named EXACTLY `nxos.yml`
+
+---
 
 **Key learning:**
-- Variables = reusable configuration values
-- `group_vars/` = Ansible automatically finds them here
-- YAML spacing matters (use 2-space indentation)
+- Variables live in `group_vars/` and are automatically loaded by Ansible
+- YAML spacing matters (2-space indentation required)
+- Ansible looks for: `group_vars/<groupname>.yml` automatically
 
 ---
 
@@ -485,64 +770,307 @@ Playbook runs tasks sequentially:
 
 **WHY:** Half-filled templates teach you to READ and UNDERSTAND playbook syntax instead of just copy-pasting
 
-**YOUR TASK - Review Student Template:**
+---
 
-Open: `playbooks/student/ce01_student_template.yml`
+## 🎯 EXACTLY WHAT TO FILL IN
 
-**Find all TODOs (look for lines with TODO comment)**
+### Task A: Fill in ce01_student_template.yml (RED Clients)
 
-Each TODO shows:
-- What to fill in
-- Why you're filling it
-- A hint for the answer
+**Step 1: Open the student template**
 
-**Example TODO in template:**
-```yaml
-- name: "TASK 1A: Create VLAN 10 (RED) on n9k-ce01"
-  cisco.nxos.nxos_vlans:
-    # TODO: What is the state? (hint: 'merged' means create/update)
-    state: ???
-    config:
-      - name: "{{ red_vlan.name }}"
-        vlan_id: "{{ red_vlan.id }}"
-```
-
-**How to solve it:**
-1. Read the TODO comment: "What is the state?"
-2. Read the hint: "'merged' means create/update"
-3. Check the solution: `state: merged`
-4. Replace `???` with `merged`
-
-**YOUR FILLS:**
-
-**ce01_student_template.yml TODOs:**
-- Line ~12: `state:` parameter - Hint in comment
-- Line ~22: `.id` variable - What variable has VLAN 10?
-- Line ~35: `.id` variable - What variable has VLAN 10?
-- Line ~50: `.id` variable - What variable has VLAN 10?
-
-**ce02_student_template.yml TODOs:**
-- Line ~12: `state:` parameter
-- Line ~22: `.id` variable - What variable has VLAN 20?
-- Line ~35: `.id` variable - What variable has VLAN 20?
-- Line ~50: `.id` variable - What variable has VLAN 20?
-
-**VERIFICATION - Compare to solution:**
 ```bash
-diff playbooks/student/ce01_student_template.yml playbooks/solution/ce01_solution.yml
-# If no lines shown: Perfect match!
-# If lines shown: Those are the differences - study them
+cat lab-exercises/Task1/playbooks/student/ce01_student_template.yml
 ```
+
+**What you'll see (FULL FILE):**
+```yaml
+---
+- name: "TASK 1: Configure n9k-ce01 for RED Clients Reachability"
+  hosts: ???                                          # ← TODO #1: FIND THIS
+
+  gather_facts: false
+
+  tasks:
+    - name: "TASK 1A: Create VLAN 10 (RED) on n9k-ce01"
+      cisco.nxos.nxos_vlans:
+        state: ???                                   # ← TODO #2: FIND THIS
+        config:
+          - name: "{{ red_vlan.name }}"
+            vlan_id: "{{ red_vlan.id }}"
+
+    - name: "TASK 1B: Configure Eth1/3 (to client1) as L2 in VLAN 10"
+      cisco.nxos.nxos_l2_interfaces:
+        config:
+          - name: "Ethernet1/3"
+            access:
+              vlan: "{{ ??? }}"                     # ← TODO #3: FIND THIS
+        state: merged
+
+    - name: "TASK 1C: Configure Eth1/4 (to client2) as L2 in VLAN 10"
+      cisco.nxos.nxos_l2_interfaces:
+        config:
+          - name: "Ethernet1/4"
+            access:
+              vlan: "{{ ??? }}"                     # ← TODO #4: FIND THIS
+        state: merged
+
+    - name: "TASK 1D: Enable Eth1/3 and Eth1/4 (no shutdown)"
+      cisco.nxos.nxos_interfaces:
+        config:
+          - name: "Ethernet1/3"
+            enabled: true
+          - name: "Ethernet1/4"
+            enabled: true
+        state: merged
+```
+
+---
+
+### TODO #1: Fix the `hosts:` line
+
+**Find (line 2):**
+```yaml
+  hosts: ???
+```
+
+**Replace with:**
+```yaml
+  hosts: nxos
+```
+
+**Why:** This tells Ansible "run on devices in the nxos group from inventory"
+
+**Before/After:**
+```yaml
+BEFORE:
+- name: "TASK 1: Configure n9k-ce01 for RED Clients Reachability"
+  hosts: ???
+
+AFTER:
+- name: "TASK 1: Configure n9k-ce01 for RED Clients Reachability"
+  hosts: nxos
+```
+
+---
+
+### TODO #2: Fix the `state:` in Task 1A
+
+**Find (line 12):**
+```yaml
+        state: ???
+```
+
+**Replace with:**
+```yaml
+        state: merged
+```
+
+**Why:** NXOS modules use "merged" (not "present") to create/update VLANs
+
+**Before/After:**
+```yaml
+BEFORE:
+    - name: "TASK 1A: Create VLAN 10 (RED) on n9k-ce01"
+      cisco.nxos.nxos_vlans:
+        state: ???
+        config:
+
+AFTER:
+    - name: "TASK 1A: Create VLAN 10 (RED) on n9k-ce01"
+      cisco.nxos.nxos_vlans:
+        state: merged
+        config:
+```
+
+---
+
+### TODO #3: Fix the vlan reference in Task 1B
+
+**Find (line 23, inside Task 1B):**
+```yaml
+              vlan: "{{ ??? }}"
+```
+
+**Replace with:**
+```yaml
+              vlan: "{{ red_vlan.id }}"
+```
+
+**Why:** This pulls VLAN ID from variables (equals "10")
+
+**Before/After:**
+```yaml
+BEFORE:
+    - name: "TASK 1B: Configure Eth1/3 (to client1) as L2 in VLAN 10"
+      cisco.nxos.nxos_l2_interfaces:
+        config:
+          - name: "Ethernet1/3"
+            access:
+              vlan: "{{ ??? }}"
+        state: merged
+
+AFTER:
+    - name: "TASK 1B: Configure Eth1/3 (to client1) as L2 in VLAN 10"
+      cisco.nxos.nxos_l2_interfaces:
+        config:
+          - name: "Ethernet1/3"
+            access:
+              vlan: "{{ red_vlan.id }}"
+        state: merged
+```
+
+---
+
+### TODO #4: Fix the vlan reference in Task 1C
+
+**Find (line 32, inside Task 1C):**
+```yaml
+              vlan: "{{ ??? }}"
+```
+
+**Replace with:**
+```yaml
+              vlan: "{{ red_vlan.id }}"
+```
+
+**Why:** Same as TODO #3 - also needs red_vlan.id for VLAN 10
+
+**Before/After:**
+```yaml
+BEFORE:
+    - name: "TASK 1C: Configure Eth1/4 (to client2) as L2 in VLAN 10"
+      cisco.nxos.nxos_l2_interfaces:
+        config:
+          - name: "Ethernet1/4"
+            access:
+              vlan: "{{ ??? }}"
+        state: merged
+
+AFTER:
+    - name: "TASK 1C: Configure Eth1/4 (to client2) as L2 in VLAN 10"
+      cisco.nxos.nxos_l2_interfaces:
+        config:
+          - name: "Ethernet1/4"
+            access:
+              vlan: "{{ red_vlan.id }}"
+        state: merged
+```
+
+---
+
+### Step 2: Save your changes
+
+```bash
+# Save in your editor (Ctrl+S in most editors)
+```
+
+---
+
+### Step 3: Do the same for ce02_student_template.yml (PURPLE Clients)
+
+**Open the template:**
+```bash
+cat lab-exercises/Task1/playbooks/student/ce02_student_template.yml
+```
+
+**The TODOs are identical, EXCEPT for the VLAN variable:**
+- TODO #1: `hosts:` → Replace with `nxos`
+- TODO #2: `state:` → Replace with `merged`
+- TODO #3: `vlan:` → Replace with `{{ purple_vlan.id }}` ← DIFFERENT! (not red_vlan)
+- TODO #4: `vlan:` → Replace with `{{ purple_vlan.id }}` ← DIFFERENT! (not red_vlan)
+
+**Why the difference?**
+- ce01 is for RED clients (VLAN 10) → uses `red_vlan.id`
+- ce02 is for PURPLE clients (VLAN 20) → uses `purple_vlan.id`
+- When variables are substituted:
+  - ce01: `{{ red_vlan.id }}` becomes 10
+  - ce02: `{{ purple_vlan.id }}` becomes 20
+
+**Exact for ce02_student_template.yml:**
+
+Find line 2:
+```yaml
+  hosts: ???
+```
+Replace with:
+```yaml
+  hosts: nxos
+```
+
+Find line 12:
+```yaml
+        state: ???
+```
+Replace with:
+```yaml
+        state: merged
+```
+
+Find line 23:
+```yaml
+              vlan: "{{ ??? }}"
+```
+Replace with:
+```yaml
+              vlan: "{{ purple_vlan.id }}"
+```
+
+Find line 32:
+```yaml
+              vlan: "{{ ??? }}"
+```
+Replace with:
+```yaml
+              vlan: "{{ purple_vlan.id }}"
+```
+
+---
+
+### Step 4: Verify your changes
+
+**Compare ce01 to the solution:**
+```bash
+diff lab-exercises/Task1/playbooks/student/ce01_student_template.yml \
+     lab-exercises/Task1/playbooks/solution/ce01_solution.yml
+```
+
+**What you should see (if correct):**
+```
+# No output at all = Perfect match! ✅
+```
+
+**If you see differences:**
+```
+< state: ???
+> state: merged
+```
+This means you missed a TODO. Go back and fix it.
+
+---
+
+**Compare ce02 to the solution:**
+```bash
+diff lab-exercises/Task1/playbooks/student/ce02_student_template.yml \
+     lab-exercises/Task1/playbooks/solution/ce02_solution.yml
+```
+
+**What you should see (if correct):**
+```
+# No output at all = Perfect match! ✅
+```
+
+---
 
 **KEY INSIGHT:**
-After filling this in, you understand:
-- When Ansible processes playbooks, it substitutes variables
-- `{{ red_vlan.id }}` becomes `10`
-- `{{ purple_vlan.id }}` becomes `20`
-- This is why variables are so powerful!
+After filling in these templates, you understand:
+- Playbook structure (hosts, tasks, modules)
+- Variable substitution (`{{ variable.subproperty }}`)
+- Module parameters (state, config, name, vlan, enabled)
+- Why NXOS uses "merged" not "present"
+- How templates make you think through each step
 
 **Key learning:**
-- Templates make you think through each step
+- Templates = guided learning, not just copy-paste
 - Solution comparison teaches you proper syntax
 - Variable substitution = code reusability
 
@@ -691,6 +1219,8 @@ If this ping test PASSES, Ansible can reach the devices. If it FAILS, playbook w
 3. If task A fails, stops (won't run task B)
 4. Reports what it did
 
+---
+
 ### Step 6A: Configure RED Clients (n9k-ce01)
 
 **WHAT this does:**
@@ -698,71 +1228,136 @@ If this ping test PASSES, Ansible can reach the devices. If it FAILS, playbook w
 - Assigns Ethernet1/3 and Ethernet1/4 to VLAN 10
 - Enables both ports
 
+---
+
+**Step 6A.1: Run the command**
+
 ```bash
 cd lab-exercises/Task1
 
 # Run the RED playbook
 ansible-playbook \
-  -i inventory/hosts_reference.yml \
+  -i inventory/hosts.yml \
   playbooks/solution/ce01_solution.yml \
   -e @inventory/group_vars/nxos.yml \
   -v
 ```
 
-**Command breakdown:**
+**Command breakdown - EXACTLY what to type:**
 
-| Flag | Meaning |
-|------|---------|
-| `ansible-playbook` | Run a playbook (not ad-hoc commands) |
-| `-i inventory/hosts_reference.yml` | Use this inventory (defines devices) |
-| `playbooks/solution/ce01_solution.yml` | Run THIS playbook file |
-| `-e @inventory/group_vars/nxos.yml` | Load variables from this file (-e = extra, @ = from file) |
-| `-v` | Verbose (show detailed execution) |
+| Part | Meaning | Example |
+|------|---------|---------|
+| `ansible-playbook` | Run a playbook | Literal command |
+| `-i inventory/hosts.yml` | Use YOUR inventory file | `-i` = inventory flag |
+| `playbooks/solution/ce01_solution.yml` | Run THIS playbook file | File path (don't change) |
+| `-e @inventory/group_vars/nxos.yml` | Load variables | `-e @` = load from file |
+| `-v` | Show detailed output | Verbose flag |
 
-**What Ansible does internally:**
-1. Reads playbook file
-2. Sees: `hosts: nxos` - finds "nxos" group in inventory
-3. Gets devices: n9k-ce01 (from hosts group)
-4. Loads variables: red_vlan.id = 10, red_vlan.name = "RED_CLIENTS", etc.
-5. Substitutes variables: `{{ red_vlan.id }}` becomes `10`
-6. Connects to n9k-ce01 via SSH
-7. Executes tasks 1A, 1B, 1C, 1D in order
-8. Reports results
+---
 
-**Expected output:**
+**Step 6A.2: What you'll see (CORRECT OUTPUT ✅)**
+
+**First, you'll see the play header:**
 ```
-PLAY [TASK 1: Configure n9k-ce01 for RED Clients Reachability] ****
+[WARNING]: No password was provided for elevated privilege, assuming unprivileged execution
 
+PLAY [TASK 1: Configure n9k-ce01 for RED Clients Reachability] ****
+```
+
+↑ The WARNING is normal and can be ignored.
+
+---
+
+**Next, you'll see each TASK execute:**
+
+```
 TASK [TASK 1A: Create VLAN 10 (RED) on n9k-ce01] ****
 changed: [n9k-ce01]
+```
 
+**What this means:**
+- Task ran successfully
+- `changed: [n9k-ce01]` = This device had changes made to it
+- VLAN 10 was created because it didn't exist before
+
+---
+
+```
 TASK [TASK 1B: Configure Eth1/3 (to client1) as L2 in VLAN 10] ****
 changed: [n9k-ce01]
+```
 
+**What this means:**
+- Ethernet1/3 was configured as access port in VLAN 10
+- CLI equivalent ran: `interface Eth1/3` → `switchport mode access` → `switchport access vlan 10`
+
+---
+
+```
 TASK [TASK 1C: Configure Eth1/4 (to client2) as L2 in VLAN 10] ****
 changed: [n9k-ce01]
+```
 
+**What this means:**
+- Ethernet1/4 was configured as access port in VLAN 10
+- Same as Task 1B, but for the other port
+
+---
+
+```
 TASK [TASK 1D: Enable Eth1/3 and Eth1/4 (no shutdown)] ****
 changed: [n9k-ce01]
+```
 
+**What this means:**
+- Both ports were enabled (no shutdown)
+- Ports are now in "up" state
+- Traffic can now flow
+
+---
+
+**Finally, you'll see the summary:**
+
+```
 PLAY RECAP ****
 n9k-ce01 : ok=4 changed=4 unreachable=0 failed=0 skipped=0 rescued=0 ignored=0
 ```
 
-**Output interpretation:**
+**What each metric means:**
 
-| Line | Meaning |
-|------|---------|
-| `changed: [n9k-ce01]` | Task ran and made changes to device |
-| `ok: [n9k-ce01]` | Task ran but made NO changes (already set) |
-| `failed=0` | ✅ SUCCESS - no failures |
-| `unreachable=0` | ✅ Device was reachable |
-| `changed=4` | 4 changes were made |
+| Metric | Value | Meaning |
+|--------|-------|---------|
+| `ok=4` | 4 tasks | All 4 tasks ran successfully |
+| `changed=4` | 4 changes | All 4 tasks made changes (first run) |
+| `unreachable=0` | No unreachable | Device WAS reachable |
+| `failed=0` | No failures | ✅ **SUCCESS** |
 
-**Why did we get "changed" 4 times?**
-- First run: VLAN doesn't exist → created → changed
-- If you run AGAIN: VLAN already exists → no change → ok (not changed)
-- This is called **idempotency** - running multiple times is safe
+---
+
+**If you see anything different, it's a PROBLEM:**
+
+**Problem: `failed=1`**
+```
+PLAY RECAP ****
+n9k-ce01 : ok=2 changed=2 unreachable=0 failed=1 skipped=0
+```
+↑ One task failed (check error above the RECAP)
+
+**Problem: `unreachable=1`**
+```
+PLAY RECAP ****
+n9k-ce01 : ok=0 changed=0 unreachable=1 failed=0 skipped=0
+```
+↑ Ansible couldn't reach the device (IP wrong? SSH key missing?)
+
+**Problem: `changed=0`**
+```
+PLAY RECAP ****
+n9k-ce01 : ok=4 changed=0 unreachable=0 failed=0 skipped=0
+```
+↑ Configuration already existed (run again to verify - still `changed=0` is normal)
+
+---
 
 ### Step 6B: Configure PURPLE Clients (n9k-ce02)
 
@@ -771,21 +1366,48 @@ n9k-ce01 : ok=4 changed=4 unreachable=0 failed=0 skipped=0 rescued=0 ignored=0
 - Assigns Ethernet1/3 and Ethernet1/4 to VLAN 20
 - Enables both ports
 
+---
+
+**Step 6B.1: Run the command**
+
 ```bash
 # Run the PURPLE playbook
 ansible-playbook \
-  -i inventory/hosts_reference.yml \
+  -i inventory/hosts.yml \
   playbooks/solution/ce02_solution.yml \
   -e @inventory/group_vars/nxos.yml \
   -v
 ```
 
-**Expected output:** Same as Step 6A, but for n9k-ce02 and VLAN 20
+---
+
+**Step 6B.2: What you should see (CORRECT OUTPUT ✅)**
+
+Same structure as Step 6A, but for n9k-ce02:
+
+```
+PLAY [TASK 1: Configure n9k-ce02 for PURPLE Clients Reachability] ****
+
+TASK [TASK 1A: Create VLAN 20 (PURPLE) on n9k-ce02] ****
+changed: [n9k-ce02]
+
+TASK [TASK 1B: Configure Eth1/3 (to client3) as L2 in VLAN 20] ****
+changed: [n9k-ce02]
+
+TASK [TASK 1C: Configure Eth1/4 (to client4) as L2 in VLAN 20] ****
+changed: [n9k-ce02]
+
+TASK [TASK 1D: Enable Eth1/3 and Eth1/4 (no shutdown)] ****
+changed: [n9k-ce02]
+
+PLAY RECAP ****
+n9k-ce02 : ok=4 changed=4 unreachable=0 failed=0 skipped=0 rescued=0 ignored=0
+```
 
 **Key learning:**
 - Both playbooks configure identical logic (VLAN + ports)
-- Only difference: which device, which VLAN ID, which clients
-- ONE playbook template can be used for BOTH because variables are swapped
+- Only difference: which device (n9k-ce02 vs n9k-ce01), which VLAN ID (20 vs 10)
+- Variables substitution makes this possible (same playbook, different values)
 
 ---
 
@@ -806,7 +1428,7 @@ ansible-playbook \
 ```bash
 # Run validation playbook
 ansible-playbook \
-  -i inventory/hosts_reference.yml \
+  -i inventory/hosts.yml \
   playbooks/helper/validate_task1.yml \
   -v
 ```
