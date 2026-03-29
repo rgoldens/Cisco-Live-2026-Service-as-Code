@@ -1,0 +1,19 @@
+# ============================================================================
+# TASK 1: NXOS Group Variables - REFERENCE
+# ============================================================================
+
+red_vlan:
+  id: 10
+  name: "RED_CLIENTS"
+  description: "RED clients (client1 and client2 on 23.23.23.0/24)"
+  ports:
+    - Ethernet1/3
+    - Ethernet1/4
+
+purple_vlan:
+  id: 20
+  name: "PURPLE_CLIENTS"
+  description: "PURPLE clients (client3 and client4 on 34.34.34.0/24)"
+  ports:
+    - Ethernet1/3
+    - Ethernet1/4

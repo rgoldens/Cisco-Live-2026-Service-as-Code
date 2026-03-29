@@ -1,0 +1,43 @@
+---
+# ============================================================================
+# TASK 1: Configure n9k-ce02 for PURPLE Clients L2 Switching - SOLUTION
+# ============================================================================
+
+- name: "TASK 1: Configure n9k-ce02 for PURPLE Clients Reachability"
+  hosts: "n9k-ce02"
+  gather_facts: false
+  connection: network_cli
+  
+  tasks:
+    - name: "TASK 1A: Create VLAN 20 (PURPLE) on n9k-ce02"
+      cisco.nxos.nxos_vlans:
+        state: merged
+        config:
+          - name: "{{ purple_vlan.name }}"
+            vlan_id: "{{ purple_vlan.id }}"
+
+    - name: "TASK 1B: Configure Eth1/3 (to client3) as L2 in VLAN 20"
+      cisco.nxos.nxos_l2_interfaces:
+        config:
+          - name: "Ethernet1/3"
+            access:
+              vlan: "{{ purple_vlan.id }}"
+        state: merged
+
+    - name: "TASK 1C: Configure Eth1/4 (to client4) as L2 in VLAN 20"
+      cisco.nxos.nxos_l2_interfaces:
+        config:
+          - name: "Ethernet1/4"
+            access:
+              vlan: "{{ purple_vlan.id }}"
+        state: merged
+
+    - name: "TASK 1D: Enable Eth1/3 and Eth1/4 (no shutdown)"
+      cisco.nxos.nxos_interfaces:
+        config:
+          - name: "{{ item }}"
+            enabled: true
+        state: merged
+      loop:
+        - "Ethernet1/3"
+        - "Ethernet1/4"

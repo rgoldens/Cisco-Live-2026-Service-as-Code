@@ -1,0 +1,33 @@
+# ============================================================================
+# TASK 1: NXOS Group Variables - Student Template
+# ============================================================================
+#
+# OBJECTIVE: Define common variables for all NXOS devices
+#
+# WHAT YOU NEED TO DO:
+# Fill in the VLAN IDs and descriptions for RED and PURPLE clients
+#
+# WHY THIS MATTERS:
+# These variables are used by the playbooks to configure the switches
+# By defining them here, you can reuse the same playbook for multiple devices
+# and just change the variables - this is the principle of "Infrastructure as Code"
+#
+# ============================================================================
+
+# RED VLAN - Contains client1 and client2 (23.23.23.0/24)
+red_vlan:
+  id: 10                              # TODO: Verify: Is this the RED VLAN ID? (answer: yes, it is)
+  name: "RED_CLIENTS"                 # TODO: Replace with your VLAN name
+  description: "RED clients (client1 and client2 on 23.23.23.0/24)"
+  ports:
+    - Ethernet1/3                     # TODO: Verify: Which port has client1? (hint: check topology)
+    - Ethernet1/4                     # TODO: Verify: Which port has client2? (hint: check topology)
+
+# PURPLE VLAN - Contains client3 and client4 (34.34.34.0/24)
+purple_vlan:
+  id: 20                              # TODO: Verify: Is this the PURPLE VLAN ID? (answer: yes, it is)
+  name: "PURPLE_CLIENTS"              # TODO: Replace with your VLAN name
+  description: "PURPLE clients (client3 and client4 on 34.34.34.0/24)"
+  ports:
+    - Ethernet1/3                     # TODO: Verify: Which port has client3? (hint: check topology)
+    - Ethernet1/4                     # TODO: Verify: Which port has client4? (hint: check topology)

@@ -1,0 +1,80 @@
+---
+# ============================================================================
+# TASK 1: Configure n9k-ce02 for PURPLE Clients L2 Switching - STUDENT TEMPLATE
+# ============================================================================
+#
+# OBJECTIVE: Configure the ORANGE switch (n9k-ce02) to enable Layer 2
+#            switching between PURPLE clients (client3 and client4)
+#
+# EXPECTED OUTCOME:
+# After this playbook runs, client3 (34.34.34.1) should be able to ping 
+# client4 (34.34.34.2) because both are in the same VLAN
+#
+# HOW IT WORKS:
+# 1. Create VLAN 20 for PURPLE clients
+# 2. Configure Eth1/3 and Eth1/4 as L2 access ports in VLAN 20
+# 3. Switch learns MAC addresses and forwards frames within the VLAN
+#
+# ============================================================================
+
+- name: "TASK 1: Configure n9k-ce02 for PURPLE Clients Reachability"
+  hosts: "n9k-ce02"                   # TODO: VERIFY: This target device name
+  gather_facts: false
+  connection: network_cli
+  
+  # ───────────────────────────────────────────────────────────────────────────
+  # TASK 1A: Create VLAN 20 for PURPLE clients
+  # ───────────────────────────────────────────────────────────────────────────
+  
+  tasks:
+    - name: "TASK 1A: Create VLAN 20 (PURPLE) on n9k-ce02"
+      cisco.nxos.nxos_vlans:
+        # TODO: What is the state? (hint: 'merged' means create/update)
+        state: merged
+        config:
+          - name: "{{ purple_vlan.name }}"           # e.g., PURPLE_CLIENTS
+            vlan_id: "{{ purple_vlan.id }}"          # e.g., 20
+
+    # ───────────────────────────────────────────────────────────────────────────
+    # TASK 1B: Configure Ethernet1/3 as L2 access port in VLAN 20
+    #          (This port connects to linux-client3)
+    # ───────────────────────────────────────────────────────────────────────────
+    
+    - name: "TASK 1B: Configure Eth1/3 (to client3) as L2 in VLAN 20"
+      cisco.nxos.nxos_l2_interfaces:
+        config:
+          - name: "Ethernet1/3"
+            # TODO: What should the access vlan be?
+            # This needs to match purple_vlan.id
+            access:
+              vlan: "{{ purple_vlan.id }}"
+        state: merged
+
+    # ───────────────────────────────────────────────────────────────────────────
+    # TASK 1C: Configure Ethernet1/4 as L2 access port in VLAN 20
+    #          (This port connects to linux-client4)
+    # ───────────────────────────────────────────────────────────────────────────
+    
+    - name: "TASK 1C: Configure Eth1/4 (to client4) as L2 in VLAN 20"
+      cisco.nxos.nxos_l2_interfaces:
+        config:
+          - name: "Ethernet1/4"
+            # TODO: What should the access vlan be?
+            # This needs to match purple_vlan.id
+            access:
+              vlan: "{{ purple_vlan.id }}"
+        state: merged
+
+    # ───────────────────────────────────────────────────────────────────────────
+    # TASK 1D: Enable the interfaces (no shutdown)
+    # ───────────────────────────────────────────────────────────────────────────
+    
+    - name: "TASK 1D: Enable Eth1/3 and Eth1/4 (no shutdown)"
+      cisco.nxos.nxos_interfaces:
+        config:
+          - name: "{{ item }}"
+            enabled: true
+        state: merged
+      loop:
+        - "Ethernet1/3"
+        - "Ethernet1/4"

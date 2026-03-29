@@ -1,0 +1,34 @@
+# ============================================================================
+# TASK 1: Inventory Reference - SOLUTION
+# ============================================================================
+# This is the COMPLETED inventory. Compare your work against this file.
+# ============================================================================
+
+all:
+  children:
+    # ─────────────────────────────────────────────────────────────────────────
+    # NXOS GROUP: Cisco Nexus 9000v switches (n9k-ce01, n9k-ce02)
+    # These are the ORANGE devices in our topology
+    # ─────────────────────────────────────────────────────────────────────────
+    nxos:
+      vars:
+        ansible_network_os: cisco.nxos.nxos
+        ansible_connection: network_cli
+        ansible_user: admin
+        ansible_ssh_private_key_file: ~/.ssh/id_ed25519
+        ansible_ssh_extra_args: >-
+          -o KexAlgorithms=+diffie-hellman-group-exchange-sha1,diffie-hellman-group14-sha1
+          -o HostKeyAlgorithms=+ssh-rsa
+      
+      hosts:
+        n9k-ce01:
+          ansible_host: 172.20.20.30
+        
+        n9k-ce02:
+          ansible_host: 172.20.20.31
+
+  vars:
+    ansible_host_key_checking: false
+    ansible_ssh_common_args: >-
+      -o StrictHostKeyChecking=no
+      -o UserKnownHostsFile=/dev/null

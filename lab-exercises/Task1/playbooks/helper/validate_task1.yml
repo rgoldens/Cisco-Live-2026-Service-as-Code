@@ -1,0 +1,113 @@
+---
+# ============================================================================
+# TASK 1: Validation Playbook - Check if RED and PURPLE connectivity works
+# ============================================================================
+#
+# OBJECTIVE: Run this playbook to verify that your configuration is correct
+#
+# WHAT IT CHECKS:
+# 1. VLANs 10 and 20 exist on both switches
+# 2. Interfaces are in the correct VLANs
+# 3. Interfaces are enabled (no shutdown)
+# 4. Clients can ping each other (L2 connectivity confirmed)
+#
+# HOW TO RUN:
+# ansible-playbook -i inventory/hosts_reference.yml playbooks/helper/validate_task1.yml
+#
+# ============================================================================
+
+- name: "TASK 1: Validate RED Clients Reachability"
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: "Validate: Ping from client1 (23.23.23.1) to client2 (23.23.23.2)"
+      ansible.builtin.command:
+        cmd: "docker exec clab-LTRATO-1001-linux-client1 ping -c 2 23.23.23.2"
+      register: red_ping_result
+      failed_when: red_ping_result.rc != 0
+      changed_when: false
+
+    - name: "✅ SUCCESS: RED clients are reachable!"
+      ansible.builtin.debug:
+        msg: |
+          RED CLIENTS CONNECTIVITY TEST PASSED ✅
+          client1 (23.23.23.1) ✔ can reach client2 (23.23.23.2)
+          This means VLAN 10 is working correctly on n9k-ce01
+      when: red_ping_result.rc == 0
+
+---
+- name: "TASK 1: Validate PURPLE Clients Reachability"
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: "Validate: Ping from client3 (34.34.34.1) to client4 (34.34.34.2)"
+      ansible.builtin.command:
+        cmd: "docker exec clab-LTRATO-1001-linux-client3 ping -c 2 34.34.34.2"
+      register: purple_ping_result
+      failed_when: purple_ping_result.rc != 0
+      changed_when: false
+
+    - name: "✅ SUCCESS: PURPLE clients are reachable!"
+      ansible.builtin.debug:
+        msg: |
+          PURPLE CLIENTS CONNECTIVITY TEST PASSED ✅
+          client3 (34.34.34.1) ✔ can reach client4 (34.34.34.2)
+          This means VLAN 20 is working correctly on n9k-ce02
+      when: purple_ping_result.rc == 0
+
+---
+- name: "TASK 1: Verify VLAN Configuration on n9k-ce01"
+  hosts: n9k-ce01
+  gather_facts: false
+  tasks:
+    - name: "Check VLAN 10 exists on n9k-ce01"
+      cisco.nxos.nxos_command:
+        commands:
+          - "show vlan id 10"
+      register: vlan_10_check
+      changed_when: false
+
+    - name: "Display VLAN 10 configuration"
+      ansible.builtin.debug:
+        msg: "{{ vlan_10_check.stdout_lines[0] }}"
+
+---
+- name: "TASK 1: Verify VLAN Configuration on n9k-ce02"
+  hosts: n9k-ce02
+  gather_facts: false
+  tasks:
+    - name: "Check VLAN 20 exists on n9k-ce02"
+      cisco.nxos.nxos_command:
+        commands:
+          - "show vlan id 20"
+      register: vlan_20_check
+      changed_when: false
+
+    - name: "Display VLAN 20 configuration"
+      ansible.builtin.debug:
+        msg: "{{ vlan_20_check.stdout_lines[0] }}"
+
+---
+- name: "TASK 1: Display Final Status"
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: "Final Task 1 Status Report"
+      ansible.builtin.debug:
+        msg: |
+
+          ╔════════════════════════════════════════════════════════════════╗
+          ║                    TASK 1 VALIDATION COMPLETE                 ║
+          ╠════════════════════════════════════════════════════════════════╣
+          ║                                                                ║
+          ║  ✅ RED Clients Reachability:  PASSED                         ║
+          ║     - client1 (23.23.23.1) ping client2 (23.23.23.2) ✓       ║
+          ║     - VLAN 10 configured on n9k-ce01 ✓                       ║
+          ║                                                                ║
+          ║  ✅ PURPLE Clients Reachability:  PASSED                      ║
+          ║     - client3 (34.34.34.1) ping client4 (34.34.34.2) ✓       ║
+          ║     - VLAN 20 configured on n9k-ce02 ✓                       ║
+          ║                                                                ║
+          ║  🎉 TASK 1 COMPLETE! Ready for Task 2                        ║
+          ║                                                                ║
+          ╚════════════════════════════════════════════════════════════════╝

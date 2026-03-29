@@ -1,0 +1,77 @@
+# ============================================================================
+# TASK 1: Inventory Template - Student Exercise
+# ============================================================================
+# 
+# OBJECTIVE: Build the Ansible inventory that defines which devices to 
+#            configure and how to reach them.
+#
+# WHAT YOU NEED TO DO:
+# 1. Replace ALL device IPs with the MANAGEMENT IPs from your lab
+# 2. Replace device NAMES if different (usually they match the container names)
+# 3. Verify ANSIBLE_USER credentials are correct for each device type
+#
+# WHY THIS MATTERS:
+# - Inventory tells Ansible which devices exist and how to connect to them
+# - Without correct IPs/credentials, playbooks can't reach devices
+# - This is ALWAYS the first step in automation - knowing what you're managing
+#
+# ============================================================================
+
+all:
+  children:
+    # ─────────────────────────────────────────────────────────────────────────
+    # NXOS GROUP: Cisco Nexus 9000v switches (n9k-ce01, n9k-ce02)
+    # These are the ORANGE devices in our topology
+    # ─────────────────────────────────────────────────────────────────────────
+    nxos:
+      vars:
+        # Set the Ansible network OS for NXOS devices
+        # This tells Ansible which modules and connection types to use
+        ansible_network_os: cisco.nxos.nxos
+        
+        # Set connection type to network_cli (standard for Cisco devices)
+        # This means "connect via SSH and use the command-line interface"
+        ansible_connection: network_cli
+        
+        # Default username for NXOS devices
+        # (can be overridden per-host if needed)
+        ansible_user: admin
+        
+        # SSH key for ed25519 (modern encryption)
+        # Required for NXOS in this lab
+        ansible_ssh_private_key_file: ~/.ssh/id_ed25519
+        
+        # NXOS requires legacy SSH algorithms to work with vrnetlab
+        # (This is a vrnetlab limitation, not NXOS-specific)
+        ansible_ssh_extra_args: >-
+          -o KexAlgorithms=+diffie-hellman-group-exchange-sha1,diffie-hellman-group14-sha1
+          -o HostKeyAlgorithms=+ssh-rsa
+      
+      hosts:
+        # RED side switch (connects to client1 and client2)
+        n9k-ce01:
+          # TODO: Replace THIS_IP with the management IP of n9k-ce01
+          # Hint: It starts with 172.20.20...
+          # Why: Ansible needs this IP to SSH into the device
+          ansible_host: THIS_IP_FOR_N9K_CE01
+        
+        # PURPLE side switch (connects to client3 and client4)
+        n9k-ce02:
+          # TODO: Replace THIS_IP with the management IP of n9k-ce02
+          # Hint: It starts with 172.20.20...
+          # Why: Ansible needs this IP to SSH into the device
+          ansible_host: THIS_IP_FOR_N9K_CE02
+
+  # ───────────────────────────────────────────────────────────────────────────
+  # GLOBAL VARIABLES: Apply to ALL devices in the 'all' group
+  # ───────────────────────────────────────────────────────────────────────────
+  vars:
+    # Disable host key checking (for lab environment, NOT production)
+    # In production: verify SSH keys for security
+    ansible_host_key_checking: false
+    
+    # SSH arguments applied to all connections
+    # These make SSH more permissive for the lab (again, not production)
+    ansible_ssh_common_args: >-
+      -o StrictHostKeyChecking=no
+      -o UserKnownHostsFile=/dev/null
