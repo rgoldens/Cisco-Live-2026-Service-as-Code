@@ -1,149 +1,164 @@
-# Task 2: IS-IS with Area Border Router (ABR) Design
+# Task 2: ISIS Configuration via Ansible
 
-**Duration:** 60 minutes  
-**Level:** Intermediate  
-**Devices:** CSR-PE01, CSR-PE02, N9K-CE01, N9K-CE02, XRd01, XRd02 (via IS-IS)  
-**Goal:** Enable RED and PURPLE clients to reach their respective CSR PE loopbacks via IS-IS routing
+**Time:** ~1 hour  
+**Devices:** CSR-PE01, CSR-PE02, N9K-CE01, N9K-CE02  
+**Goal:** Deploy ISIS routing between CSRs and N9Ks so clients can reach PE loopbacks
 
 ---
 
-## 📌 Quick Start
+## 📋 5-Step Learning Track
 
-### Prerequisites
-- Task 1 complete (clients have IPs, VLANs configured)
-- You can SSH to CSRs and N9Ks
-- Ansible is available in lab environment
-
-### Deploy Task 2
+### **Step 1: Review Inventory** (5 min)
+Understand which devices you're configuring.
 
 ```bash
 cd lab-exercises/Task2
+cat inventory/hosts.yml | grep -A 20 "^all:"
+```
 
-# Run the master playbook
-ansible-playbook -i inventory/hosts.yml playbooks/00_deploy_task2.yml
+**Look for:** CSR and N9K device groups with their IP addresses.
 
-# Or run individually:
+---
+
+### **Step 2: Examine Variables** (10 min)
+Check the per-device configuration parameters.
+
+```bash
+# View CSR variables
+cat group_vars/csr/csr-pe01.yml
+cat group_vars/csr/csr-pe02.yml
+
+# View N9K variables
+cat group_vars/nxos/n9k-ce01.yml
+cat group_vars/nxos/n9k-ce02.yml
+```
+
+**What to look for:**
+- `isis_router_name` — e.g., `CORE`, `CUSTOMER_RED`
+- `isis_net_address` — ISIS network addresses for each device/area
+- `isis_level` — `level-1-only` (CE) or `level-2-only` (PE)
+
+---
+
+### **Step 3: Study Playbooks** (20 min)
+Understand how Ansible configures each device type.
+
+```bash
+# CSR playbook (configures PE devices)
+cat playbooks/01_deploy_isis_csr.yml
+
+# N9K playbook (configures CE devices)
+cat playbooks/02_deploy_isis_nxos.yml
+
+# Validation playbook
+cat playbooks/03_validate_isis.yml
+```
+
+**Key Ansible Concepts:**
+- `ios_config` module — sends commands to CSRs
+- `nxos_config` module — sends commands to N9Ks
+- `when:` conditions — runs tasks only on specific devices
+- Variables — templated into configuration commands
+
+---
+
+### **Step 4: Run Playbooks** (15 min)
+Deploy the configuration.
+
+```bash
+# Deploy to CSRs
 ansible-playbook -i inventory/hosts.yml playbooks/01_deploy_isis_csr.yml
+
+# Deploy to N9Ks
 ansible-playbook -i inventory/hosts.yml playbooks/02_deploy_isis_nxos.yml
-ansible-playbook -i inventory/hosts.yml playbooks/03_validate_isis.yml
-```
 
-### Validate Results
-
-**On RED clients (linux-client1, linux-client2):**
-```bash
-ping 192.168.10.11  # Should get REPLY
-```
-
-**On PURPLE clients (linux-client3, linux-client4):**
-```bash
-ping 192.168.10.12  # Should get REPLY
-```
-
-**On CSRs:**
-```bash
-show isis neighbors          # Verify adjacencies
-show isis database           # Verify database
-show ip route isis           # Verify learned routes
-```
-
-**On N9Ks:**
-```bash
-show isis neighbors          # Verify adjacencies
-show isis database           # Verify database
-show ip route isis           # Verify learned routes
+# Watch for "ok" or "changed" status — no "failed"
 ```
 
 ---
 
-## 📂 Directory Structure
+### **Step 5: Validate Configuration** (10 min)
+Confirm ISIS is working.
+
+```bash
+# Run validation playbook
+ansible-playbook -i inventory/hosts.yml playbooks/03_validate_isis.yml
+
+# Manually verify on devices:
+# SSH to CSR and check:
+ssh admin@clab-LTRATO-1001-csr-pe01
+  show isis neighbors
+  show ip route isis
+
+# SSH to N9K and check:
+ssh admin@clab-LTRATO-1001-n9k-ce01
+  show isis neighbors
+  show ip route isis
+
+# Test client connectivity:
+ssh root@clab-LTRATO-1001-linux-client1
+  ping 192.168.10.11
+  ping 192.168.10.12
+```
+
+**Expected Results:**
+- ✅ ISIS neighbors appear in `show isis neighbors`
+- ✅ Loopback routes learned via ISIS (`show ip route isis`)
+- ✅ Clients can ping PE loopbacks
+
+---
+
+## 📂 File Structure
 
 ```
 Task2/
-├── Task2-ISISABRGuide.md          ← Comprehensive student guide (NEXT)
-├── README.md                      ← This file
-├── docs/
-│   ├── isis_concepts.md
-│   ├── abr_design.md
-│   └── troubleshooting.md
+├── README.md                          ← This file
 ├── inventory/
-│   ├── hosts.yml                  ← Device list
+│   ├── hosts.yml                      ← Device list (shared with Task 1)
 │   └── group_vars/
-│       ├── csr/all.yml            ← CSR variables
-│       ├── csr/csr-pe01.yml       ← CSR-PE01 specifics
-│       ├── csr/csr-pe02.yml       ← CSR-PE02 specifics
-│       ├── nxos/all.yml           ← N9K variables
-│       ├── nxos/n9k-ce01.yml      ← N9K-CE01 specifics
-│       └── nxos/n9k-ce02.yml      ← N9K-CE02 specifics
-├── playbooks/
-│   ├── 00_deploy_task2.yml        ← Master orchestration playbook
-│   ├── 01_deploy_isis_csr.yml     ← Deploy CSR configuration
-│   ├── 02_deploy_isis_nxos.yml    ← Deploy N9K configuration
-│   └── 03_validate_isis.yml       ← Validation tests
-└── roles/
-    ├── csr_isis_abr/
-    │   └── templates/
-    │       └── isis_config.j2      ← CSR config template
-    └── nxos_isis/
-        └── templates/
-            └── isis_config.j2      ← N9K config template
+│       ├── csr/
+│       │   ├── csr-pe01.yml           ← [FILL IN] PE01 ISIS config
+│       │   └── csr-pe02.yml           ← [FILL IN] PE02 ISIS config
+│       └── nxos/
+│           ├── n9k-ce01.yml           ← [FILL IN] CE01 ISIS config
+│           └── n9k-ce02.yml           ← [FILL IN] CE02 ISIS config
+└── playbooks/
+    ├── 01_deploy_isis_csr.yml         ← Deploy to CSRs
+    ├── 02_deploy_isis_nxos.yml        ← Deploy to N9Ks
+    └── 03_validate_isis.yml           ← Verify configuration
 ```
-
----
-
-## 🎯 What You'll Learn
-
-1. **IS-IS Routing Protocol**
-   - How IS-IS discovers neighbors
-   - IS-IS areas and hierarchies
-   - Level 1 vs Level 2
-
-2. **Area Border Routers (ABRs)**
-   - Why ABRs important for network design
-   - How ABRs connect multiple areas
-   - Benefits: isolation, scalability, modularity
-
-3. **Customer Network Segmentation**
-   - Isolating customer routing domains
-   - Why areas prevent cross-customer traffic
-   - Preparation for Task 3's VRF model
-
-4. **Ansible Network Automation**
-   - Multi-device orchestration
-   - Configuration templating
-   - Validation and verification
-
----
-
-## 📋 Learning Objectives
-
-By the end of Task 2, you will:
-- ✅ Understand IS-IS routing and area design
-- ✅ Configure CSRs as Area Border Routers
-- ✅ Deploy IS-IS to customer CEs (N9Ks)
-- ✅ Verify loopback reachability for clients
-- ✅ Validate area isolation and routing
 
 ---
 
 ## 🔄 Connection to Other Tasks
 
-**Built on:** Task 1 (L2 VLAN connectivity, client IPs)  
-**Used by:** Task 3 (Inter-AS Option A, BGP, L3VPN)
+**Builds on:** Task 1 (VLAN connectivity, client IPs)  
+**Foundation for:** Task 3 (BGP routing between XRd and CSR)
 
 ---
 
-## 📖 Next: Read Task2-ISISABRGuide.md
+## 💡 Ansible Concepts You'll See
 
-This README is a quick reference. For comprehensive learning:
-
-1. **Concepts:** Read docs/isis_concepts.md
-2. **Architecture:** Read docs/abr_design.md
-3. **Full Guide:** Read Task2-ISISABRGuide.md
-4. **Troubleshooting:** Read docs/troubleshooting.md
+| Concept | Where | Purpose |
+|---------|-------|---------|
+| **Inventory groups** | `hosts.yml` | Organize devices by type (csr, nxos, clients) |
+| **Group variables** | `group_vars/csr/` | Define per-device ISIS configuration |
+| **Conditional tasks** | `when: inventory_hostname == 'csr-pe01'` | Run config on specific devices |
+| **Modules** | `ios_config`, `nxos_config` | Send commands to network devices |
+| **Jinja2 templates** | Inside playbooks | Dynamically generate commands from variables |
 
 ---
 
-## ❓ Questions?
+## ❓ Troubleshooting
 
-Refer to the comprehensive guide: `Task2-ISISABRGuide.md`
+**Playbook fails:**  
+→ Check `ansible-playbook` output for error messages  
+→ Verify SSH works: `ssh admin@device-ip "show version"`
+
+**ISIS neighbors don't appear:**  
+→ Verify interfaces are up: `show int status`  
+→ Check ISIS is enabled: `show isis process`
+
+**Clients can't ping PE:**  
+→ Check routes exist: `show ip route isis`  
+→ Verify firewall/ACLs not blocking ICMP

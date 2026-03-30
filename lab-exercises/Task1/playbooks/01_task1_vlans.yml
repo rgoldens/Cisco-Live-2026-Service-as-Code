@@ -1,0 +1,123 @@
+---
+# Task 1 Playbook: VLAN Configuration for N9K Switches
+#
+# Purpose:
+# - Create VLANs (10 for RED, 20 for PURPLE)
+# - Configure switch interfaces as access ports
+# - Assign interfaces to their respective VLANs
+#
+# Result:
+# - RED clients (1, 2) can ping each other via VLAN 10
+# - PURPLE clients (3, 4) can ping each other via VLAN 20
+#
+# This playbook targets the 'nxos' group, which includes n9k-ce01 and n9k-ce02
+# Variables come from group_vars/nxos.yml
+
+- name: Task 1 - VLAN Configuration
+  hosts: nxos
+  gather_facts: no
+
+  tasks:
+    # =========================================================================
+    # SECTION 1: Create VLANs
+    # =========================================================================
+    # What this does:  Creates VLAN 10 (RED) and VLAN 20 (PURPLE)
+    # Why:             VLANs isolate traffic - clients in same VLAN can reach each other
+    # How:             Loop through the 'vlans' list from group_vars/nxos.yml
+    #                  For each VLAN, create it on the target device
+    # Note:            state: present = create if not exists (idempotent)
+    # =========================================================================
+
+    - name: Create VLAN 10 (RED)
+      cisco.nxos.nxos_vlans:
+        config:
+          - vlan_id: 10
+            name: RED_CLIENTS
+        state: merged
+
+    - name: Create VLAN 20 (PURPLE)
+      cisco.nxos.nxos_vlans:
+        config:
+          - vlan_id: 20
+            name: PURPLE_CLIENTS
+        state: merged
+
+    # =========================================================================
+    # SECTION 2: Configure Access Ports (n9k-ce01 - RED)
+    # =========================================================================
+    # What this does:  Set Ethernet1/3 and Ethernet1/4 to access mode in VLAN 10
+    # Why:             Access mode = endpoint devices (clients), not trunk links
+    # How:             Use nxos_l2_interfaces module for N9K
+    # =========================================================================
+
+    - name: Configure RED access ports on n9k-ce01
+      cisco.nxos.nxos_l2_interfaces:
+        config:
+          - name: "{{ item }}"
+            mode: access
+            access:
+              vlan: 10
+        state: merged
+      when: inventory_hostname == "n9k-ce01"
+      loop:
+        - Ethernet1/3
+        - Ethernet1/4
+
+    # =========================================================================
+    # SECTION 3: Configure Access Ports (n9k-ce02 - PURPLE)
+    # =========================================================================
+    # What this does:  Set Ethernet1/3 and Ethernet1/4 to access mode in VLAN 20
+    # Why:             Isolates PURPLE clients in different VLAN than RED
+    # =========================================================================
+
+    - name: Configure PURPLE access ports on n9k-ce02
+      cisco.nxos.nxos_l2_interfaces:
+        config:
+          - name: "{{ item }}"
+            mode: access
+            access:
+              vlan: 20
+        state: merged
+      when: inventory_hostname == "n9k-ce02"
+      loop:
+        - Ethernet1/3
+        - Ethernet1/4
+
+    # =========================================================================
+    # SECTION 4: Verify Configuration
+    # =========================================================================
+    # What this does:  Checks that VLAN exists on the device
+    # Why:             Validation that config was applied correctly
+    # =========================================================================
+
+    - name: Verify VLAN 10 creation
+      cisco.nxos.nxos_command:
+        commands:
+          - show vlan id 10
+      register: vlan_10_check
+
+    - name: Verify VLAN 20 creation
+      cisco.nxos.nxos_command:
+        commands:
+          - show vlan id 20
+      register: vlan_20_check
+
+    - name: Display VLAN verification results
+      debug:
+        msg: |
+          ✅ Configuration Verified on {{ inventory_hostname }}
+          
+          VLAN 10 Status:
+          {{ vlan_10_check.stdout[0] | regex_search('RED_CLIENTS.*active', multiline=True) }}
+          
+          VLAN 20 Status:
+          {{ vlan_20_check.stdout[0] | regex_search('PURPLE_CLIENTS.*active', multiline=True) }}
+
+  # =========================================================================
+  # END OF PLAYBOOK
+  # =========================================================================
+  # When this playbook finishes:
+  # 1. Both VLANs created on n9k-ce01 and n9k-ce02
+  # 2. All 4 client-facing interfaces configured as access ports
+  # 3. RED clients in VLAN 10, PURPLE clients in VLAN 20
+  # 4. Interfaces are UP and passing traffic in their VLANs

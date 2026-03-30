@@ -1,0 +1,38 @@
+# NXOS (Nexus 9K) Group Variables
+---
+
+# IS-IS Configuration for N9K CEs
+
+isis_config:
+  # N9Ks will have one IS-IS instance:
+  # - CUSTOMER area (level 1) - connects to CSR PE via Eth1/1
+  # - Will redistribute connected routes so clients' subnets are visible
+  
+  customer_area:
+    level_type: "level-1-only"
+    metric_style: "wide"
+    advertise_routes:
+      - type: "connected"
+        description: "Client VLAN subnets"
+
+# Interface IS-IS Settings
+interfaces:
+  eth1_1:
+    # Customer interface connecting to CSR PE
+    description: "TO_CSR_PE"
+    isis_level: "L1"
+    isis_passive: false
+    
+  loopback0:
+    description: "N9K_Router_ID"
+    isis_level: "L1"
+    isis_passive: true
+    
+  # Client-facing interfaces - NO ISIS
+  eth1_3:
+    description: "TO_CLIENT"
+    isis_enabled: false
+    
+  eth1_4:
+    description: "TO_CLIENT"
+    isis_enabled: false

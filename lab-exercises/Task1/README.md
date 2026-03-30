@@ -1,144 +1,228 @@
-# TASK 1: Reachability Service - Red & Purple Client Configuration
+# Task 1: VLAN Configuration via Ansible
 
-## Quick Start
+**Goal:** Learn Ansible fundamentals by automating VLAN configuration on two N9K switches.
 
-**Objective:** Enable Layer 2 connectivity between RED clients and between PURPLE clients using Ansible
-
-**Time:** 45 minutes  
-**Difficulty:** Beginner  
-
-## Files in This Directory
-
-```
-Task1/
-├── Task1-Ansible.md               ← START HERE (complete guide)
-├── README.md                       ← This file
-├── inventory/
-│   ├── hosts_template.yml          ← Students fill in IPs here
-│   ├── hosts_reference.yml         ← Solution
-│   ├── group_vars_nxos_template.yml  ← Students fill in variables
-│   └── group_vars_nxos_reference.yml ← Solution
-└── playbooks/
-    ├── student/
-    │   ├── ce01_student_template.yml  ← Students complete this
-    │   └── ce02_student_template.yml  ← Students complete this
-    ├── solution/
-    │   ├── ce01_solution.yml          ← Reference solution
-    │   └── ce02_solution.yml          ← Reference solution
-    └── helper/
-        └── validate_task1.yml         ← Validation playbook
-```
-
-## Lab Topology
-
-```
-RED CLIENTS                      ORANGE                      GREEN              BLUE
-client1 (23.23.23.1)    ─eth1←→Eth1/3─┐
-                                  ├─→ n9k-ce01 ──Eth1/1──→ csr-pe01
-client2 (23.23.23.2)    ─eth1←→Eth1/4─┘                  (to xrd01)
-
-client3 (34.34.34.1)    ─eth1←→Eth1/3─┐
-                                  ├─→ n9k-ce02 ──Eth1/1──→ csr-pe02
-client4 (34.34.34.2)    ─eth1←→Eth1/4─┘                  (to xrd02)
-```
-
-## Steps to Complete Task 1
-
-### 1. Fill in Inventory (10 min)
-```bash
-# Edit inventory/hosts_template.yml
-# Replace management IPs for n9k-ce01 and n9k-ce02
-```
-
-### 2. Create Variables (5 min)
-```bash
-# Create inventory/group_vars/nxos.yml 
-# Copy from inventory/group_vars_nxos_template.yml
-# Verify VLAN IDs: 10 for RED, 20 for PURPLE
-```
-
-### 3. Complete Student Playbooks (10 min)
-```bash
-# Edit playbooks/student/ce01_student_template.yml
-# Edit playbooks/student/ce02_student_template.yml
-# Answer all TODOs by comparing to solutions
-```
-
-### 4. Run Playbooks (10 min)
-```bash
-ansible-playbook -i inventory/hosts_reference.yml \
-  playbooks/solution/ce01_solution.yml \
-  -e @inventory/group_vars/nxos.yml
-
-ansible-playbook -i inventory/hosts_reference.yml \
-  playbooks/solution/ce02_solution.yml \
-  -e @inventory/group_vars/nxos.yml
-```
-
-### 5. Validate (5 min)
-```bash
-# Test RED clients ping
-docker exec clab-LTRATO-1001-linux-client1 ping -c 2 23.23.23.2
-
-# Test PURPLE clients ping
-docker exec clab-LTRATO-1001-linux-client3 ping -c 2 34.34.34.2
-
-# Both should show: "2 packets transmitted, 2 received"
-```
-
-## Success Criteria
-
-✅ RED clients (client1 & client2) can ping each other  
-✅ PURPLE clients (client3 & client4) can ping each other  
-✅ VLAN 10 exists on n9k-ce01 with Eth1/3 and Eth1/4  
-✅ VLAN 20 exists on n9k-ce02 with Eth1/3 and Eth1/4  
-
-## Key Commands
-
-```bash
-# Test inventory
-ansible all -i inventory/hosts_reference.yml --list-hosts
-
-# Ping devices
-ansible all -i inventory/hosts_reference.yml -m ping
-
-# Run playbook in verbose mode
-ansible-playbook -i inventory/hosts_reference.yml playbooks/solution/ce01_solution.yml -v
-
-# Check VLAN on switch
-ssh admin@172.20.20.30
-n9k-ce01# show vlan id 10
-```
-
-## Troubleshooting
-
-| Issue | Solution |
-|-------|----------|
-| `Permission denied` | Check SSH key path: `~/.ssh/id_ed25519` |
-| `Unreachable` | Verify inventory IPs are correct (172.20.20.30, 172.20.20.31) |
-| `Clients can't ping` | Run validation playbook to check VLAN config |
-| `Nothing changes on rerun` | This is normal! Ansible is idempotent |
-
-## What You'll Learn
-
-- What is Ansible and how to write playbooks
-- How to build an inventory file
-- How to use variables in Ansible
-- Layer 2 switching concepts (VLANs, access ports)
-- How to validate network configuration
-- Infrastructure as Code principles
-
-## Next Steps
-
-After Task 1 succeeds:
-→ Proceed to **Task 2: Loopback Provisioning**
-
-## Resources
-
-- Full guide: `Task1-Ansible.md`
-- Ansible docs: https://docs.ansible.com/ansible/latest/
-- Cisco NXOS modules: https://docs.ansible.com/ansible/latest/collections/cisco/nxos/
+**Time:** ~1 hour  
+**Focus:** Ansible skills (inventory, variables, playbooks, modules)
 
 ---
 
-**Ready?** Start with `Task1-Ansible.md` 🚀
+## What You're Building
+
+Configure two Nexus switches to create isolated network segments:
+
+| Segment | VLAN | Clients | Purpose |
+|---------|------|---------|---------|
+| **RED** | 10 | client1, client2 | Can reach each other (same VLAN) |
+| **PURPLE** | 20 | client3, client4 | Can reach each other (same VLAN) |
+
+**Why:** Demonstrates how Ansible automates network configuration instead of manual CLI commands.
+
+---
+
+## 5-Step Track (1 hour)
+
+| Step | Task | Time | What You'll Do |
+|------|------|------|---|
+| **1** | Review Inventory | 5 min | Read `../inventory/hosts.yml` — understand device groups |
+| **2** | Fill Variables | 10 min | Edit `group_vars/nxos.yml` — add VLAN IDs and port assignments |
+| **3** | Study Playbook | 15 min | Review `playbooks/01_task1_vlans.yml` — understand how Ansible loops/templates work |
+| **4** | Run Playbook | 10 min | Execute playbook → deploys VLAN config to both switches |
+| **5** | Validate | 10 min | Run ping tests from client containers → verify connectivity |
+| **+** | Buffer | 10 min | Time for questions/troubleshooting |
+
+---
+
+## File Structure
+
+```
+Task1/
+├── README.md (this file)
+├── PLAYBOOK_WALKTHROUGH.md (detailed playbook explanation)
+├── group_vars/
+│   └── nxos.yml (← YOU FILL THIS IN)
+└── playbooks/
+    └── 01_task1_vlans.yml (pre-written, well-commented)
+```
+
+---
+
+## Step 1: Review Inventory (5 min) ✅
+
+**File:** `../inventory/hosts.yml`
+
+```bash
+cat ../inventory/hosts.yml | grep -A 10 "nxos:"
+```
+
+You'll see:
+```yaml
+nxos:
+  hosts:
+    n9k-ce01:
+      ansible_host: 172.20.20.30
+    n9k-ce02:
+      ansible_host: 172.20.20.31
+  vars:
+    ansible_user: admin
+    ansible_password: admin
+```
+
+**What this means:**
+- Both N9K switches are in the `nxos` **group**
+- Shared credentials (admin/admin) for the group
+- Individual host entries with management IPs
+- Playbooks targeting `hosts: nxos` will run on both switches
+
+---
+
+## Step 2: Fill Variables (10 min) 📝
+
+**File:** `group_vars/nxos.yml`
+
+Template structure:
+```yaml
+vlans:
+  - vlan_id: <RED_ID>
+    name: RED_CLIENTS
+    interfaces:
+      - Ethernet1/3
+      - Ethernet1/4
+  
+  - vlan_id: <PURPLE_ID>
+    name: PURPLE_CLIENTS
+    interfaces:
+      - Ethernet1/3
+      - Ethernet1/4
+```
+
+**Your job:**
+1. Replace `<RED_ID>` with `10`
+2. Replace `<PURPLE_ID>` with `20`
+3. Save file
+
+**Concept:** Variables are shared by all devices in the `nxos` group. The playbook will apply this to both n9k-ce01 and n9k-ce02.
+
+---
+
+## Step 3: Study Playbook (15 min) 📖
+
+**File:** `playbooks/01_task1_vlans.yml`
+
+Key sections:
+
+### Section 1: Create VLANs
+```yaml
+- name: Create VLANs
+  cisco.nxos.nxos_vlans:
+    vlan_id: "{{ item.vlan_id }}"
+    name: "{{ item.name }}"
+    state: present
+  loop: "{{ vlans }}"
+```
+
+**What it does:**
+- `loop: "{{ vlans }}"` — repeat for each VLAN in your variables
+- `{{ item.vlan_id }}` — Jinja2 template extracts ID from current loop item
+- `state: present` — create VLAN if it doesn't exist (idempotent)
+
+**In plain English:** "For each VLAN in my variables, create it on this device"
+
+### Section 2: Configure Access Ports
+```yaml
+- name: Configure access ports
+  cisco.nxos.nxos_l2_interfaces:
+    name: "{{ item.interface }}"
+    mode: access
+    access:
+      vlan: "{{ item.vlan_id }}"
+  loop: "{{ vlans | selectattr('interfaces') }}"
+```
+
+**What it does:**
+- Iterates through interfaces from each VLAN
+- Sets mode to `access` (instead of trunk)
+- Assigns the interface to the correct VLAN
+
+**In plain English:** "Put each interface in access mode and assign it to its VLAN"
+
+---
+
+## Step 4: Run Playbook (10 min) ▶️
+
+```bash
+cd ~/lab-exercises/Task1
+
+ansible-playbook -i ../inventory/hosts.yml playbooks/01_task1_vlans.yml -v
+```
+
+**What you'll see:**
+```
+TASK [Create VLANs] ****
+changed: [n9k-ce01] => (item={'vlan_id': 10, ...})
+changed: [n9k-ce01] => (item={'vlan_id': 20, ...})
+changed: [n9k-ce02] => (item={'vlan_id': 10, ...})
+changed: [n9k-ce02] => (item={'vlan_id': 20, ...})
+
+TASK [Configure access ports] ****
+changed: [n9k-ce01] ...
+changed: [n9k-ce02] ...
+
+PLAY RECAP ***
+n9k-ce01: ok=2 changed=2 unreachable=0 failed=0
+n9k-ce02: ok=2 changed=2 unreachable=0 failed=0
+```
+
+**Interpretation:**
+- `changed=2` = 2 tasks modified device config
+- `ok=2` = all tasks succeeded
+- If you see `failed=1`, check your variables file for typos
+
+---
+
+## Step 5: Validate (10 min) ✅
+
+Test RED clients (should reach each other):
+```bash
+ansible linux-client1 -i ../inventory/hosts.yml -m raw -a "ping -c 3 172.20.20.41"
+```
+
+Expected output: `3 received, 0% loss`
+
+Test PURPLE clients (should reach each other):
+```bash
+ansible linux-client3 -i ../inventory/hosts.yml -m raw -a "ping -c 3 172.20.20.43"
+```
+
+Expected output: `3 received, 0% loss`
+
+**If pings fail:**
+1. Verify playbook succeeded (check output above)
+2. Check variables file for typos
+3. SSH to switch: `ssh admin@172.20.20.30` then `show vlan` to debug
+
+---
+
+## Ansible Concepts You've Just Used
+
+| Concept | You used it for | Where |
+|---------|-----------------|-------|
+| **Inventory** | Define which devices exist | `../inventory/hosts.yml` |
+| **Groups** | Organize devices (nxos, clients) | `nxos:` section |
+| **Variables** | Share data across devices | `group_vars/nxos.yml` |
+| **Jinja2 templates** | Substitute values dynamically | `{{ item.vlan_id }}` |
+| **Loops** | Repeat tasks | `loop: "{{ vlans }}"` |
+| **Modules** | Perform specific actions | `nxos_vlans`, `nxos_l2_interfaces` |
+| **Idempotency** | Safe re-runs | `state: present` |
+| **Hosts targeting** | Run on specific devices | `hosts: nxos` in playbook |
+
+---
+
+## Task 1 Complete ✅
+
+When all 3 success criteria pass:
+- ✅ Playbook showed `changed=X` with no failures
+- ✅ RED clients ping test = 0% loss
+- ✅ PURPLE clients ping test = 0% loss
+
+**Next:** Proceed to `Task 2/` for ISIS routing configuration!

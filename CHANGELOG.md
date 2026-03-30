@@ -3039,6 +3039,7 @@ TOTAL: SUCCESS (all adjacencies up, all routes reachable)
 | 0.6.0 | 2026-03-30 | Complete IS-ISIS + ABR architecture | 3 playbooks | 5/5 UP | ✅ Deployed & tested |
 | 0.6.1 | 2026-03-30 | Ansible SSH/KEX refactor (sshpass solution) | 2 playbooks updated | 5/5 UP | ✅ Validated |
 | 0.6.2 | 2026-03-30 | Comprehensive validation & verification | 1 validation playbook | 5/5 UP detailed | ✅ All verified |
+| 0.6.3 | 2026-03-30 | Student/instructor documentation separation | All playbooks | N/A | ✅ Ready for students |
 
 **Combined improvements:** Task2 integrated from bare topology to fully operational IS-ISIS domain with complete Ansible automation, addressing real-world SSH compatibility challenges and demonstrating multi-area routing design.
 
@@ -3046,3 +3047,173 @@ TOTAL: SUCCESS (all adjacencies up, all routes reachable)
 - v0.6.0: Complete functional deployment
 - v0.6.1: SSH compatibility solved
 - v0.6.2: Full validation and verification
+- v0.6.3: Student-ready documentation (SSH hidden)
+
+---
+
+## Version 0.6.3
+
+**Date:** 2026-03-30
+
+### Summary
+Complete student/instructor documentation separation and pre-flight infrastructure validation. Created student-facing guides with ZERO references to SSH or infrastructure complexity. Built one-time instructor setup script to validate all infrastructure before students arrive. Full separation of concerns: students focus on Ansible automation learning, instructors handle all infrastructure management invisible to students.
+
+### 0.6.3.1 — Student Documentation (Clean, SSH-Free)
+
+**Created student-only guides with no infrastructure complexity:**
+
+**File: `lab-exercises/README_STUDENTS.md`** (Primary student entry point)
+- Three simple playbook commands to run
+- Expected success indicators (green checkmarks)
+- Error handling: "Contact your instructor"
+- Total time: ~40 minutes
+- NO SSH references
+- NO infrastructure troubleshooting
+- NO setup required
+
+**File: `lab-exercises/Task1/README.md`** (Updated)
+- VLAN configuration deep-dive
+- Ansible concepts explained
+- Playbook structure walkthrough
+- NO SSH references
+
+**File: `lab-exercises/Task2/README.md`** (Updated)
+- Removed: Pre-Requirement SSH connectivity section
+- Removed: "Important SSH Note" warnings
+- Kept: ISIS configuration concepts, device differences
+- Clean student focus on Ansible learning
+
+**Design principle:** Students run exactly 3 playbooks and see success. Infrastructure is completely hidden.
+
+### 0.6.3.2 — Instructor-Only Setup Automation
+
+**Created: `lab-exercises/INSTRUCTOR_SETUP.sh`**
+
+One-command infrastructure validation script run BEFORE students arrive:
+
+```bash
+./INSTRUCTOR_SETUP.sh
+```
+
+**Validates:**
+- ✅ SSH connectivity to all 6 network devices (CSR, N9K, XRd)
+- ✅ Ansible connectivity to all device groups
+- ✅ Playbook syntax validation (all 3 playbooks)
+- ✅ SSH KEX options configured correctly for CSR legacy algorithms
+- ✅ Reports: Everything ready ✓ or specific issues to fix
+
+**Duration:** ~30 seconds  
+**Result:** Pass/fail report with actionable errors if issues found
+
+**Design:** Instructors run this ONCE before students arrive. If all checks pass, students have zero chance of SSH/connectivity issues.
+
+### 0.6.3.3 — Instructor Deployment Guide
+
+**Created: `lab-exercises/INSTRUCTOR_GUIDE.md`**
+
+Complete instructor reference covering:
+
+**Section 1: Before Students Arrive (5 minutes)**
+- Prerequisites checklist
+- Run `./INSTRUCTOR_SETUP.sh` (the core one-time setup)
+- Verify it passes (infrastructure is ready)
+
+**Section 2: Give Students the Right Materials**
+- ✅ Give: README_STUDENTS.md, Task1/README.md, Task2/README.md
+- ❌ Don't give: SSH_SETUP_GUIDE, PRE-LAB-CHECKLIST, INSTRUCTOR_SETUP
+
+**Section 3: Students Execute (40 minutes)**
+- Three playbook commands students run
+- Success indicators (all green)
+
+**Section 4: Troubleshooting (for instructors only)**
+- Connection refused → Check device reachability
+- Permission denied → Check credentials
+- SSH KEX errors → Already pre-configured, this shouldn't happen
+- Reference INSTRUCTOR_SETUP.sh to debug
+
+**Design:** One clear reference document for instructor workflows, entirely separate from student materials.
+
+### 0.6.3.4 — Infrastructure Pre-Lab (Instructor Only)
+
+**Updated: `lab-exercises/PRE-LAB-CHECKLIST.md`** (Marked "INSTRUCTOR ONLY")
+
+Changed from student-facing guide to instructor reference:
+
+**What changed:**
+- Removed student perspective (no "check your environment" framing)
+- Renamed to "INSTRUCTOR ONLY" in title
+- Kept Step 2: Manual SSH tests with KEX options (for instructor debugging)
+- Kept Step 3: Ansible connectivity tests
+- Purpose: If `INSTRUCTOR_SETUP.sh` fails, use this for manual troubleshooting
+
+**Not given to students** — They have no reason to run manual SSH tests or understand KEX algorithms.
+
+### 0.6.3.5 — Documentation Organization
+
+**Created: `lab-exercises/FILE_ORGANIZATION.md`**
+
+Clear matrix showing:
+- **Give to students:** README_STUDENTS.md, Task1/README.md, Task2/README.md
+- **Keep as instructor:** INSTRUCTOR_GUIDE.md, INSTRUCTOR_SETUP.sh, PRE-LAB-CHECKLIST.md, SSH_SETUP_GUIDE.md
+- Why each document is what color
+- Deployment workflow
+- Quick reference table
+
+**Design:** One reference for "what materials go where" to prevent accidental sharing of infrastructure complexity with students.
+
+### 0.6.3.6 — Deep Technical Reference (Instructor Background)
+
+**Maintained: `lab-exercises/SSH_SETUP_GUIDE.md`** (Unchanged)
+
+Kept as instructor resource explaining:
+- Why CSR uses legacy SSH algorithms
+- What's pre-configured in ansible.cfg
+- How playbooks work around KEX issues
+- Why CSR playbook uses direct SSH vs network_cli
+- (Students never see this — it's background knowledge for instructors only)
+
+### 0.6.3.7 — Student Experience (Complete Separation)
+
+**Before these changes:**
+- Students received PRE-LAB-CHECKLIST with SSH KEX commands
+- Students might see SSH errors
+- Students exposed to infrastructure complexity
+- Confusion about "why is CSR different?"
+
+**After these changes:**
+- Students receive README_STUDENTS.md only
+- Three playbook commands to run
+- All green checkmarks → Success
+- Zero infrastructure awareness
+- Focused on Ansible automation learning
+
+**Expected workflow:**
+1. Instructor reviews INSTRUCTOR_GUIDE.md
+2. Instructor runs `./INSTRUCTOR_SETUP.sh` (all checks pass)
+3. Instructor gives README_STUDENTS.md to students
+4. Students run 3 playbooks (~40 minutes)
+5. All students see success
+6. No SSH debugging, no infrastructure troubleshooting
+
+### Test Results
+
+All playbooks validated again:
+- ✅ Task 1 VLAN deployment: ok=6, changed=1
+- ✅ Task 2 CSR ISIS: ok=7, changed=2
+- ✅ Task 2 N9K ISIS: ok=5, changed=1
+- ✅ All idempotent (run twice confirmed)
+- ✅ Instructor setup script validates all infrastructure
+
+**Files — Version 0.6.3:**
+
+| File | Location | Type | Change |
+|---|---|---|---|
+| lab-exercises/README_STUDENTS.md | GitHub repo | **CREATED** | Main student entry point, 3 playbooks, no SSH |
+| lab-exercises/INSTRUCTOR_SETUP.sh | GitHub repo | **CREATED** | One-command pre-flight validation |
+| lab-exercises/INSTRUCTOR_GUIDE.md | GitHub repo | **CREATED** | Complete instructor deployment reference |
+| lab-exercises/FILE_ORGANIZATION.md | GitHub repo | **CREATED** | Student vs instructor material matrix |
+| lab-exercises/Task2/README.md | GitHub repo | **UPDATED** | Removed SSH pre-requirement section |
+| lab-exercises/PRE-LAB-CHECKLIST.md | GitHub repo | **UPDATED** | Marked "INSTRUCTOR ONLY", simplified |
+| lab-exercises/SSH_SETUP_GUIDE.md | GitHub repo | **MAINTAINED** | Kept as instructor background reference |
+| CHANGELOG.md | GitHub repo | **UPDATED** | Added v0.6.3 section |

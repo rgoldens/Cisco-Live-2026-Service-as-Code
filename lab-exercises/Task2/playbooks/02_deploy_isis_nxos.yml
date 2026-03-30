@@ -1,77 +1,76 @@
 ---
-# Playbook: Deploy IS-IS to N9K CEs
-# Purpose: Configure N9K-CE01 and N9K-CE02 with IS-IS to peer with CSR ABRs
-# Connection: Local with sshpass for legacy SSH algorithm support
+# Playbook: Deploy ISIS Configuration to N9K CEs
+# Purpose: Configure N9K-CE01 and N9K-CE02 with ISIS (level-1-only) to peer with CSR PEs
+# Uses: nxos_config module for Cisco NXOS devices
+# Devices: n9k-ce01 (RED), n9k-ce02 (PURPLE)
 
-- name: Deploy IS-ISIS Configuration to N9K CEs
+- name: Deploy ISIS to N9K CEs
   hosts: nxos
   gather_facts: false
+  
   vars:
-    ansible_command_timeout: 30
+    # Device-to-configuration mapping
+    device_config:
+      n9k-ce01:
+        ce_id: "0021"
+        customer: "RED"
+        customer_isis: "CUSTOMER_RED"
+        customer_net_id: "0001"
+      n9k-ce02:
+        ce_id: "0022"
+        customer: "PURPLE"
+        customer_isis: "CUSTOMER_PURPLE"
+        customer_net_id: "0002"
     
+    # Shorthand for this device's config
+    this_device: "{{ device_config[inventory_hostname] }}"
+  
   tasks:
-    - name: "N9K-{{ inventory_hostname }} | Deploy IS-IS configuration via SSH"
-      shell: |
-        sshpass -p {{ ansible_password }} ssh {{ ssh_options }} {{ ansible_user }}@{{ ansible_host }} << 'EOCONFIG'
-        configure terminal
-        
-        ! ===== ENABLE ISIS FEATURE =====
-        feature isis
-        
-        ! ===== ENABLE {% if ce_site == 'red' %}CUSTOMER_RED{% else %}CUSTOMER_PURPLE{% endif %} IS-ISIS INSTANCE (Level-1) =====
-        router isis {% if ce_site == 'red' %}CUSTOMER_RED{% else %}CUSTOMER_PURPLE{% endif %}
-        
-         net 49.000{% if ce_site == 'red' %}1{% else %}2{% endif %}.0000.0000.0{% if inventory_hostname == 'n9k-ce01' %}101{% else %}102{% endif %}.00
-         is-type level-1-only
-         metric-style wide
-        exit
-        
-        ! ===== ENABLE IS-ISIS ON Eth1/1 (to CSR PE) =====
-        interface Ethernet1/1
-         description TO_CSR_PE
-         ip router isis {% if ce_site == 'red' %}CUSTOMER_RED{% else %}CUSTOMER_PURPLE{% endif %}
-        
-         isis circuit-type level-1
-        exit
-        
-        ! ===== ENABLE IS-ISIS ON Loopback0 (PASSIVE) =====
-        interface loopback0
-         ip router isis {% if ce_site == 'red' %}CUSTOMER_RED{% else %}CUSTOMER_PURPLE{% endif %}
-        
-         isis passive
-        exit
-        
-        ! ===== REDISTRIBUTE CONNECTED ROUTES (CLIENT SUBNETS) =====
-        route-map ALLOW_ALL permit 10
-        exit
-        
-        router isis {% if ce_site == 'red' %}CUSTOMER_RED{% else %}CUSTOMER_PURPLE{% endif %}
-        
-         redistribute connected route-map ALLOW_ALL
-        exit
-        
-        exit
-        copy running-config startup-config
-        EOCONFIG
-      register: ssh_result
+    # Step 1: Enable ISIS feature
+    - name: "{{ inventory_hostname }} | Enable ISIS feature"
+      cisco.nxos.nxos_config:
+        lines:
+          - "feature isis"
       tags:
         - deploy_isis
 
-    - name: "N9K-{{ inventory_hostname }} | Display deployment output"
-      debug:
-        msg: "{{ ssh_result.stdout }}"
+    # Step 2: Configure ISIS instance
+    - name: "{{ inventory_hostname }} | Configure ISIS CUSTOMER instance (level-1-only)"
+      cisco.nxos.nxos_config:
+        lines:
+          - "net 49.{{ this_device.customer_net_id }}.0000.0000.{{ this_device.ce_id }}.00"
+          - "is-type level-1"
+        parents: "router isis {{ this_device.customer_isis }}"
+        match: line
       tags:
-        - debug
+        - deploy_isis
 
-    - name: "N9K-{{ inventory_hostname }} | Verify IS-ISIS configuration deployed"
-      shell: |
-        sshpass -p {{ ansible_password }} ssh {{ ssh_options }} {{ ansible_user }}@{{ ansible_host }} "show run | include 'router isis'"
-      register: verify_result
+    # Step 3: Enable ISIS on Eth1/1 (to CSR PE)
+    - name: "{{ inventory_hostname }} | Enable ISIS on Eth1/1 (to CSR PE)"
+      cisco.nxos.nxos_config:
+        lines:
+          - "description TO_CSR_PE"
+          - "ip router isis {{ this_device.customer_isis }}"
+          - "isis circuit-type level-1"
+        parents: "interface Ethernet1/1"
+        match: line
       tags:
-        - verify
+        - deploy_isis
 
-    - name: "N9K-{{ inventory_hostname }} | Display IS-IS configuration"
-      debug:
-        msg: "{{ verify_result.stdout_lines }}"
+    # Step 4: Enable ISIS on Loopback0 (passive)
+    - name: "{{ inventory_hostname }} | Enable ISIS on Loopback0 (passive - device identity)"
+      cisco.nxos.nxos_config:
+        lines:
+          - "ip router isis {{ this_device.customer_isis }}"
+        parents: "interface Loopback0"
+        match: line
       tags:
-        - verify
+        - deploy_isis
+
+    # Step 5: Save Configuration
+    - name: "{{ inventory_hostname }} | Save running config to startup"
+      cisco.nxos.nxos_command:
+        commands:
+          - "copy running-config startup-config"
+      tags:
+        - deploy_isis

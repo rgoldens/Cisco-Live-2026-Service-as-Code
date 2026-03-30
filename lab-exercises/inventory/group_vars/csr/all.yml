@@ -1,0 +1,41 @@
+# CSR Group Variables - Common for all CSRs
+---
+
+# IS-IS Configuration for CSRs as ABRs
+
+isis_config:
+  # CSR will have two IS-IS instances:
+  # 1. CORE area (level 2) - connects to XRds via Gi2
+  # 2. CUSTOMER area (level 1) - connects to N9K via Gi4
+  
+  core_area:
+    instance_name: "CORE"
+    net_prefix: "49.0000.SP"  # SP Core area
+    level_type: "level-2-only"
+    metric_style: "wide"
+    
+  customer_area:
+    # Will be customized per device (RED/PURPLE)
+    level_type: "level-1-only"
+    metric_style: "wide"
+    summary_routes_advertise: false
+    
+# Interface IS-IS Settings
+interfaces:
+  gi2:
+    # Core interface connecting to XRd backbone
+    description: "TO_XRd_Backbone"
+    isis_area: "CORE"
+    isis_level: "L2"
+    isis_passive: false
+    
+  gi4:
+    # Customer interface connecting to N9K CE
+    description: "TO_N9K_CE"
+    isis_level: "L1"
+    isis_passive: false
+    
+  loopback0:
+    description: "PE_Router_ID"
+    isis_level: "both"
+    isis_passive: true

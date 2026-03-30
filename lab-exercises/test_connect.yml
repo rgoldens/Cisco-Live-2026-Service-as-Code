@@ -1,0 +1,12 @@
+- hosts: csr
+  gather_facts: no
+  tasks:
+    - name: Test simple ping
+      cisco.ios.ios_command:
+        commands:
+          - show version
+      register: result
+    
+    - name: Display result
+      debug:
+        msg: "{{ result }}"

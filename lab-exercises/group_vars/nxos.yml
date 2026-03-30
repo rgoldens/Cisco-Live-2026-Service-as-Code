@@ -1,0 +1,32 @@
+# Task 1 Variables: VLAN Configuration for N9K Switches
+# 
+# This file is loaded automatically for all devices in the 'nxos' group
+# (defined in ../inventory/hosts.yml)
+#
+# Students: Fill in the values below where indicated by [FILL IN]
+
+# VLAN definitions
+vlans:
+  - vlan_id: 10
+    name: RED_CLIENTS
+    description: "RED segment - clients 1 and 2"
+  
+  - vlan_id: 20
+    name: PURPLE_CLIENTS
+    description: "PURPLE segment - clients 3 and 4"
+
+# Interface to VLAN mapping for n9k-ce01
+# (The first N9K switch - RED clients)
+n9k_ce01_vlans:
+  - vlan_id: 10
+    interfaces:
+      - Ethernet1/3  # connects to linux-client1 (RED)
+      - Ethernet1/4  # connects to linux-client2 (RED)
+
+# Interface to VLAN mapping for n9k-ce02
+# (The second N9K switch - PURPLE clients)
+n9k_ce02_vlans:
+  - vlan_id: 20
+    interfaces:
+      - Ethernet1/3  # connects to linux-client3 (PURPLE)
+      - Ethernet1/4  # connects to linux-client4 (PURPLE)

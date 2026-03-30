@@ -1,0 +1,18 @@
+---
+- hosts: csr
+  gather_facts: no
+  connection: local
+  
+  tasks:
+    - name: Test SSH to CSR-PE01
+      shell: |
+        ssh -o HostKeyAlgorithms=ssh-rsa -o PubkeyAcceptedKeyTypes=ssh-rsa \
+            -o KexAlgorithms=diffie-hellman-group14-sha1,diffie-hellman-group-exchange-sha1 \
+            -o StrictHostKeyChecking=no -o ConnectTimeout=5 \
+            admin@{{ ansible_host }} show version | head -10
+      register: result
+      changed_when: false
+    
+    - name: Display output
+      debug:
+        msg: "{{ result.stdout }}"
