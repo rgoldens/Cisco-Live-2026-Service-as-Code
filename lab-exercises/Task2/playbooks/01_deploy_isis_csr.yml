@@ -1,164 +1,82 @@
 ---
 # Playbook: Deploy IS-IS to CSR PEs (ABR Configuration)
 # Purpose: Configure CSR-PE01 and CSR-PE02 as ABRs connecting CORE and CUSTOMER areas
-# Description: 
-#   - CSR-PE01: CORE area (Gi2 to XRd) + CUSTOMER_RED area (Gi4 to N9K-CE01)
-#   - CSR-PE02: CORE area (Gi2 to XRd) + CUSTOMER_PURPLE area (Gi4 to N9K-CE02)
+# Connection: Local with sshpass for legacy SSH algorithm support
 
-- name: Deploy IS-IS Configuration to CSR PEs
+- name: Deploy IS-ISIS Configuration to CSR PEs
   hosts: csr
   gather_facts: false
   vars:
     ansible_command_timeout: 30
     
   tasks:
-    - name: Generate IS-IS configuration from Jinja2 template
-      template:
-        src: "{{ playbook_dir }}/../roles/csr_isis_abr/templates/isis_config.j2"
-        dest: "/tmp/{{ inventory_hostname }}_isis_config.txt"
-        backup: no
-      delegate_to: localhost
-      run_once: false
+    - name: "CSR-{{ inventory_hostname }} | Deploy IS-IS configuration via SSH"
+      shell: |
+        sshpass -p {{ ansible_password }} ssh {{ ssh_options }} {{ ansible_user }}@{{ ansible_host }} << 'EOCONFIG'
+        configure terminal
+        
+        ! ===== CLEAR OLD CONFIG =====
+        no router isis CORE
+        no router isis {% if pe_site == 'red' %}CUSTOMER_RED{% else %}CUSTOMER_PURPLE{% endif %}
+        
+        ! ===== ENABLE CORE IS-ISIS INSTANCE (Level-2, BACKBONE) =====
+        router isis CORE
+         net 49.0000.0000.0000.{% if inventory_hostname == 'csr-pe01' %}0011{% else %}0012{% endif %}.00
+         is-type level-2-only
+         metric-style wide
+         passive-interface Loopback0
+        exit
+        
+        ! ===== ENABLE CUSTOMER IS-ISIS INSTANCE (Level-1, LOCAL) =====
+        router isis {% if pe_site == 'red' %}CUSTOMER_RED{% else %}CUSTOMER_PURPLE{% endif %}
+        
+         net 49.000{% if pe_site == 'red' %}1{% else %}2{% endif %}.0000.0000.000{% if inventory_hostname == 'csr-pe01' %}1{% else %}2{% endif %}.00
+         is-type level-1-only
+         metric-style wide
+         passive-interface Loopback0
+        exit
+        
+        ! ===== ENABLE IS-ISIS ON INTERFACES =====
+        interface GigabitEthernet2
+         ip router isis CORE
+         isis circuit-type level-2-only
+        exit
+        
+        interface GigabitEthernet4
+         ip router isis {% if pe_site == 'red' %}CUSTOMER_RED{% else %}CUSTOMER_PURPLE{% endif %}
+        
+         isis circuit-type level-1
+        exit
+        
+        ! ===== ENABLE IS-ISIS ON LOOPBACK =====
+        interface Loopback0
+         ip router isis CORE
+         ip router isis {% if pe_site == 'red' %}CUSTOMER_RED{% else %}CUSTOMER_PURPLE{% endif %}
+        
+        exit
+        
+        exit
+        write memory
+        EOCONFIG
+      register: ssh_result
       tags:
-        - generate_config
-        - debug
+        - deploy_isis
 
-    - name: Display generated config
+    - name: "CSR-{{ inventory_hostname }} | Display deployment output"
       debug:
-        msg: "{{ lookup('file', '/tmp/' + inventory_hostname + '_isis_config.txt') }}"
+        msg: "{{ ssh_result.stdout }}"
       tags:
         - debug
 
-    - name: Configure IS-IS CORE area on CSR
-      cisco.ios.ios_config:
-        lines:
-          - "router isis CORE"
-          - " net 49.0000.00000000.{{ inventory_hostname.split('-')[1].split('0')[1] }}.00"
-          - " is-type level-2-only"
-          - " metric-style wide"
-          - " passive-interface Loopback0"
-        parents: "router isis CORE"
-        save_when: modified
-      tags:
-        - deploy_isis
-        - deploy_core_area
-
-    - name: Enable IS-IS on Gi2 (CORE area)
-      cisco.ios.ios_config:
-        lines:
-          - "ip router isis CORE"
-        parents: "interface GigabitEthernet2"
-        save_when: modified
-      tags:
-        - deploy_isis
-        - deploy_interfaces
-
-    - name: Configure IS-IS CUSTOMER area on CSR-PE01
-      cisco.ios.ios_config:
-        lines:
-          - "router isis CUSTOMER_RED"
-          - " net 49.0000.RED.csrpe01.00"
-          - " is-type level-1-only"
-          - " metric-style wide"
-          - " passive-interface Loopback0"
-        parents: "router isis CUSTOMER_RED"
-        save_when: modified
-      when: inventory_hostname == 'csr-pe01'
-      tags:
-        - deploy_isis
-        - deploy_customer_area
-
-    - name: Configure IS-IS CUSTOMER area on CSR-PE02
-      cisco.ios.ios_config:
-        lines:
-          - "router isis CUSTOMER_PURPLE"
-          - " net 49.0000.PURPLE.csrpe02.00"
-          - " is-type level-1-only"
-          - " metric-style wide"
-          - " passive-interface Loopback0"
-        parents: "router isis CUSTOMER_PURPLE"
-        save_when: modified
-      when: inventory_hostname == 'csr-pe02'
-      tags:
-        - deploy_isis
-        - deploy_customer_area
-
-    - name: Enable IS-IS on Gi4 (CUSTOMER area) for CSR-PE01
-      cisco.ios.ios_config:
-        lines:
-          - "ip router isis CUSTOMER_RED"
-          - "isis circuit-type level-1"
-        parents: "interface GigabitEthernet4"
-        save_when: modified
-      when: inventory_hostname == 'csr-pe01'
-      tags:
-        - deploy_isis
-        - deploy_interfaces
-
-    - name: Enable IS-IS on Gi4 (CUSTOMER area) for CSR-PE02
-      cisco.ios.ios_config:
-        lines:
-          - "ip router isis CUSTOMER_PURPLE"
-          - "isis circuit-type level-1"
-        parents: "interface GigabitEthernet4"
-        save_when: modified
-      when: inventory_hostname == 'csr-pe02'
-      tags:
-        - deploy_isis
-        - deploy_interfaces
-
-    - name: Enable IS-IS on Loopback0
-      cisco.ios.ios_config:
-        lines:
-          - "ip router isis CORE"
-          - "ip router isis {{ 'CUSTOMER_RED' if inventory_hostname == 'csr-pe01' else 'CUSTOMER_PURPLE' }}"
-        parents: "interface Loopback0"
-        save_when: modified
-      tags:
-        - deploy_isis
-        - deploy_loopback
-
-    - name: Save configuration to startup
-      cisco.ios.ios_command:
-        commands:
-          - "write memory"
-      tags:
-        - save_config
-
-    - name: Verify IS-IS is running
-      cisco.ios.ios_command:
-        commands:
-          - "show isis summary"
-          - "show isis neighbors"
-      register: isis_output
-      tags:
-        - verify
-        - debug
-
-    - name: Display IS-IS verification
-      debug:
-        msg: "{{ isis_output.stdout_lines }}"
-      tags:
-        - verify
-        - debug
-
-  post_tasks:
-    - name: Pause for convergence
-      pause:
-        seconds: 10
-      tags:
-        - always
-
-    - name: Final verification - show IS-IS neighbors
-      cisco.ios.ios_command:
-        commands:
-          - "show isis neighbors"
-      register: neighbors
+    - name: "CSR-{{ inventory_hostname }} | Verify IS-ISIS configuration deployed"
+      shell: |
+        sshpass -p {{ ansible_password }} ssh {{ ssh_options }} {{ ansible_user }}@{{ ansible_host }} "show run | include 'router isis'"
+      register: verify_result
       tags:
         - verify
 
-    - name: Display neighbors
+    - name: "CSR-{{ inventory_hostname }} | Display IS-IS configuration"
       debug:
-        msg: "{{ neighbors.stdout }}"
+        msg: "{{ verify_result.stdout_lines }}"
       tags:
         - verify
