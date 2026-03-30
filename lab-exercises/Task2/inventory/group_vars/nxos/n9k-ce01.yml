@@ -1,0 +1,42 @@
+# N9K-CE01 Specific Configuration
+---
+
+# N9K-CE01 connects RED customers to CSR-PE01
+# Will run IS-IS in CUSTOMER_RED area (level 1 only)
+
+device_role: "ce_red"
+ce_site: "red"
+
+isis_instance:
+  name: "CUSTOMER_RED"
+  net: "49.0000.RED.n9kce01.00"  # N9K-CE01 in CUSTOMER_RED
+  level_type: "level-1-only"
+  
+interfaces:
+  # Connection to CSR-PE01
+  eth1/1:
+    description: "TO_CSR_PE01"
+    isis_enabled: true
+    isis_level: "level-1"
+    passive: false
+    
+  # Client-facing (no IS-IS)  
+  eth1/3:
+    description: "TO_CLIENT1"
+    isis_enabled: false
+    
+  eth1/4:
+    description: "TO_CLIENT2"
+    isis_enabled: false
+    
+  # Loopback
+  loopback0:
+    description: "N9K_CE01_RID"
+    isis_enabled: true
+    passive: true
+    isis_level: "level-1"
+
+# Redistribute connected routes so client subnets are visible in IS-IS
+route_redistribution:
+  - protocol: "connected"
+    route_map: "ALLOW_CLIENT_SUBNETS"

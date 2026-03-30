@@ -1,0 +1,41 @@
+# CSR-PE01 Specific Configuration
+---
+
+# CSR-PE01 hosts RED customers
+# Will run IS-IS in two areas:
+# 1. CORE area (connects to XRd backbone)
+# 2. CUSTOMER_RED area (connects to N9K-CE01)
+
+device_role: "pe_red"
+
+isis_instances:
+  core:
+    name: "CORE"
+    net: "49.0000.00000000.0011.00"  # CSR-PE01 in CORE
+    level_type: "level-2-only"
+    interfaces:
+      - name: "GigabitEthernet2"
+        isis_area: "CORE"
+        isis_level: "level-2"
+      - name: "Loopback0"
+        isis_area: "CORE"
+        passive: true
+        
+  customer:
+    name: "CUSTOMER_RED"
+    net: "49.0000.RED.csrpe01.00"  # CSR-PE01 in CUSTOMER_RED
+    level_type: "level-1-only"
+    interfaces:
+      - name: "GigabitEthernet4"
+        isis_area: "CUSTOMER_RED"
+        isis_level: "level-1"
+      - name: "Loopback0"
+        isis_area: "CUSTOMER_RED"
+        passive: true
+
+# Loopback details
+loopback:
+  interface: "Loopback0"
+  ip: "192.168.10.11"
+  mask: "255.255.255.255"
+  isis: true

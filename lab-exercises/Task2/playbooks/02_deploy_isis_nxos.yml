@@ -1,0 +1,186 @@
+---
+# Playbook: Deploy IS-IS to N9K CEs
+# Purpose: Configure N9K-CE01 and N9K-CE02 with IS-IS to peer with CSR ABRs
+# Description:
+#   - N9K-CE01: CUSTOMER_RED area (Eth1/1 to CSR-PE01)
+#   - N9K-CE02: CUSTOMER_PURPLE area (Eth1/1 to CSR-PE02)
+
+- name: Deploy IS-IS Configuration to N9K CEs
+  hosts: nxos
+  gather_facts: false
+  vars:
+    ansible_command_timeout: 30
+    
+  tasks:
+    - name: Generate IS-IS configuration from Jinja2 template
+      template:
+        src: "{{ playbook_dir }}/../roles/nxos_isis/templates/isis_config.j2"
+        dest: "/tmp/{{ inventory_hostname }}_isis_config.txt"
+        backup: no
+      delegate_to: localhost
+      run_once: false
+      tags:
+        - generate_config
+        - debug
+
+    - name: Display generated config
+      debug:
+        msg: "{{ lookup('file', '/tmp/' + inventory_hostname + '_isis_config.txt') }}"
+      tags:
+        - debug
+
+    - name: Configure IS-IS routing for N9K-CE01
+      cisco.nxos.nxos_config:
+        lines:
+          - "router isis CUSTOMER_RED"
+          - " net 49.0000.RED.n9kce01.00"
+          - " is-type level-1-only"
+          - " metric-style wide"
+        save_when: modified
+      when: inventory_hostname == 'n9k-ce01'
+      tags:
+        - deploy_isis
+        - deploy_routing
+
+    - name: Configure IS-IS routing for N9K-CE02
+      cisco.nxos.nxos_config:
+        lines:
+          - "router isis CUSTOMER_PURPLE"
+          - " net 49.0000.PURPLE.n9kce02.00"
+          - " is-type level-1-only"
+          - " metric-style wide"
+        save_when: modified
+      when: inventory_hostname == 'n9k-ce02'
+      tags:
+        - deploy_isis
+        - deploy_routing
+
+    - name: Enable IS-IS on Eth1/1 for N9K-CE01
+      cisco.nxos.nxos_config:
+        lines:
+          - "ip router isis CUSTOMER_RED"
+          - "isis circuit-type level-1"
+        parents: "interface Ethernet1/1"
+        save_when: modified
+      when: inventory_hostname == 'n9k-ce01'
+      tags:
+        - deploy_isis
+        - deploy_interfaces
+
+    - name: Enable IS-IS on Eth1/1 for N9K-CE02
+      cisco.nxos.nxos_config:
+        lines:
+          - "ip router isis CUSTOMER_PURPLE"
+          - "isis circuit-type level-1"
+        parents: "interface Ethernet1/1"
+        save_when: modified
+      when: inventory_hostname == 'n9k-ce02'
+      tags:
+        - deploy_isis
+        - deploy_interfaces
+
+    - name: Enable IS-IS on Loopback0 for N9K-CE01
+      cisco.nxos.nxos_config:
+        lines:
+          - "ip router isis CUSTOMER_RED"
+          - "isis passive"
+        parents: "interface loopback0"
+        save_when: modified
+      when: inventory_hostname == 'n9k-ce01'
+      tags:
+        - deploy_isis
+        - deploy_loopback
+
+    - name: Enable IS-IS on Loopback0 for N9K-CE02
+      cisco.nxos.nxos_config:
+        lines:
+          - "ip router isis CUSTOMER_PURPLE"
+          - "isis passive"
+        parents: "interface loopback0"
+        save_when: modified
+      when: inventory_hostname == 'n9k-ce02'
+      tags:
+        - deploy_isis
+        - deploy_loopback
+
+    - name: Create route-map for redistributing connected routes (N9K-CE01)
+      cisco.nxos.nxos_config:
+        lines:
+          - "permit 10"
+        parents: "route-map ALLOW_CLIENT_SUBNETS permit 10"
+        save_when: modified
+      when: inventory_hostname == 'n9k-ce01'
+      tags:
+        - deploy_isis
+        - deploy_redistribution
+
+    - name: Create route-map for redistributing connected routes (N9K-CE02)
+      cisco.nxos.nxos_config:
+        lines:
+          - "permit 10"
+        parents: "route-map ALLOW_CLIENT_SUBNETS permit 10"
+        save_when: modified
+      when: inventory_hostname == 'n9k-ce02'
+      tags:
+        - deploy_isis
+        - deploy_redistribution
+
+    - name: Redistribute connected routes for N9K-CE01
+      cisco.nxos.nxos_config:
+        lines:
+          - "redistribute connected route-map ALLOW_CLIENT_SUBNETS"
+        parents: "router isis CUSTOMER_RED"
+        save_when: modified
+      when: inventory_hostname == 'n9k-ce01'
+      tags:
+        - deploy_isis
+        - deploy_redistribution
+
+    - name: Redistribute connected routes for N9K-CE02
+      cisco.nxos.nxos_config:
+        lines:
+          - "redistribute connected route-map ALLOW_CLIENT_SUBNETS"
+        parents: "router isis CUSTOMER_PURPLE"
+        save_when: modified
+      when: inventory_hostname == 'n9k-ce02'
+      tags:
+        - deploy_isis
+        - deploy_redistribution
+
+    - name: Verify IS-IS is running on N9Ks
+      cisco.nxos.nxos_command:
+        commands:
+          - "show isis summary"
+          - "show isis neighbors"
+      register: isis_output
+      tags:
+        - verify
+        - debug
+
+    - name: Display IS-IS verification
+      debug:
+        msg: "{{ isis_output.stdout_lines }}"
+      tags:
+        - verify
+        - debug
+
+  post_tasks:
+    - name: Pause for convergence
+      pause:
+        seconds: 10
+      tags:
+        - always
+
+    - name: Final verification - show IS-IS neighbors
+      cisco.nxos.nxos_command:
+        commands:
+          - "show isis neighbors"
+      register: neighbors
+      tags:
+        - verify
+
+    - name: Display neighbors
+      debug:
+        msg: "{{ neighbors.stdout }}"
+      tags:
+        - verify

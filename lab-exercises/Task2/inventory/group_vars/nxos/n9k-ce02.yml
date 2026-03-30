@@ -1,0 +1,42 @@
+# N9K-CE02 Specific Configuration
+---
+
+# N9K-CE02 connects PURPLE customers to CSR-PE02
+# Will run IS-IS in CUSTOMER_PURPLE area (level 1 only)
+
+device_role: "ce_purple"
+ce_site: "purple"
+
+isis_instance:
+  name: "CUSTOMER_PURPLE"
+  net: "49.0000.PURPLE.n9kce02.00"  # N9K-CE02 in CUSTOMER_PURPLE
+  level_type: "level-1-only"
+  
+interfaces:
+  # Connection to CSR-PE02
+  eth1/1:
+    description: "TO_CSR_PE02"
+    isis_enabled: true
+    isis_level: "level-1"
+    passive: false
+    
+  # Client-facing (no IS-IS)  
+  eth1/3:
+    description: "TO_CLIENT3"
+    isis_enabled: false
+    
+  eth1/4:
+    description: "TO_CLIENT4"
+    isis_enabled: false
+    
+  # Loopback
+  loopback0:
+    description: "N9K_CE02_RID"
+    isis_enabled: true
+    passive: true
+    isis_level: "level-1"
+
+# Redistribute connected routes so client subnets are visible in IS-IS
+route_redistribution:
+  - protocol: "connected"
+    route_map: "ALLOW_CLIENT_SUBNETS"
