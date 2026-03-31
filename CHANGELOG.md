@@ -3217,3 +3217,232 @@ All playbooks validated again:
 | lab-exercises/PRE-LAB-CHECKLIST.md | GitHub repo | **UPDATED** | Marked "INSTRUCTOR ONLY", simplified |
 | lab-exercises/SSH_SETUP_GUIDE.md | GitHub repo | **MAINTAINED** | Kept as instructor background reference |
 | CHANGELOG.md | GitHub repo | **UPDATED** | Added v0.6.3 section |
+
+---
+
+## Version 0.7
+
+**Date:** 2026-03-31
+
+### Summary
+Task 3 (MPLS L3VPN) fully built and committed. Comprehensive audit of the entire lab
+uncovered critical bugs in startup configurations, Task 2 playbooks, and documentation.
+All issues fixed and documented in `FINDINGS_AND_FIXES.md`.
+
+---
+
+### 0.7.1 — Task 3: MPLS L3VPN with iBGP Route Reflectors
+
+Complete Task 3 implementation — 3 playbooks + README:
+
+**Architecture:**
+- Single iBGP AS 65000 with VPNv4 address-family
+- XRd01/XRd02 act as Route Reflectors
+- CSR-PE01/PE02 act as PE routers (RR clients)
+- VRF CUST_A (RD 65000:100, RT 65000:100) on CE-facing Gi4
+- MPLS LDP for label distribution, ISIS CORE as IGP
+
+**Playbooks created:**
+
+| Playbook | Plays | Purpose |
+|---|---|---|
+| `01_deploy_underlay.yml` | 3 | XRd: add Gi0/0/0/1 to ISIS CORE + MPLS LDP. CSR: MPLS LDP + `mpls ip` on Gi2. Validation. |
+| `02_deploy_overlay.yml` | 3 | XRd: BGP 65000 VPNv4 with RR clients. CSR: VRF CUST_A + BGP VPNv4. Validation. |
+| `03_validate_task3.yml` | 4 | ISIS assertions, MPLS LDP checks, BGP VPNv4 summary, loopback ping, VRF routes. |
+
+**README:** Accurate architecture documentation with topology diagram, device roles table,
+routing design (IGP/MPLS/BGP/VPN), playbook run sequence, and expected end state.
+
+**Design note:** Task 3's VRF assignment on Gi4 (`vrf forwarding CUST_A`) intentionally
+strips Task 2's ISIS CUSTOMER config from that interface — transitioning PE-CE from flat
+ISIS to MPLS L3VPN service.
+
+---
+
+### 0.7.2 — Comprehensive Lab Audit: Startup Configurations
+
+End-to-end testing revealed critical issues in all 6 device startup configs.
+
+**Finding 1: CSR Interface Mapping Wrong (CRITICAL)**
+
+Original CSR configs had interface descriptions and IPs assigned to the **wrong interfaces**:
+
+| Interface | Original Config Said | Actual Containerlab Wiring |
+|---|---|---|
+| Gi2 (eth1) | `TO_n9k-ce01` (CE link) | → xrd01 Gi0/0/0/1 (backbone) |
+| Gi3 (eth2) | `TO_xrd01` (backbone) | → csr-pe02 Gi3 (inter-PE) |
+| Gi4 (eth3) | `TO_csr-pe02` (inter-PE) | → n9k-ce01 Eth1/1 (CE link) |
+
+**Impact:** ISIS adjacencies, MPLS LDP, and BGP sessions would form on wrong interfaces.
+
+**Finding 2: Wrong IP Addressing Scheme (CRITICAL)**
+
+Original configs used `10.0.0.x` loopbacks; playbooks expected `192.168.x.x`:
+
+| Device | Original Lo0 | Expected Lo0 |
+|---|---|---|
+| xrd01 | 10.0.0.1 | 192.168.0.1 |
+| xrd02 | 10.0.0.2 | 192.168.0.2 |
+| csr-pe01 | 10.0.0.11 | 192.168.10.11 |
+| csr-pe02 | 10.0.0.12 | 192.168.10.12 |
+
+**Impact:** BGP neighbor statements in Task 3 playbooks would never establish.
+
+**Finding 3: Pre-configured Services (DESIGN)**
+
+All original configs had ISIS, MPLS LDP, BGP, VRF, OSPF, VXLAN, and/or EVPN
+pre-configured — defeating the lab's purpose of deploying these via Ansible.
+
+**Finding 4: XRd Duplicate IP**
+
+`xrd01.cfg.bak`: Both Loopback0 and Gi0/0/0/0 had `10.0.0.1`.
+
+**Finding 5: N9K Feature Bloat**
+
+N9K configs enabled unnecessary `netconf`, `nxapi`, `grpc`, `bgp`, `ospf`,
+`vn-segment-vlan-based`, `nv overlay` features.
+
+**Fixes applied:**
+
+| Config | Fix |
+|---|---|
+| `csr-pe01.cfg` | Correct interface→neighbor mapping, 192.168.x IPs, no protocol pre-config |
+| `csr-pe02.cfg` | Same pattern |
+| `xrd01.cfg` | 192.168.x IPs, ISIS CORE on backbone only, no MPLS/BGP |
+| `xrd02.cfg` | Same pattern |
+| `n9k-ce01.cfg` | Stripped OSPF/BGP/VXLAN/EVPN, minimal features only |
+| `n9k-ce02.cfg` | Same pattern |
+
+All original configs backed up as `*.cfg.bak`.
+
+XRd live startup configs (`/home/cisco/xrd01-startup.cfg`, `xrd02-startup.cfg`) also
+updated with correct 192.168.x IPs and ISIS CORE backbone config.
+
+---
+
+### 0.7.3 — Comprehensive Lab Audit: Task 2 Playbooks
+
+**Finding 1: Invalid ISIS NET Format (CRITICAL — Silent Failure)**
+
+`net 49.0000001.0000.0000.0011.00` — too many bytes. CLNS NETs require exactly 6-byte
+system IDs. IOS-XE returns `% Incomplete command` but the `shell` module does not detect it.
+
+**Fix:** `49.0001.1921.6810.0011.00` (derived from 192.168.10.11).
+
+**Finding 2: Invalid `is-type level-1-only` (CRITICAL — Silent Failure)**
+
+IOS-XE accepts `level-1`, `level-2-only`, or `level-1-2` — there is no `level-1-only`.
+
+**Fix:** Changed to `is-type level-1` for CUSTOMER, `is-type level-2-only` for CORE.
+
+**Finding 3: Invalid `passive-interface Loopback0` (CRITICAL — Silent Failure)**
+
+IOS-XE ISIS does not support `passive-interface` under `router isis`. This is an OSPF
+sub-command, not ISIS.
+
+**Fix:** Removed entirely. Loopback passiveness is implicit (no adjacency possible).
+
+**Finding 4: `ip router isis` Fails Without Interface IP (CRITICAL — Silent Failure)**
+
+Original startup configs had no IPs on interfaces → `% Cannot enable ISIS-IP`.
+
+**Fix:** Fixed startup configs + added `failed_when` error detection.
+
+**Finding 5: No Error Detection on Shell Tasks (CRITICAL)**
+
+All CSR `shell` tasks had no `failed_when`. The SSH wrapper always returns rc=0.
+
+**Fix:** Added `failed_when` checking stdout for `Invalid input`, `Incomplete`, `Cannot enable`.
+
+**Finding 6: Missing `isis network point-to-point` (MAJOR)**
+
+CSR Gi2 defaulted to broadcast mode; XRd Gi0/0/0/1 was P2P → adjacency never forms.
+
+**Fix:** Added `isis network point-to-point` to Gi2 configuration.
+
+---
+
+### 0.7.4 — Comprehensive Lab Audit: Task 2 Master Playbook
+
+**Finding: `include_tasks` on Files Containing Full Plays (CRITICAL)**
+
+`00_deploy_task2.yml` used `include_tasks: 01_deploy_isis_csr.yml` — but that file
+contains a full play with `hosts:` directive. Ansible throws:
+`ERROR! conflicting action statements: hosts, tasks`
+
+**Fix:** Changed to `import_playbook` at the play level. Restructured master playbook
+to use separate plays for banner, imports, and convergence wait.
+
+---
+
+### 0.7.5 — Comprehensive Lab Audit: Task 3 README
+
+**Finding: README Described Wrong Architecture (MAJOR)**
+
+Original `Task3/README.md` described Inter-AS Option A with:
+- CSR-PE01 in ASN 65001, CSR-PE02 in ASN 65002
+- eBGP between XRd (65000) and CSRs
+
+Actual design: single iBGP AS 65000 with Route Reflectors.
+
+**Fix:** Complete rewrite with correct iBGP/RR architecture.
+
+---
+
+### 0.7.6 — Comprehensive Lab Audit: Infrastructure Findings
+
+**Finding 1: vrnetlab Containers Break on `docker stop/start`**
+
+`docker stop/start` destroys containerlab veth links and vrnetlab's internal QEMU socket
+bridges. Only management (eth0) survives. Data plane is permanently broken.
+**Only fix:** Full `containerlab destroy + deploy` cycle.
+
+**Finding 2: CSR/N9K Have No `startup-config` in Topology**
+
+Only XRd nodes have `startup-config:` in `LTRATO-1001.clab.yml`. CSR and N9K boot bare.
+**Recommendation:** Add startup-config directives for all vrnetlab nodes.
+
+**Finding 3: Stale Topology File**
+
+`/tmp/.../topology/sac-lab.yml` exists alongside the active `/home/cisco/LTRATO-1001.clab.yml`.
+**Recommendation:** Remove stale file to prevent confusion.
+
+---
+
+### 0.7.7 — Findings & Fixes Document
+
+**Created: `FINDINGS_AND_FIXES.md`** at repository root.
+
+Comprehensive audit document with 10 sections covering:
+1. Executive summary with severity/count table
+2. Lab topology and correct addressing
+3. Startup configuration findings (5 issues)
+4. Task 2 playbook findings (7 issues)
+5. Task 2 master playbook finding
+6. Task 3 README finding
+7. Infrastructure/operational findings (5 issues)
+8. Task 3 build-out architecture and playbook details
+9. Fix summary with all modified files
+10. Prioritized recommendations (P0/P1/P2) for Cisco Live delivery
+
+---
+
+### Files — Version 0.7
+
+| File | Location | Type | Change |
+|---|---|---|---|
+| lab-exercises/Task3/README.md | GitHub repo | **CREATED** | Task 3 architecture documentation |
+| lab-exercises/Task3/playbooks/01_deploy_underlay.yml | GitHub repo | **CREATED** | ISIS PE links + MPLS LDP |
+| lab-exercises/Task3/playbooks/02_deploy_overlay.yml | GitHub repo | **CREATED** | BGP VPNv4 + VRF CUST_A |
+| lab-exercises/Task3/playbooks/03_validate_task3.yml | GitHub repo | **CREATED** | End-to-end validation |
+| FINDINGS_AND_FIXES.md | GitHub repo | **CREATED** | Comprehensive audit document |
+| configs/csr-pe01.cfg | GitHub repo | **REWRITTEN** | Correct interfaces, 192.168.x IPs, no pre-config |
+| configs/csr-pe02.cfg | GitHub repo | **REWRITTEN** | Same pattern |
+| configs/xrd01.cfg | GitHub repo | **REWRITTEN** | 192.168.x IPs, ISIS CORE backbone only |
+| configs/xrd02.cfg | GitHub repo | **REWRITTEN** | Same pattern |
+| configs/n9k-ce01.cfg | GitHub repo | **REWRITTEN** | Stripped unnecessary features/protocols |
+| configs/n9k-ce02.cfg | GitHub repo | **REWRITTEN** | Same pattern |
+| configs/*.cfg.bak | GitHub repo | **CREATED** | Backups of all original configs |
+| lab-exercises/Task2/playbooks/01_deploy_isis_csr.yml | GitHub repo | **REWRITTEN** | Fixed NET, is-type, P2P, error detection |
+| lab-exercises/Task2/playbooks/00_deploy_task2.yml | GitHub repo | **REWRITTEN** | include_tasks → import_playbook |
+| CHANGELOG.md | GitHub repo | **UPDATED** | Added v0.7 section |

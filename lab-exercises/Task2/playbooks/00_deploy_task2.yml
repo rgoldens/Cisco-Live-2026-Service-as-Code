@@ -1,12 +1,20 @@
 ---
-# Master Playbook: Task 2 - IS-IS with ABR Design
-# Purpose: Orchestrate full deployment of IS-IS configuration
+# =============================================================================
+# Master Playbook: Task 2 - IS-IS ABR Design
+# Purpose: Orchestrate full deployment of IS-IS CORE + CUSTOMER configuration
+#
+# Run order:
+#   1. Deploy ISIS to CSR PEs (CORE + CUSTOMER instances)
+#   2. Deploy ISIS CUSTOMER to N9K CEs
+#   3. Wait for convergence
+#   4. Validate ISIS adjacencies
+# =============================================================================
 
-- name: "Task 2: IS-IS with Area Border Router (ABR) Design - Full Deployment"
-  hosts: all
+# ---------- Banner ----------
+- name: "Task 2 Banner"
+  hosts: localhost
   gather_facts: false
-  
-  pre_tasks:
+  tasks:
     - name: Display Task 2 Header
       debug:
         msg: |
@@ -19,76 +27,31 @@
           ║  RED clients  → CSR-PE01 loopback (192.168.10.11)        ║
           ║  PURPLE clients → CSR-PE02 loopback (192.168.10.12)      ║
           ╚═══════════════════════════════════════════════════════════╝
-      run_once: true
-      tags:
-        - always
 
-    - name: Display Target Architecture
-      debug:
-        msg: |
-          Area Structure:
-          ───────────────
-          [CORE AREA: 49.0000.SP]
-            ├─ XRd01 ──┐
-            ├─ XRd02 ──┤
-            ├─ CSR-PE01 (ABR)
-            └─ CSR-PE02 (ABR)
-          
-          [CUSTOMER_RED: 49.0000.RED]
-            ├─ CSR-PE01 (ABR)
-            ├─ N9K-CE01
-            └─ Clients (23.23.23.x)
-          
-          [CUSTOMER_PURPLE: 49.0000.PURPLE]
-            ├─ CSR-PE02 (ABR)
-            ├─ N9K-CE02
-            └─ Clients (34.34.34.x)
-      run_once: true
-      tags:
-        - always
+# ---------- Step 1: CSR ISIS ----------
+- import_playbook: 01_deploy_isis_csr.yml
 
+# ---------- Step 2: N9K ISIS ----------
+- import_playbook: 02_deploy_isis_nxos.yml
+
+# ---------- Step 3: Convergence + Completion ----------
+- name: "Task 2: Convergence Wait + Summary"
+  hosts: localhost
+  gather_facts: false
   tasks:
-    - name: Include CSR deployment playbook
-      include_tasks: 01_deploy_isis_csr.yml
-      when: inventory_hostname.startswith('csr')
-      tags:
-        - deploy
-        - deploy_csr
-
-    - name: Include N9K deployment playbook
-      include_tasks: 02_deploy_isis_nxos.yml
-      when: inventory_hostname.startswith('n9k')
-      tags:
-        - deploy
-        - deploy_nxos
-
-  post_tasks:
     - name: Convergence wait
       pause:
         seconds: 30
-        prompt: |
-          Waiting for IS-IS convergence and adjacency establishment...
-          This typically takes 20-30 seconds.
-      tags:
-        - always
+        prompt: "Waiting 30s for IS-IS convergence and adjacency establishment..."
 
-    - name: Include validation playbook
-      include_tasks: 03_validate_isis.yml
-      tags:
-        - validate
-
-    - name: Task 2 Completion Message
+    - name: Task 2 Completion
       debug:
         msg: |
           ╔═══════════════════════════════════════════════════════════╗
           ║           TASK 2 DEPLOYMENT COMPLETE                      ║
           ║                                                           ║
           ║  Next Steps:                                             ║
-          ║  1. Verify IS-IS adjacencies                            ║
-          ║  2. Test client ping to loopbacks                       ║
-          ║  3. Validate area isolation                             ║
-          ║  4. Proceed to Task 3: Inter-AS Option A                ║
+          ║  1. Verify IS-IS adjacencies (show isis neighbors)      ║
+          ║  2. Test client ping to PE loopbacks                    ║
+          ║  3. Proceed to Task 3: MPLS L3VPN                       ║
           ╚═══════════════════════════════════════════════════════════╝
-      run_once: true
-      tags:
-        - always

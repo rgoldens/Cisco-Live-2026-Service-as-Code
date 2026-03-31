@@ -1,0 +1,133 @@
+!! =============================================================================
+!! XRd01 — P-Router (Core West)
+!! IOS-XR Startup Configuration
+!! Service as Code Lab — Cisco Live 2026
+!! =============================================================================
+
+hostname xrd01
+
+!! --- Users ---
+username clab
+ group root-lr
+ group cisco-support
+ secret 0 clab@123
+!
+
+!! --- Management ---
+line default
+ transport input ssh
+!
+ssh server v2
+ssh server netconf vrf default
+ssh server rate-limit 600
+!
+netconf-yang agent
+ ssh
+!
+grpc
+ port 57400
+ no-tls
+!
+
+!! --- Loopback ---
+interface Loopback0
+ description P-Router xrd01 RID
+ ipv4 address 10.0.0.1 255.255.255.255
+!
+
+!! --- Core link: xrd01 ↔ xrd02 (Gi0/0/0/0) ---
+interface GigabitEthernet0/0/0/0
+ description TO_xrd02_Gi0-0-0-0
+ ipv4 address 10.0.0.1 255.255.255.252
+ no shutdown
+!
+
+!! --- Link: xrd01 ↔ csr-pe01 (Gi0/0/0/1) ---
+interface GigabitEthernet0/0/0/1
+ description TO_csr-pe01_Gi3
+ ipv4 address 10.0.1.1 255.255.255.252
+ no shutdown
+!
+
+!! --- IS-IS (core IGP) ---
+router isis CORE
+ is-type level-2-only
+ net 49.0000.0000.0001.00
+ address-family ipv4 unicast
+  metric-style wide
+  mpls ldp auto-config
+ !
+ interface Loopback0
+  passive
+  address-family ipv4 unicast
+  !
+ !
+ interface GigabitEthernet0/0/0/0
+  point-to-point
+  address-family ipv4 unicast
+   metric 10
+  !
+ !
+ interface GigabitEthernet0/0/0/1
+  point-to-point
+  address-family ipv4 unicast
+   metric 10
+  !
+ !
+!
+
+!! --- MPLS LDP ---
+mpls ldp
+ router-id 10.0.0.1
+ address-family ipv4
+ !
+ interface GigabitEthernet0/0/0/0
+ !
+ interface GigabitEthernet0/0/0/1
+ !
+!
+
+!! --- BGP (acts as Route Reflector for PE routers) ---
+router bgp 65000
+ bgp router-id 10.0.0.1
+ bgp log neighbor changes detail
+ address-family vpnv4 unicast
+ !
+ address-family l2vpn evpn
+ !
+ !! PE neighbors — Route Reflector clients
+ neighbor 10.0.0.11
+  remote-as 65000
+  description csr-pe01
+  update-source Loopback0
+  address-family vpnv4 unicast
+   route-reflector-client
+  !
+  address-family l2vpn evpn
+   route-reflector-client
+  !
+ !
+ neighbor 10.0.0.12
+  remote-as 65000
+  description csr-pe02
+  update-source Loopback0
+  address-family vpnv4 unicast
+   route-reflector-client
+  !
+  address-family l2vpn evpn
+   route-reflector-client
+  !
+ !
+ !! iBGP peering to xrd02
+ neighbor 10.0.0.2
+  remote-as 65000
+  description xrd02
+  update-source Loopback0
+  address-family vpnv4 unicast
+  !
+  address-family l2vpn evpn
+  !
+ !
+!
+
+end

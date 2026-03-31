@@ -1,90 +1,122 @@
 ---
-# Playbook: Deploy ISIS Configuration to CSR PEs
-# Purpose: Configure CSR-PE01 and CSR-PE02 as Area Border Routers
-# Note: Uses direct SSH instead of network_cli to work around SSH library KEX limitation
-# Devices: csr-pe01 (RED), csr-pe02 (PURPLE)
+# =============================================================================
+# Task 2 — Playbook 1: Deploy ISIS to CSR PE-Routers
+#
+# Purpose: Configure ISIS CORE (level-2 backbone) and ISIS CUSTOMER (level-1
+#          PE-CE) on CSR-PE01 and CSR-PE02.
+#
+#   CSR-PE01 = ABR between CORE and CUSTOMER_RED
+#   CSR-PE02 = ABR between CORE and CUSTOMER_PURPLE
+#
+# Note: Uses direct SSH (shell module) because CSR IOS-XE 16.12 requires
+#       legacy SSH KEX algorithms not supported by Ansible's paramiko.
+#
+# Prerequisites:
+#   - CSR startup configs have IPs on Lo0, Gi2, Gi4 (deployed by containerlab)
+#   - XRd ISIS CORE backbone is pre-configured
+# =============================================================================
 
-- name: Deploy ISIS to CSR PEs
+- name: "Task 2: Deploy ISIS to CSR PEs"
   hosts: csr
   gather_facts: false
   connection: local
-  
+
   vars:
-    ssh_args: "-o StrictHostKeyChecking=no -o HostKeyAlgorithms=ssh-rsa -o PubkeyAcceptedKeyTypes=ssh-rsa -o KexAlgorithms=diffie-hellman-group14-sha1,diffie-hellman-group-exchange-sha1 -o ConnectTimeout=10"
-    
+    ssh_args: >-
+      -o StrictHostKeyChecking=no
+      -o HostKeyAlgorithms=ssh-rsa
+      -o PubkeyAcceptedKeyTypes=ssh-rsa
+      -o KexAlgorithms=diffie-hellman-group14-sha1,diffie-hellman-group-exchange-sha1
+      -o ConnectTimeout=10
+
     device_config:
       csr-pe01:
-        pe_id: "0011"
-        customer: "RED"
+        isis_core_net: "49.0001.1921.6810.0011.00"
         customer_isis: "CUSTOMER_RED"
-        customer_net_id: "0001"
+        isis_customer_net: "49.0001.1921.6810.0011.00"
       csr-pe02:
-        pe_id: "0012"
-        customer: "PURPLE"
+        isis_core_net: "49.0001.1921.6810.0012.00"
         customer_isis: "CUSTOMER_PURPLE"
-        customer_net_id: "0002"
-    
+        isis_customer_net: "49.0002.1921.6810.0012.00"
+
     this_device: "{{ device_config[inventory_hostname] }}"
-  
+
   tasks:
-    # Step 1: Deploy ISIS CORE configuration on CSR
-    - name: "{{ inventory_hostname }} | Configure ISIS CORE instance (level-2, backbone)"
+    # ===== ISIS CORE (Level-2 backbone: PE ↔ XRd P-router) =====
+
+    - name: "{{ inventory_hostname }} | Step 1: Configure ISIS CORE (level-2 backbone)"
       shell: |
         ssh {{ ssh_args }} admin@{{ ansible_host }} <<'EOF'
         configure terminal
-        no router isis CORE
         router isis CORE
-         net 49.0000.0000.0000.{{ this_device.pe_id }}.00
+         net {{ this_device.isis_core_net }}
          is-type level-2-only
          metric-style wide
-         passive-interface Loopback0
         exit
         end
         write memory
         EOF
-      register: config_result
-      changed_when: "'ISIS' in config_result.stdout"
-      tags:
-        - deploy_isis
+      register: result_core
+      failed_when: "'Invalid input' in result_core.stdout or 'Incomplete' in result_core.stdout"
+      changed_when: true
+      timeout: 30
+      tags: [isis, core]
 
-    # Step 2: Deploy ISIS CUSTOMER configuration on CSR
-    - name: "{{ inventory_hostname }} | Configure ISIS CUSTOMER instance (level-1, local)"
-      shell: |
-        ssh {{ ssh_args }} admin@{{ ansible_host }} <<'EOF'
-        configure terminal
-        no router isis {{ this_device.customer_isis }}
-        router isis {{ this_device.customer_isis }}
-         net 49.000{{ this_device.customer_net_id }}.0000.0000.{{ this_device.pe_id }}.00
-         is-type level-1-only
-         metric-style wide
-         passive-interface Loopback0
-        exit
-        end
-        write memory
-        EOF
-      register: config_result
-      changed_when: "'ISIS' in config_result.stdout"
-      tags:
-        - deploy_isis
-
-    # Step 3: Enable ISIS on Gi2 (backbone interface)
-    - name: "{{ inventory_hostname }} | Enable ISIS CORE on GigabitEthernet2"
+    - name: "{{ inventory_hostname }} | Step 2: Enable ISIS CORE on GigabitEthernet2 (backbone)"
       shell: |
         ssh {{ ssh_args }} admin@{{ ansible_host }} <<'EOF'
         configure terminal
         interface GigabitEthernet2
          ip router isis CORE
          isis circuit-type level-2-only
+         isis network point-to-point
         exit
         end
         write memory
         EOF
-      changed_when: false
-      tags:
-        - deploy_isis
+      register: result_gi2
+      failed_when: "'Invalid input' in result_gi2.stdout or 'Cannot enable' in result_gi2.stdout"
+      changed_when: true
+      timeout: 30
+      tags: [isis, core]
 
-    # Step 4: Enable ISIS on Gi4 (customer interface)  
-    - name: "{{ inventory_hostname }} | Enable ISIS CUSTOMER on GigabitEthernet4"
+    - name: "{{ inventory_hostname }} | Step 3: Enable ISIS CORE on Loopback0"
+      shell: |
+        ssh {{ ssh_args }} admin@{{ ansible_host }} <<'EOF'
+        configure terminal
+        interface Loopback0
+         ip router isis CORE
+        exit
+        end
+        write memory
+        EOF
+      register: result_lo0_core
+      failed_when: "'Invalid input' in result_lo0_core.stdout or 'Cannot enable' in result_lo0_core.stdout"
+      changed_when: true
+      timeout: 30
+      tags: [isis, core]
+
+    # ===== ISIS CUSTOMER (Level-1 PE-CE: CSR PE ↔ N9K CE) =====
+
+    - name: "{{ inventory_hostname }} | Step 4: Configure ISIS {{ this_device.customer_isis }} (level-1 PE-CE)"
+      shell: |
+        ssh {{ ssh_args }} admin@{{ ansible_host }} <<'EOF'
+        configure terminal
+        router isis {{ this_device.customer_isis }}
+         net {{ this_device.isis_customer_net }}
+         is-type level-1
+         metric-style wide
+        exit
+        end
+        write memory
+        EOF
+      register: result_customer
+      failed_when: "'Invalid input' in result_customer.stdout or 'Incomplete' in result_customer.stdout"
+      changed_when: true
+      timeout: 30
+      tags: [isis, customer]
+
+    - name: "{{ inventory_hostname }} | Step 5: Enable ISIS {{ this_device.customer_isis }} on GigabitEthernet4 (CE-facing)"
       shell: |
         ssh {{ ssh_args }} admin@{{ ansible_host }} <<'EOF'
         configure terminal
@@ -95,39 +127,36 @@
         end
         write memory
         EOF
-      changed_when: false
-      tags:
-        - deploy_isis
+      register: result_gi4
+      failed_when: "'Invalid input' in result_gi4.stdout or 'Cannot enable' in result_gi4.stdout"
+      changed_when: true
+      timeout: 30
+      tags: [isis, customer]
 
-    # Step 5: Enable ISIS on Loopback0 (router identity)
-    - name: "{{ inventory_hostname }} | Enable ISIS on Loopback0"
+    - name: "{{ inventory_hostname }} | Step 6: Enable ISIS {{ this_device.customer_isis }} on Loopback0"
       shell: |
         ssh {{ ssh_args }} admin@{{ ansible_host }} <<'EOF'
         configure terminal
         interface Loopback0
-         ip router isis CORE
          ip router isis {{ this_device.customer_isis }}
         exit
         end
         write memory
         EOF
-      changed_when: false
-      tags:
-        - deploy_isis
+      register: result_lo0_cust
+      failed_when: "'Invalid input' in result_lo0_cust.stdout or 'Cannot enable' in result_lo0_cust.stdout"
+      changed_when: true
+      timeout: 30
+      tags: [isis, customer]
 
-    # Step 6: Verify ISIS configuration
-    - name: "{{ inventory_hostname }} | Verify ISIS configuration"
+    # ===== Verification =====
+
+    - name: "{{ inventory_hostname }} | Step 7: Verify ISIS configuration"
       shell: |
-        ssh {{ ssh_args }} admin@{{ ansible_host }} "show run | include isis"
+        ssh {{ ssh_args }} admin@{{ ansible_host }} "show isis neighbors ; show clns neighbors ; show ip route isis"
       register: verify_result
       changed_when: false
 
-    - name: "{{ inventory_hostname }} | Display ISIS verification"
+    - name: "{{ inventory_hostname }} | ISIS Status"
       debug:
-        msg: |
-          ✅ ISIS Configuration Deployed to {{ inventory_hostname }}
-          
-          Running Config (ISIS):
-          {{ verify_result.stdout }}
-      tags:
-        - deploy_isis
+        msg: "{{ verify_result.stdout }}"
