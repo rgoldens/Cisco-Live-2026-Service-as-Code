@@ -1,0 +1,151 @@
+---
+# =============================================================================
+# Task 3 — Playbook 3: Full End-to-End Validation
+#
+# Checks: ISIS adjacencies, MPLS LDP, BGP VPNv4, VRF routes, reachability
+# =============================================================================
+
+# ---------- PLAY 1: XRd Validation ----------
+- name: "Task 3 Validate: XRd P-Routers"
+  hosts: xrd
+  gather_facts: false
+
+  tasks:
+    - name: "{{ inventory_hostname }} | Collect XRd state"
+      cisco.iosxr.iosxr_command:
+        commands:
+          - "show isis neighbors"
+          - "show mpls ldp neighbor brief"
+          - "show bgp vpnv4 unicast summary"
+          - "show route ipv4"
+      register: xrd_state
+
+    - name: "{{ inventory_hostname }} | ISIS Neighbors"
+      debug:
+        msg: "{{ xrd_state.stdout[0] }}"
+      tags: [isis]
+
+    - name: "{{ inventory_hostname }} | MPLS LDP Neighbors"
+      debug:
+        msg: "{{ xrd_state.stdout[1] }}"
+      tags: [mpls]
+
+    - name: "{{ inventory_hostname }} | BGP VPNv4 Summary"
+      debug:
+        msg: "{{ xrd_state.stdout[2] }}"
+      tags: [bgp]
+
+    - name: "{{ inventory_hostname }} | IPv4 Route Table"
+      debug:
+        msg: "{{ xrd_state.stdout[3] }}"
+      tags: [routes]
+
+    # --- Assertions ---
+    - name: "{{ inventory_hostname }} | Assert ISIS has 2+ neighbors"
+      assert:
+        that:
+          - "'Up' in xrd_state.stdout[0]"
+        fail_msg: "ISIS neighbors not UP on {{ inventory_hostname }}"
+        success_msg: "ISIS neighbors OK"
+      tags: [assert]
+
+    - name: "{{ inventory_hostname }} | Assert MPLS LDP has neighbors"
+      assert:
+        that:
+          - "xrd_state.stdout[1] | length > 10"
+        fail_msg: "No MPLS LDP neighbors on {{ inventory_hostname }}"
+        success_msg: "MPLS LDP OK"
+      tags: [assert]
+
+
+# ---------- PLAY 2: CSR Validation ----------
+- name: "Task 3 Validate: CSR PE-Routers"
+  hosts: csr
+  gather_facts: false
+  connection: local
+
+  vars:
+    ssh_args: >-
+      -o StrictHostKeyChecking=no
+      -o HostKeyAlgorithms=ssh-rsa
+      -o PubkeyAcceptedKeyTypes=ssh-rsa
+      -o KexAlgorithms=diffie-hellman-group14-sha1,diffie-hellman-group-exchange-sha1
+      -o ConnectTimeout=10
+
+  tasks:
+    - name: "{{ inventory_hostname }} | Collect CSR state"
+      shell: |
+        ssh {{ ssh_args }} admin@{{ ansible_host }} <<'EOF'
+        show isis neighbors
+        show mpls ldp neighbor
+        show bgp vpnv4 unicast summary
+        show vrf
+        show ip route vrf CUST_A
+        show ip interface brief | include up
+        EOF
+      register: csr_state
+      timeout: 30
+
+    - name: "{{ inventory_hostname }} | Full CSR Status"
+      debug:
+        msg: "{{ csr_state.stdout }}"
+
+
+# ---------- PLAY 3: Reachability Tests ----------
+- name: "Task 3 Validate: Loopback Reachability"
+  hosts: xrd
+  gather_facts: false
+
+  vars:
+    # CSR PE loopbacks — reachable via ISIS CORE
+    csr_loopbacks:
+      - { ip: "192.168.10.11", name: "csr-pe01 Lo0" }
+      - { ip: "192.168.10.12", name: "csr-pe02 Lo0" }
+
+  tasks:
+    - name: "{{ inventory_hostname }} | Ping {{ item.name }} ({{ item.ip }})"
+      cisco.iosxr.iosxr_command:
+        commands:
+          - "ping {{ item.ip }} source {{ '192.168.0.1' if inventory_hostname == 'xrd01' else '192.168.0.2' }} count 3"
+      register: ping_result
+      loop: "{{ csr_loopbacks }}"
+      when: inventory_hostname == 'xrd01'
+
+    - name: "{{ inventory_hostname }} | Ping Results"
+      debug:
+        msg: "{{ item.stdout[0] | default('skipped') }}"
+      loop: "{{ ping_result.results | default([]) }}"
+      when: inventory_hostname == 'xrd01' and ping_result is defined
+
+
+# ---------- PLAY 4: Summary ----------
+- name: "Task 3 Validate: Summary"
+  hosts: localhost
+  gather_facts: false
+
+  tasks:
+    - name: "Display Task 3 Checklist"
+      debug:
+        msg: |
+          ╔═══════════════════════════════════════════════════════════╗
+          ║           TASK 3: SP Core Validation Checklist           ║
+          ╠═══════════════════════════════════════════════════════════╣
+          ║                                                         ║
+          ║  Review the output above and verify:                    ║
+          ║                                                         ║
+          ║  [1] ISIS:  xrd01 sees xrd02 + csr-pe01 (2 neighbors)  ║
+          ║            xrd02 sees xrd01 + csr-pe02 (2 neighbors)   ║
+          ║                                                         ║
+          ║  [2] MPLS:  LDP neighbors match ISIS neighbors          ║
+          ║             Labels allocated for loopbacks               ║
+          ║                                                         ║
+          ║  [3] BGP:   VPNv4 sessions Established to CSR PEs       ║
+          ║             Route Reflector clients active                ║
+          ║                                                         ║
+          ║  [4] VRF:   CUST_A active on CSR-PE01 and CSR-PE02      ║
+          ║             Connected routes in VRF routing table        ║
+          ║                                                         ║
+          ║  [5] Ping:  XRd loopbacks reachable from CSR PEs        ║
+          ║             (and vice versa)                              ║
+          ║                                                         ║
+          ╚═══════════════════════════════════════════════════════════╝

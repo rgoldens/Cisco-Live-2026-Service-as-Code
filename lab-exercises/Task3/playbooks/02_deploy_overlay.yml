@@ -1,0 +1,196 @@
+---
+# =============================================================================
+# Task 3 — Playbook 2: Deploy BGP VPN Overlay + VRF Services
+#
+# Scope:  XRd P-routers (Route Reflectors) + CSR PE-routers (VPN PEs)
+# Goal:   iBGP VPNv4 overlay with VRF CUST_A service on CSR PEs
+#
+# Design:
+#   - XRd01/XRd02 = Route Reflectors for VPNv4
+#   - CSR-PE01/PE02 = VPN PE routers, VRF CUST_A on CE-facing Gi4
+#   - All iBGP ASN 65000, update-source Loopback0
+# =============================================================================
+
+# ---------- PLAY 1: XRd Route Reflectors — BGP VPNv4 ----------
+- name: "Task 3 Step 2a: XRd BGP VPNv4 (Route Reflectors)"
+  hosts: xrd
+  gather_facts: false
+
+  vars:
+    xrd_bgp:
+      xrd01:
+        router_id: "192.168.0.1"
+        # Neighbors: other XRd + both CSR PEs
+        peers:
+          - { ip: "192.168.0.2",  desc: "xrd02",    rr_client: false }
+          - { ip: "192.168.10.11", desc: "csr-pe01",  rr_client: true }
+          - { ip: "192.168.10.12", desc: "csr-pe02",  rr_client: true }
+      xrd02:
+        router_id: "192.168.0.2"
+        peers:
+          - { ip: "192.168.0.1",  desc: "xrd01",    rr_client: false }
+          - { ip: "192.168.10.11", desc: "csr-pe01",  rr_client: true }
+          - { ip: "192.168.10.12", desc: "csr-pe02",  rr_client: true }
+
+    this_bgp: "{{ xrd_bgp[inventory_hostname] }}"
+
+  tasks:
+    # --- BGP base ---
+    - name: "{{ inventory_hostname }} | Configure BGP 65000 base"
+      cisco.iosxr.iosxr_config:
+        lines:
+          - "bgp router-id {{ this_bgp.router_id }}"
+          - "bgp log neighbor changes detail"
+          - "address-family vpnv4 unicast"
+        parents:
+          - "router bgp 65000"
+      tags: [bgp]
+
+    # --- BGP neighbors ---
+    - name: "{{ inventory_hostname }} | Configure BGP neighbor {{ item.ip }} ({{ item.desc }})"
+      cisco.iosxr.iosxr_config:
+        lines:
+          - "remote-as 65000"
+          - "description {{ item.desc }}"
+          - "update-source Loopback0"
+        parents:
+          - "router bgp 65000"
+          - "neighbor {{ item.ip }}"
+      loop: "{{ this_bgp.peers }}"
+      tags: [bgp]
+
+    # --- BGP neighbor VPNv4 activation ---
+    - name: "{{ inventory_hostname }} | Activate VPNv4 for {{ item.desc }}"
+      cisco.iosxr.iosxr_config:
+        lines: >-
+          {{ ['route-reflector-client'] if item.rr_client else [] }}
+        parents:
+          - "router bgp 65000"
+          - "neighbor {{ item.ip }}"
+          - "address-family vpnv4 unicast"
+      loop: "{{ this_bgp.peers }}"
+      tags: [bgp]
+
+
+# ---------- PLAY 2: CSR PE-Routers — BGP VPNv4 + VRF ----------
+- name: "Task 3 Step 2b: CSR BGP VPNv4 + VRF Services"
+  hosts: csr
+  gather_facts: false
+  connection: local
+
+  vars:
+    ssh_args: >-
+      -o StrictHostKeyChecking=no
+      -o HostKeyAlgorithms=ssh-rsa
+      -o PubkeyAcceptedKeyTypes=ssh-rsa
+      -o KexAlgorithms=diffie-hellman-group14-sha1,diffie-hellman-group-exchange-sha1
+      -o ConnectTimeout=10
+
+    csr_bgp:
+      csr-pe01:
+        router_id: "192.168.10.11"
+        gi4_vrf_ip: "10.2.0.1"
+        gi4_vrf_mask: "255.255.255.252"
+      csr-pe02:
+        router_id: "192.168.10.12"
+        gi4_vrf_ip: "10.2.0.5"
+        gi4_vrf_mask: "255.255.255.252"
+
+    this_csr: "{{ csr_bgp[inventory_hostname] }}"
+
+    # XRd Route Reflector loopbacks
+    rr1_ip: "192.168.0.1"
+    rr2_ip: "192.168.0.2"
+
+  tasks:
+    # --- VRF Definition ---
+    - name: "{{ inventory_hostname }} | Configure VRF CUST_A"
+      shell: |
+        ssh {{ ssh_args }} admin@{{ ansible_host }} <<'EOF'
+        configure terminal
+        vrf definition CUST_A
+         rd 65000:100
+         route-target export 65000:100
+         route-target import 65000:100
+         address-family ipv4
+         exit-address-family
+        exit
+        end
+        write memory
+        EOF
+      changed_when: true
+      timeout: 30
+      tags: [vrf]
+
+    # --- Place Gi4 into VRF (CE-facing interface) ---
+    # NOTE: 'vrf forwarding' will strip the existing IP and ISIS CUSTOMER config
+    # from Task 2. This is intentional — Task 3 moves PE-CE to L3VPN service.
+    - name: "{{ inventory_hostname }} | Assign Gi4 to VRF CUST_A"
+      shell: |
+        ssh {{ ssh_args }} admin@{{ ansible_host }} <<'EOF'
+        configure terminal
+        interface GigabitEthernet4
+         vrf forwarding CUST_A
+         ip address {{ this_csr.gi4_vrf_ip }} {{ this_csr.gi4_vrf_mask }}
+         no shutdown
+        exit
+        end
+        write memory
+        EOF
+      changed_when: true
+      timeout: 30
+      tags: [vrf]
+
+    # --- BGP Configuration ---
+    - name: "{{ inventory_hostname }} | Configure BGP 65000 with VPNv4 and VRF"
+      shell: |
+        ssh {{ ssh_args }} admin@{{ ansible_host }} <<'EOF'
+        configure terminal
+        router bgp 65000
+         bgp router-id {{ this_csr.router_id }}
+         bgp log-neighbor-changes
+         no bgp default ipv4-unicast
+         !
+         neighbor {{ rr1_ip }} remote-as 65000
+         neighbor {{ rr1_ip }} description xrd01-RR
+         neighbor {{ rr1_ip }} update-source Loopback0
+         neighbor {{ rr2_ip }} remote-as 65000
+         neighbor {{ rr2_ip }} description xrd02-RR
+         neighbor {{ rr2_ip }} update-source Loopback0
+         !
+         address-family vpnv4
+          neighbor {{ rr1_ip }} activate
+          neighbor {{ rr1_ip }} send-community both
+          neighbor {{ rr2_ip }} activate
+          neighbor {{ rr2_ip }} send-community both
+         exit-address-family
+         !
+         address-family ipv4 vrf CUST_A
+          redistribute connected
+         exit-address-family
+        exit
+        end
+        write memory
+        EOF
+      changed_when: true
+      timeout: 30
+      tags: [bgp, vrf]
+
+
+# ---------- PLAY 3: Quick Overlay Validation ----------
+- name: "Task 3 Step 2c: Validate Overlay"
+  hosts: xrd
+  gather_facts: false
+
+  tasks:
+    - name: "{{ inventory_hostname }} | Check BGP VPNv4 summary"
+      cisco.iosxr.iosxr_command:
+        commands:
+          - "show bgp vpnv4 unicast summary"
+      register: bgp_sum
+
+    - name: "{{ inventory_hostname }} | Display BGP status"
+      debug:
+        msg: |
+          === BGP VPNv4 SUMMARY ===
+          {{ bgp_sum.stdout[0] }}

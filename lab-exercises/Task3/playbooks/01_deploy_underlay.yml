@@ -1,0 +1,136 @@
+---
+# =============================================================================
+# Task 3 — Playbook 1: Deploy SP Core Underlay (ISIS + MPLS LDP)
+#
+# Scope:  XRd P-routers + CSR PE-routers
+# Goal:   Full ISIS CORE adjacency and MPLS label distribution across the backbone
+#
+# Topology:
+#   xrd01 Gi0/0/0/0 ↔ Gi0/0/0/0 xrd02       (P–P backbone)
+#   xrd01 Gi0/0/0/1 ↔ Gi2 csr-pe01           (P–PE west)
+#   xrd02 Gi0/0/0/1 ↔ Gi2 csr-pe02           (P–PE east)
+#   csr-pe01 Gi4     ↔ Eth1/1 n9k-ce01        (PE–CE west)
+#   csr-pe02 Gi4     ↔ Eth1/1 n9k-ce02        (PE–CE east)
+# =============================================================================
+
+# ---------- PLAY 1: XRd P-Routers — ISIS + MPLS LDP ----------
+- name: "Task 3 Step 1a: XRd ISIS CORE + MPLS LDP"
+  hosts: xrd
+  gather_facts: false
+
+  vars:
+    xrd_config:
+      xrd01:
+        loopback_ip: "192.168.0.1"
+        sid_index: 1
+      xrd02:
+        loopback_ip: "192.168.0.2"
+        sid_index: 2
+    this_xrd: "{{ xrd_config[inventory_hostname] }}"
+
+  tasks:
+    # --- ISIS: ensure Gi0/0/0/1 is in ISIS CORE ---
+    - name: "{{ inventory_hostname }} | Add Gi0/0/0/1 to ISIS CORE"
+      cisco.iosxr.iosxr_config:
+        lines:
+          - "circuit-type level-2-only"
+          - "point-to-point"
+          - "address-family ipv4 unicast"
+        parents:
+          - "router isis CORE"
+          - "interface GigabitEthernet0/0/0/1"
+      tags: [isis]
+
+    # --- MPLS LDP ---
+    - name: "{{ inventory_hostname }} | Configure MPLS LDP"
+      cisco.iosxr.iosxr_config:
+        lines:
+          - "router-id {{ this_xrd.loopback_ip }}"
+        parents:
+          - "mpls ldp"
+      tags: [mpls]
+
+    - name: "{{ inventory_hostname }} | MPLS LDP address-family"
+      cisco.iosxr.iosxr_config:
+        lines:
+          - "address-family ipv4"
+        parents:
+          - "mpls ldp"
+      tags: [mpls]
+
+    - name: "{{ inventory_hostname }} | MPLS LDP on Gi0/0/0/0"
+      cisco.iosxr.iosxr_config:
+        lines:
+          - "interface GigabitEthernet0/0/0/0"
+        parents:
+          - "mpls ldp"
+      tags: [mpls]
+
+    - name: "{{ inventory_hostname }} | MPLS LDP on Gi0/0/0/1"
+      cisco.iosxr.iosxr_config:
+        lines:
+          - "interface GigabitEthernet0/0/0/1"
+        parents:
+          - "mpls ldp"
+      tags: [mpls]
+
+
+# ---------- PLAY 2: CSR PE-Routers — MPLS LDP (ISIS already deployed by Task 2) ----------
+- name: "Task 3 Step 1b: CSR MPLS LDP"
+  hosts: csr
+  gather_facts: false
+  connection: local
+
+  vars:
+    ssh_args: >-
+      -o StrictHostKeyChecking=no
+      -o HostKeyAlgorithms=ssh-rsa
+      -o PubkeyAcceptedKeyTypes=ssh-rsa
+      -o KexAlgorithms=diffie-hellman-group14-sha1,diffie-hellman-group-exchange-sha1
+      -o ConnectTimeout=10
+
+  tasks:
+    # --- MPLS LDP + enable mpls ip on Gi2 (backbone uplink) ---
+    # NOTE: ISIS CORE on Gi2/Lo0 is already configured by Task 2
+    - name: "{{ inventory_hostname }} | Configure MPLS LDP + enable mpls ip on Gi2"
+      shell: |
+        ssh {{ ssh_args }} admin@{{ ansible_host }} <<'EOF'
+        configure terminal
+        mpls ldp router-id Loopback0 force
+        interface GigabitEthernet2
+         mpls ip
+         isis network point-to-point
+        exit
+        end
+        write memory
+        EOF
+      changed_when: true
+      timeout: 30
+      tags: [mpls]
+
+
+# ---------- PLAY 3: Quick Underlay Validation ----------
+- name: "Task 3 Step 1c: Validate Underlay"
+  hosts: xrd
+  gather_facts: false
+
+  tasks:
+    - name: "{{ inventory_hostname }} | Check ISIS neighbors"
+      cisco.iosxr.iosxr_command:
+        commands:
+          - "show isis neighbors"
+      register: isis_nbrs
+
+    - name: "{{ inventory_hostname }} | Check MPLS LDP neighbors"
+      cisco.iosxr.iosxr_command:
+        commands:
+          - "show mpls ldp neighbor brief"
+      register: ldp_nbrs
+
+    - name: "{{ inventory_hostname }} | Display underlay status"
+      debug:
+        msg: |
+          === ISIS NEIGHBORS ===
+          {{ isis_nbrs.stdout[0] }}
+          === MPLS LDP NEIGHBORS ===
+          {{ ldp_nbrs.stdout[0] }}
