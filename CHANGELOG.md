@@ -3470,3 +3470,25 @@ Fixed a missing `ansible.cfg` in each Task subdirectory that caused the SSH host
 | lab-exercises/Task2/ansible.cfg | GitHub repo | **CREATED** — disable host_key_checking |
 | lab-exercises/Task3/ansible.cfg | GitHub repo | **CREATED** — disable host_key_checking |
 | CHANGELOG.md | GitHub repo | **UPDATED** — Added v0.7.8 section |
+
+---
+
+### 0.7.9 — N9K CE: Eth1/3 and Eth1/4 set to `no switchport` at startup
+
+**Date:** 2026-04-09
+
+Changed Eth1/3 and Eth1/4 on both N9K CE nodes from Layer 2 (default switchport, VLAN 1) to Layer 3 (`no switchport`) in the startup configuration.
+
+**Reason:** Without this change, client-facing interfaces boot as access ports in VLAN 1, allowing clients to reach each other before the student configures anything — bypassing the Task 1 VLAN exercise entirely.
+
+With `no switchport`, the interfaces are routed ports at startup with no L2 forwarding. Students must configure VLANs, switchport mode, and access port assignments as part of Task 1 before clients have any connectivity.
+
+**Applied live** via Ansible and persisted to startup-config (`save_when: always`). Takes effect immediately — no reboot required.
+
+**Files — Version 0.7.9:**
+
+| File | Location | Change |
+|---|---|---|
+| configs/n9k-ce01.cfg | GitHub repo | **UPDATED** — Eth1/3 and Eth1/4 now include `no switchport` |
+| configs/n9k-ce02.cfg | GitHub repo | **UPDATED** — Eth1/3 and Eth1/4 now include `no switchport` |
+| CHANGELOG.md | GitHub repo | **UPDATED** — Added v0.7.9 section |
