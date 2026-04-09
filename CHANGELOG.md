@@ -3446,3 +3446,27 @@ Comprehensive audit document with 10 sections covering:
 | lab-exercises/Task2/playbooks/01_deploy_isis_csr.yml | GitHub repo | **REWRITTEN** | Fixed NET, is-type, P2P, error detection |
 | lab-exercises/Task2/playbooks/00_deploy_task2.yml | GitHub repo | **REWRITTEN** | include_tasks → import_playbook |
 | CHANGELOG.md | GitHub repo | **UPDATED** | Added v0.7 section |
+
+---
+
+### 0.7.8 — Fix: Add ansible.cfg to Task1, Task2, Task3
+
+**Date:** 2026-04-09
+
+Fixed a missing `ansible.cfg` in each Task subdirectory that caused the SSH host key mismatch error (`libssh: The authenticity of host can't be established`) when students ran playbooks from inside a Task directory.
+
+**Root cause:** Ansible searches for `ansible.cfg` starting from the directory the playbook is run from. The `lab-exercises/ansible.cfg` (which has `host_key_checking = False`) was not found when running from `lab-exercises/Task1/`, `Task2/`, or `Task3/` — causing Ansible to fall back to strict host key checking.
+
+**Fix:** Added a matching `ansible.cfg` to each Task directory with identical settings:
+- `host_key_checking = False`
+- `StrictHostKeyChecking=no` in `ssh_args`
+- `deprecation_warnings = False`
+
+**Files — Version 0.7.8:**
+
+| File | Location | Change |
+|---|---|---|
+| lab-exercises/Task1/ansible.cfg | GitHub repo | **CREATED** — disable host_key_checking |
+| lab-exercises/Task2/ansible.cfg | GitHub repo | **CREATED** — disable host_key_checking |
+| lab-exercises/Task3/ansible.cfg | GitHub repo | **CREATED** — disable host_key_checking |
+| CHANGELOG.md | GitHub repo | **UPDATED** — Added v0.7.8 section |
