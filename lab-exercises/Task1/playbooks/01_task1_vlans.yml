@@ -33,14 +33,14 @@
         config:
           - vlan_id: 10
             name: RED_CLIENTS
-        state: merged
+        state: replaced
 
     - name: Create VLAN 20 (PURPLE)
       cisco.nxos.nxos_vlans:
         config:
           - vlan_id: 20
             name: PURPLE_CLIENTS
-        state: merged
+        state: replaced
 
     # =========================================================================
     # SECTION 2: Configure Access Ports (n9k-ce01 - RED)
@@ -57,7 +57,7 @@
             mode: access
             access:
               vlan: 10
-        state: merged
+        state: replaced
       when: inventory_hostname == "n9k-ce01"
       loop:
         - Ethernet1/3
@@ -77,7 +77,7 @@
             mode: access
             access:
               vlan: 20
-        state: merged
+        state: replaced
       when: inventory_hostname == "n9k-ce02"
       loop:
         - Ethernet1/3

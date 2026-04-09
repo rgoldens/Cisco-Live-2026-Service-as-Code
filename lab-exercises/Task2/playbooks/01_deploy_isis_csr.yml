@@ -33,11 +33,11 @@
       csr-pe01:
         isis_core_net: "49.0001.1921.6810.0011.00"
         customer_isis: "CUSTOMER_RED"
-        isis_customer_net: "49.0001.1921.6810.0011.00"
+        isis_customer_net: "49.0001.0000.0000.0011.00"
       csr-pe02:
         isis_core_net: "49.0001.1921.6810.0012.00"
         customer_isis: "CUSTOMER_PURPLE"
-        isis_customer_net: "49.0002.1921.6810.0012.00"
+        isis_customer_net: "49.0002.0000.0000.0012.00"
 
     this_device: "{{ device_config[inventory_hostname] }}"
 

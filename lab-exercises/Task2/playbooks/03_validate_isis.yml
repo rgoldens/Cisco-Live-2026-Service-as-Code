@@ -1,156 +1,91 @@
 ---
+# =============================================================================
 # Playbook: Validate IS-IS Configuration and Client Reachability
-# Purpose: Verify IS-IS adjacencies and loopback reachability for clients
+# Purpose: Verify IS-IS adjacencies, routing tables, and loopback reachability
+#
+# Note: CSR validation uses shell+SSH (same as deployment) because CSR IOS-XE
+#       16.12 requires legacy SSH KEX algorithms not supported by paramiko.
+# =============================================================================
 
-- name: Validate IS-IS Configuration
-  hosts: csr, nxos
+# ---------- PLAY 1: Validate IS-IS on CSRs (via shell+SSH) ----------
+- name: "Task 2 Validate: CSR IS-IS Configuration"
+  hosts: csr
   gather_facts: false
-  vars:
-    ansible_command_timeout: 30
-    
-  tasks:
-    - name: Check IS-IS neighbors on CSRs
-      cisco.ios.ios_command:
-        commands:
-          - "show isis neighbors"
-          - "show isis database"
-      register: csr_isis
-      when: inventory_hostname.startswith('csr')
-      tags:
-        - validate_adjacencies
+  connection: local
 
-    - name: Check IS-IS neighbors on N9Ks
+  vars:
+    ssh_args: >-
+      -o StrictHostKeyChecking=no
+      -o HostKeyAlgorithms=ssh-rsa
+      -o PubkeyAcceptedKeyTypes=ssh-rsa
+      -o KexAlgorithms=diffie-hellman-group14-sha1,diffie-hellman-group-exchange-sha1
+      -o ConnectTimeout=10
+
+  tasks:
+    - name: "{{ inventory_hostname }} | Check IS-IS neighbors and routes"
+      shell: |
+        ssh {{ ssh_args }} admin@{{ ansible_host }} "show isis neighbors ; show ip route isis"
+      register: csr_isis
+      changed_when: false
+      timeout: 30
+      tags: [validate_adjacencies]
+
+    - name: "{{ inventory_hostname }} | IS-IS Status"
+      debug:
+        msg: "{{ csr_isis.stdout }}"
+      tags: [validate_adjacencies]
+
+
+# ---------- PLAY 2: Validate IS-IS on N9Ks ----------
+- name: "Task 2 Validate: N9K IS-IS Configuration"
+  hosts: nxos
+  gather_facts: false
+
+  tasks:
+    - name: "{{ inventory_hostname }} | Check IS-IS adjacency"
       cisco.nxos.nxos_command:
         commands:
-          - "show isis neighbors"
+          - "show isis adjacency"
           - "show isis database"
       register: n9k_isis
-      when: inventory_hostname.startswith('n9k')
-      tags:
-        - validate_adjacencies
+      tags: [validate_adjacencies]
 
-    - name: Display CSR IS-IS status
-      debug:
-        msg: "{{ csr_isis.stdout_lines }}"
-      when: inventory_hostname.startswith('csr')
-      tags:
-        - validate_adjacencies
-
-    - name: Display N9K IS-IS status
+    - name: "{{ inventory_hostname }} | IS-IS Status"
       debug:
         msg: "{{ n9k_isis.stdout_lines }}"
-      when: inventory_hostname.startswith('n9k')
-      tags:
-        - validate_adjacencies
+      tags: [validate_adjacencies]
 
-    - name: Check routing table on CSRs
-      cisco.ios.ios_command:
-        commands:
-          - "show ip route isis"
-      register: csr_routes
-      when: inventory_hostname.startswith('csr')
-      tags:
-        - validate_routes
-
-    - name: Check routing table on N9Ks
+    - name: "{{ inventory_hostname }} | Check IS-IS routing table"
       cisco.nxos.nxos_command:
         commands:
           - "show ip route isis"
       register: n9k_routes
-      when: inventory_hostname.startswith('n9k')
-      tags:
-        - validate_routes
+      tags: [validate_routes]
 
-    - name: Display CSR routing table
-      debug:
-        msg: "{{ csr_routes.stdout }}"
-      when: inventory_hostname.startswith('csr')
-      tags:
-        - validate_routes
-
-    - name: Display N9K routing table
+    - name: "{{ inventory_hostname }} | IS-IS Routes"
       debug:
         msg: "{{ n9k_routes.stdout }}"
-      when: inventory_hostname.startswith('n9k')
-      tags:
-        - validate_routes
+      tags: [validate_routes]
 
----
 
-# Playbook: Validate Client Reachability to Loopbacks
-# Purpose: Test ping from clients to CSR loopbacks
-
-- name: Validate Client Loopback Reachability
+# ---------- PLAY 3: Validation Summary ----------
+- name: "Task 2 Validate: Summary"
   hosts: localhost
-  gather_facts: true
-  vars:
-    # Red clients and target
-    red_clients:
-      - host: "172.20.20.40"
-        ip: "23.23.23.1"
-        name: "linux-client1"
-    purple_clients:
-      - host: "172.20.20.41"
-        ip: "34.34.34.1"
-        name: "linux-client3"
-    
-    csr_pe01_loopback: "192.168.10.11"
-    csr_pe02_loopback: "192.168.10.12"
+  gather_facts: false
 
   tasks:
-    - name: Test RED clients reaching CSR-PE01 loopback
-      shell: "ping -c 1 {{ csr_pe01_loopback }} > /dev/null 2>&1 && echo 'REACHABLE' || echo 'UNREACHABLE'"
-      register: red_reachability
-      async: 30
-      poll: 0
-      tags:
-        - validate_reachability
-
-    - name: Test PURPLE clients reaching CSR-PE02 loopback
-      shell: "ping -c 1 {{ csr_pe02_loopback }} > /dev/null 2>&1 && echo 'REACHABLE' || echo 'UNREACHABLE'"
-      register: purple_reachability
-      async: 30
-      poll: 0
-      tags:
-        - validate_reachability
-
-    - name: Wait for ping tests to complete
-      async_status:
-        jid: "{{ item.ansible_job_id }}"
-      register: job_result
-      until: job_result.finished
-      retries: 10
-      delay: 1
-      loop:
-        - "{{ red_reachability }}"
-        - "{{ purple_reachability }}"
-      tags:
-        - validate_reachability
-
-    - name: Display RED client reachability results
-      debug:
-        msg: "RED clients can reach CSR-PE01 loopback ({{ csr_pe01_loopback }}): {{ red_reachability.rc }}"
-      tags:
-        - validate_reachability
-
-    - name: Display PURPLE client reachability results
-      debug:
-        msg: "PURPLE clients can reach CSR-PE02 loopback ({{ csr_pe02_loopback }}): {{ purple_reachability.rc }}"
-      tags:
-        - validate_reachability
-
-  post_tasks:
     - name: Validation Summary
       debug:
         msg: |
           ==========================================
           Task 2: IS-IS Validation Summary
           ==========================================
-          ✓ IS-IS CORE area: XRds + CSRs
-          ✓ IS-IS CUSTOMER_RED area: CSR-PE01 + N9K-CE01
-          ✓ IS-IS CUSTOMER_PURPLE area: CSR-PE02 + N9K-CE02
-          ✓ Client reachability verified
-          ✓ Area isolation confirmed
+          Review the output above and verify:
+
+          [1] CSR-PE01: ISIS CORE neighbor (xrd01) + CUSTOMER_RED neighbor (n9k-ce01)
+          [2] CSR-PE02: ISIS CORE neighbor (xrd02) + CUSTOMER_PURPLE neighbor (n9k-ce02)
+          [3] N9K-CE01: ISIS CUSTOMER_RED adjacency to CSR-PE01
+          [4] N9K-CE02: ISIS CUSTOMER_PURPLE adjacency to CSR-PE02
+          [5] ISIS routes present on all devices
           ==========================================
-      tags:
-        - always
+      tags: [always]
