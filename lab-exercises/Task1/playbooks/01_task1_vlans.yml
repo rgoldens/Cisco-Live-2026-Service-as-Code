@@ -51,13 +51,13 @@
     # =========================================================================
 
     - name: Configure RED access ports on n9k-ce01
-      cisco.nxos.nxos_l2_interfaces:
-        config:
-          - name: "{{ item }}"
-            mode: access
-            access:
-              vlan: 10
-        state: replaced
+      cisco.nxos.nxos_config:
+        parents: "interface {{ item }}"
+        lines:
+          - switchport
+          - switchport mode access
+          - switchport access vlan 10
+        match: line
       when: inventory_hostname == "n9k-ce01"
       loop:
         - Ethernet1/3
@@ -71,13 +71,13 @@
     # =========================================================================
 
     - name: Configure PURPLE access ports on n9k-ce02
-      cisco.nxos.nxos_l2_interfaces:
-        config:
-          - name: "{{ item }}"
-            mode: access
-            access:
-              vlan: 20
-        state: replaced
+      cisco.nxos.nxos_config:
+        parents: "interface {{ item }}"
+        lines:
+          - switchport
+          - switchport mode access
+          - switchport access vlan 20
+        match: line
       when: inventory_hostname == "n9k-ce02"
       loop:
         - Ethernet1/3

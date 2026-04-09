@@ -24,6 +24,7 @@
   vars:
     ssh_args: >-
       -o StrictHostKeyChecking=no
+      -o UserKnownHostsFile=/dev/null
       -o HostKeyAlgorithms=ssh-rsa
       -o PubkeyAcceptedKeyTypes=ssh-rsa
       -o KexAlgorithms=diffie-hellman-group14-sha1,diffie-hellman-group-exchange-sha1
@@ -42,9 +43,7 @@
     this_device: "{{ device_config[inventory_hostname] }}"
 
   tasks:
-    # ===== ISIS CORE (Level-2 backbone: PE ↔ XRd P-router) =====
-
-    - name: "{{ inventory_hostname }} | Step 1: Configure ISIS CORE (level-2 backbone)"
+    - name: "{{ inventory_hostname }} | Configure ISIS CORE and CUSTOMER in one session"
       shell: |
         ssh {{ ssh_args }} admin@{{ ansible_host }} <<'EOF'
         configure terminal
@@ -53,101 +52,36 @@
          is-type level-2-only
          metric-style wide
         exit
-        end
-        write memory
-        EOF
-      register: result_core
-      failed_when: "'Invalid input' in result_core.stdout or 'Incomplete' in result_core.stdout"
-      changed_when: true
-      timeout: 30
-      tags: [isis, core]
-
-    - name: "{{ inventory_hostname }} | Step 2: Enable ISIS CORE on GigabitEthernet2 (backbone)"
-      shell: |
-        ssh {{ ssh_args }} admin@{{ ansible_host }} <<'EOF'
-        configure terminal
-        interface GigabitEthernet2
-         ip router isis CORE
-         isis circuit-type level-2-only
-         isis network point-to-point
-        exit
-        end
-        write memory
-        EOF
-      register: result_gi2
-      failed_when: "'Invalid input' in result_gi2.stdout or 'Cannot enable' in result_gi2.stdout"
-      changed_when: true
-      timeout: 30
-      tags: [isis, core]
-
-    - name: "{{ inventory_hostname }} | Step 3: Enable ISIS CORE on Loopback0"
-      shell: |
-        ssh {{ ssh_args }} admin@{{ ansible_host }} <<'EOF'
-        configure terminal
-        interface Loopback0
-         ip router isis CORE
-        exit
-        end
-        write memory
-        EOF
-      register: result_lo0_core
-      failed_when: "'Invalid input' in result_lo0_core.stdout or 'Cannot enable' in result_lo0_core.stdout"
-      changed_when: true
-      timeout: 30
-      tags: [isis, core]
-
-    # ===== ISIS CUSTOMER (Level-1 PE-CE: CSR PE ↔ N9K CE) =====
-
-    - name: "{{ inventory_hostname }} | Step 4: Configure ISIS {{ this_device.customer_isis }} (level-1 PE-CE)"
-      shell: |
-        ssh {{ ssh_args }} admin@{{ ansible_host }} <<'EOF'
-        configure terminal
         router isis {{ this_device.customer_isis }}
          net {{ this_device.isis_customer_net }}
          is-type level-1
          metric-style wide
         exit
-        end
-        write memory
-        EOF
-      register: result_customer
-      failed_when: "'Invalid input' in result_customer.stdout or 'Incomplete' in result_customer.stdout"
-      changed_when: true
-      timeout: 30
-      tags: [isis, customer]
-
-    - name: "{{ inventory_hostname }} | Step 5: Enable ISIS {{ this_device.customer_isis }} on GigabitEthernet4 (CE-facing)"
-      shell: |
-        ssh {{ ssh_args }} admin@{{ ansible_host }} <<'EOF'
-        configure terminal
+        interface GigabitEthernet2
+         ip router isis CORE
+         isis circuit-type level-2-only
+         isis network point-to-point
+        exit
         interface GigabitEthernet4
          ip router isis {{ this_device.customer_isis }}
          isis circuit-type level-1
         exit
-        end
-        write memory
-        EOF
-      register: result_gi4
-      failed_when: "'Invalid input' in result_gi4.stdout or 'Cannot enable' in result_gi4.stdout"
-      changed_when: true
-      timeout: 30
-      tags: [isis, customer]
-
-    - name: "{{ inventory_hostname }} | Step 6: Enable ISIS {{ this_device.customer_isis }} on Loopback0"
-      shell: |
-        ssh {{ ssh_args }} admin@{{ ansible_host }} <<'EOF'
-        configure terminal
         interface Loopback0
+         ip router isis CORE
          ip router isis {{ this_device.customer_isis }}
         exit
         end
         write memory
         EOF
-      register: result_lo0_cust
-      failed_when: "'Invalid input' in result_lo0_cust.stdout or 'Cannot enable' in result_lo0_cust.stdout"
+      register: result_config
+      failed_when: >-
+        'Invalid input' in result_config.stdout or
+        'Incomplete' in result_config.stdout or
+        'Cannot enable' in result_config.stdout or
+        'Connection timed out' in result_config.stderr
       changed_when: true
-      timeout: 30
-      tags: [isis, customer]
+      timeout: 90
+      tags: [isis, core, customer]
 
     # ===== Verification =====
 
@@ -156,6 +90,7 @@
         ssh {{ ssh_args }} admin@{{ ansible_host }} "show isis neighbors ; show clns neighbors ; show ip route isis"
       register: verify_result
       changed_when: false
+      timeout: 30
 
     - name: "{{ inventory_hostname }} | ISIS Status"
       debug:
