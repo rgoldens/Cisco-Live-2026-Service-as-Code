@@ -3492,3 +3492,22 @@ With `no switchport`, the interfaces are routed ports at startup with no L2 forw
 | configs/n9k-ce01.cfg | GitHub repo | **UPDATED** — Eth1/3 and Eth1/4 now include `no switchport` |
 | configs/n9k-ce02.cfg | GitHub repo | **UPDATED** — Eth1/3 and Eth1/4 now include `no switchport` |
 | CHANGELOG.md | GitHub repo | **UPDATED** — Added v0.7.9 section |
+
+---
+
+### 0.7.10 — Fix: N9K Eth1/3 and Eth1/4 `no switchport` now persistent across reboots
+
+**Date:** 2026-04-10
+
+**Problem:** The `no switchport` change applied in v0.7.9 did not survive a server reboot. Root cause: the N9K nodes have no `startup-config` directive in `LTRATO-1001.clab.yml`, so ContainerLab boots them bare every time. The `/home/cisco/n9k-ce01.cfg` file on the server was never being loaded.
+
+**Fix:** Added `no switchport` tasks for Ethernet1/3 and Ethernet1/4 to `n9k-ip-config.yml` with `save_when: always`. This playbook is called by `csr-ip-retry.sh` on every boot, so the config is re-applied and saved to NX-OS startup-config automatically after every server or container restart.
+
+**Verified:** `show startup-config | section Ethernet1/3|Ethernet1/4` confirms `no switchport` is present in startup-config on both n9k-ce01 and n9k-ce02.
+
+**Files — Version 0.7.10:**
+
+| File | Location | Change |
+|---|---|---|
+| /home/cisco/n9k-ip-config.yml | Server (198.18.134.90) | **UPDATED** — Added `no switchport` tasks for Eth1/3 and Eth1/4 |
+| CHANGELOG.md | GitHub repo | **UPDATED** — Added v0.7.10 section |
