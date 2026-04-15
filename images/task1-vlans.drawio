@@ -20,17 +20,11 @@
           <mxGeometry x="25" y="30" width="500" height="35" as="geometry" />
         </mxCell>
 
-        <!-- Dual-line divider -->
+        <!-- Single divider line -->
         <mxCell id="div1" parent="1" style="endArrow=none;html=1;strokeColor=#00aaff;strokeWidth=2;" edge="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="25" y="68" as="sourcePoint" />
             <mxPoint x="1175" y="68" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="div2" parent="1" style="endArrow=none;html=1;strokeColor=#00d4ff;strokeWidth=1;" edge="1">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="25" y="72" as="sourcePoint" />
-            <mxPoint x="1175" y="72" as="targetPoint" />
           </mxGeometry>
         </mxCell>
 
