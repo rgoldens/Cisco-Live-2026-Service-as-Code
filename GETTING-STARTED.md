@@ -105,7 +105,7 @@ Alternatively, SSH from any terminal:
 ssh cisco@<your-dcloud-server-ip>
 ```
 
-> **Credentials:** Username: `cisco` / Password: `cisco`
+> **Credentials:** Username: `cisco` / Password: `C1sco12345`
 
 ---
 
