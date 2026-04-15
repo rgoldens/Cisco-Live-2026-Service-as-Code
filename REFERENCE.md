@@ -1,4 +1,4 @@
-← [Lab Guide](LAB-GUIDE.md) | [Primer →](PRIMER.md)
+← [Getting Started](GETTING-STARTED.md) | [Lab Guide](LAB-GUIDE.md) | [Primer →](PRIMER.md)
 
 ---
 
@@ -64,4 +64,4 @@ Keep this section open while you work.
 
 ---
 
-← [Lab Guide](LAB-GUIDE.md) | [Primer →](PRIMER.md)
+← [Getting Started](GETTING-STARTED.md) | [Lab Guide](LAB-GUIDE.md) | [Primer →](PRIMER.md)

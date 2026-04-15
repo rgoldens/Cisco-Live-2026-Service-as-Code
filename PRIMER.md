@@ -1,4 +1,4 @@
-← [Reference Tables](REFERENCE.md) | [Lab Guide](LAB-GUIDE.md) | [Task 1 →](TASK1.md)
+← [Getting Started](GETTING-STARTED.md) | [Lab Guide](LAB-GUIDE.md) | [Task 1 →](TASK1.md)
 
 ---
 
@@ -126,4 +126,4 @@ nano ~/ce-access-vlan.yml
 
 ---
 
-← [Reference Tables](REFERENCE.md) | [Lab Guide](LAB-GUIDE.md) | [Task 1 →](TASK1.md)
+← [Getting Started](GETTING-STARTED.md) | [Lab Guide](LAB-GUIDE.md) | [Task 1 →](TASK1.md)
