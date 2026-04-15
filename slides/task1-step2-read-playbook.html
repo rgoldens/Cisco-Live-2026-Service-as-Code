@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1200" />
+<title>Task 1 — Step 2: Read the Playbook</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #0a0a0a;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 40px 0;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .slide {
+    background: #0e1621;
+    width: 1200px;
+    padding: 22px 36px 32px 36px;
+    position: relative;
+  }
+
+  /* ── Header ─────────────────────────────────── */
+  .breadcrumb { font-size: 11px; color: #00aaff; margin-bottom: 4px; letter-spacing: 0.04em; }
+  .breadcrumb span { color: #5a6a7a; }
+  .title { font-size: 26px; font-weight: 700; color: #fff; margin-bottom: 3px; }
+  .subtitle { font-size: 13px; color: #5a6a7a; margin-bottom: 10px; }
+  .divider      { width: 100%; height: 3px; background: #00aaff; margin-bottom: 3px; border-radius: 1px; }
+  .divider-thin { width: 100%; height: 1px; background: #00d4ff; margin-bottom: 22px; }
+
+  /* ── Main flow container ─────────────────────── */
+  .flow {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    margin-bottom: 20px;
+  }
+
+  /* ── Arrow connector ─────────────────────────── */
+  .arrow-col {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    flex-shrink: 0;
+  }
+  .arrow-svg { width: 44px; }
+
+  /* ── Task card ───────────────────────────────── */
+  .task-card {
+    flex: 1;
+    background: #141e2b;
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .task-accent { height: 3px; }
+  .task-body   { padding: 16px 18px 18px; flex: 1; display: flex; flex-direction: column; gap: 10px; }
+
+  .task-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #5a6a7a;
+  }
+
+  /* Module pill */
+  .module-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #0e1621;
+    border-radius: 20px;
+    padding: 5px 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    width: fit-content;
+  }
+  .module-pill .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* Badge */
+  .badge {
+    display: inline-block;
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .badge-d  { background: #00aaff18; color: #00aaff; border: 1px solid #00aaff33; }
+  .badge-r  { background: #ff880018; color: #ff8800; border: 1px solid #ff880033; }
+
+  /* Flow diagram inside each card */
+  .flow-diagram {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin: 2px 0 4px;
+  }
+  .flow-box {
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 11px;
+    color: #c8d0d8;
+    line-height: 1.4;
+    text-align: center;
+    flex: 1;
+  }
+  .flow-box .label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.08em; color: #5a6a7a; margin-bottom: 3px; }
+  .flow-box .value { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; }
+  .flow-mini-arrow { width: 28px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+
+  .task-desc {
+    font-size: 12px;
+    color: #c8d0d8;
+    line-height: 1.65;
+  }
+  .task-desc em { color: #fff; font-style: normal; font-weight: 600; }
+
+  /* ── Concept row ─────────────────────────────── */
+  .concepts {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+  .concept-card {
+    background: #141e2b;
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .concept-body { padding: 14px 18px 16px; display: flex; gap: 16px; align-items: flex-start; }
+  .concept-icon { flex-shrink: 0; margin-top: 2px; }
+  .concept-text {}
+  .concept-title { font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 5px; }
+  .concept-desc  { font-size: 12px; color: #c8d0d8; line-height: 1.65; }
+  .concept-desc em { color: #fff; font-style: normal; font-weight: 600; }
+
+  .concept-flow {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+  .cf-item {
+    background: #0e1621;
+    border-radius: 4px;
+    padding: 4px 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: #c8d0d8;
+    white-space: nowrap;
+  }
+  .cf-arrow { color: #4a5568; font-size: 14px; }
+
+  /* ── Insight bar ─────────────────────────────── */
+  .insight {
+    background: #141e2b;
+    border-left: 3px solid #00cc66;
+    border-radius: 6px;
+    padding: 12px 18px;
+    font-size: 12px;
+    color: #c8d0d8;
+    line-height: 1.65;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .insight-icon { flex-shrink: 0; margin-top: 1px; }
+  .insight strong { color: #00cc66; }
+  .insight code   { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #7b68ee; background: #1e2d3d; padding: 1px 5px; border-radius: 3px; }
+</style>
+</head>
+<body>
+<div class="slide">
+
+  <!-- Header -->
+  <div class="breadcrumb">LTRATO-1001 <span>|</span> Ansible Lab</div>
+  <div class="title">Step 2: Read the Playbook</div>
+  <div class="subtitle">Understand what each task does — and why — before running anything</div>
+  <div class="divider"></div>
+  <div class="divider-thin"></div>
+
+  <!-- ══ Main flow: 3 tasks + arrows ══════════════════════════════════════════ -->
+  <div class="flow">
+
+    <!-- ── Task 1: nxos_vlans ─────────────────────────────── -->
+    <div class="task-card">
+      <div class="task-accent" style="background:#00aaff;"></div>
+      <div class="task-body">
+        <div>
+          <div class="task-label">Playbook Task 1</div>
+          <div style="margin-top:6px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+            <div class="module-pill" style="color:#00aaff;">
+              <div class="dot" style="background:#00aaff;"></div>
+              cisco.nxos.nxos_vlans
+            </div>
+            <span class="badge badge-d">Declarative</span>
+          </div>
+        </div>
+
+        <!-- Flow: desired state → Ansible → CLI -->
+        <div class="flow-diagram">
+          <div class="flow-box" style="background:#1e2d3d; border:1px solid #00aaff33;">
+            <div class="label">You say</div>
+            <div class="value" style="color:#00aaff;">VLAN 23<br>active</div>
+          </div>
+          <div class="flow-mini-arrow">
+            <svg width="28" height="16" viewBox="0 0 28 16">
+              <path d="M2 8 H22 M18 3 L26 8 L18 13" stroke="#4a5568" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="flow-box" style="background:#00aaff12; border:1px solid #00aaff33;">
+            <div class="label">Ansible decides</div>
+            <div class="value" style="color:#c8d0d8; font-size:10px;">vlan 23<br>name CLIENT‑VLAN‑23</div>
+          </div>
+          <div class="flow-mini-arrow">
+            <svg width="28" height="16" viewBox="0 0 28 16">
+              <path d="M2 8 H22 M18 3 L26 8 L18 13" stroke="#4a5568" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="flow-box" style="background:#1e2d3d; border:1px solid #2a3a4a;">
+            <div class="label">Device</div>
+            <div class="value" style="color:#00cc66; font-size:10px;">
+              <svg width="22" height="22" viewBox="0 0 24 24" style="display:block;margin:0 auto 2px;"><rect x="2" y="5" width="20" height="14" rx="2" fill="none" stroke="#00cc66" stroke-width="1.5"/><line x1="6" y1="12" x2="18" y2="12" stroke="#00cc66" stroke-width="1.5"/><circle cx="7" cy="9" r="1" fill="#00cc66"/><circle cx="17" cy="9" r="1" fill="#00cc66"/></svg>
+              N9K switch
+            </div>
+          </div>
+        </div>
+
+        <div class="task-desc">
+          Describe <em>desired state</em> — Ansible figures out what CLI to send.
+          If the VLAN already exists, nothing changes. <em>Idempotent by design.</em>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Arrow 1→2 ──────────────────────────────────────── -->
+    <div class="arrow-col">
+      <svg class="arrow-svg" height="60" viewBox="0 0 44 60">
+        <path d="M8 30 H34 M28 22 L38 30 L28 38" stroke="#4a5568" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <text x="22" y="18" text-anchor="middle" font-family="Inter,sans-serif" font-size="8" fill="#5a6a7a">then</text>
+      </svg>
+    </div>
+
+    <!-- ── Task 2: nxos_config ────────────────────────────── -->
+    <div class="task-card">
+      <div class="task-accent" style="background:#ff8800;"></div>
+      <div class="task-body">
+        <div>
+          <div class="task-label">Playbook Task 2</div>
+          <div style="margin-top:6px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+            <div class="module-pill" style="color:#ff8800;">
+              <div class="dot" style="background:#ff8800;"></div>
+              cisco.nxos.nxos_config
+            </div>
+            <span class="badge badge-r">Raw CLI</span>
+          </div>
+        </div>
+
+        <!-- Flow: context → lines loop -->
+        <div class="flow-diagram">
+          <div class="flow-box" style="background:#1e2d3d; border:1px solid #ff880033; text-align:left;">
+            <div class="label">parents:</div>
+            <div class="value" style="color:#ff8800; font-size:10px;">interface<br>Ethernet1/3</div>
+          </div>
+          <div class="flow-mini-arrow">
+            <svg width="28" height="16" viewBox="0 0 28 16">
+              <path d="M2 8 H22 M18 3 L26 8 L18 13" stroke="#4a5568" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="flow-box" style="background:#ff880010; border:1px solid #ff880033; text-align:left;">
+            <div class="label">lines:</div>
+            <div class="value" style="color:#c8d0d8; font-size:10px;">switchport<br>no shutdown</div>
+          </div>
+          <div class="flow-mini-arrow">
+            <svg width="28" height="16" viewBox="0 0 28 16">
+              <path d="M2 8 H22 M18 3 L26 8 L18 13" stroke="#4a5568" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="flow-box" style="background:#1e2d3d; border:1px solid #2a3a4a;">
+            <div class="label">loop × 2</div>
+            <div class="value" style="color:#ff8800; font-size:10px;">Eth1/3<br>Eth1/4</div>
+          </div>
+        </div>
+
+        <div class="task-desc">
+          No purpose-built module for port mode? Send CLI directly.
+          <em>parents:</em> enters the interface context first — like typing
+          <code style="font-family:'JetBrains Mono';font-size:10px;color:#ff8800;background:#1e2d3d;padding:1px 4px;border-radius:3px;">interface Eth1/3</code>.
+          <em>loop:</em> runs it for each port.
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Arrow 2→3 ──────────────────────────────────────── -->
+    <div class="arrow-col">
+      <svg class="arrow-svg" height="60" viewBox="0 0 44 60">
+        <path d="M8 30 H34 M28 22 L38 30 L28 38" stroke="#4a5568" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <text x="22" y="18" text-anchor="middle" font-family="Inter,sans-serif" font-size="8" fill="#5a6a7a">then</text>
+      </svg>
+    </div>
+
+    <!-- ── Task 3: nxos_l2_interfaces ────────────────────── -->
+    <div class="task-card">
+      <div class="task-accent" style="background:#7b68ee;"></div>
+      <div class="task-body">
+        <div>
+          <div class="task-label">Playbook Task 3</div>
+          <div style="margin-top:6px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+            <div class="module-pill" style="color:#7b68ee;">
+              <div class="dot" style="background:#7b68ee;"></div>
+              nxos_l2_interfaces
+            </div>
+            <span class="badge badge-d">Declarative</span>
+          </div>
+        </div>
+
+        <!-- Flow: variable → switch A / switch B -->
+        <div class="flow-diagram">
+          <div class="flow-box" style="background:#7b68ee12; border:1px solid #7b68ee33; text-align:center;">
+            <div class="label">variable</div>
+            <div class="value" style="color:#7b68ee; font-size:10px;">vlan_config<br>[hostname].id</div>
+          </div>
+          <div class="flow-mini-arrow">
+            <!-- fork arrow -->
+            <svg width="28" height="40" viewBox="0 0 28 40">
+              <line x1="4" y1="20" x2="14" y2="20" stroke="#4a5568" stroke-width="1.5" stroke-linecap="round"/>
+              <line x1="14" y1="10" x2="14" y2="30" stroke="#4a5568" stroke-width="1.5" stroke-linecap="round"/>
+              <line x1="14" y1="10" x2="24" y2="10" stroke="#4a5568" stroke-width="1.5" stroke-linecap="round"/>
+              <line x1="14" y1="30" x2="24" y2="30" stroke="#4a5568" stroke-width="1.5" stroke-linecap="round"/>
+              <polygon points="22,7 26,10 22,13" fill="#4a5568"/>
+              <polygon points="22,27 26,30 22,33" fill="#4a5568"/>
+            </svg>
+          </div>
+          <div style="flex:1; display:flex; flex-direction:column; gap:4px;">
+            <div class="flow-box" style="background:#1e2d3d; border:1px solid #2a3a4a; padding:5px 8px;">
+              <div class="label">ce01</div>
+              <div class="value" style="color:#00cc66; font-size:11px;">VLAN 23</div>
+            </div>
+            <div class="flow-box" style="background:#1e2d3d; border:1px solid #2a3a4a; padding:5px 8px;">
+              <div class="label">ce02</div>
+              <div class="value" style="color:#00cc66; font-size:11px;">VLAN 34</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="task-desc">
+          Assigns a VLAN to the port. The variable resolves differently per device —
+          <em>same task, different values</em> on each switch.
+          No copy-paste, no duplication.
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end .flow -->
+
+  <!-- ══ Concept row ══════════════════════════════════════════════════════════ -->
+  <div class="concepts">
+
+    <!-- loop -->
+    <div class="concept-card">
+      <div class="task-accent" style="background:#7b68ee;"></div>
+      <div class="concept-body">
+        <div class="concept-icon">
+          <svg width="36" height="36" viewBox="0 0 36 36">
+            <circle cx="18" cy="18" r="16" fill="#7b68ee18" stroke="#7b68ee" stroke-width="1.5"/>
+            <!-- repeat arrows -->
+            <path d="M11 18 A7 7 0 0 1 25 18" fill="none" stroke="#7b68ee" stroke-width="1.8" stroke-linecap="round"/>
+            <polygon points="25,14 29,18 25,22" fill="#7b68ee"/>
+            <path d="M25 18 A7 7 0 0 1 11 18" fill="none" stroke="#7b68ee" stroke-width="1.8" stroke-linecap="round" stroke-dasharray="2,2"/>
+            <polygon points="11,22 7,18 11,14" fill="#7b68ee" opacity="0.5"/>
+          </svg>
+        </div>
+        <div class="concept-text">
+          <div class="concept-title"><code style="font-family:'JetBrains Mono';color:#7b68ee;">loop:</code> — runs once per item</div>
+          <div class="concept-desc">
+            Write the task once. List the ports. Ansible runs it for each.
+            <em>2 ports today → 48 ports tomorrow.</em> Same playbook, bigger list.
+          </div>
+          <div class="concept-flow">
+            <div class="cf-item" style="color:#7b68ee;">Ethernet1/3</div>
+            <span class="cf-arrow">→</span>
+            <div class="cf-item" style="color:#7b68ee;">Ethernet1/4</div>
+            <span class="cf-arrow">→</span>
+            <div class="cf-item" style="color:#5a6a7a; font-style:italic;">... Ethernet1/48</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- save_when + idempotency -->
+    <div class="concept-card">
+      <div class="task-accent" style="background:#00cc66;"></div>
+      <div class="concept-body">
+        <div class="concept-icon">
+          <svg width="36" height="36" viewBox="0 0 36 36">
+            <circle cx="18" cy="18" r="16" fill="#00cc6618" stroke="#00cc66" stroke-width="1.5"/>
+            <!-- shield check -->
+            <path d="M18 10 L26 13 L26 19 C26 23 22 26 18 28 C14 26 10 23 10 19 L10 13 Z" fill="none" stroke="#00cc66" stroke-width="1.5" stroke-linejoin="round"/>
+            <path d="M14 18.5 L17 21.5 L22 15.5" stroke="#00cc66" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="concept-text">
+          <div class="concept-title"><code style="font-family:'JetBrains Mono';color:#00cc66;">save_when: modified</code> — safe to re-run</div>
+          <div class="concept-desc">
+            Only writes to startup-config if something actually <em>changed</em> this run.
+            Re-run the playbook 100 times — it won't spam the config.
+          </div>
+          <div class="concept-flow">
+            <div class="cf-item">run 1 → changed</div>
+            <span class="cf-arrow">→</span>
+            <div class="cf-item" style="color:#00cc66;">writes config</div>
+            &nbsp;
+            <div class="cf-item">run 2 → ok</div>
+            <span class="cf-arrow">→</span>
+            <div class="cf-item" style="color:#5a6a7a;">no write</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end .concepts -->
+
+  <!-- ══ Insight bar ══════════════════════════════════════════════════════════ -->
+  <div class="insight">
+    <div class="insight-icon">
+      <svg width="20" height="20" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="10" fill="#00cc6620" stroke="#00cc66" stroke-width="1.5"/>
+        <line x1="12" y1="8" x2="12" y2="13" stroke="#00cc66" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="12" cy="16" r="1" fill="#00cc66"/>
+      </svg>
+    </div>
+    <div>
+      <strong>Automation Insight:</strong>
+      Three tasks. Three modules. Three concerns separated cleanly — <em>create</em> the VLAN,
+      <em>configure</em> the ports, <em>assign</em> the VLAN to the ports.
+      The <code>loop:</code> keyword removed duplication across ports.
+      The <code>{{ variable }}</code> removed duplication across switches.
+      <strong>This is how automation scales: data changes, logic doesn't.</strong>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
