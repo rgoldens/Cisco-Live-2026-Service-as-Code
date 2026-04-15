@@ -81,41 +81,16 @@ have nowhere to go. This is expected — no VLANs have been configured yet.
 > after the playbook runs. If you don't know where you started, you can't prove
 > you improved anything.
 
-Now let's configure it.
+### Step 2: Read the Playbook
 
-### Exercise: Complete the Playbook
-
-Open the playbook in your editor:
+Before making any changes, open the playbook and read through it:
 
 ```bash
 nano ~/ce-access-vlan.yml
 ```
 
-Scroll to the `vars:` section near the top. You'll see TODO placeholders:
-
-```yaml
-vars:
-  vlan_config:
-    n9k-ce01:
-      id: ___          # TODO: VLAN ID for west-side clients (see Table 1)
-      name: "___"      # TODO: Name this VLAN (convention: CLIENT-VLAN-<id>)
-    n9k-ce02:
-      id: ___          # TODO: VLAN ID for east-side clients (see Table 1)
-      name: "___"      # TODO: Name this VLAN (convention: CLIENT-VLAN-<id>)
-```
-
-Using **Table 1: VLAN Assignments**, fill in the 4 values:
-
-1. **n9k-ce01 VLAN ID:** The VLAN for west-side clients (client1, client2)
-2. **n9k-ce01 VLAN name:** Use the naming convention `CLIENT-VLAN-<id>`
-3. **n9k-ce02 VLAN ID:** The VLAN for east-side clients (client3, client4)
-4. **n9k-ce02 VLAN name:** Use the naming convention `CLIENT-VLAN-<id>`
-
-Save the file when done.
-
-### Ansible Concepts in This Playbook
-
-Before running, read through the tasks below the vars. Notice:
+Read through the tasks in the playbook. Notice how each task maps to one of
+the three things a VLAN configuration requires:
 
 - **`cisco.nxos.nxos_vlans`** (Step 1) — A *declarative* module. You describe
   the desired state ("VLAN 23 should exist and be active"), and Ansible figures
@@ -140,13 +115,35 @@ Before running, read through the tasks below the vars. Notice:
 - **`save_when: modified`** (Step 4) — Only writes to startup-config if
   something actually changed. This is idempotent — safe to run repeatedly.
 
-### Run It
+### Step 3: Fill in the Variables
+
+Scroll to the `vars:` section near the top of the playbook. You'll see TODO placeholders:
+
+```yaml
+vars:
+  vlan_config:
+    n9k-ce01:
+      id: ___          # TODO: VLAN ID for west-side clients (see Table 1)
+      name: "___"      # TODO: Name this VLAN (convention: CLIENT-VLAN-<id>)
+    n9k-ce02:
+      id: ___          # TODO: VLAN ID for east-side clients (see Table 1)
+      name: "___"      # TODO: Name this VLAN (convention: CLIENT-VLAN-<id>)
+```
+
+Using **Table 1: VLAN Assignments**, fill in the 4 values:
+
+1. **n9k-ce01 VLAN ID:** The VLAN for west-side clients (client1, client2)
+2. **n9k-ce01 VLAN name:** Use the naming convention `CLIENT-VLAN-<id>`
+3. **n9k-ce02 VLAN ID:** The VLAN for east-side clients (client3, client4)
+4. **n9k-ce02 VLAN name:** Use the naming convention `CLIENT-VLAN-<id>`
+
+Save the file when done.
+
+### Step 4: Run the Playbook
 
 ```bash
 ansible-playbook ~/ce-access-vlan.yml
 ```
-
-### Understanding the Output
 
 Watch the output as it runs. Ansible uses color-coded status for each task:
 
@@ -293,7 +290,7 @@ n9k-ce02                   : ok=10   changed=6    unreachable=0    failed=0
 > scroll up to find the red error message — it will tell you exactly which task
 > failed and why.
 
-### Checkpoint
+### Step 5: Verify the Results
 
 Confirm these results from the playbook output:
 
@@ -347,7 +344,7 @@ the device's current state against the desired state, fixes only what
 changed, and leaves everything else untouched. This is idempotency working
 for you in the real world.
 
-### Step 2: Break Something
+### Step 1: Introduce the Drift
 
 SSH into **n9k-ce01** and manually shut down the client1 port. This simulates
 an unauthorized change — maybe someone disabled the port while debugging a
@@ -362,7 +359,7 @@ interface Ethernet1/3
 end
 ```
 
-### Step 3: Confirm the Damage
+### Step 2: Confirm the Impact
 
 Verify that client1 can no longer reach client2:
 
@@ -386,7 +383,7 @@ From 23.23.23.1 icmp_seq=3 Destination Host Unreachable
 One manual change on one interface, and connectivity is broken. In a network
 with hundreds of switches, finding this would be a needle in a haystack.
 
-### Step 4: Let Ansible Fix It
+### Step 3: Let Ansible Remediate
 
 Re-run the exact same playbook you ran in Task 1:
 
@@ -427,7 +424,7 @@ the device's current state and only changed what was actually wrong. That's
 the power of idempotency — it's not just "safe to re-run," it's a
 **drift detection and remediation engine**.
 
-### Step 5: Verify the Fix
+### Step 4: Verify the Fix
 
 Check the playbook's ping output:
 
