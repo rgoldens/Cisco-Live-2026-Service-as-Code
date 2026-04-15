@@ -3638,3 +3638,37 @@ With `no switchport`, the interfaces are routed ports at startup with no L2 forw
 |---|---|---|
 | /home/cisco/post-deploy.sh | Server (198.18.134.90) | **UPDATED** — Added `CLIENT_ROUTES` array and static route application in step 5 |
 | CHANGELOG.md | GitHub repo | **UPDATED** — Added v0.7.11 section |
+
+---
+
+### 0.7.12 — Add short-name aliases to /etc/hosts for all lab nodes
+
+**Date:** 2026-04-15
+
+Added short-name DNS aliases to `/etc/hosts` on the server so nodes can be reached by short name (e.g. `ssh csr-pe01`) in addition to the full ContainerLab name (`ssh clab-LTRATO-1001-csr-pe01`).
+
+**Aliases added:**
+
+| Short Name | IP |
+|---|---|
+| `xrd01` | `172.20.20.10` |
+| `xrd02` | `172.20.20.11` |
+| `csr-pe01` | `172.20.20.20` |
+| `csr-pe02` | `172.20.20.21` |
+| `n9k-ce01` | `172.20.20.30` |
+| `n9k-ce02` | `172.20.20.31` |
+| `linux-client1` | `172.20.20.40` |
+| `linux-client2` | `172.20.20.41` |
+| `linux-client3` | `172.20.20.42` |
+| `linux-client4` | `172.20.20.43` |
+
+**Implementation:** A new step 6 added to `post-deploy.sh` removes any existing alias block (idempotent) and appends a fresh static block to `/etc/hosts` after the ContainerLab-managed section. This ensures aliases survive reboots and redeployments — ContainerLab only manages its own `###### CLAB-LTRATO-1001-START/END ######` block and will not overwrite the aliases.
+
+**Verified:** All 10 short names resolve correctly via `getent hosts`.
+
+**Files — Version 0.7.12:**
+
+| File | Location | Change |
+|---|---|---|
+| /home/cisco/post-deploy.sh | Server (198.18.134.90) | **UPDATED** — Added step 6: /etc/hosts short-name aliases |
+| CHANGELOG.md | GitHub repo | **UPDATED** — Added v0.7.12 section |
