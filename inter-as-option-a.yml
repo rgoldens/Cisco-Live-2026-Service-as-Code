@@ -1,0 +1,379 @@
+---
+# ============================================================================
+# inter-as-option-a.yml — Task 3: Inter-AS Option A (Full East-West Reachability)
+# ============================================================================
+#
+# WHAT THIS PLAYBOOK DOES:
+#   Configures Inter-AS Option A so that Linux clients on the west side
+#   (client1/2 on n9k-ce01) can reach clients on the east side (client3/4
+#   on n9k-ce02) across the full SP core.
+#
+#   Traffic path: client1 → n9k-ce01 → csr-pe01 → xrd01 → xrd02 → csr-pe02
+#                 → n9k-ce02 → client3
+#
+# This is the most complex playbook in the lab — it touches four different
+# platforms (IOS-XR, IOS, NX-OS, Linux) and introduces BGP, VRFs, and
+# route redistribution. Pay attention to how Ansible handles each platform
+# differently while the overall workflow stays consistent.
+#
+# USAGE:
+#   ansible-playbook inter-as-option-a.yml
+#
+# EXPECTED RESULT:
+#   - linux-client1 (23.23.23.1) can ping linux-client3 (34.34.34.1)
+#   - linux-client2 (23.23.23.2) can ping linux-client4 (34.34.34.2)
+#
+# ============================================================================
+
+# ---------------------------------------------------------------------------
+# Play 1: Configure VRF and BGP on XRd core routers (IOS-XR)
+# ---------------------------------------------------------------------------
+# The XRd routers are the SP core. They use VRFs to keep customer traffic
+# separate from the SP infrastructure, and MP-BGP VPNv4 to exchange
+# customer routes across the core.
+#
+# IMPORTANT — IOS-XR NESTING:
+# IOS-XR has a deeply nested config model. Ansible's iosxr_config module
+# sends each "parents" level as a separate CLI context entry. When config
+# is 3-4 levels deep (e.g., router bgp → vrf → neighbor → address-family),
+# you MUST break it into separate tasks — one per nesting level. Trying to
+# push deeply nested config in a single task often fails with "Incomplete
+# command". This is the #1 gotcha when automating IOS-XR.
+# ---------------------------------------------------------------------------
+- name: "Task 3 — Configure VRF and BGP on XRd core routers"
+  hosts: xrd
+  gather_facts: false
+
+  # =========================================================================
+  # EXERCISE: Complete the XRd core router variables below.
+  #
+  # Reference: See "Table 3: BGP Peering" and "Table 2: IP Addressing"
+  # in the Lab Guide.
+  #
+  # Each XRd router needs:
+  #   - The OTHER XRd's Loopback0 IP (for iBGP VPNv4 peering)
+  #   - Its own Gi0/0/0/1 IP toward the CSR PE (see Table 2)
+  #   - The CSR PE's IP on the same /30 link (eBGP neighbor)
+  # =========================================================================
+  vars:
+    xrd_config:
+      xrd01:
+        remote_lo: ___           # TODO: xrd02's Loopback0 IP (iBGP VPNv4 peer)
+        gi1_ip: ___              # TODO: xrd01's Gi0/0/0/1 IP toward csr-pe01
+        gi1_mask: ___            # TODO: Subnet mask for the /30 link
+        csr_peer: ___            # TODO: csr-pe01's IP on the same /30 link
+      xrd02:
+        remote_lo: ___           # TODO: xrd01's Loopback0 IP (iBGP VPNv4 peer)
+        gi1_ip: ___              # TODO: xrd02's Gi0/0/0/1 IP toward csr-pe02
+        gi1_mask: ___            # TODO: Subnet mask for the /30 link
+        csr_peer: ___            # TODO: csr-pe02's IP on the same /30 link
+
+  tasks:
+
+    # -----------------------------------------------------------------------
+    # Step 1: Push all VRF, interface, and BGP config via raw CLI
+    # -----------------------------------------------------------------------
+    # We use iosxr_command to push config directly because the iosxr_config
+    # module relies on internal commands (show commit changes diff) that
+    # are not supported on XRd 25.4.1. The iosxr_command module bypasses
+    # this by sending raw CLI commands, which works reliably on all versions.
+    #
+    # IOS-XR requires "configure terminal" to enter config mode, and
+    # "commit" to save changes (unlike IOS where running-config updates
+    # immediately). "end" exits config mode back to exec.
+    # -----------------------------------------------------------------------
+    - name: "Step 1 — Create PASS-ALL route-policy"
+      cisco.iosxr.iosxr_command:
+        commands:
+          - configure terminal
+          - route-policy PASS-ALL
+          - pass
+          - end-policy
+          - commit
+          - end
+
+    - name: "Step 2 — Create VRF Customer-CLIVE with route-targets"
+      cisco.iosxr.iosxr_command:
+        commands:
+          - configure terminal
+          - vrf Customer-CLIVE
+          - address-family ipv4 unicast
+          - import route-target 65000:1
+          - export route-target 65000:1
+          - commit
+          - end
+
+    - name: "Step 3 — Assign Gi0/0/0/1 to VRF and re-apply IP"
+      cisco.iosxr.iosxr_command:
+        commands:
+          - configure terminal
+          - interface GigabitEthernet0/0/0/1
+          - vrf Customer-CLIVE
+          - "ipv4 address {{ xrd_config[inventory_hostname].gi1_ip }} {{ xrd_config[inventory_hostname].gi1_mask }}"
+          - no shutdown
+          - commit
+          - end
+
+    # -----------------------------------------------------------------------
+    # Step 4: Configure BGP — iBGP VPNv4 peering
+    # -----------------------------------------------------------------------
+    # VPNv4 carries VRF routes across the SP core between XRd routers.
+    # They peer via loopbacks (reachable through IS-IS).
+    # -----------------------------------------------------------------------
+    - name: "Step 4a — Configure BGP process and iBGP VPNv4 neighbor"
+      cisco.iosxr.iosxr_command:
+        commands:
+          - configure terminal
+          - router bgp 65000
+          - address-family vpnv4 unicast
+          - "neighbor {{ xrd_config[inventory_hostname].remote_lo }}"
+          - remote-as 65000
+          - update-source Loopback0
+          - address-family vpnv4 unicast
+          - next-hop-self
+          - commit
+          - end
+
+    # -----------------------------------------------------------------------
+    # Step 5: Configure eBGP in VRF toward CSR PE
+    # -----------------------------------------------------------------------
+    # Under the VRF, we set the route-distinguisher, enable redistribution,
+    # and peer with the CSR PE using eBGP.
+    #
+    # "as-override" is a key SP technique — both CSR PEs share the same AS
+    # (65001). Without this, BGP loop prevention would reject routes that
+    # already have AS 65001 in the path.
+    # -----------------------------------------------------------------------
+    - name: "Step 5a — Configure VRF RD and redistribution in BGP"
+      cisco.iosxr.iosxr_command:
+        commands:
+          - configure terminal
+          - router bgp 65000
+          - vrf Customer-CLIVE
+          - rd 65000:1
+          - address-family ipv4 unicast
+          - redistribute connected
+          - commit
+          - end
+
+    - name: "Step 5b — Configure eBGP neighbor in VRF with route-policies"
+      cisco.iosxr.iosxr_command:
+        commands:
+          - configure terminal
+          - router bgp 65000
+          - vrf Customer-CLIVE
+          - "neighbor {{ xrd_config[inventory_hostname].csr_peer }}"
+          - remote-as 65001
+          - address-family ipv4 unicast
+          - route-policy PASS-ALL in
+          - route-policy PASS-ALL out
+          - as-override
+          - commit
+          - end
+
+    # -----------------------------------------------------------------------
+    # Step 5: Verify BGP config was applied
+    # -----------------------------------------------------------------------
+    - name: "Step 5 — Verify BGP config"
+      cisco.iosxr.iosxr_command:
+        commands:
+          - show run router bgp
+      register: bgp_check
+
+    - name: "Display BGP config"
+      ansible.builtin.debug:
+        var: bgp_check.stdout_lines
+
+# ---------------------------------------------------------------------------
+# Play 2: Configure BGP on CSR PE routers
+# ---------------------------------------------------------------------------
+# The CSR PEs connect the customer IS-IS domain to the SP core via BGP.
+# We redistribute IS-IS into BGP (advertise client subnets to the core)
+# and BGP into IS-IS (so each N9K learns about the remote client subnet).
+# ---------------------------------------------------------------------------
+- name: "Task 3 — Configure BGP on CSR PE routers"
+  hosts: csr
+  gather_facts: false
+
+  # =========================================================================
+  # EXERCISE: Complete the CSR PE variables below.
+  #
+  # Each CSR PE needs the IP of its XRd neighbor (the other end of the
+  # /30 link between them). This is the eBGP peer.
+  # Reference: See "Table 3: BGP Peering" in the Lab Guide.
+  # =========================================================================
+  vars:
+    bgp_config:
+      csr-pe01:
+        xrd_peer: ___          # TODO: xrd01's Gi0/0/0/1 IP (eBGP neighbor)
+      csr-pe02:
+        xrd_peer: ___          # TODO: xrd02's Gi0/0/0/1 IP (eBGP neighbor)
+
+  tasks:
+
+    - name: "Step 1 — Configure BGP AS 65001 and eBGP neighbor"
+      cisco.ios.ios_config:
+        lines:
+          - neighbor {{ bgp_config[inventory_hostname].xrd_peer }} remote-as 65000
+        parents: router bgp 65001
+        save_when: modified
+
+    - name: "Step 2 — Configure BGP address-family and redistribution"
+      cisco.ios.ios_config:
+        lines:
+          - neighbor {{ bgp_config[inventory_hostname].xrd_peer }} activate
+          - redistribute isis CORE level-2
+        parents:
+          - router bgp 65001
+          - address-family ipv4 unicast
+        save_when: modified
+
+    - name: "Step 3 — Redistribute BGP into IS-IS"
+      cisco.ios.ios_config:
+        lines:
+          - redistribute bgp 65001 metric 40 level-2
+        parents: router isis CORE
+        save_when: modified
+
+    - name: "Step 4 — Wait for CSR to stabilize"
+      ansible.builtin.wait_for:
+        host: "{{ ansible_host }}"
+        port: 22
+        delay: 5
+        timeout: 60
+
+# ---------------------------------------------------------------------------
+# Play 3: Add cross-site routes on Linux clients
+# ---------------------------------------------------------------------------
+- name: "Task 3 — Add cross-site routes on Linux clients"
+  hosts: linux
+  gather_facts: false
+
+  # =========================================================================
+  # EXERCISE: Complete the cross-site routing variables below.
+  #
+  # Each client needs a route to the REMOTE client subnet, via its local
+  # SVI gateway. West clients need to reach the east subnet, and vice versa.
+  # Reference: See "Table 2: IP Addressing" in the Lab Guide.
+  # =========================================================================
+  vars:
+    cross_routes:
+      linux-client1:
+        dest: ___              # TODO: East-side client subnet (x.x.x.0/24)
+        gw: ___                # TODO: West SVI gateway IP
+      linux-client2:
+        dest: ___              # TODO: Same as client1 (same switch)
+        gw: ___                # TODO: Same as client1
+      linux-client3:
+        dest: ___              # TODO: West-side client subnet (x.x.x.0/24)
+        gw: ___                # TODO: East SVI gateway IP
+      linux-client4:
+        dest: ___              # TODO: Same as client3 (same switch)
+        gw: ___                # TODO: Same as client3
+
+  tasks:
+
+    - name: "Add route to remote client subnet"
+      ansible.builtin.raw: "ip route replace {{ cross_routes[inventory_hostname].dest }} via {{ cross_routes[inventory_hostname].gw }} dev eth1"
+      changed_when: true
+
+# ---------------------------------------------------------------------------
+# Play 4: Wait for BGP convergence
+# ---------------------------------------------------------------------------
+- name: "Wait for BGP convergence"
+  hosts: localhost
+  gather_facts: false
+  connection: local
+
+  tasks:
+
+    - name: "Pause 90 seconds for BGP to converge"
+      ansible.builtin.pause:
+        seconds: 90
+        prompt: "Waiting for BGP sessions to establish and routes to propagate..."
+
+# ---------------------------------------------------------------------------
+# Play 5: Verify BGP sessions and routes
+# ---------------------------------------------------------------------------
+# Always verify after configuration. We check both the SP core (XRd VPNv4)
+# and the PE edge (CSR BGP) to ensure routes are being exchanged end-to-end.
+# "register" captures command output so "debug" can display it.
+# ---------------------------------------------------------------------------
+- name: "Verify — BGP sessions on XRd"
+  hosts: xrd
+  gather_facts: false
+
+  tasks:
+
+    - name: "Verify — Show BGP VPNv4 summary"
+      cisco.iosxr.iosxr_command:
+        commands:
+          - show bgp vpnv4 unicast summary
+      register: bgp_summary
+
+    - name: "Display BGP VPNv4 summary"
+      ansible.builtin.debug:
+        var: bgp_summary.stdout_lines
+
+    - name: "Verify — Show BGP VRF Customer-CLIVE routes"
+      cisco.iosxr.iosxr_command:
+        commands:
+          - show bgp vrf Customer-CLIVE ipv4 unicast
+      register: bgp_routes
+
+    - name: "Display VRF routes"
+      ansible.builtin.debug:
+        var: bgp_routes.stdout_lines
+
+- name: "Verify — BGP on CSR PEs"
+  hosts: csr
+  gather_facts: false
+
+  tasks:
+
+    - name: "Verify — Show BGP summary"
+      cisco.ios.ios_command:
+        commands:
+          - show ip bgp summary
+      register: bgp_summary
+
+    - name: "Display BGP summary"
+      ansible.builtin.debug:
+        var: bgp_summary.stdout_lines
+
+    - name: "Verify — Show IP route BGP"
+      cisco.ios.ios_command:
+        commands:
+          - show ip route bgp
+      register: bgp_routes
+
+    - name: "Display BGP routes"
+      ansible.builtin.debug:
+        var: bgp_routes.stdout_lines
+
+# ---------------------------------------------------------------------------
+# Play 6: Test — Full east-west connectivity
+# ---------------------------------------------------------------------------
+# The ultimate validation — if these pings work, every layer of the network
+# is functioning: VLANs, IS-IS, BGP, VRFs, and route redistribution.
+# ---------------------------------------------------------------------------
+- name: "Test — Full east-west client connectivity"
+  hosts: linux
+  gather_facts: false
+
+  vars:
+    ping_targets:
+      linux-client1: 34.34.34.1
+      linux-client2: 34.34.34.2
+      linux-client3: 23.23.23.1
+      linux-client4: 23.23.23.2
+
+  tasks:
+
+    - name: "Test — Ping remote client"
+      ansible.builtin.raw: "ping -c 3 -W 2 {{ ping_targets[inventory_hostname] }}"
+      register: ping_result
+
+    - name: "Show ping result"
+      ansible.builtin.debug:
+        var: ping_result.stdout_lines

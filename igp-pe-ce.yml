@@ -1,0 +1,361 @@
+---
+# ============================================================================
+# igp-pe-ce.yml — Task 2: IS-IS Routing Between CE and PE Switches
+# ============================================================================
+#
+# WHAT THIS PLAYBOOK DOES:
+#   Configures IS-IS routing between the NX-OS CE switches and CSR PE routers,
+#   and creates gateway interfaces (SVIs) so Linux clients can reach the
+#   CSR PE loopback addresses.
+#
+# This is a multi-platform playbook — it configures NX-OS, IOS, and Linux
+# hosts in sequence, showing how Ansible orchestrates across different
+# device types in a single workflow.
+#
+# USAGE:
+#   ansible-playbook igp-pe-ce.yml
+#
+# EXPECTED RESULT:
+#   - linux-client1/2 can ping 192.168.10.11 (csr-pe01 Loopback0)
+#   - linux-client3/4 can ping 192.168.10.12 (csr-pe02 Loopback0)
+#
+# ============================================================================
+
+# ---------------------------------------------------------------------------
+# Play 1: Configure IS-IS and SVIs on NX-OS CE switches
+# ---------------------------------------------------------------------------
+# We configure the N9K switches first because they are reliable and fast.
+# This sets up the CE side of the IS-IS adjacency before we touch the CSRs.
+# ---------------------------------------------------------------------------
+- name: "Task 2 — Configure IS-IS and gateway SVIs on NX-OS CE switches"
+  hosts: nxos
+  gather_facts: false
+
+  # =========================================================================
+  # EXERCISE: Complete the variables below before running this playbook.
+  #
+  # Reference: See "Table 2: IP Addressing" and "Deriving IS-IS NET
+  # Addresses" in the Lab Guide.
+  #
+  # Each CE switch needs:
+  #   - An IS-IS NET address (derived from its Loopback0 IP)
+  #   - The VLAN ID from Task 1 (so the SVI matches the VLAN)
+  #   - A gateway IP on the SVI for the Linux clients
+  # =========================================================================
+  vars:
+    isis_config:
+      n9k-ce01:
+        net: "___"         # TODO: IS-IS NET for n9k-ce01 (see "Deriving IS-IS NET Addresses")
+        vlan_id: ___       # TODO: Must match the VLAN ID you used in Task 1
+        svi_ip: "___"      # TODO: Gateway IP/mask for west clients (see Table 2)
+      n9k-ce02:
+        net: "___"         # TODO: IS-IS NET for n9k-ce02
+        vlan_id: ___       # TODO: Must match the VLAN ID you used in Task 1
+        svi_ip: "___"      # TODO: Gateway IP/mask for east clients (see Table 2)
+
+  tasks:
+
+    # -----------------------------------------------------------------------
+    # Step 1: Enable IS-IS feature
+    # -----------------------------------------------------------------------
+    # NX-OS requires features to be explicitly enabled before use.
+    # This is a single CLI command pushed via nxos_config.
+    # -----------------------------------------------------------------------
+    - name: "Step 1 — Enable IS-IS feature on NX-OS"
+      cisco.nxos.nxos_config:
+        lines:
+          - feature isis
+
+    # -----------------------------------------------------------------------
+    # Step 2: Create the IS-IS process and configure it
+    # -----------------------------------------------------------------------
+    # We use nxos_config with "parents" to enter the IS-IS router context,
+    # then push the configuration lines. This mirrors what you'd type on
+    # the CLI: "router isis CORE" → then the sub-commands.
+    # -----------------------------------------------------------------------
+    - name: "Step 2 — Configure IS-IS process"
+      cisco.nxos.nxos_config:
+        lines:
+          - net {{ isis_config[inventory_hostname].net }}
+          - is-type level-2
+        parents: router isis CORE
+
+    # -----------------------------------------------------------------------
+    # Step 3: Create the SVI (VLAN interface) as the client gateway
+    # -----------------------------------------------------------------------
+    # The SVI gives Linux clients a Layer 3 gateway. We add it to IS-IS
+    # as a passive interface so its subnet is advertised to the CSR PEs.
+    # -----------------------------------------------------------------------
+    - name: "Step 3 — Create SVI as client gateway and add to IS-IS"
+      cisco.nxos.nxos_config:
+        lines:
+          - ip address {{ isis_config[inventory_hostname].svi_ip }}
+          - ip router isis CORE
+          - isis passive-interface level-2
+          - no shutdown
+        parents: "interface Vlan{{ isis_config[inventory_hostname].vlan_id }}"
+
+    # -----------------------------------------------------------------------
+    # Step 4: Add the uplink (Eth1/1) to IS-IS
+    # -----------------------------------------------------------------------
+    # Eth1/1 connects to the CSR PE. Adding it to IS-IS forms the routing
+    # adjacency so routes are exchanged between the CE and PE.
+    # -----------------------------------------------------------------------
+    - name: "Step 4 — Add uplink Eth1/1 to IS-IS"
+      cisco.nxos.nxos_config:
+        lines:
+          - ip router isis CORE
+          - isis network point-to-point
+        parents: interface Ethernet1/1
+
+    # -----------------------------------------------------------------------
+    # Step 5: Add Loopback0 to IS-IS as a passive interface
+    # -----------------------------------------------------------------------
+    - name: "Step 5 — Add Loopback0 to IS-IS"
+      cisco.nxos.nxos_config:
+        lines:
+          - ip router isis CORE
+          - isis passive-interface level-2
+        parents: interface loopback0
+
+    # -----------------------------------------------------------------------
+    # Step 6: Save configuration
+    # -----------------------------------------------------------------------
+    - name: "Step 6 — Save running configuration"
+      cisco.nxos.nxos_config:
+        save_when: modified
+
+# ---------------------------------------------------------------------------
+# Play 2: Configure IS-IS on CSR PE routers
+# ---------------------------------------------------------------------------
+# CSR1000v can be slow to respond after config changes. We minimize SSH
+# round-trips where possible, and wait for the router to settle after
+# pushing config before moving on.
+# ---------------------------------------------------------------------------
+- name: "Task 2 — Configure IS-IS on CSR PE routers"
+  hosts: csr
+  gather_facts: false
+
+  # =========================================================================
+  # EXERCISE: Complete the CSR PE variables below.
+  #
+  # Each CSR PE needs an IS-IS NET address derived from its Loopback0 IP.
+  # Reference: See "Deriving IS-IS NET Addresses" in the Lab Guide.
+  # =========================================================================
+  vars:
+    isis_config:
+      csr-pe01:
+        net: "___"         # TODO: IS-IS NET for csr-pe01
+      csr-pe02:
+        net: "___"         # TODO: IS-IS NET for csr-pe02
+
+  tasks:
+
+    # -----------------------------------------------------------------------
+    # Step 1: Configure IS-IS process, interfaces, and Loopback0 in one batch
+    # -----------------------------------------------------------------------
+    # We push all IS-IS config in a single task using "lines" + "parents".
+    # Batching reduces the number of SSH round-trips to the CSR, which helps
+    # avoid SSH timeouts on this platform.
+    #
+    # "ios_config" sends each block of lines to the device. The "parents"
+    # parameter tells Ansible which config context to enter first
+    # (like typing "router isis CORE" before the sub-commands).
+    # -----------------------------------------------------------------------
+    - name: "Step 1 — Configure IS-IS process"
+      cisco.ios.ios_config:
+        lines:
+          - net {{ isis_config[inventory_hostname].net }}
+          - is-type level-2-only
+          - metric-style wide
+        parents: router isis CORE
+        save_when: modified
+
+    - name: "Step 2 — Add Loopback0 to IS-IS"
+      cisco.ios.ios_config:
+        lines:
+          - ip router isis CORE
+        parents: interface Loopback0
+        save_when: modified
+
+    # -----------------------------------------------------------------------
+    # NOTE: IOS puts "passive-interface" under the router process, NOT under
+    # the interface itself. This is different from NX-OS (which uses
+    # "isis passive-interface" under the interface). Knowing these platform
+    # differences is key when writing multi-vendor playbooks.
+    # -----------------------------------------------------------------------
+    - name: "Step 2b — Set Loopback0 as passive in IS-IS process"
+      cisco.ios.ios_config:
+        lines:
+          - passive-interface Loopback0
+        parents: router isis CORE
+        save_when: modified
+
+    - name: "Step 3 — Add GigabitEthernet4 to IS-IS (PE-CE link)"
+      cisco.ios.ios_config:
+        lines:
+          - ip router isis CORE
+          - isis network point-to-point
+        parents: interface GigabitEthernet4
+        save_when: modified
+
+    # -----------------------------------------------------------------------
+    # Step 4: Wait for CSR to settle
+    # -----------------------------------------------------------------------
+    # After pushing config, the CSR control plane needs a moment to process.
+    # "wait_for" pauses until SSH (port 22) is responsive again. This
+    # prevents the next play from failing due to a stale connection.
+    # -----------------------------------------------------------------------
+    - name: "Step 4 — Wait for CSR to stabilize"
+      ansible.builtin.wait_for:
+        host: "{{ ansible_host }}"
+        port: 22
+        delay: 5
+        timeout: 60
+
+# ---------------------------------------------------------------------------
+# Play 3: Configure default routes on Linux clients
+# ---------------------------------------------------------------------------
+# Linux clients need a route to reach the CSR loopbacks. We add a default
+# route pointing to the N9K SVI (their gateway). We use "raw" because
+# these Alpine Linux containers don't have Python installed.
+# ---------------------------------------------------------------------------
+- name: "Task 2 — Add default routes on Linux clients"
+  hosts: linux
+  gather_facts: false
+
+  # =========================================================================
+  # EXERCISE: Complete the Linux client routing variables below.
+  #
+  # Each client needs a gateway (the SVI IP you configured above) and
+  # routes to reach the CSR PE loopback and the PE-CE link subnet.
+  # Reference: See "Table 2: IP Addressing" in the Lab Guide.
+  #
+  # Hint: West clients (1, 2) use the west SVI as their gateway.
+  #       East clients (3, 4) use the east SVI as their gateway.
+  # =========================================================================
+  vars:
+    route_config:
+      linux-client1:
+        gateway: ___         # TODO: SVI gateway IP for west clients
+        routes:
+          - ___              # TODO: CSR PE loopback subnet (e.g., x.x.x.0/24)
+          - ___              # TODO: West PE-CE link subnet (see Table 2)
+      linux-client2:
+        gateway: ___         # TODO: Same gateway as client1 (same switch)
+        routes:
+          - ___              # TODO: Same routes as client1
+          - ___
+      linux-client3:
+        gateway: ___         # TODO: SVI gateway IP for east clients
+        routes:
+          - ___              # TODO: CSR PE loopback subnet
+          - ___              # TODO: East PE-CE link subnet (see Table 2)
+      linux-client4:
+        gateway: ___         # TODO: Same gateway as client3 (same switch)
+        routes:
+          - ___              # TODO: Same routes as client3
+          - ___
+
+  tasks:
+
+    # -----------------------------------------------------------------------
+    # Add specific routes via the SVI gateway
+    # -----------------------------------------------------------------------
+    # We use "raw" because these Alpine containers don't have Python.
+    # "ip route replace" is idempotent — it adds the route if missing, or
+    # updates it if it already exists. No errors either way.
+    #
+    # "loop" iterates over the routes list. Ansible runs this task once per
+    # route, with {{ item }} set to the current route.
+    # -----------------------------------------------------------------------
+    # "changed_when: true" tells Ansible this task always makes a change.
+    # The "raw" module can't detect changes on its own, so we set this
+    # explicitly. Without it, Ansible would report "ok" instead of "changed".
+    - name: "Add route to {{ item }} via SVI gateway"
+      ansible.builtin.raw: "ip route replace {{ item }} via {{ route_config[inventory_hostname].gateway }} dev eth1"
+      loop: "{{ route_config[inventory_hostname].routes }}"
+      changed_when: true
+
+# ---------------------------------------------------------------------------
+# Play 4: Verify IS-IS adjacency and routing
+# ---------------------------------------------------------------------------
+# "register" saves command output into a variable. "debug" prints it.
+# This pattern — run show command → register → debug — is the standard
+# way to collect and display verification output in Ansible.
+# ---------------------------------------------------------------------------
+- name: "Verify — IS-IS neighbors and routes"
+  hosts: nxos
+  gather_facts: false
+
+  tasks:
+
+    - name: "Verify — Show IS-IS neighbors"
+      cisco.nxos.nxos_command:
+        commands:
+          - show isis adjacency
+      register: isis_neighbors
+
+    - name: "Display IS-IS neighbors"
+      ansible.builtin.debug:
+        var: isis_neighbors.stdout_lines
+
+    - name: "Verify — Show IP route IS-IS"
+      cisco.nxos.nxos_command:
+        commands:
+          - show ip route isis
+      register: isis_routes
+
+    - name: "Display IS-IS routes"
+      ansible.builtin.debug:
+        var: isis_routes.stdout_lines
+
+- name: "Verify — CSR IS-IS neighbors and routes"
+  hosts: csr
+  gather_facts: false
+
+  tasks:
+
+    - name: "Verify — Show IS-IS neighbors"
+      cisco.ios.ios_command:
+        commands:
+          - show isis neighbors
+      register: isis_neighbors
+
+    - name: "Display IS-IS neighbors"
+      ansible.builtin.debug:
+        var: isis_neighbors.stdout_lines
+
+    - name: "Verify — Show IP route IS-IS"
+      cisco.ios.ios_command:
+        commands:
+          - show ip route isis
+      register: isis_routes
+
+    - name: "Display IS-IS routes"
+      ansible.builtin.debug:
+        var: isis_routes.stdout_lines
+
+# ---------------------------------------------------------------------------
+# Play 5: Test — Clients ping CSR PE Loopback0
+# ---------------------------------------------------------------------------
+- name: "Test — Linux clients ping CSR PE loopback"
+  hosts: linux
+  gather_facts: false
+
+  vars:
+    target:
+      linux-client1: 192.168.10.11
+      linux-client2: 192.168.10.11
+      linux-client3: 192.168.10.12
+      linux-client4: 192.168.10.12
+
+  tasks:
+
+    - name: "Test — Ping CSR PE loopback"
+      ansible.builtin.raw: "ping -c 3 -W 2 {{ target[inventory_hostname] }}"
+      register: ping_result
+
+    - name: "Show ping result"
+      ansible.builtin.debug:
+        var: ping_result.stdout_lines

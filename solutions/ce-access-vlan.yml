@@ -1,0 +1,246 @@
+---
+# ============================================================================
+# ce-access-vlan.yml — Task 1: Configure L2 Access Ports on NX-OS CE Switches
+# ============================================================================
+#
+# WHAT THIS PLAYBOOK DOES:
+#   Configures VLAN access ports on the Nexus 9000v CE switches so that
+#   Linux clients connected to the same switch can communicate at Layer 2.
+#
+#   - n9k-ce01: Creates VLAN 23, assigns Eth1/3 and Eth1/4 as access ports
+#   - n9k-ce02: Creates VLAN 34, assigns Eth1/3 and Eth1/4 as access ports
+#
+# WHY THIS MATTERS:
+#   Right now, Eth1/3 and Eth1/4 on each switch are in their default routed
+#   ("no switchport") mode — the Linux clients have no Layer 2 path to each
+#   other. By converting the ports to switchport mode, creating a VLAN, and
+#   assigning both ports to it, we create a Layer 2 bridge so clients on the
+#   same switch can reach each other.
+#
+# USAGE:
+#   ansible-playbook ce-access-vlan.yml
+#
+# EXPECTED RESULT:
+#   - linux-client1 (23.23.23.1) can ping linux-client2 (23.23.23.2)
+#   - linux-client3 (34.34.34.1) can ping linux-client4 (34.34.34.2)
+#
+# ============================================================================
+
+# ---------------------------------------------------------------------------
+# Play 1: Configure VLANs and access ports on NX-OS CE switches
+# ---------------------------------------------------------------------------
+# "hosts: nxos" targets both n9k-ce01 and n9k-ce02 (defined in inventory.yml).
+# "gather_facts: false" skips the automatic device discovery step — network
+# devices don't support the default fact-gathering module, so we disable it.
+# ---------------------------------------------------------------------------
+- name: "Task 1 — Configure L2 access VLANs on NX-OS CE switches"
+  hosts: nxos
+  gather_facts: false
+
+  # -------------------------------------------------------------------------
+  # VARIABLES
+  # -------------------------------------------------------------------------
+  # "vars" lets us define data that tasks can reference with {{ variable }}.
+  # Here we map each switch to its VLAN ID and name. Using variables makes
+  # the playbook easier to maintain — change the VLAN here, and every task
+  # picks it up automatically.
+  # -------------------------------------------------------------------------
+  vars:
+    vlan_config:
+      n9k-ce01:
+        id: 23
+        name: CLIENT-VLAN-23
+      n9k-ce02:
+        id: 34
+        name: CLIENT-VLAN-34
+
+  tasks:
+
+    # -----------------------------------------------------------------------
+    # Step 1: Create the VLAN
+    # -----------------------------------------------------------------------
+    # The cisco.nxos.nxos_vlans module is purpose-built for VLAN management.
+    # It's "declarative" — you describe the desired state, and Ansible figures
+    # out what commands to run. If the VLAN already exists, nothing changes
+    # (this is called "idempotency").
+    # -----------------------------------------------------------------------
+    - name: "Step 1 — Create VLAN on each CE switch"
+      cisco.nxos.nxos_vlans:
+        config:
+          - vlan_id: "{{ vlan_config[inventory_hostname].id }}"
+            name: "{{ vlan_config[inventory_hostname].name }}"
+            state: active
+        state: merged
+
+    # -----------------------------------------------------------------------
+    # Step 2: Convert interfaces to switchport (L2) mode
+    # -----------------------------------------------------------------------
+    # On N9Kv, interfaces default to routed ("no switchport") mode. Before
+    # we can assign a VLAN, we must convert the port to Layer 2 mode by
+    # running the "switchport" command.
+    #
+    # We use cisco.nxos.nxos_config here because this is a raw CLI command
+    # that changes the interface operating mode — the higher-level
+    # nxos_l2_interfaces module expects the port to already be in L2 mode.
+    #
+    # "loop" iterates over a list. For each item, Ansible runs the task
+    # once, with {{ item }} set to the current list element.
+    # -----------------------------------------------------------------------
+    - name: "Step 2 — Convert Eth1/3 and Eth1/4 to switchport mode"
+      cisco.nxos.nxos_config:
+        lines:
+          - switchport
+        parents: "interface {{ item }}"
+      loop:
+        - Ethernet1/3
+        - Ethernet1/4
+
+    # -----------------------------------------------------------------------
+    # Step 3: Assign access VLAN to each port
+    # -----------------------------------------------------------------------
+    # Now that the ports are in L2 mode, we can use the nxos_l2_interfaces
+    # module to set them as access ports in the correct VLAN.
+    #
+    # This module is "declarative" — we describe the desired state (access
+    # mode, specific VLAN), and Ansible determines what commands are needed.
+    # If the port is already configured correctly, no changes are made.
+    #
+    # Under the hood, this sends:
+    #   interface Ethernet1/3
+    #     switchport access vlan 23
+    # -----------------------------------------------------------------------
+    - name: "Step 3 — Assign access VLAN to Eth1/3 and Eth1/4"
+      cisco.nxos.nxos_l2_interfaces:
+        config:
+          - name: Ethernet1/3
+            access:
+              vlan: "{{ vlan_config[inventory_hostname].id }}"
+          - name: Ethernet1/4
+            access:
+              vlan: "{{ vlan_config[inventory_hostname].id }}"
+        state: merged
+
+    # -----------------------------------------------------------------------
+    # Step 4: Save the running config
+    # -----------------------------------------------------------------------
+    # NX-OS doesn't auto-save. If the switch reboots, unsaved changes are
+    # lost. This task copies running-config to startup-config.
+    # "save_when: modified" only saves if changes were actually made —
+    # this avoids unnecessary writes and is a best practice.
+    # -----------------------------------------------------------------------
+    - name: "Step 4 — Save running configuration"
+      cisco.nxos.nxos_config:
+        save_when: modified
+
+    # -----------------------------------------------------------------------
+    # Step 5: Bounce client-facing ports (vrnetlab workaround)
+    # -----------------------------------------------------------------------
+    # The N9Kv virtual machine needs a port bounce after the first time an
+    # interface transitions to switchport mode. Without this, the virtual
+    # dataplane doesn't forward L2 traffic even though the config is correct.
+    # This is a vrnetlab quirk — it does NOT happen on physical Nexus hardware.
+    # On subsequent (idempotent) runs, the ports are already in switchport
+    # mode so the bounce is harmless.
+    # -----------------------------------------------------------------------
+    - name: "Step 5 — Bounce client ports (vrnetlab workaround)"
+      cisco.nxos.nxos_config:
+        lines:
+          - shutdown
+        parents: "interface {{ item }}"
+      loop:
+        - Ethernet1/3
+        - Ethernet1/4
+
+    - name: "Step 5b — Bring client ports back up"
+      cisco.nxos.nxos_config:
+        lines:
+          - no shutdown
+        parents: "interface {{ item }}"
+      loop:
+        - Ethernet1/3
+        - Ethernet1/4
+
+    - name: "Wait for ports to re-initialize (vrnetlab needs ~30s)"
+      ansible.builtin.pause:
+        seconds: 30
+
+# ---------------------------------------------------------------------------
+# Play 2: Verify the configuration
+# ---------------------------------------------------------------------------
+# This is a separate play that runs AFTER the config is applied. Verification
+# is a best practice — never assume config was applied correctly. Always check.
+# ---------------------------------------------------------------------------
+- name: "Verify — Check VLAN and port status"
+  hosts: nxos
+  gather_facts: false
+
+  tasks:
+
+    # -----------------------------------------------------------------------
+    # Show VLAN brief — confirms the VLAN was created
+    # -----------------------------------------------------------------------
+    - name: "Verify — Show VLAN brief"
+      cisco.nxos.nxos_command:
+        commands:
+          - show vlan brief
+      register: vlan_output
+
+    - name: "Display VLAN status"
+      ansible.builtin.debug:
+        var: vlan_output.stdout_lines
+
+    # -----------------------------------------------------------------------
+    # Show interface status — confirms ports are in the correct VLAN
+    # -----------------------------------------------------------------------
+    - name: "Verify — Show interface status"
+      cisco.nxos.nxos_command:
+        commands:
+          - show interface status
+      register: intf_output
+
+    - name: "Display interface status"
+      ansible.builtin.debug:
+        var: intf_output.stdout_lines
+
+# ---------------------------------------------------------------------------
+# Play 3: Test connectivity from Linux clients
+# ---------------------------------------------------------------------------
+# This play targets the Linux clients to run ping tests. This demonstrates
+# that Ansible isn't just for network devices — it can orchestrate servers,
+# containers, and anything reachable via SSH.
+# ---------------------------------------------------------------------------
+- name: "Test — Ping between clients on the same switch"
+  hosts: linux
+  gather_facts: false
+
+  tasks:
+
+    # -----------------------------------------------------------------------
+    # Client1 pings Client2 (both on n9k-ce01, VLAN 23)
+    # -----------------------------------------------------------------------
+    # "register" saves the output of a command into a variable so we can
+    # display or inspect it later. "when" is a conditional — this task only
+    # runs on linux-client1, not on every host in the "linux" group.
+    # -----------------------------------------------------------------------
+    - name: "Test — client1 pings client2 (23.23.23.1 → 23.23.23.2)"
+      ansible.builtin.raw: ping -c 3 -W 2 23.23.23.2
+      register: ping_result
+      when: inventory_hostname == "linux-client1"
+
+    - name: "Show ping result (client1 → client2)"
+      ansible.builtin.debug:
+        var: ping_result.stdout_lines
+      when: inventory_hostname == "linux-client1"
+
+    # -----------------------------------------------------------------------
+    # Client3 pings Client4 (both on n9k-ce02, VLAN 34)
+    # -----------------------------------------------------------------------
+    - name: "Test — client3 pings client4 (34.34.34.1 → 34.34.34.2)"
+      ansible.builtin.raw: ping -c 3 -W 2 34.34.34.2
+      register: ping_result
+      when: inventory_hostname == "linux-client3"
+
+    - name: "Show ping result (client3 → client4)"
+      ansible.builtin.debug:
+        var: ping_result.stdout_lines
+      when: inventory_hostname == "linux-client3"

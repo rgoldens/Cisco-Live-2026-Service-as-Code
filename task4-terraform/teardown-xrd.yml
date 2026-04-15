@@ -1,0 +1,58 @@
+# ============================================================================
+# teardown-xrd.yml — Remove XRd BGP/VRF config before Terraform rebuild
+# ============================================================================
+# Run this BEFORE "terraform apply" to cleanly remove the Ansible-applied
+# configuration from the XRd routers. This simulates the student tearing
+# down Task 3's XRd portion so Terraform can rebuild it.
+#
+# Usage:
+#   cd /home/clab/ciscolive-ltrato1001/interactive
+#   ansible-playbook -i inventory.yml task4-terraform/teardown-xrd.yml
+# ============================================================================
+
+---
+- name: "Tear down XRd BGP/VRF config (prepare for Terraform)"
+  hosts: xrd
+  gather_facts: false
+  connection: ansible.netcommon.network_cli
+
+  tasks:
+    # -----------------------------------------------------------------------
+    # Step 1: Remove BGP VRF and VPNv4 neighbor config
+    # -----------------------------------------------------------------------
+    - name: "Remove BGP VRF and iBGP VPNv4 config"
+      cisco.iosxr.iosxr_config:
+        lines:
+          - no vrf Customer-CLIVE
+          - no address-family vpnv4 unicast
+          - no neighbor {{ ibgp_peer }}
+        parents: router bgp 65000
+      vars:
+        ibgp_peer: "{{ '192.168.0.2' if inventory_hostname == 'xrd01' else '192.168.0.1' }}"
+
+    # -----------------------------------------------------------------------
+    # Step 2: Remove VRF definition
+    # -----------------------------------------------------------------------
+    - name: "Remove VRF Customer-CLIVE"
+      cisco.iosxr.iosxr_config:
+        lines:
+          - no vrf Customer-CLIVE
+
+    # -----------------------------------------------------------------------
+    # Step 3: Remove interface VRF assignment and restore IP
+    # -----------------------------------------------------------------------
+    - name: "Remove VRF from Gi0/0/0/1 and clear IP"
+      cisco.iosxr.iosxr_config:
+        lines:
+          - no vrf
+          - no ipv4 address
+          - shutdown
+        parents: interface GigabitEthernet0/0/0/1
+
+    # -----------------------------------------------------------------------
+    # Step 4: Remove route-policy
+    # -----------------------------------------------------------------------
+    - name: "Remove route-policy PASS-ALL"
+      cisco.iosxr.iosxr_config:
+        lines:
+          - no route-policy PASS-ALL

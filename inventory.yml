@@ -1,0 +1,89 @@
+---
+# Ansible Inventory for LTRATO-1001 lab
+# Management network: 172.20.20.0/24 (reachable from 198.18.134.90 only)
+#
+# Key usage:
+#   XRd  : ~/.ssh/id_rsa  (ed25519 not supported)
+#   NX-OS, Linux : ~/.ssh/id_ed25519
+#   CSR  : password-only (paramiko with legacy KEX; pubkey causes hard disconnect)
+
+all:
+  children:
+
+    # ── P / Route-Reflector nodes (XRd) ────────────────────────────────────────
+    xrd:
+      vars:
+        ansible_network_os: cisco.iosxr.iosxr
+        ansible_connection: network_cli
+        # XRd does NOT support ed25519; must use RSA key.
+        # Explicitly set private_key_file so paramiko uses it (look_for_keys=False globally).
+        ansible_ssh_private_key_file: ~/.ssh/id_rsa
+      hosts:
+        xrd01:
+          ansible_host: 172.20.20.10
+          ansible_user: clab
+        xrd02:
+          ansible_host: 172.20.20.11
+          ansible_user: clab
+
+    # ── PE nodes (CSR1000v) ─────────────────────────────────────────────────────
+    csr:
+      vars:
+        ansible_network_os: cisco.ios.ios
+        ansible_connection: network_cli
+        # CSR 16.12 only supports legacy KEX (sha1-based) — use paramiko.
+        # Paramiko sends rsa-sha2-* signatures which CSR 16.12 rejects with a hard
+        # disconnect. Fix: password-only auth. ansible.cfg sets look_for_keys=False
+        # globally; not setting ansible_ssh_private_key_file here ensures paramiko
+        # won't attempt pubkey (network_cli also checks: password set + no key file
+        # → look_for_keys=False).
+        ansible_network_cli_ssh_type: paramiko
+        ansible_paramiko_host_key_auto_add: true
+        ansible_password: admin
+        ansible_become_password: admin
+      hosts:
+        csr-pe01:
+          ansible_host: 172.20.20.20
+          ansible_user: admin
+        csr-pe02:
+          ansible_host: 172.20.20.21
+          ansible_user: admin
+
+    # ── CE nodes (Nexus 9000v) ──────────────────────────────────────────────────
+    nxos:
+      vars:
+        ansible_network_os: cisco.nxos.nxos
+        ansible_connection: network_cli
+        ansible_user: admin
+        ansible_ssh_private_key_file: ~/.ssh/id_ed25519
+        # NX-OS vrnetlab requires legacy KEX algorithms
+        ansible_ssh_extra_args: >-
+          -o KexAlgorithms=+diffie-hellman-group-exchange-sha1,diffie-hellman-group14-sha1
+          -o HostKeyAlgorithms=+ssh-rsa
+      hosts:
+        n9k-ce01:
+          ansible_host: 172.20.20.30
+        n9k-ce02:
+          ansible_host: 172.20.20.31
+
+    # ── Linux clients ────────────────────────────────────────────────────────────
+    linux:
+      vars:
+        ansible_connection: ssh
+        ansible_user: root
+        ansible_ssh_private_key_file: ~/.ssh/id_ed25519
+      hosts:
+        linux-client1:
+          ansible_host: 172.20.20.40
+        linux-client2:
+          ansible_host: 172.20.20.41
+        linux-client3:
+          ansible_host: 172.20.20.42
+        linux-client4:
+          ansible_host: 172.20.20.43
+
+  vars:
+    ansible_host_key_checking: false
+    ansible_ssh_common_args: >-
+      -o StrictHostKeyChecking=no
+      -o UserKnownHostsFile=/dev/null
