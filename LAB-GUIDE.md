@@ -441,10 +441,13 @@ This naming convention makes the network topology self-documenting.
 This is the foundation — Task 2 adds Layer 3 gateways on these VLANs (SVIs),
 and Task 3 carries VLAN routes across the SP core.
 
-### Step 0: See the Problem
+### Step 1: Verify the Baseline
 
-Before fixing anything, prove to yourself that the network is broken. SSH into
-one of the Linux clients and try to ping its neighbor on the same switch:
+Before configuring anything, verify the initial state of the network. Clients
+on the same switch cannot reach each other yet — not because something is
+broken, but because the VLANs haven't been configured. This is your baseline.
+
+SSH into one of the Linux clients and try to ping its neighbor on the same switch:
 
 ```bash
 ssh linux-client1 ping -c 3 23.23.23.2
@@ -467,14 +470,14 @@ ssh linux-client3 ping -c 3 34.34.34.2
 
 Same result — **100% packet loss**. Both pairs of clients are physically
 connected to the same switch, but with no VLAN bridging the ports, the frames
-have nowhere to go.
+have nowhere to go. This is expected — no VLANs have been configured yet.
 
-> **Why start with failure?** In automation, your first step should always be
-> to verify the current state. This gives you a baseline to compare against
-> after the playbook runs. If you can't prove it was broken, you can't prove
-> you fixed it.
+> **Why start with verification?** In automation, your first step should always
+> be to verify the current state. This gives you a baseline to compare against
+> after the playbook runs. If you don't know where you started, you can't prove
+> you improved anything.
 
-Now let's fix it.
+Now let's configure it.
 
 ### Exercise: Complete the Playbook
 
