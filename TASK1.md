@@ -45,7 +45,7 @@ This naming convention makes the network topology self-documenting.
 This is the foundation — Task 2 adds Layer 3 gateways on these VLANs (SVIs),
 and Task 3 carries VLAN routes across the SP core.
 
-### Step 0: See the Problem
+### Step 1: See the Problem
 
 Before fixing anything, prove to yourself that the network is broken. SSH into
 one of the Linux clients and try to ping its neighbor on the same switch:
@@ -344,7 +344,7 @@ the device's current state against the desired state, fixes only what
 changed, and leaves everything else untouched. This is idempotency working
 for you in the real world.
 
-### Step 1: Break Something
+### Step 2: Break Something
 
 SSH into **n9k-ce01** and manually shut down the client1 port. This simulates
 an unauthorized change — maybe someone disabled the port while debugging a
@@ -359,7 +359,7 @@ interface Ethernet1/3
 end
 ```
 
-### Step 2: Confirm the Damage
+### Step 3: Confirm the Damage
 
 Verify that client1 can no longer reach client2:
 
@@ -383,7 +383,7 @@ From 23.23.23.1 icmp_seq=3 Destination Host Unreachable
 One manual change on one interface, and connectivity is broken. In a network
 with hundreds of switches, finding this would be a needle in a haystack.
 
-### Step 3: Let Ansible Fix It
+### Step 4: Let Ansible Fix It
 
 Re-run the exact same playbook you ran in Task 1:
 
@@ -424,7 +424,7 @@ the device's current state and only changed what was actually wrong. That's
 the power of idempotency — it's not just "safe to re-run," it's a
 **drift detection and remediation engine**.
 
-### Step 4: Verify the Fix
+### Step 5: Verify the Fix
 
 Check the playbook's ping output:
 
