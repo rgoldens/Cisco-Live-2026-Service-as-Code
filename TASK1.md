@@ -109,7 +109,7 @@ the three things a VLAN configuration requires:
   pulls the VLAN ID from your variables — the same task works on both switches
   because each has different variable values.
 
-- **`loop`** (Steps 2, 5) — Runs the task once per item in the list. This
+- **`loop`** (Step 2) — Runs the task once per item in the list. This
   avoids duplicating the same task for each interface.
 
 > **💡 Automation Insight:** That `loop:` keyword just saved you from writing the same task twice. Now imagine you have 48 ports to configure instead of 2. Same playbook, bigger list. Automation scales linearly with data, not with effort.
@@ -161,10 +161,10 @@ tasks look like when they run successfully:
 PLAY [Task 1 — Configure L2 access VLANs on NX-OS CE switches] *****************
 
 TASK [Step 1 — Create VLAN on each CE switch] **********************************
-changed: [n9k-ce02]
 changed: [n9k-ce01]
+changed: [n9k-ce02]
 
-TASK [Step 2 — Convert Eth1/3 and Eth1/4 to switchport mode and bring up] *****
+TASK [Step 2 — Convert Eth1/3 and Eth1/4 to switchport mode and bring up] ******
 changed: [n9k-ce01] => (item=Ethernet1/3)
 changed: [n9k-ce02] => (item=Ethernet1/3)
 changed: [n9k-ce01] => (item=Ethernet1/4)
@@ -178,27 +178,15 @@ TASK [Step 4 — Save running configuration] ***********************************
 changed: [n9k-ce01]
 changed: [n9k-ce02]
 
-TASK [Step 5 — Bounce client ports (vrnetlab workaround)] **********************
-changed: [n9k-ce01] => (item=Ethernet1/3)
-changed: [n9k-ce02] => (item=Ethernet1/3)
-changed: [n9k-ce01] => (item=Ethernet1/4)
-changed: [n9k-ce02] => (item=Ethernet1/4)
-
-TASK [Step 5b — Bring client ports back up] ************************************
-changed: [n9k-ce02] => (item=Ethernet1/3)
-changed: [n9k-ce01] => (item=Ethernet1/3)
-changed: [n9k-ce02] => (item=Ethernet1/4)
-changed: [n9k-ce01] => (item=Ethernet1/4)
-
-TASK [Wait for ports to re-initialize (vrnetlab needs ~30s)] *******************
+TASK [Pause 30 seconds for virtual switch dataplane to update] *****************
 Pausing for 30 seconds
+(ctrl+C then 'C' = continue early, ctrl+C then 'A' = abort)
 ok: [n9k-ce01]
 ```
 
-> **What's happening with Steps 5 and 5b?** The playbook shuts down the client
-> ports and brings them back up. This is a workaround for ContainerLab's vrnetlab
-> — sometimes virtual NIC mappings need a port bounce to properly forward traffic
-> after VLAN changes. In a real network, this step wouldn't be needed.
+> **Why the 30-second pause?** The N9Kv virtual switch needs a moment for its
+> dataplane to start forwarding L2 traffic after VLAN changes. This is a
+> vrnetlab quirk — physical Nexus hardware doesn't need this delay.
 
 After the config tasks, the playbook runs **verification** and **test** plays
 automatically. Here's what successful verification looks like:
@@ -283,11 +271,11 @@ The **PLAY RECAP** at the very end gives you a summary of everything that happen
 PLAY RECAP *********************************************************************
 linux-client1              : ok=2    changed=1    unreachable=0    failed=0
 linux-client3              : ok=2    changed=1    unreachable=0    failed=0
-n9k-ce01                   : ok=11   changed=6    unreachable=0    failed=0
-n9k-ce02                   : ok=10   changed=6    unreachable=0    failed=0
+n9k-ce01                   : ok=7    changed=4    unreachable=0    failed=0
+n9k-ce02                   : ok=6    changed=4    unreachable=0    failed=0
 ```
 
-> **Reading the recap:** Each line is a device. `changed=6` means 6 tasks made
+> **Reading the recap:** Each line is a device. `changed=4` means 4 tasks made
 > changes. `failed=0` means nothing went wrong. If you see `failed=1` or higher,
 > scroll up to find the red error message — it will tell you exactly which task
 > failed and why.
@@ -348,16 +336,16 @@ for you in the real world.
 
 ### Step 1: Introduce the Drift
 
-SSH into **n9k-ce01** and manually shut down the client1 port. This simulates
-an unauthorized change — maybe someone disabled the port while debugging a
-different issue and forgot to re-enable it.
+SSH into **n9k-ce01** and manually change the VLAN on the client1 port. This
+simulates an unauthorized change — maybe someone moved a port to the wrong
+VLAN while troubleshooting a different issue.
 
 From the n9k-ce01 CLI:
 
 ```
 configure terminal
 interface Ethernet1/3
-  shutdown
+  switchport access vlan 27
 end
 ```
 
@@ -382,8 +370,10 @@ From 23.23.23.1 icmp_seq=3 Destination Host Unreachable
 3 packets transmitted, 0 received, +3 errors, 100% packet loss, time 2055ms
 ```
 
-One manual change on one interface, and connectivity is broken. In a network
-with hundreds of switches, finding this would be a needle in a haystack.
+One manual change on one interface, and connectivity is broken. Client1 is now
+on VLAN 27 while client2 is still on VLAN 23 — they're in different broadcast
+domains. In a network with hundreds of switches, finding a single misassigned
+VLAN would be a needle in a haystack.
 
 ### Step 3: Let Ansible Remediate
 
@@ -404,22 +394,34 @@ ok: [n9k-ce02]
 
 TASK [Step 2 — Convert Eth1/3 and Eth1/4 to switchport mode and bring up] ******
 changed: [n9k-ce01] => (item=Ethernet1/3)
-changed: [n9k-ce01] => (item=Ethernet1/4)
 changed: [n9k-ce02] => (item=Ethernet1/3)
+changed: [n9k-ce01] => (item=Ethernet1/4)
 changed: [n9k-ce02] => (item=Ethernet1/4)
 
 TASK [Step 3 — Assign access VLAN to Eth1/3 and Eth1/4] ************************
-ok: [n9k-ce01]
+changed: [n9k-ce01]
 ok: [n9k-ce02]
 ```
 
 Notice the difference:
 
 - **Step 1** shows `ok` — the VLANs already exist. Nothing to do.
-- **Step 2** shows `changed` — Ansible detected that Ethernet1/3 was shut
-  down and brought it back up. This is where the drift was repaired.
-- **Step 3** shows `ok` — the VLAN assignment was still correct. The shutdown
-  didn't remove it.
+- **Step 2** shows `changed` on all ports — but **nothing actually changed on
+  the devices**. This is a false positive caused by the `nxos_config` module.
+  Unlike the declarative modules in Steps 1 and 3, `nxos_config` sends raw CLI
+  commands and compares them against the running configuration text. Commands
+  like `switchport` and `no shutdown` don't appear in NX-OS running config once
+  a port is already in that state, so the module can't tell the port is already
+  configured correctly — it sends the commands again and reports `changed` every
+  time. This is a known limitation of CLI-based ("imperative") modules versus
+  declarative resource modules. In production, teams work around this with
+  `changed_when` overrides or by replacing `nxos_config` tasks with declarative
+  equivalents where possible.
+- **Step 3** is where the real action is: `changed` on **n9k-ce01** but `ok` on
+  **n9k-ce02**. This is a declarative module (`nxos_l2_interfaces`) that
+  compares the desired VLAN assignment against the device's actual state. It
+  detected that Ethernet1/3 was on VLAN 27 instead of VLAN 23 and corrected it.
+  n9k-ce02 was already correct, so nothing changed. **This is the drift signal.**
 
 Ansible didn't blindly reconfigure everything. It checked each task against
 the device's current state and only changed what was actually wrong. That's
@@ -449,10 +451,10 @@ ok: [linux-client1] => {
 
 ### Checkpoint
 
-- [ ] You manually shut down Ethernet1/3 on n9k-ce01
+- [ ] You manually changed Ethernet1/3 on n9k-ce01 to VLAN 27
 - [ ] client1 → client2 ping showed **100% packet loss**
-- [ ] Re-running the playbook showed `changed` on Step 2 (the drifted task)
-- [ ] Re-running the playbook showed `ok` on Steps 1 and 3 (nothing else touched)
+- [ ] Re-running the playbook showed `changed` on Step 3 for n9k-ce01 only
+- [ ] Re-running the playbook showed `ok` on Step 3 for n9k-ce02 (nothing touched)
 - [ ] client1 → client2 ping is back to **0% packet loss**
 
 > **💡 Automation Insight:** In production, teams schedule playbook runs every

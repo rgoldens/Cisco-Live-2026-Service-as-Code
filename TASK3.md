@@ -402,6 +402,15 @@ ok: [localhost]
 
 **Verification plays** show BGP session status and learned routes:
 
+> **Note:** On a first run, the iBGP VPNv4 session may still be exchanging
+> prefixes when the verification plays execute. You might see `St/PfxRcd: 0`
+> instead of `3`, and the VRF route table may show only 3 local prefixes
+> instead of 6. This is normal — BGP convergence on virtual routers can take
+> slightly longer than the 90-second pause. If you see this, wait another
+> 30-60 seconds and check manually with `ssh xrd01 'show bgp vpnv4 unicast
+> summary'`. The pings at the end of the playbook are the real validation —
+> if they pass, the routes have propagated.
+
 ```
 TASK [Display BGP VPNv4 summary] ***********************************************
 ok: [xrd01] => {
@@ -635,10 +644,10 @@ already exists with the correct config, and made no changes. The PLAY RECAP
 will show `changed=0` for most devices on the second run.
 
 > **Exception:** Some tasks always show `changed` because their modules can't
-> detect existing state. The port bounce tasks (shut/no-shut) and Linux `raw`
-> commands always report `changed`. The XRd tasks using `iosxr_command` always
-> report `ok` (but for the opposite reason — they can't detect whether they
-> made a change). These are module limitations, not playbook bugs.
+> detect existing state. The `nxos_config` switchport tasks (Step 2) and Linux
+> `raw` commands always report `changed`. The XRd tasks using `iosxr_command`
+> always report `ok` (but for the opposite reason — they can't detect whether
+> they made a change). These are module limitations, not playbook bugs.
 
 > **💡 Automation Insight:** You just ran the same playbook twice and nothing broke. That `changed=0` output is the most underrated feature in automation. It means you can schedule this playbook to run every hour, and it will silently fix any config drift without touching what's already correct. That's how production teams keep 10,000 devices in compliance.
 

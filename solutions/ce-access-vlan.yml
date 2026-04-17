@@ -133,36 +133,16 @@
         save_when: modified
 
     # -----------------------------------------------------------------------
-    # Step 5: Bounce client-facing ports (vrnetlab workaround)
+    # Step 5: Wait for virtual switch dataplane to update
     # -----------------------------------------------------------------------
-    # The N9Kv virtual machine needs a port bounce after the first time an
-    # interface transitions to switchport mode. Without this, the virtual
-    # dataplane doesn't forward L2 traffic even though the config is correct.
-    # This is a vrnetlab quirk — it does NOT happen on physical Nexus hardware.
-    # On subsequent (idempotent) runs, the ports are already in switchport
-    # mode so the bounce is harmless.
+    # The N9Kv virtual machine needs a short delay after VLAN changes for
+    # the virtual dataplane to start forwarding L2 traffic. This is a
+    # vrnetlab quirk — it does NOT happen on physical Nexus hardware.
     # -----------------------------------------------------------------------
-    - name: "Step 5 — Bounce client ports (vrnetlab workaround)"
-      cisco.nxos.nxos_config:
-        lines:
-          - shutdown
-        parents: "interface {{ item }}"
-      loop:
-        - Ethernet1/3
-        - Ethernet1/4
-
-    - name: "Step 5b — Bring client ports back up"
-      cisco.nxos.nxos_config:
-        lines:
-          - no shutdown
-        parents: "interface {{ item }}"
-      loop:
-        - Ethernet1/3
-        - Ethernet1/4
-
-    - name: "Wait for ports to re-initialize (vrnetlab needs ~30s)"
+    - name: "Pause 30 seconds for virtual switch dataplane to update"
       ansible.builtin.pause:
         seconds: 30
+        prompt: "Waiting for VLAN changes to take effect..."
 
 # ---------------------------------------------------------------------------
 # Play 2: Verify the configuration

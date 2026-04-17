@@ -262,9 +262,9 @@
 
   tasks:
 
-    - name: "Pause 60 seconds for BGP to converge"
+    - name: "Pause 90 seconds for BGP to converge"
       ansible.builtin.pause:
-        seconds: 60
+        seconds: 90
         prompt: "Waiting for BGP sessions to establish and routes to propagate..."
 
 # ---------------------------------------------------------------------------

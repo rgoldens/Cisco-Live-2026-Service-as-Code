@@ -91,6 +91,42 @@ The original LAB-GUIDE.md remains unchanged as the master document.
 
 ---
 
+### 1.0.3 — Task 1 Drift Rework, Output Validation, Image Fixes
+
+**Date:** 2026-04-17
+
+Changes from full student walkthrough on a freshly reset server. All tasks
+(1 through 4b) validated end-to-end with actual output compared against guide.
+
+**Task 1: Replace port bounce with 30-second pause**
+- Removed Steps 5, 5b (shutdown/no-shutdown bounce) and 30s wait
+- Replaced with a single 30-second `ansible.builtin.pause` task
+- Updated `ce-access-vlan.yml` and `solutions/ce-access-vlan.yml`
+- PLAY RECAP updated: `ok=7 changed=4` (was `ok=11 changed=6`)
+
+**Task 1b: Change drift scenario from shutdown to VLAN change**
+- Drift scenario changed from "shutdown Eth1/3" to "change VLAN to 27"
+- More realistic drift example (VLAN misassignment vs port shutdown)
+- Step 3 remediation now shows `changed` on n9k-ce01 only, `ok` on n9k-ce02
+- Added detailed explanation of Step 2 false positive (`nxos_config` imperative
+  module limitation — always reports `changed` for switchport/no-shutdown)
+
+**Task 3: BGP convergence timing note**
+- Added note that VPNv4 summary may show `St/PfxRcd: 0` on first run if BGP
+  hasn't fully converged by the time verification plays execute
+- Updated idempotency exception note: replaced "port bounce tasks" reference
+  with "nxos_config switchport tasks (Step 2)"
+- Fixed `solutions/inter-as-option-a.yml` pause from 60s to 90s to match
+  student playbook
+
+**Images: Convert RGBA to RGB for MacDown compatibility**
+- `task2-isis.png`, `isis-net-derivation.png`, `task3-bgp-vpn.png` converted
+  from RGBA (transparent) to RGB to match task1 image format
+- Fixes rendering issue in MacDown and other markdown previewers that don't
+  handle PNG alpha channels
+
+---
+
 ### Known Issues (documented in lab guide)
 
 | Issue | Severity | Mitigation |
