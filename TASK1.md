@@ -263,6 +263,14 @@ end
 
 Verify that client1 can no longer reach client2:
 
+> **💡 Ansible Tip:** Earlier in this task you SSH'd directly into the client to
+> run a ping. Here we use `ansible -m raw` to do the same thing without logging
+> in. The `-m raw` flag sends a shell command over SSH without requiring Python
+> on the target — which means it works on any SSH-accessible device in your
+> inventory: Linux servers, routers, switches, containers. Ansible isn't just
+> for playbooks. You can use it as a remote executor for one-off commands across
+> your entire inventory from a single prompt.
+
 ```bash
 ansible linux-client1 -m raw -a "ping -c 3 -W 2 23.23.23.2"
 ```
