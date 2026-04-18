@@ -56,29 +56,7 @@ ansible-playbook -i ~/inventory.yml teardown-xrd.yml
 
 Expected output — 4 tasks, all `changed`:
 
-```
-PLAY [Tear down XRd BGP/VRF config (prepare for Terraform)] **
-
-TASK [Remove BGP VRF and iBGP VPNv4 config] ***
-changed: [xrd01]
-changed: [xrd02]
-
-TASK [Remove VRF Customer-CLIVE] **************
-changed: [xrd01]
-changed: [xrd02]
-
-TASK [Remove VRF from Gi0/0/0/1 and clear IP] *
-changed: [xrd01]
-changed: [xrd02]
-
-TASK [Remove route-policy PASS-ALL] ***********
-changed: [xrd01]
-changed: [xrd02]
-
-PLAY RECAP ************************************
-xrd01   : ok=4    changed=4    failed=0
-xrd02   : ok=4    changed=4    failed=0
-```
+![Teardown playbook output](images/task4-teardown-output.png)
 
 > **Why tear down first?** Terraform tracks what it manages in a state file.
 > If Ansible already created the configuration, Terraform doesn't know about
