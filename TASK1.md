@@ -159,31 +159,7 @@ Watch the output as it runs. Ansible uses color-coded status for each task:
 On the first run, most tasks should show `changed`. Here's what the configuration
 tasks look like when they run successfully:
 
-```
-PLAY [Task 1 — Configure L2 access VLANs on NX-OS CE switches] *****************
-
-TASK [Step 1 — Create VLAN on each CE switch] **********************************
-changed: [n9k-ce02]
-changed: [n9k-ce01]
-
-TASK [Step 2 — Set Eth1/3 and Eth1/4 to Layer 2 (switchport) mode] ************
-changed: [n9k-ce02]
-changed: [n9k-ce01]
-
-TASK [Step 3 — Assign access VLAN to Eth1/3 and Eth1/4] ************************
-changed: [n9k-ce02]
-changed: [n9k-ce01]
-
-TASK [Step 4 — Save running configuration] *************************************
-ok: [n9k-ce02]
-ok: [n9k-ce01]
-
-TASK [Pause 30 seconds for virtual switch dataplane to update] *****************
-Pausing for 30 seconds
-(ctrl+C then 'C' = continue early, ctrl+C then 'A' = abort)
-[Pause 30 seconds for virtual switch dataplane to update]
-Waiting for VLAN changes to take effect...:
-```
+![Playbook run output](images/task1-step4-output.png)
 
 > **Why the 30-second pause?** The N9Kv virtual switch needs a moment for its
 > dataplane to start forwarding L2 traffic after VLAN changes. This is a
