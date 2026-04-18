@@ -170,35 +170,7 @@ automatically. Here's what successful verification looks like:
 
 > **💡 Automation Insight:** Notice that every playbook includes `show` commands and ping tests *as code*. This is a game-changer: verification isn't something you do after the change — it's part of the change. In production, if a verification task fails, you can automatically trigger a rollback. The playbook becomes a self-validating change window.
 
-```
-PLAY [Verify — Check VLAN and port status] *************************************
-
-TASK [Verify — Show VLAN brief] ************************************************
-ok: [n9k-ce01]
-ok: [n9k-ce02]
-
-TASK [Display VLAN status] *****************************************************
-ok: [n9k-ce01] => {
-    "vlan_output.stdout_lines": [
-        [
-            "VLAN Name                             Status    Ports",
-            "---- -------------------------------- --------- ---------",
-            "1    default                          active    ...",
-            "23   CLIENT-VLAN-23                   active    Eth1/3, Eth1/4"
-        ]
-    ]
-}
-ok: [n9k-ce02] => {
-    "vlan_output.stdout_lines": [
-        [
-            "VLAN Name                             Status    Ports",
-            "---- -------------------------------- --------- ---------",
-            "1    default                          active    ...",
-            "34   CLIENT-VLAN-34                   active    Eth1/3, Eth1/4"
-        ]
-    ]
-}
-```
+![Verify play output](images/task1-verify-output.png)
 
 > **What to look for:** Each switch should have its VLAN (23 or 34) in `active`
 > status with both `Eth1/3` and `Eth1/4` listed in the Ports column. If you see

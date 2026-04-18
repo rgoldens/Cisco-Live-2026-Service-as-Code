@@ -65,3 +65,4 @@ The HTML template used to generate these images is stored at `/tmp/ansible-outpu
 | File | Description |
 |---|---|
 | `task1-step4-output.png` | Task 1 — first run playbook output (Steps 1–4 + pause) |
+| `task1-verify-output.png` | Task 1 — verify play output (Show VLAN brief + Display VLAN status) |
