@@ -44,14 +44,20 @@ The HTML template used to generate these images is stored at `/tmp/ansible-outpu
 
 ---
 
+## Standard Image Width
+
+All terminal output images **must be 980px wide**. This ensures consistent rendering
+across the lab guide. Always use `--window-size=980,<height>` when exporting.
+
+---
+
 ## Export Process
 
 1. Write content to an HTML file using `<span>` tags with the colors above
-2. Export with headless Chrome:
+2. Export with headless Chrome at **980px width**:
    ```bash
    "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" \
      --headless=new --disable-gpu \
-     --run-all-compositor-stages-before-draw \
      --screenshot="images/<filename>.png" \
      --window-size=980,<height> --hide-scrollbars \
      "file:///tmp/ansible-output.html"
