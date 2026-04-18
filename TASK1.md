@@ -51,7 +51,10 @@ Before configuring anything, verify the initial state of the network. Clients
 on the same switch cannot reach each other yet — not because something is
 broken, but because the VLANs haven't been configured. This is your baseline.
 
-SSH into one of the Linux clients and try to ping its neighbor on the same switch:
+From the server terminal, SSH into linux-client1 and try to ping its neighbor
+on the same switch. You could SSH into the client first and then run the ping
+from there — but here we use the shorthand form that passes the command directly
+over SSH in one line:
 
 ```bash
 ssh linux-client1 ping -c 3 23.23.23.2
@@ -66,7 +69,7 @@ PING 23.23.23.2 (23.23.23.2) 56(84) bytes of data.
 3 packets transmitted, 0 received, 100% packet loss, time 2002ms
 ```
 
-Try the east side too:
+Try the east side the same way:
 
 ```bash
 ssh linux-client3 ping -c 3 34.34.34.2
