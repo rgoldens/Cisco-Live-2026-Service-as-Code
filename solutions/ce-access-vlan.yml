@@ -37,22 +37,23 @@
   hosts: nxos
   gather_facts: false
 
-  # -------------------------------------------------------------------------
-  # VARIABLES
-  # -------------------------------------------------------------------------
-  # "vars" lets us define data that tasks can reference with {{ variable }}.
-  # Here we map each switch to its VLAN ID and name. Using variables makes
-  # the playbook easier to maintain — change the VLAN here, and every task
-  # picks it up automatically.
-  # -------------------------------------------------------------------------
+  # =========================================================================
+  # EXERCISE: Complete the variables below before running this playbook.
+  #
+  # Reference: See "Table 1: VLAN Assignments" in the Lab Guide.
+  #
+  # Each CE switch needs a VLAN for its locally-connected clients:
+  #   - n9k-ce01 (west side): clients 1 and 2
+  #   - n9k-ce02 (east side): clients 3 and 4
+  # =========================================================================
   vars:
     vlan_config:
       n9k-ce01:
-        id: 23
-        name: CLIENT-VLAN-23
+        id: 23          # TODO: VLAN ID for west-side clients (see Table 1)
+        name: "Jordan"      # TODO: Name this VLAN (convention: CLIENT-VLAN-<id>)
       n9k-ce02:
-        id: 34
-        name: CLIENT-VLAN-34
+        id: 34         # TODO: VLAN ID for east-side clients (see Table 1)
+        name: "Payton"      # TODO: Name this VLAN (convention: CLIENT-VLAN-<id>)
 
   tasks:
 
@@ -73,29 +74,22 @@
         state: merged
 
     # -----------------------------------------------------------------------
-    # Step 2: Convert interfaces to switchport (L2) mode
     # -----------------------------------------------------------------------
-    # On N9Kv, interfaces default to routed ("no switchport") mode. Before
-    # we can assign a VLAN, we must convert the port to Layer 2 mode by
-    # running the "switchport" command.
-    #
-    # We use cisco.nxos.nxos_config here because this is a raw CLI command
-    # that changes the interface operating mode — the higher-level
-    # nxos_l2_interfaces module expects the port to already be in L2 mode.
-    #
-    # "loop" iterates over a list. For each item, Ansible runs the task
-    # once, with {{ item }} set to the current list element.
+    # Step 2: Set interfaces to Layer 2 (switchport) mode
     # -----------------------------------------------------------------------
-    - name: "Step 2 — Convert Eth1/3 and Eth1/4 to switchport mode"
-      cisco.nxos.nxos_config:
-        lines:
-          - switchport
-        parents: "interface {{ item }}"
-      loop:
-        - Ethernet1/3
-        - Ethernet1/4
+    # On N9Kv, interfaces default to routed (Layer 3) mode on boot.
+    # nxos_interfaces is declarative -- it checks the current mode and only
+    # changes it if needed. No spurious changed on re-runs.
+    # -----------------------------------------------------------------------
+    - name: "Step 2 -- Set Eth1/3 and Eth1/4 to Layer 2 (switchport) mode"
+      cisco.nxos.nxos_interfaces:
+        config:
+          - name: Ethernet1/3
+            mode: layer2
+          - name: Ethernet1/4
+            mode: layer2
+        state: merged
 
-    # -----------------------------------------------------------------------
     # Step 3: Assign access VLAN to each port
     # -----------------------------------------------------------------------
     # Now that the ports are in L2 mode, we can use the nxos_l2_interfaces
@@ -209,7 +203,7 @@
 
     - name: "Show ping result (client1 → client2)"
       ansible.builtin.debug:
-        var: ping_result.stdout_lines
+        msg: "{{ ping_result.stdout_lines | default([]) }}"
       when: inventory_hostname == "linux-client1"
 
     # -----------------------------------------------------------------------
@@ -222,5 +216,5 @@
 
     - name: "Show ping result (client3 → client4)"
       ansible.builtin.debug:
-        var: ping_result.stdout_lines
+        msg: "{{ ping_result.stdout_lines | default([]) }}"
       when: inventory_hostname == "linux-client3"

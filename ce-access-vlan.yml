@@ -49,11 +49,11 @@
   vars:
     vlan_config:
       n9k-ce01:
-        id: ___          # TODO: VLAN ID for west-side clients (see Table 1)
-        name: "___"      # TODO: Name this VLAN (convention: CLIENT-VLAN-<id>)
+        id: 23          # TODO: VLAN ID for west-side clients (see Table 1)
+        name: "Jordan"      # TODO: Name this VLAN (convention: CLIENT-VLAN-<id>)
       n9k-ce02:
-        id: ___          # TODO: VLAN ID for east-side clients (see Table 1)
-        name: "___"      # TODO: Name this VLAN (convention: CLIENT-VLAN-<id>)
+        id: 34         # TODO: VLAN ID for east-side clients (see Table 1)
+        name: "Payton"      # TODO: Name this VLAN (convention: CLIENT-VLAN-<id>)
 
   tasks:
 
@@ -74,30 +74,22 @@
         state: merged
 
     # -----------------------------------------------------------------------
-    # Step 2: Convert interfaces to switchport (L2) mode and enable them
     # -----------------------------------------------------------------------
-    # On N9Kv, interfaces default to routed ("no switchport") mode and are
-    # administratively shut down. We must convert the port to Layer 2 mode
-    # and bring it up before we can assign a VLAN.
-    #
-    # We use cisco.nxos.nxos_config here because this is a raw CLI command
-    # that changes the interface operating mode — the higher-level
-    # nxos_l2_interfaces module expects the port to already be in L2 mode.
-    #
-    # "loop" iterates over a list. For each item, Ansible runs the task
-    # once, with {{ item }} set to the current list element.
+    # Step 2: Set interfaces to Layer 2 (switchport) mode
     # -----------------------------------------------------------------------
-    - name: "Step 2 — Convert Eth1/3 and Eth1/4 to switchport mode and bring up"
-      cisco.nxos.nxos_config:
-        lines:
-          - switchport
-          - no shutdown
-        parents: "interface {{ item }}"
-      loop:
-        - Ethernet1/3
-        - Ethernet1/4
+    # On N9Kv, interfaces default to routed (Layer 3) mode on boot.
+    # nxos_interfaces is declarative -- it checks the current mode and only
+    # changes it if needed. No spurious changed on re-runs.
+    # -----------------------------------------------------------------------
+    - name: "Step 2 -- Set Eth1/3 and Eth1/4 to Layer 2 (switchport) mode"
+      cisco.nxos.nxos_interfaces:
+        config:
+          - name: Ethernet1/3
+            mode: layer2
+          - name: Ethernet1/4
+            mode: layer2
+        state: merged
 
-    # -----------------------------------------------------------------------
     # Step 3: Assign access VLAN to each port
     # -----------------------------------------------------------------------
     # Now that the ports are in L2 mode, we can use the nxos_l2_interfaces
@@ -211,7 +203,7 @@
 
     - name: "Show ping result (client1 → client2)"
       ansible.builtin.debug:
-        var: ping_result.stdout_lines
+        msg: "{{ ping_result.stdout_lines | default([]) }}"
       when: inventory_hostname == "linux-client1"
 
     # -----------------------------------------------------------------------
@@ -224,5 +216,5 @@
 
     - name: "Show ping result (client3 → client4)"
       ansible.builtin.debug:
-        var: ping_result.stdout_lines
+        msg: "{{ ping_result.stdout_lines | default([]) }}"
       when: inventory_hostname == "linux-client3"
