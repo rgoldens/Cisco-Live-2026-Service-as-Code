@@ -178,56 +178,17 @@ automatically. Here's what successful verification looks like:
 
 Finally, the ping tests confirm L2 connectivity:
 
-```
-PLAY [Test — Ping between clients on the same switch] **************************
-
-TASK [Test — client1 pings client2 (23.23.23.1 → 23.23.23.2)] ******************
-changed: [linux-client1]
-
-TASK [Show ping result (client1 → client2)] ************************************
-ok: [linux-client1] => {
-    "ping_result.stdout_lines": [
-        "PING 23.23.23.2 (23.23.23.2) 56(84) bytes of data.",
-        "64 bytes from 23.23.23.2: icmp_seq=1 ttl=64 time=4.85 ms",
-        "64 bytes from 23.23.23.2: icmp_seq=2 ttl=64 time=4.97 ms",
-        "64 bytes from 23.23.23.2: icmp_seq=3 ttl=64 time=2.29 ms",
-        "",
-        "--- 23.23.23.2 ping statistics ---",
-        "3 packets transmitted, 3 received, 0% packet loss, time 2003ms"
-    ]
-}
-
-TASK [Test — client3 pings client4 (34.34.34.1 → 34.34.34.2)] ******************
-changed: [linux-client3]
-
-TASK [Show ping result (client3 → client4)] ************************************
-ok: [linux-client3] => {
-    "ping_result.stdout_lines": [
-        "PING 34.34.34.2 (34.34.34.2) 56(84) bytes of data.",
-        "64 bytes from 34.34.34.2: icmp_seq=1 ttl=64 time=6.21 ms",
-        "64 bytes from 34.34.34.2: icmp_seq=2 ttl=64 time=1.76 ms",
-        "64 bytes from 34.34.34.2: icmp_seq=3 ttl=64 time=2.12 ms",
-        "",
-        "--- 34.34.34.2 ping statistics ---",
-        "3 packets transmitted, 3 received, 0% packet loss, time 2003ms"
-    ]
-}
-```
+![Ping test output](images/task1-ping-output.png)
 
 The **PLAY RECAP** at the very end gives you a summary of everything that happened:
 
-```
-PLAY RECAP *********************************************************************
-linux-client1              : ok=2    changed=1    unreachable=0    failed=0
-linux-client3              : ok=2    changed=1    unreachable=0    failed=0
-n9k-ce01                   : ok=7    changed=4    unreachable=0    failed=0
-n9k-ce02                   : ok=6    changed=4    unreachable=0    failed=0
-```
+![PLAY RECAP output](images/task1-recap-output.png)
 
-> **Reading the recap:** Each line is a device. `changed=4` means 4 tasks made
-> changes. `failed=0` means nothing went wrong. If you see `failed=1` or higher,
-> scroll up to find the red error message — it will tell you exactly which task
-> failed and why.
+> **Reading the recap:** Each line is a device. `changed=3` means 3 tasks made
+> changes on that switch. `failed=0` means nothing went wrong. `skipped=2` on
+> the Linux clients means those tasks were skipped because the `when` condition
+> was false for that host. If you see `failed=1` or higher, scroll up to find
+> the red error message — it will tell you exactly which task failed and why.
 
 ### Step 5: Verify the Results
 

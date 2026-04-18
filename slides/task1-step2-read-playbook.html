@@ -258,35 +258,35 @@
       </svg>
     </div>
 
-    <!-- ── Task 2: nxos_config ────────────────────────────── -->
+    <!-- ── Task 2: nxos_interfaces ───────────────────────── -->
     <div class="task-card">
-      <div class="task-accent" style="background:#ff8800;"></div>
+      <div class="task-accent" style="background:#00d4ff;"></div>
       <div class="task-body">
         <div>
           <div class="task-label">Playbook Task 2</div>
           <div style="margin-top:6px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-            <div class="module-pill" style="color:#ff8800;">
-              <div class="dot" style="background:#ff8800;"></div>
-              cisco.nxos.nxos_config
+            <div class="module-pill" style="color:#00d4ff;">
+              <div class="dot" style="background:#00d4ff;"></div>
+              cisco.nxos.nxos_interfaces
             </div>
-            <span class="badge badge-r">Raw CLI</span>
+            <span class="badge badge-d">Declarative</span>
           </div>
         </div>
 
-        <!-- Flow: context → lines loop -->
+        <!-- Flow: desired state → Ansible → ports -->
         <div class="flow-diagram">
-          <div class="flow-box" style="background:#1e2d3d; border:1px solid #ff880033; text-align:left;">
-            <div class="label">parents:</div>
-            <div class="value" style="color:#ff8800; font-size:10px;">interface<br>Ethernet1/3</div>
+          <div class="flow-box" style="background:#1e2d3d; border:1px solid #00d4ff33; text-align:left;">
+            <div class="label">You say</div>
+            <div class="value" style="color:#00d4ff; font-size:10px;">Eth1/3<br>mode: layer2</div>
           </div>
           <div class="flow-mini-arrow">
             <svg width="28" height="16" viewBox="0 0 28 16">
               <path d="M2 8 H22 M18 3 L26 8 L18 13" stroke="#4a5568" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </div>
-          <div class="flow-box" style="background:#ff880010; border:1px solid #ff880033; text-align:left;">
-            <div class="label">lines:</div>
-            <div class="value" style="color:#c8d0d8; font-size:10px;">switchport<br>no shutdown</div>
+          <div class="flow-box" style="background:#00d4ff12; border:1px solid #00d4ff33; text-align:left;">
+            <div class="label">Ansible decides</div>
+            <div class="value" style="color:#c8d0d8; font-size:10px;">switchport<br>(if needed)</div>
           </div>
           <div class="flow-mini-arrow">
             <svg width="28" height="16" viewBox="0 0 28 16">
@@ -294,16 +294,15 @@
             </svg>
           </div>
           <div class="flow-box" style="background:#1e2d3d; border:1px solid #2a3a4a;">
-            <div class="label">loop × 2</div>
-            <div class="value" style="color:#ff8800; font-size:10px;">Eth1/3<br>Eth1/4</div>
+            <div class="label">Both ports</div>
+            <div class="value" style="color:#00d4ff; font-size:10px;">Eth1/3<br>Eth1/4</div>
           </div>
         </div>
 
         <div class="task-desc">
-          No purpose-built module for port mode? Send CLI directly.
-          <em>parents:</em> enters the interface context first — like typing
-          <code style="font-family:'JetBrains Mono';font-size:10px;color:#ff8800;background:#1e2d3d;padding:1px 4px;border-radius:3px;">interface Eth1/3</code>.
-          <em>loop:</em> runs it for each port.
+          Declare <em>mode: layer2</em> — Ansible checks the current state and only
+          sends <code style="font-family:'JetBrains Mono';font-size:10px;color:#00d4ff;background:#1e2d3d;padding:1px 4px;border-radius:3px;">switchport</code>
+          if it's missing. <em>Idempotent — safe to re-run.</em>
         </div>
       </div>
     </div>
@@ -449,9 +448,9 @@
     <div>
       <strong>Automation Insight:</strong>
       Three tasks. Three modules. Three concerns separated cleanly — <em>create</em> the VLAN,
-      <em>configure</em> the ports, <em>assign</em> the VLAN to the ports.
-      The <code>loop:</code> keyword removed duplication across ports.
-      The <code>{{ variable }}</code> removed duplication across switches.
+      <em>set port mode</em> to Layer 2, <em>assign</em> the VLAN to the ports.
+      All three modules are <em>declarative</em>: describe the desired state, Ansible figures out
+      what to change. The <code>{{ variable }}</code> removed duplication across switches.
       <strong>This is how automation scales: data changes, logic doesn't.</strong>
     </div>
   </div>

@@ -38,7 +38,7 @@ The HTML template used to generate these images is stored at `/tmp/ansible-outpu
 | `changed` | Golden yellow | `#e5c000` |
 | `ok` | Bright green | `#00cc44` |
 | `failed` | Red (not yet used) | `#e06c75` |
-| `skipping` | Cyan (not yet used) | `#56b6c2` |
+| `skipping` | Cyan | `#00aaaa` |
 | Headers / plain text | Bright white | `#e8e8e8` |
 | Informational text | Light grey | `#cccccc` |
 
@@ -66,6 +66,8 @@ The HTML template used to generate these images is stored at `/tmp/ansible-outpu
 |---|---|
 | `task1-step4-output.png` | Task 1 — first run playbook output (Steps 1–4 + pause) |
 | `task1-verify-output.png` | Task 1 — verify play output (Show VLAN brief + Display VLAN status) |
+| `task1-ping-output.png` | Task 1 — ping test play output (client1→client2, client3→client4) |
+| `task1-recap-output.png` | Task 1 — PLAY RECAP summary (all 6 hosts, first run) |
 | `task2-nxos-output.png` | Task 2 — Play 1 NX-OS IS-IS config (Steps 1–6) |
 | `task2-csr-output.png` | Task 2 — Play 2 CSR PE IS-IS config (Steps 1–4 + wait) |
 | `task2-linux-routes-output.png` | Task 2 — Play 3 Linux client route additions |
