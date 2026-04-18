@@ -277,16 +277,17 @@ ansible linux-client1 -m raw -a "ping -c 3 -W 2 23.23.23.2"
 
 You should see **100% packet loss**:
 
-```
-linux-client1 | FAILED | rc=1 >>
-PING 23.23.23.2 (23.23.23.2) 56(84) bytes of data.
-From 23.23.23.1 icmp_seq=1 Destination Host Unreachable
-From 23.23.23.1 icmp_seq=2 Destination Host Unreachable
-From 23.23.23.1 icmp_seq=3 Destination Host Unreachable
+![Ad-hoc ping failed output](images/task1-adhoc-failed-output.png)
 
---- 23.23.23.2 ping statistics ---
-3 packets transmitted, 0 received, +3 errors, 100% packet loss, time 2055ms
-```
+> **💡 Why does it say FAILED?** Don't worry — this is exactly what we expected.
+> The red `[ERROR]` and `FAILED | rc=1` are Ansible telling you that the ping
+> command exited with an error code. Here's the key: `ping` always exits with
+> an error code when packets are lost. Ansible sees that error code and flags it
+> as a failure — but that's not a problem with Ansible or your setup. It's
+> actually confirming that connectivity is broken, which is the whole point of
+> this step. The `100% packet loss` line in the output is your proof. You will
+> see this same pattern any time you use `ansible -m raw` to run a command that
+> returns a non-zero exit code.
 
 One manual change on one interface, and connectivity is broken. Client1 is now
 on VLAN 27 while client2 is still on VLAN 23 — they're in different broadcast
