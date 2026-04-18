@@ -92,6 +92,8 @@ Before making any changes, open the playbook and read through it:
 nano ~/ce-access-vlan.yml
 ```
 
+> **Note:** You can use any Linux text editor you prefer — `vi`, `vim`, `nano`, etc. All examples in this lab use `nano`.
+
 ![Step 2: Read the Playbook](images/task1-step2-read-playbook.png)
 
 Read through the tasks in the playbook. Notice how each task maps to one of
