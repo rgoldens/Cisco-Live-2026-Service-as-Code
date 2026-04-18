@@ -72,3 +72,12 @@ The HTML template used to generate these images is stored at `/tmp/ansible-outpu
 | `task2-verify-output.png` | Task 2 — NX-OS IS-IS neighbors and routes verification |
 | `task2-csr-verify-output.png` | Task 2 — CSR PE IS-IS neighbor verification |
 | `task2-ping-output.png` | Task 2 — Ping test results + PLAY RECAP |
+| `task3-xrd-output.png` | Task 3 — Play 1 XRd VRF and BGP config (Steps 1–5b, all ok) |
+| `task3-bgp-config-output.png` | Task 3 — XRd show run router bgp display |
+| `task3-csr-output.png` | Task 3 — Play 2 CSR PE BGP config (Steps 1–4, changed) |
+| `task3-linux-routes-output.png` | Task 3 — Play 3 Linux cross-site route additions |
+| `task3-pause-output.png` | Task 3 — 90-second BGP convergence pause |
+| `task3-bgp-summary-output.png` | Task 3 — XRd BGP VPNv4 summary (3 prefixes received) |
+| `task3-vrf-routes-output.png` | Task 3 — XRd VRF route table (6 prefixes, 6 paths) |
+| `task3-csr-bgp-summary-output.png` | Task 3 — CSR PE BGP summary (4 prefixes received) |
+| `task3-ping-output.png` | Task 3 — Cross-site ping results (4 clients) + PLAY RECAP |

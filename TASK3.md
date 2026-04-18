@@ -253,33 +253,7 @@ for BGP convergence. Be patient — the pause is there for a reason.
 
 **Play 1 — XRd configuration** sets up VRF, MPLS VPN, and BGP:
 
-```
-PLAY [Task 3 — Configure VRF and BGP on XRd core routers] **********************
-
-TASK [Step 1 — Create PASS-ALL route-policy] ***********************************
-ok: [xrd02]
-ok: [xrd01]
-
-TASK [Step 2 — Create VRF Customer-CLIVE with route-targets] *******************
-ok: [xrd01]
-ok: [xrd02]
-
-TASK [Step 3 — Assign Gi0/0/0/1 to VRF and re-apply IP] ************************
-ok: [xrd01]
-ok: [xrd02]
-
-TASK [Step 4a — Configure BGP process and iBGP VPNv4 neighbor] *****************
-ok: [xrd01]
-ok: [xrd02]
-
-TASK [Step 5a — Configure VRF RD and redistribution in BGP] ********************
-ok: [xrd01]
-ok: [xrd02]
-
-TASK [Step 5b — Configure eBGP neighbor in VRF with route-policies] ************
-ok: [xrd02]
-ok: [xrd01]
-```
+![Play 1 — XRd VRF and BGP configuration](images/task3-xrd-output.png)
 
 > **Why do the XRd tasks show `ok` instead of `changed`?** These tasks use
 > `iosxr_command` (raw CLI mode) instead of `iosxr_config` (declarative mode).
@@ -298,40 +272,7 @@ ok: [xrd01]
 
 The verification task shows the complete BGP config on each XRd:
 
-```
-TASK [Display BGP config] ******************************************************
-ok: [xrd01] => {
-    "bgp_check.stdout_lines": [
-        [
-            "router bgp 65000",
-            " address-family vpnv4 unicast",
-            " !",
-            " neighbor 192.168.0.2",
-            "  remote-as 65000",
-            "  update-source Loopback0",
-            "  address-family vpnv4 unicast",
-            "   next-hop-self",
-            "  !",
-            " !",
-            " vrf Customer-CLIVE",
-            "  rd 65000:1",
-            "  address-family ipv4 unicast",
-            "   redistribute connected",
-            "  !",
-            "  neighbor 10.1.0.6",
-            "   remote-as 65001",
-            "   address-family ipv4 unicast",
-            "    route-policy PASS-ALL in",
-            "    route-policy PASS-ALL out",
-            "    as-override",
-            "   !",
-            "  !",
-            " !",
-            "!"
-        ]
-    ]
-}
-```
+![XRd BGP configuration display](images/task3-bgp-config-output.png)
 
 > **Reading the BGP config:** This is the complete `router bgp` hierarchy on
 > xrd01. Look for: (1) `neighbor 192.168.0.2` — that's your `remote_lo` value
@@ -342,25 +283,7 @@ ok: [xrd01] => {
 
 **Play 2 — CSR PE configuration** sets up eBGP and IS-IS redistribution:
 
-```
-PLAY [Task 3 — Configure BGP on CSR PE routers] ********************************
-
-TASK [Step 1 — Configure BGP AS 65001 and eBGP neighbor] ***********************
-changed: [csr-pe01]
-changed: [csr-pe02]
-
-TASK [Step 2 — Configure BGP address-family and redistribution] ****************
-changed: [csr-pe02]
-changed: [csr-pe01]
-
-TASK [Step 3 — Redistribute BGP into IS-IS] ************************************
-changed: [csr-pe02]
-changed: [csr-pe01]
-
-TASK [Step 4 — Wait for CSR to stabilize] **************************************
-ok: [csr-pe02]
-ok: [csr-pe01]
-```
+![Play 2 — CSR PE BGP configuration](images/task3-csr-output.png)
 
 > **What is route redistribution?** The CSR PEs sit between two routing
 > protocols: IS-IS (toward the N9K CE) and BGP (toward the XRd core). Step 2
@@ -371,26 +294,11 @@ ok: [csr-pe01]
 
 **Play 3 — Linux cross-site routes** adds the final piece:
 
-```
-PLAY [Task 3 — Add cross-site routes on Linux clients] *************************
-
-TASK [Add route to remote client subnet] ***************************************
-changed: [linux-client1]
-changed: [linux-client2]
-changed: [linux-client3]
-changed: [linux-client4]
-```
+![Play 3 — Linux cross-site route additions](images/task3-linux-routes-output.png)
 
 **Convergence pause** — the playbook then waits for BGP:
 
-```
-PLAY [Wait for BGP convergence] ************************************************
-
-TASK [Pause 90 seconds for BGP to converge] ************************************
-Pausing for 90 seconds
-(ctrl+C then 'C' = continue early, ctrl+C then 'A' = abort)
-ok: [localhost]
-```
+![BGP convergence pause](images/task3-pause-output.png)
 
 > **Why 90 seconds?** BGP convergence is not instant. The iBGP VPNv4 session
 > between xrd01 and xrd02 needs to: (1) establish the TCP connection, (2)
@@ -411,19 +319,7 @@ ok: [localhost]
 > summary'`. The pings at the end of the playbook are the real validation —
 > if they pass, the routes have propagated.
 
-```
-TASK [Display BGP VPNv4 summary] ***********************************************
-ok: [xrd01] => {
-    "bgp_summary.stdout_lines": [
-        [
-            "BGP router identifier 192.168.0.1, local AS number 65000",
-            "...
-            "Neighbor        Spk    AS MsgRcvd MsgSent   TblVer  InQ OutQ  Up/Down  St/PfxRcd",
-            "192.168.0.2       0 65000      17      17       15    0    0 00:11:43          3"
-        ]
-    ]
-}
-```
+![XRd BGP VPNv4 summary](images/task3-bgp-summary-output.png)
 
 > **Reading the BGP summary:** The key columns are:
 > - **Neighbor**: `192.168.0.2` — the iBGP VPNv4 peer (xrd02's loopback)
@@ -435,25 +331,7 @@ ok: [xrd01] => {
 
 The VRF route table shows all learned prefixes:
 
-```
-TASK [Display VRF routes] ******************************************************
-ok: [xrd01] => {
-    "bgp_routes.stdout_lines": [
-        [
-            "...
-            "   Network            Next Hop        Metric LocPrf Weight Path",
-            "*> 10.1.0.4/30        0.0.0.0              0         32768 ?",
-            "*>i10.1.0.8/30        192.168.0.2          0    100      0 ?",
-            "*> 23.23.23.0/24      10.1.0.6            50             0 65001 ?",
-            "*>i34.34.34.0/24      192.168.0.2         50    100      0 65001 ?",
-            "*> 192.168.20.21/32   10.1.0.6            11             0 65001 ?",
-            "*>i192.168.20.22/32   192.168.0.2         11    100      0 65001 ?",
-            "",
-            "Processed 6 prefixes, 6 paths"
-        ]
-    ]
-}
-```
+![XRd VRF route table](images/task3-vrf-routes-output.png)
 
 > **Reading the VRF route table:** Each line is a route in the VRF:
 > - `*>` = best path, locally originated or from eBGP
@@ -468,19 +346,7 @@ ok: [xrd01] => {
 
 The CSR BGP verification confirms eBGP sessions are up:
 
-```
-TASK [Display BGP summary] *****************************************************
-ok: [csr-pe01] => {
-    "bgp_summary.stdout_lines": [
-        [
-            "BGP router identifier 192.168.10.11, local AS number 65001",
-            "...
-            "Neighbor        V    AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd",
-            "10.1.0.5        4 65000       9       6        5    0    0 00:01:18        4"
-        ]
-    ]
-}
-```
+![CSR PE BGP summary](images/task3-csr-bgp-summary-output.png)
 
 > **CSR BGP summary:** csr-pe01 peers with xrd01 (`10.1.0.5`) and has received
 > 4 prefixes. The `State/PfxRcd` column showing a number (not `Idle`/`Active`)
@@ -488,78 +354,7 @@ ok: [csr-pe01] => {
 
 **The final ping tests** — the moment of truth:
 
-```
-PLAY [Test — Full east-west client connectivity] *******************************
-
-TASK [Show ping result] ********************************************************
-ok: [linux-client1] => {
-    "ping_result.stdout_lines": [
-        "PING 34.34.34.1 (34.34.34.1) 56(84) bytes of data.",
-        "64 bytes from 34.34.34.1: icmp_seq=1 ttl=58 time=16.6 ms",
-        "64 bytes from 34.34.34.1: icmp_seq=2 ttl=58 time=8.56 ms",
-        "64 bytes from 34.34.34.1: icmp_seq=3 ttl=58 time=9.20 ms",
-        "",
-        "--- 34.34.34.1 ping statistics ---",
-        "3 packets transmitted, 3 received, 0% packet loss, time 2002ms"
-    ]
-}
-ok: [linux-client2] => {
-    "ping_result.stdout_lines": [
-        "PING 34.34.34.2 (34.34.34.2) 56(84) bytes of data.",
-        "64 bytes from 34.34.34.2: icmp_seq=1 ttl=58 time=11.5 ms",
-        "64 bytes from 34.34.34.2: icmp_seq=2 ttl=58 time=44.1 ms",
-        "64 bytes from 34.34.34.2: icmp_seq=3 ttl=58 time=45.4 ms",
-        "",
-        "--- 34.34.34.2 ping statistics ---",
-        "3 packets transmitted, 3 received, 0% packet loss, time 2001ms"
-    ]
-}
-ok: [linux-client3] => {
-    "ping_result.stdout_lines": [
-        "PING 23.23.23.1 (23.23.23.1) 56(84) bytes of data.",
-        "64 bytes from 23.23.23.1: icmp_seq=1 ttl=58 time=45.2 ms",
-        "64 bytes from 23.23.23.1: icmp_seq=2 ttl=58 time=41.6 ms",
-        "64 bytes from 23.23.23.1: icmp_seq=3 ttl=58 time=81.3 ms",
-        "",
-        "--- 23.23.23.1 ping statistics ---",
-        "3 packets transmitted, 3 received, 0% packet loss, time 2002ms"
-    ]
-}
-ok: [linux-client4] => {
-    "ping_result.stdout_lines": [
-        "PING 23.23.23.2 (23.23.23.2) 56(84) bytes of data.",
-        "64 bytes from 23.23.23.2: icmp_seq=1 ttl=58 time=74.4 ms",
-        "64 bytes from 23.23.23.2: icmp_seq=2 ttl=58 time=70.1 ms",
-        "64 bytes from 23.23.23.2: icmp_seq=3 ttl=58 time=27.1 ms",
-        "",
-        "--- 23.23.23.2 ping statistics ---",
-        "3 packets transmitted, 3 received, 0% packet loss, time 2003ms"
-    ]
-}
-```
-
-> **TTL=58** tells you the packet crossed 6 hops (256 - 58 = 198... actually,
-> Linux starts with TTL=64, so 64 - 58 = 6 hops). The path is:
-> `client1 → n9k-ce01 → csr-pe01 → xrd01 → xrd02 → csr-pe02 → n9k-ce02 → client3`
-> (7 devices but 6 L3 hops). Each hop decrements the TTL by 1.
-
-> **Why are latencies higher for cross-site?** These packets traverse the entire
-> virtual SP core — 6 router hops running as containers on a single server.
-> Latencies of 10-80ms are normal for this lab environment. In a real SP network
-> with hardware routers, cross-site latency would be much lower.
-
-```
-PLAY RECAP *********************************************************************
-csr-pe01                   : ok=8    changed=3    unreachable=0    failed=0
-csr-pe02                   : ok=8    changed=3    unreachable=0    failed=0
-linux-client1              : ok=3    changed=2    unreachable=0    failed=0
-linux-client2              : ok=3    changed=2    unreachable=0    failed=0
-linux-client3              : ok=3    changed=2    unreachable=0    failed=0
-linux-client4              : ok=3    changed=2    unreachable=0    failed=0
-localhost                  : ok=1    changed=0    unreachable=0    failed=0
-xrd01                      : ok=12   changed=0    unreachable=0    failed=0
-xrd02                      : ok=12   changed=0    unreachable=0    failed=0
-```
+![Cross-site ping results and PLAY RECAP](images/task3-ping-output.png)
 
 ### Checkpoint
 
