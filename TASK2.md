@@ -220,33 +220,7 @@ in sequence: NX-OS switches first, then CSR PE routers, then Linux clients.
 
 **Play 1 — NX-OS configuration** creates IS-IS and SVIs:
 
-```
-PLAY [Task 2 — Configure IS-IS and gateway SVIs on NX-OS CE switches] **********
-
-TASK [Step 1 — Enable IS-IS feature on NX-OS] **********************************
-changed: [n9k-ce01]
-changed: [n9k-ce02]
-
-TASK [Step 2 — Configure IS-IS process] ****************************************
-changed: [n9k-ce01]
-changed: [n9k-ce02]
-
-TASK [Step 3 — Create SVI as client gateway and add to IS-IS] ******************
-changed: [n9k-ce02]
-changed: [n9k-ce01]
-
-TASK [Step 4 — Add uplink Eth1/1 to IS-IS] *************************************
-changed: [n9k-ce02]
-changed: [n9k-ce01]
-
-TASK [Step 5 — Add Loopback0 to IS-IS] *****************************************
-changed: [n9k-ce01]
-changed: [n9k-ce02]
-
-TASK [Step 6 — Save running configuration] *************************************
-changed: [n9k-ce02]
-changed: [n9k-ce01]
-```
+![Play 1 — NX-OS IS-IS configuration](images/task2-nxos-output.png)
 
 > **What just happened?** Step 1 enables the IS-IS feature (`feature isis` on
 > NX-OS). Steps 2-5 create the IS-IS process, add the SVI, uplink, and
@@ -256,29 +230,7 @@ changed: [n9k-ce01]
 
 **Play 2 — CSR PE configuration** creates IS-IS on the PE routers:
 
-```
-PLAY [Task 2 — Configure IS-IS on CSR PE routers] ******************************
-
-TASK [Step 1 — Configure IS-IS process] ****************************************
-changed: [csr-pe02]
-changed: [csr-pe01]
-
-TASK [Step 2 — Add Loopback0 to IS-IS] *****************************************
-changed: [csr-pe01]
-changed: [csr-pe02]
-
-TASK [Step 2b — Set Loopback0 as passive in IS-IS process] *********************
-changed: [csr-pe02]
-changed: [csr-pe01]
-
-TASK [Step 3 — Add GigabitEthernet4 to IS-IS (PE-CE link)] *********************
-changed: [csr-pe02]
-changed: [csr-pe01]
-
-TASK [Step 4 — Wait for CSR to stabilize] **************************************
-ok: [csr-pe01]
-ok: [csr-pe02]
-```
+![Play 2 — CSR PE IS-IS configuration](images/task2-csr-output.png)
 
 > **Why is Loopback0 passive?** A passive interface advertises its IP into IS-IS
 > (so other routers learn the route) but doesn't try to form an adjacency on it.
@@ -296,19 +248,7 @@ ok: [csr-pe02]
 > which Ansible can't resolve until the loop starts. The routes are applied
 > correctly despite the warning.
 
-```
-PLAY [Task 2 — Add default routes on Linux clients] ****************************
-
-TASK [Add route to 192.168.10.0/24 via SVI gateway] ***************************
-changed: [linux-client1] => (item=192.168.10.0/24)
-changed: [linux-client1] => (item=10.2.0.0/30)
-changed: [linux-client3] => (item=192.168.10.0/24)
-changed: [linux-client3] => (item=10.2.0.4/30)
-changed: [linux-client2] => (item=192.168.10.0/24)
-changed: [linux-client4] => (item=192.168.10.0/24)
-changed: [linux-client2] => (item=10.2.0.0/30)
-changed: [linux-client4] => (item=10.2.0.4/30)
-```
+![Play 3 — Linux client route additions](images/task2-linux-routes-output.png)
 
 > **Notice the `loop` in action:** Each client runs the task twice — once per
 > route in its `routes` list. The `=> (item=...)` shows which route is being
@@ -317,50 +257,13 @@ changed: [linux-client4] => (item=10.2.0.4/30)
 
 **Verification plays** show IS-IS adjacencies and routes:
 
-```
-PLAY [Verify — IS-IS neighbors and routes] *************************************
-
-TASK [Display IS-IS neighbors] *************************************************
-ok: [n9k-ce01] => {
-    "isis_neighbors.stdout_lines": [
-        [
-            "IS-IS process: CORE VRF: default",
-            "IS-IS adjacency database:",
-            "System ID       SNPA            Level  State  Hold Time  Interface",
-            "csr-pe01        N/A             2      UP     00:00:27   Ethernet1/1"
-        ]
-    ]
-}
-ok: [n9k-ce02] => {
-    "isis_neighbors.stdout_lines": [
-        [
-            "IS-IS process: CORE VRF: default",
-            "IS-IS adjacency database:",
-            "System ID       SNPA            Level  State  Hold Time  Interface",
-            "csr-pe02        N/A             2      UP     00:00:27   Ethernet1/1"
-        ]
-    ]
-}
-```
+![NX-OS IS-IS neighbors and routes](images/task2-verify-output.png)
 
 > **What to look for:** The `State` column should say `UP` — this means the
 > IS-IS adjacency has formed between the CE switch and its PE router. The
 > `Interface` should be `Ethernet1/1` (the uplink). If you see `INIT` instead
 > of `UP`, the neighbor's IS-IS process might not be configured yet, or the
 > NET addresses might be malformed.
-
-```
-TASK [Display IS-IS routes] ****************************************************
-ok: [n9k-ce01] => {
-    "isis_routes.stdout_lines": [
-        [
-            "IP Route Table for VRF \"default\"",
-            "192.168.10.11/32, ubest/mbest: 1/0",
-            "    *via 10.2.0.1, Eth1/1, [115/40], isis-CORE, L2"
-        ]
-    ]
-}
-```
 
 > **Reading the route table:** `192.168.10.11/32` is csr-pe01's Loopback0 —
 > learned via IS-IS (`isis-CORE, L2`) through the uplink (`Eth1/1`). The `[115/40]`
@@ -369,18 +272,7 @@ ok: [n9k-ce01] => {
 
 The CSR PE verification shows the same from the other side:
 
-```
-TASK [Display IS-IS neighbors] *************************************************
-ok: [csr-pe01] => {
-    "isis_neighbors.stdout_lines": [
-        [
-            "Tag CORE:",
-            "System Id       Type Interface     IP Address      State Holdtime Circuit Id",
-            "n9k-ce01        L2   Gi4           10.2.0.2        UP    23       01"
-        ]
-    ]
-}
-```
+![CSR PE IS-IS neighbor verification](images/task2-csr-verify-output.png)
 
 > **Cross-check:** csr-pe01 sees n9k-ce01 as a Level 2 neighbor on Gi4 (the
 > PE-CE link). The IP `10.2.0.2` is n9k-ce01's Eth1/1 address. Both sides
@@ -388,21 +280,7 @@ ok: [csr-pe01] => {
 
 **Ping tests** confirm end-to-end reachability from clients to PE loopbacks:
 
-```
-PLAY [Test — Linux clients ping CSR PE loopback] *******************************
-
-TASK [Show ping result] ********************************************************
-ok: [linux-client1] => {
-    "ping_result.stdout_lines": [
-        "PING 192.168.10.11 (192.168.10.11) 56(84) bytes of data.",
-        "64 bytes from 192.168.10.11: icmp_seq=2 ttl=254 time=4.99 ms",
-        "64 bytes from 192.168.10.11: icmp_seq=3 ttl=254 time=4.16 ms",
-        "",
-        "--- 192.168.10.11 ping statistics ---",
-        "3 packets transmitted, 2 received, 33.3333% packet loss, time 2014ms"
-    ]
-}
-```
+![Ping test and PLAY RECAP](images/task2-ping-output.png)
 
 > **Why 2 out of 3?** The first ping packet is often lost because the ARP table
 > is empty. When client1 sends the first ICMP packet, the network needs to
@@ -413,17 +291,10 @@ ok: [linux-client1] => {
 > **TTL=254** tells you the packet crossed 2 hops: client1 → n9k-ce01 SVI →
 > csr-pe01 Loopback0. Each hop decrements the TTL by 1 (starting from 256).
 
-```
-PLAY RECAP *********************************************************************
-csr-pe01                   : ok=9    changed=4    unreachable=0    failed=0
-csr-pe02                   : ok=9    changed=4    unreachable=0    failed=0
-linux-client1              : ok=3    changed=2    unreachable=0    failed=0
-linux-client2              : ok=3    changed=2    unreachable=0    failed=0
-linux-client3              : ok=3    changed=2    unreachable=0    failed=0
-linux-client4              : ok=3    changed=2    unreachable=0    failed=0
-n9k-ce01                   : ok=10   changed=6    unreachable=0    failed=0
-n9k-ce02                   : ok=10   changed=6    unreachable=0    failed=0
-```
+> **Reading the recap:** Each line is a device. `changed=4` means 4 tasks made
+> changes. `failed=0` means nothing went wrong. If you see `failed=1` or higher,
+> scroll up to find the red error message — it will tell you exactly which task
+> failed and why.
 
 ### Checkpoint
 
