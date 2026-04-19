@@ -163,7 +163,8 @@ tasks look like when they run successfully:
 
 > **Why the 30-second pause?** The N9Kv virtual switch needs a moment for its
 > dataplane to start forwarding L2 traffic after VLAN changes. This is a
-> vrnetlab quirk — physical Nexus hardware doesn't need this delay.
+> vrnetlab quirk — physical Nexus hardware may also need a brief delay
+> for STP convergence, but vrnetlab virtual switches typically need a longer pause.
 
 After the config tasks, the playbook runs **verification** and **test** plays
 automatically. Here's what successful verification looks like:
@@ -176,7 +177,7 @@ automatically. Here's what successful verification looks like:
 > status with both `Eth1/3` and `Eth1/4` listed in the Ports column. If you see
 > the VLAN but no ports, the switchport assignment didn't work correctly.
 
-Finally, the ping tests confirm L2 connectivity:
+Finally, the ping tests confirm end-to-end reachability across the VLAN:
 
 ![Ping test output](images/task1-ping-output.png)
 
@@ -266,8 +267,8 @@ Verify that client1 can no longer reach client2:
 > **💡 Ansible Tip:** Earlier in this task you SSH'd directly into the client to
 > run a ping. Here we use `ansible -m raw` to do the same thing without logging
 > in. The `-m raw` flag sends a shell command over SSH without requiring Python
-> on the target — which means it works on any SSH-accessible device in your
-> inventory: Linux servers, routers, switches, containers. Ansible isn't just
+> on the target — which means it works on any SSH-accessible Linux or Unix host
+> in your inventory. Ansible isn't just
 > for playbooks. You can use it as a remote executor for one-off commands across
 > your entire inventory from a single prompt.
 
@@ -326,16 +327,14 @@ Notice the difference:
 
 - **Step 1** shows `ok` — the VLANs already exist. Nothing to do.
 - **Step 2** shows `changed` on all ports — but **nothing actually changed on
-  the devices**. This is a false positive caused by the `nxos_config` module.
-  Unlike the declarative modules in Steps 1 and 3, `nxos_config` sends raw CLI
-  commands and compares them against the running configuration text. Commands
-  like `switchport` and `no shutdown` don't appear in NX-OS running config once
-  a port is already in that state, so the module can't tell the port is already
-  configured correctly — it sends the commands again and reports `changed` every
-  time. This is a known limitation of CLI-based ("imperative") modules versus
-  declarative resource modules. In production, teams work around this with
-  `changed_when` overrides or by replacing `nxos_config` tasks with declarative
-  equivalents where possible.
+  the devices**. This is a false positive caused by the `nxos_interfaces` module.
+  Unlike the fully declarative modules in Steps 1 and 3, `nxos_interfaces`
+  compares its desired attributes against the running state but can't always
+  detect that commands like `switchport` and `no shutdown` are already in
+  effect — NX-OS omits them from running config once a port is already in that
+  state. The module sends the commands again and reports `changed` every time.
+  This is a known quirk of certain resource modules. In production, teams work
+  around this with `changed_when` overrides.
 - **Step 3** is where the real action is: `changed` on **n9k-ce01** but `ok` on
   **n9k-ce02**. This is a declarative module (`nxos_l2_interfaces`) that
   compares the desired VLAN assignment against the device's actual state. It

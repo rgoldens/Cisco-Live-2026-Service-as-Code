@@ -45,9 +45,10 @@ shared infrastructure.
 #### 2. MP-BGP VPNv4 (iBGP between XRd routers)
 
 The iBGP VPNv4 session carries VRF routes across the SP core between xrd01
-and xrd02. "VPNv4" means the routes include a **Route Distinguisher (RD)** —
-a tag that identifies which VRF they belong to, even if two VRFs use the same
-IP addresses.
+and xrd02. "VPNv4" means each IPv4 prefix is prepended with a **Route
+Distinguisher (RD)**, making it globally unique in the BGP table — even if two
+customers use the same IP address space. Which VRFs actually import those
+routes is controlled by **Route Targets (RT)**, configured below.
 
 This session uses Loopback0 addresses (`192.168.0.1` ↔ `192.168.0.2`),
 which are reachable via the pre-configured IS-IS/MPLS core. Using loopbacks
@@ -74,7 +75,8 @@ receives a route from csr-pe01 (AS path: `65001`), it carries it via iBGP to
 xrd02, which tries to advertise it to csr-pe02. But csr-pe02 sees AS 65001
 already in the path — BGP loop prevention says "I'm in AS 65001, this route
 has already been through AS 65001, drop it." The `as-override` command on the
-XRd replaces the remote AS (65001) with its own AS (65000) in the AS-path,
+XRd routers' eBGP sessions toward the CSR PEs replaces any occurrence of
+AS 65001 in the AS-path with the XRd's own AS (65000) before advertising,
 bypassing this check. This is a standard SP technique when multiple PE sites
 share the same AS number.
 
@@ -85,7 +87,7 @@ Here's the complete data flow when client1 pings client3:
 ```
 client1 (23.23.23.1)
   → n9k-ce01 SVI (23.23.23.254)     ← static route via SVI gateway
-  → csr-pe01 (IS-IS route)          ← IS-IS carries the route to XRd
+  → csr-pe01 (IS-IS route)          ← IS-IS learned this route from the CE
   → xrd01 VRF (eBGP from CSR)       ← eBGP brings it into the VRF
   → xrd02 VRF (iBGP VPNv4)          ← VPNv4 carries it across the core
   → csr-pe02 (eBGP from XRd)        ← eBGP pushes it to the remote CSR
@@ -223,10 +225,12 @@ Save the file when done.
 
 ### Ansible Concepts in This Playbook
 
-- **`cisco.iosxr.iosxr_command`** — Pushes raw CLI commands to IOS-XR. We use
-  this instead of `iosxr_config` because the config module relies on internal
-  commands that XRd doesn't support. Each task enters config mode (`configure
-  terminal`), pushes commands, commits, and exits (`end`).
+- **`cisco.iosxr.iosxr_command`** — Designed for exec-mode (show) commands,
+  but used here as a workaround to push raw config CLI to XRd. The proper
+  `iosxr_config` module relies on internal IOS-XR mechanisms that XRd doesn't
+  fully support. By sending `configure terminal`, config statements, `commit`,
+  and `end` as raw commands, we work around this limitation — at the cost of
+  idempotency detection (the module can't tell if the config already existed).
 
 - **IOS-XR commit model** — Unlike IOS (where config takes effect immediately),
   IOS-XR requires an explicit `commit` to apply changes. This is a safety
@@ -334,7 +338,7 @@ The VRF route table shows all learned prefixes:
 ![XRd VRF route table](images/task3-vrf-routes-output.png)
 
 > **Reading the VRF route table:** Each line is a route in the VRF:
-> - `*>` = best path, locally originated or from eBGP
+> - `*>` = valid, best path selected by BGP
 > - `*>i` = best path, learned via iBGP (the `i` means "internal" — from the other XRd)
 > - Look for both client subnets: `23.23.23.0/24` (west) and `34.34.34.0/24` (east)
 > - **6 prefixes** is the expected total — if you see fewer, a route isn't propagating

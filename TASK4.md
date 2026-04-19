@@ -630,8 +630,9 @@ Apply complete! Resources: 18 added, 0 changed, 0 destroyed.
 
 > **Speed comparison:** Terraform applies all 18 resources in about 3-5
 > seconds via gNMI. The equivalent Ansible playbook takes longer because
-> it runs tasks sequentially over SSH. gNMI's structured data means less
-> back-and-forth with the device.
+> it runs tasks sequentially. Terraform can apply resources in parallel
+> across both routers simultaneously, as you can see in the interleaved
+> output above.
 
 ### Verify: Check for Drift
 
@@ -642,7 +643,7 @@ terraform plan
 ```
 
 Terraform reads the live configuration from both routers via gNMI, compares
-it against the state file, and reports:
+it against the desired state in your `.tf` files, and reports:
 
 ```
 iosxr_route_policy.pass_all_xrd02: Refreshing state...
@@ -675,9 +676,9 @@ live device config via gNMI and comparing every attribute against what it
 expects. All 18 resources match, so the output is "No changes."
 
 This is Terraform's version of idempotency. The state file records what
-was created, and `plan` compares it against the live device config. If
-someone manually changed something on the router, this command would show
-you exactly what drifted (you'll see this in Task 4b).
+was last known, `plan` refreshes it from the live device, then diffs against
+your `.tf` configuration. If someone manually changed something on the router,
+this command would show you exactly what drifted (you'll see this in Task 4b).
 
 ### Verify: East-West Connectivity
 
@@ -710,7 +711,7 @@ rtt min/avg/max/mdev = 10.117/11.334/13.350/1.435 ms
 Full east-west connectivity — rebuilt entirely with Terraform. The traffic
 path is identical to Task 3: client1 (23.23.23.1) → n9k-ce01 → csr-pe01 →
 xrd01 → xrd02 → csr-pe02 → n9k-ce02 → client3 (34.34.34.1), crossing
-6 devices, 4 platforms, and 3 protocols (VLAN, IS-IS, BGP VPN).
+6 devices, 4 platforms, and 4 technologies (VLAN, IS-IS, MPLS, BGP VPNv4).
 
 ### Bonus: Clean Destroy
 
@@ -942,7 +943,7 @@ terraform plan
 ```
 
 Terraform reads the live device configuration via gNMI, compares it against
-the state file, and shows you exactly what drifted:
+the desired state in your `.tf` files, and shows you exactly what drifted:
 
 ```
 iosxr_route_policy.pass_all_xrd01: Refreshing state...

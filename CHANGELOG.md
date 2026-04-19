@@ -127,6 +127,52 @@ Changes from full student walkthrough on a freshly reset server. All tasks
 
 ---
 
+### 1.0.4 — Technical Accuracy Fixes Across All Tasks
+
+**Date:** 2026-04-19
+
+Reviewed all four task documents for technical inaccuracies. Fixed 14 issues
+ranging from incorrect protocol descriptions to misleading module behavior
+explanations.
+
+**TASK1.md (4 fixes)**
+- Fix: Drift explanation attributed false-positive `changed` to `nxos_config`
+  but the playbook uses `nxos_interfaces` — corrected module name and explanation
+- Fix: Claimed "physical Nexus hardware doesn't need this delay" — physical
+  switches also have STP convergence delays; reworded to clarify vrnetlab
+  exacerbates the issue
+- Fix: Claimed `-m raw` works on "routers, switches, containers" — narrowed
+  scope to Linux/Unix hosts (network devices use `network_cli`, not POSIX shell)
+- Fix: Ping described as testing "L2 connectivity" — changed to "end-to-end
+  reachability across the VLAN" (ping is L3/ICMP)
+
+**TASK2.md (1 fix)**
+- Fix: TTL described as "starting from 256" — TTL is 8-bit (max 255); corrected
+  to "Cisco IOS routers originate replies with TTL 255"
+
+**TASK3.md (5 fixes)**
+- Fix: Route Distinguisher (RD) described as identifying "which VRF they belong
+  to" — that's Route Targets' job; RD provides prefix uniqueness in BGP table
+- Fix: Data flow diagram said "IS-IS carries the route to XRd" — eBGP carries
+  VRF routes to XRd; IS-IS is how the CSR learned them from the CE
+- Fix: `iosxr_command` described as a config-push module — it's an exec/show
+  module used here as a workaround since `iosxr_config` doesn't work on XRd
+- Fix: `*>` in BGP table described as "locally originated or from eBGP" — it
+  simply means valid best path; iBGP routes can also be `*>`
+- Fix: `as-override` direction unclear — clarified it's applied outbound on the
+  XRd PE toward the CSR CE
+
+**TASK4.md (5 fixes)**
+- Fix: Three instances claiming `terraform plan` compares against the "state
+  file" — Terraform compares against the desired state in `.tf` files; the state
+  file is refreshed from the live device, then diffed against `.tf` config
+- Fix: "3 protocols (VLAN, IS-IS, BGP VPN)" omitted MPLS — corrected to
+  "4 technologies (VLAN, IS-IS, MPLS, BGP VPNv4)"
+- Fix: Speed comparison claimed gNMI is faster due to "less back-and-forth" —
+  the real advantage is Terraform's parallel resource execution across routers
+
+---
+
 ### Known Issues (documented in lab guide)
 
 | Issue | Severity | Mitigation |

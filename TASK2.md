@@ -289,7 +289,8 @@ The CSR PE verification shows the same from the other side:
 > If you see 0 received, something is wrong.
 
 > **TTL=254** tells you the packet crossed 2 hops: client1 → n9k-ce01 SVI →
-> csr-pe01 Loopback0. Each hop decrements the TTL by 1 (starting from 256).
+> csr-pe01 Loopback0. Each hop decrements the TTL by 1 (Cisco IOS routers
+> originate replies with TTL 255).
 
 > **Reading the recap:** Each line is a device. `changed=4` means 4 tasks made
 > changes. `failed=0` means nothing went wrong. If you see `failed=1` or higher,
