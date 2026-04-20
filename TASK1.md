@@ -295,7 +295,43 @@ on VLAN 27 while client2 is still on VLAN 23 — they're in different broadcast
 domains. In a network with hundreds of switches, finding a single misassigned
 VLAN would be a needle in a haystack.
 
-### Step 3: Let Ansible Remediate
+### Step 3: Check Before You Fix
+
+Before re-running the playbook to fix the drift, run it in **dry-run mode** first
+to see exactly what Ansible would change — without touching any device:
+
+```bash
+ansible-playbook --check --diff ~/ce-access-vlan.yml
+```
+
+> **💡 Ansible Tip:** Two flags that every network engineer should know:
+>
+> - **`--check`** — Dry-run mode. Ansible connects to every device, evaluates
+>   every task, and tells you what *would* change — but makes **zero changes**.
+>   Nothing is written to any device. Think of it as "show me the plan before
+>   you execute it."
+>
+> - **`--diff`** — Shows a before/after comparison for any task that would make
+>   a change. Instead of just seeing `changed: [n9k-ce01]`, you see the exact
+>   value that was wrong and what Ansible would set it to.
+>
+> **Why check first?** In production, re-running a playbook without knowing
+> what it will change is risky — especially if other engineers have made
+> intentional changes since your last run. `--check --diff` lets you verify
+> that Ansible has correctly identified *only* the drifted config before you
+> commit the fix. You're looking for `changed` on exactly one task on exactly
+> one device — confirming the drift is isolated to what you expect.
+
+When you run this command, you should see output like this:
+
+![Check and diff output](images/task1-check-diff-output.png)
+
+Notice that Step 3 shows `changed: [n9k-ce01]` — Ansible has detected the
+VLAN drift on n9k-ce01 and is telling you it *would* fix it. Everything else
+is `ok`. No changes have been made yet. Now that you've confirmed the plan
+looks right, you can run the playbook for real.
+
+### Step 4: Let Ansible Remediate
 
 Re-run the exact same playbook you ran in Task 1:
 
@@ -346,7 +382,7 @@ the device's current state and only changed what was actually wrong. That's
 the power of idempotency — it's not just "safe to re-run," it's a
 **drift detection and remediation engine**.
 
-### Step 4: Verify the Fix
+### Step 5: Verify the Fix
 
 Check the playbook's ping output:
 
@@ -371,8 +407,8 @@ ok: [linux-client1] => {
 
 - [ ] You manually changed Ethernet1/3 on n9k-ce01 to VLAN 27
 - [ ] client1 → client2 ping showed **100% packet loss**
-- [ ] Re-running the playbook showed `changed` on Step 3 for n9k-ce01 only
-- [ ] Re-running the playbook showed `ok` on Step 3 for n9k-ce02 (nothing touched)
+- [ ] Re-running the playbook showed `changed` on Step 4 for n9k-ce01 only
+- [ ] Re-running the playbook showed `ok` on Step 4 for n9k-ce02 (nothing touched)
 - [ ] client1 → client2 ping is back to **0% packet loss**
 
 > **💡 Automation Insight:** In production, teams schedule playbook runs every

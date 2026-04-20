@@ -75,6 +75,7 @@ across the lab guide. Always use `--window-size=980,<height>` when exporting.
 | `task1-ping-output.png` | Task 1 — ping test play output (client1→client2, client3→client4) |
 | `task1-recap-output.png` | Task 1 — PLAY RECAP summary (all 6 hosts, first run) |
 | `task1-adhoc-failed-output.png` | Task 1 — ad-hoc raw ping showing expected FAILED/rc=1 output |
+| `task1-check-diff-output.png` | Task 1 — `--check --diff` dry-run output showing drift detected on n9k-ce01 |
 | `task2-nxos-output.png` | Task 2 — Play 1 NX-OS IS-IS config (Steps 1–6) |
 | `task2-csr-output.png` | Task 2 — Play 2 CSR PE IS-IS config (Steps 1–4 + wait) |
 | `task2-linux-routes-output.png` | Task 2 — Play 3 Linux client route additions |
