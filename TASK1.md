@@ -8,11 +8,11 @@
 
 ### Objective
 
-Configure VLANs on the N9K CE switches so that Linux clients on the same
-switch can communicate at Layer 2.
+Configure VLANs on the N9K CE switches so Linux clients on the same
+switch can communicate on the same vlan. 
 
 **Before Task 1:**
-- Client1 (23.23.23.1) CANNOT reach Client2 (23.23.23.2) — no L2 path
+- Client1 (23.23.23.1) CANNOT reach Client2 (23.23.23.2)
 - Client3 (34.34.34.1) CANNOT reach Client4 (34.34.34.2)
 
 **After Task 1:**
@@ -25,7 +25,7 @@ The client-facing ports (Eth1/3, Eth1/4) on each N9K switch are currently in
 their default state — they operate as independent interfaces with no bridging
 between them. Even though client1 and client2 are plugged into the same
 physical switch, they can't talk to each other because there's no shared
-Layer 2 domain.
+broadcast domain.
 
 **VLANs** (Virtual Local Area Networks) solve this by creating a logical
 broadcast domain:
