@@ -326,10 +326,20 @@ When you run this command, you should see output like this:
 
 ![Check and diff output](images/task1-check-diff-output.png)
 
-Notice that Step 3 shows `changed: [n9k-ce01]` — Ansible has detected the
-VLAN drift on n9k-ce01 and is telling you it *would* fix it. Everything else
-is `ok`. No changes have been made yet. Now that you've confirmed the plan
-looks right, you can run the playbook for real.
+Here is what the dry run is telling you:
+
+- **Step 1** → `ok` on both switches — the VLANs already exist, nothing to do
+- **Step 2** → `ok` on both switches — ports are already in Layer 2 mode, no drift here
+- **Step 3** → `ok` on n9k-ce02, **`changed` on n9k-ce01** — this is the drift.
+  Ansible detected that Ethernet1/3 on n9k-ce01 has the wrong VLAN assigned and
+  *would* correct it. n9k-ce02 was never touched, so it's still correct.
+- **Step 4** → the `[WARNING]` about skipping the config save is expected in
+  check mode — Ansible never writes to any device during a dry run, so it skips
+  the save and tells you so.
+
+No changes have been made to any device yet. The dry run confirmed exactly what
+you expected — one task, one device, one fix needed. Now you can run the
+playbook for real with confidence.
 
 ### Step 4: Let Ansible Remediate
 
@@ -339,69 +349,29 @@ Re-run the exact same playbook you ran in Task 1:
 ansible-playbook ~/ce-access-vlan.yml
 ```
 
-### Understanding the Output
+Here is the output you will see:
 
-Watch the output carefully this time. Compare it to your first run:
+![Remediation run output](images/task1-remediate-output.png)
 
-```
-TASK [Step 1 — Create VLAN on each CE switch] **********************************
-ok: [n9k-ce01]
-ok: [n9k-ce02]
-
-TASK [Step 2 — Convert Eth1/3 and Eth1/4 to switchport mode and bring up] ******
-changed: [n9k-ce01] => (item=Ethernet1/3)
-changed: [n9k-ce02] => (item=Ethernet1/3)
-changed: [n9k-ce01] => (item=Ethernet1/4)
-changed: [n9k-ce02] => (item=Ethernet1/4)
-
-TASK [Step 3 — Assign access VLAN to Eth1/3 and Eth1/4] ************************
-changed: [n9k-ce01]
-ok: [n9k-ce02]
-```
-
-Notice the difference:
-
-- **Step 1** shows `ok` — the VLANs already exist. Nothing to do.
-- **Step 2** shows `changed` on all ports — but **nothing actually changed on
-  the devices**. This is a false positive caused by the `nxos_interfaces` module.
-  Unlike the fully declarative modules in Steps 1 and 3, `nxos_interfaces`
-  compares its desired attributes against the running state but can't always
-  detect that commands like `switchport` and `no shutdown` are already in
-  effect — NX-OS omits them from running config once a port is already in that
-  state. The module sends the commands again and reports `changed` every time.
-  This is a known quirk of certain resource modules. In production, teams work
-  around this with `changed_when` overrides.
-- **Step 3** is where the real action is: `changed` on **n9k-ce01** but `ok` on
-  **n9k-ce02**. This is a declarative module (`nxos_l2_interfaces`) that
-  compares the desired VLAN assignment against the device's actual state. It
-  detected that Ethernet1/3 was on VLAN 27 instead of VLAN 23 and corrected it.
-  n9k-ce02 was already correct, so nothing changed. **This is the drift signal.**
-
-Ansible didn't blindly reconfigure everything. It checked each task against
-the device's current state and only changed what was actually wrong. That's
-the power of idempotency — it's not just "safe to re-run," it's a
+This is the actual fix. Ansible ran every task against the real device state —
+and this time made the change for real. Step 3 shows `changed: [n9k-ce01]`,
+exactly what the dry run predicted. Everything else is `ok` because nothing
+else had drifted. Ansible didn't blindly reconfigure everything — it checked
+each task against the device's current state and only changed what was actually
+wrong. That's the power of idempotency — it's not just "safe to re-run," it's a
 **drift detection and remediation engine**.
 
 ### Step 5: Verify the Fix
 
-Check the playbook's ping output:
+The playbook doesn't just fix the config — it verifies connectivity automatically
+as part of the same run. The built-in ping test runs at the end and you can see
+the result in the output:
 
-```
-TASK [Show ping result (client1 → client2)] ************************************
-ok: [linux-client1] => {
-    "ping_result.stdout_lines": [
-        "PING 23.23.23.2 (23.23.23.2) 56(84) bytes of data.",
-        "64 bytes from 23.23.23.2: icmp_seq=1 ttl=64 time=2.70 ms",
-        "64 bytes from 23.23.23.2: icmp_seq=2 ttl=64 time=1.73 ms",
-        "64 bytes from 23.23.23.2: icmp_seq=3 ttl=64 time=1.74 ms",
-        "",
-        "--- 23.23.23.2 ping statistics ---",
-        "3 packets transmitted, 3 received, 0% packet loss, time 2004ms"
-    ]
-}
-```
+![Remediation ping verification output](images/task1-remediate-ping-output.png)
 
-**0% packet loss.** Connectivity restored.
+**0% packet loss on both client pairs.** Connectivity is fully restored. You
+didn't have to manually SSH into anything to verify — the playbook did it for
+you.
 
 ### Checkpoint
 
