@@ -37,7 +37,7 @@ The HTML template used to generate these images is stored at `/tmp/ansible-outpu
 |---|---|---|
 | `changed` | Golden yellow | `#e5c000` |
 | `ok` | Bright green | `#00cc44` |
-| `failed` | Red (not yet used) | `#e06c75` |
+| `failed` | Red | `#e06c75` — when entire output is failure/stderr, use this color for ALL lines |
 | `skipping` | Cyan | `#00aaaa` |
 | Headers / plain text | Bright white | `#e8e8e8` |
 | Informational text | Light grey | `#cccccc` |
