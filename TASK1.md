@@ -181,11 +181,7 @@ Save the file when done.
 
 ### Step 4: Run the Playbook
 
-```bash
-ansible-playbook ~/ce-access-vlan.yml
-```
-
-Before you run it, here's exactly what Ansible does with the variables you just filled in:
+Here's exactly what Ansible does with the variables you just filled in:
 
 ![Running the Playbook — What Happens Under the Hood](images/task1-variables-explainer.png)
 
@@ -198,6 +194,12 @@ Before you run it, here's exactly what Ansible does with the variables you just 
 | **E** | `.id` → reads the `id` field → **23** |
 
 The expression `{{ vlan_config[inventory_hostname].id }}` resolves to `23` on `n9k-ce01` and `34` on `n9k-ce02` — using the exact same playbook, with no `if/else` logic anywhere.
+
+Now run the playbook:
+
+```bash
+ansible-playbook ~/ce-access-vlan.yml
+```
 
 Watch the output as it runs. Ansible uses color-coded status for each task:
 
