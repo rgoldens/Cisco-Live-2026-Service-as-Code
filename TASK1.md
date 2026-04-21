@@ -155,7 +155,84 @@ Before filling in the variables, take a minute to understand what you just read.
 
 ### Step 3: Fill in the Variables
 
-Scroll to the `vars:` section near the top of the playbook. You'll see TODO placeholders:
+Before you edit anything, take a minute to understand how variables work in this playbook. This is one of the most important concepts in Ansible — and once it clicks, you'll see the same pattern in every task in this lab.
+
+---
+
+#### How `vlan_config` is structured
+
+The playbook stores all per-device data in a single variable called `vlan_config`. It is a **nested dictionary** — a variable that holds other variables, organised by key. The outer keys are device names:
+
+```yaml
+vars:
+  vlan_config:        # ← top-level variable name
+    n9k-ce01:         # ← key = device name (must match inventory.yml exactly)
+      id: 23          # ← VLAN ID for this device
+      name: "CLIENT-VLAN-23"
+    n9k-ce02:         # ← different device, different values
+      id: 34
+      name: "CLIENT-VLAN-34"
+```
+
+Think of it like a lookup table: given a device name, you get back the values for that device.
+
+---
+
+#### What is `inventory_hostname`?
+
+Look at the task that assigns the VLAN to each port:
+
+```yaml
+vlan: "{{ vlan_config[inventory_hostname].id }}"
+```
+
+`inventory_hostname` is a **magic variable** that Ansible sets automatically — you never define it yourself. It always equals the name of the device the current task is running on.
+
+- When Ansible runs this task on `n9k-ce01` → `inventory_hostname` = `"n9k-ce01"`
+- When Ansible runs this task on `n9k-ce02` → `inventory_hostname` = `"n9k-ce02"`
+
+So `vlan_config[inventory_hostname].id` is just a dictionary lookup using the current device's name as the key. On `n9k-ce01` it resolves to `23`. On `n9k-ce02` it resolves to `34`. One task. Two devices. Two different values — automatically.
+
+---
+
+#### Where does `inventory_hostname` come from? — `inventory.yml`
+
+The device names come from `inventory.yml`. This file is Ansible's source of truth for what devices exist, their IP addresses, and how to connect to them. The relevant section for this task is:
+
+```yaml
+nxos:             # ← group name — matches "hosts: nxos" in the playbook
+  hosts:
+    n9k-ce01:     # ← this name becomes inventory_hostname when the task runs on this device
+      ansible_host: 172.20.20.30
+    n9k-ce02:     # ← so does this
+      ansible_host: 172.20.20.31
+```
+
+When you run `ansible-playbook ce-access-vlan.yml`, Ansible reads `inventory.yml` automatically. It sees `hosts: nxos` in the playbook, finds the `nxos` group in inventory, and runs the play on every host in that group — `n9k-ce01` first, then `n9k-ce02`.
+
+> **Key rule:** The device names in your `vars:` block (`n9k-ce01`, `n9k-ce02`) must match the names in `inventory.yml` **exactly** — same capitalisation, same hyphens. If they don't match, the lookup fails.
+
+---
+
+#### The full resolution trace
+
+Here's exactly what happens when Ansible runs the task on `n9k-ce01`:
+
+![How variables resolve in Ansible — resolution trace](images/task1-variables-explainer.png)
+
+| Step | What happens |
+|---|---|
+| **A** | `hosts: nxos` → Ansible finds `n9k-ce01` and `n9k-ce02` in inventory |
+| **B** | Ansible starts executing tasks on `n9k-ce01` |
+| **C** | Ansible sets `inventory_hostname = "n9k-ce01"` automatically |
+| **D** | `vlan_config["n9k-ce01"]` → looks up the `n9k-ce01` entry in your vars |
+| **E** | `.id` → reads the `id` field → **23** |
+
+The expression `{{ vlan_config[inventory_hostname].id }}` resolves to `23` on `n9k-ce01` and `34` on `n9k-ce02` — using the exact same playbook, with no `if/else` logic anywhere.
+
+---
+
+Now you're ready to fill in the values. Scroll to the `vars:` section in the playbook. You'll see TODO placeholders:
 
 ```yaml
 vars:
