@@ -91,30 +91,23 @@ nano ~/ce-access-vlan.yml
 
 ![Step 2: Read the Playbook](images/task1-step2-read-playbook.png)
 
+Read through the playbook carefully. Here's what each section does:
+
+- **`vars: vlan_config`** — The per-device variable block at the top of the playbook. You'll fill in the VLAN ID and name for each switch in Step 3. These values are what `{{ vlan_config[inventory_hostname].id }}` pulls from at runtime — one entry per device, looked up automatically.
+
+- **`cisco.nxos.nxos_vlans`** (Task 1) — A *declarative* module. You describe the desired state — "VLAN 23 should exist and be named CLIENT-VLAN-23" — and Ansible determines what CLI commands to send. If the VLAN already exists with the correct config, nothing changes.
+
+- **`cisco.nxos.nxos_interfaces`** (Task 2) — Sets Eth1/3 and Eth1/4 to Layer 2 (switchport) mode. On N9Kv, ports boot in Layer 3 (routed) mode by default. This module checks the current mode and only makes a change if it's wrong — truly idempotent.
+
+- **`cisco.nxos.nxos_l2_interfaces`** (Task 3) — Assigns the access VLAN to each port. Uses `{{ vlan_config[inventory_hostname].id }}` to pull the correct VLAN ID from your vars — the same task runs on both switches and produces different results automatically.
+
+- **`cisco.nxos.nxos_config`** (Task 4) — Saves the running config to startup-config, but only if something actually changed (`save_when: modified`). Safe to re-run — won't cause unnecessary writes.
+
+> **💡 Automation Insight:** Three tasks. Three modules. Three concerns separated cleanly — *create* the VLAN, *set port mode* to Layer 2, *assign* the VLAN to the ports. All three modules are *declarative*: describe the desired state, Ansible figures out what to change. The `{{ variable }}` syntax removed duplication across switches. This is how automation scales: data changes, logic doesn't.
+
+> **Note:** The image below has comments removed for brevity — it shows only the YAML structure you need to understand.
+
 ![Step 2: Clean playbook view](images/task1-step2-playbook-clean.png)
-
-Read through the tasks in the playbook. Notice how each task maps to one of
-the three things a VLAN configuration requires:
-
-- **`cisco.nxos.nxos_vlans`** (Step 1) — A *declarative* module. You describe
-  the desired state ("VLAN 23 should exist and be active"), and Ansible figures
-  out what CLI commands to send. If the VLAN already exists, nothing changes.
-
-- **`cisco.nxos.nxos_interfaces`** (Step 2) — A *declarative* module that sets
-  the interface operating mode. On N9Kv, ports default to Layer 3 (routed) mode
-  on boot. Setting `mode: layer2` converts them to switchport mode. Because this
-  module checks the current state before acting, it only reports `changed` when
-  the port is actually in the wrong mode — truly idempotent.
-
-- **`cisco.nxos.nxos_l2_interfaces`** (Step 3) — Another declarative module
-  that assigns VLANs to interfaces. Notice how `{{ vlan_config[inventory_hostname].id }}`
-  pulls the VLAN ID from your variables — the same task works on both switches
-  because each has different variable values.
-
-> **💡 Automation Insight:** Steps 1, 2, and 3 are all declarative modules — they describe *what you want*, not *how to get there*. Ansible checks the device's current state and only makes changes if something is actually wrong. Re-run the playbook 10 times and you'll see `ok` across the board. That's idempotency working for you.
-
-- **`save_when: modified`** (Step 4) — Only writes to startup-config if
-  something actually changed. This is idempotent — safe to run repeatedly.
 
 ---
 
