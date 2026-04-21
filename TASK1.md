@@ -119,6 +119,51 @@ the three things a VLAN configuration requires:
 - **`save_when: modified`** (Step 4) — Only writes to startup-config if
   something actually changed. This is idempotent — safe to run repeatedly.
 
+---
+
+### 🔬 Deep Dive: How NX-OS Modules Work in Ansible
+
+Before filling in the variables, take a minute to understand what you just read. This reference explains the naming convention, key parameters, and `state:` behavior — a pattern you'll see in every task in this lab.
+
+![Deep Dive: How NX-OS Modules Work in Ansible](images/task1-deep-dive-modules.png)
+
+#### Module Naming — What does `cisco.nxos.nxos_vlans` actually mean?
+
+| Part | Value | What it is |
+|---|---|---|
+| **Namespace** | `cisco` | The vendor who publishes and maintains the code on Ansible Galaxy |
+| **Collection** | `nxos` | The platform. `cisco.nxos` contains ~100 modules — one per NX-OS resource: VLANs, interfaces, BGP, VRFs, ACLs, OSPF, and more |
+| **Module** | `nxos_vlans` | The specific resource module. Swap it for `nxos_bgp_global` and you're managing BGP — same pattern, different resource |
+
+To install the collection on any Ansible control node:
+
+```bash
+ansible-galaxy collection install cisco.nxos
+```
+
+#### Key Parameters
+
+**`config:`** — A list of resources you want to configure. Each item is one resource instance (one VLAN). You can configure multiple VLANs in a single task by adding more list items.
+
+**`vlan_id:`** *(required)* — The VLAN number (1–4094). The module uses this to identify the VLAN on the device and compare against desired state.
+
+**`state:`** *(default: `merged`)* — Controls the **behavior** of the module, not the state of the VLAN itself. See the table below.
+
+**`{{ inventory_hostname }}`** — A magic variable Ansible provides automatically. It always equals the name of the device the current task is running on. When running on `n9k-ce01` it resolves to `"n9k-ce01"` — so `vlan_config[inventory_hostname].id` looks up that device's entry in your vars.
+
+#### The `state:` Values You Need to Know
+
+| Value | What Ansible does | When to use it |
+|---|---|---|
+| `merged` *(default)* | Adds or updates only what you specify. Leaves everything else on the device untouched. | First choice for most tasks. Safe to re-run — won't remove anything you didn't tell it to. |
+| `replaced` | Fully replaces the config for the specific resources you list. Other resources on the device are left alone. | You want to completely redefine a resource's config from scratch. |
+| `overridden` | Replaces **all** resources of this type on the device. Anything not in your task gets deleted. | Enforcing a complete desired state — removes unmanaged config. Use with caution. |
+| `deleted` | Removes the resources you specify. Without a `config:` list, deletes all resources of this type. | You want to delete specific VLANs. |
+
+> **You now know the pattern.** Every NX-OS module in this lab follows the same structure: `cisco.nxos.<resource>`, a `config:` list describing desired state, and `state: merged` to apply it safely. Task 2 uses `nxos_l3_interfaces` and `nxos_ospf_interfaces` — same pattern, different resources.
+
+---
+
 ### Step 3: Fill in the Variables
 
 Scroll to the `vars:` section near the top of the playbook. You'll see TODO placeholders:
