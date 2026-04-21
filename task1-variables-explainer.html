@@ -165,8 +165,8 @@
 
   <!-- Header -->
   <div class="breadcrumb">LTRATO-1001 <span>|</span> Ansible Lab</div>
-  <div class="title">How Variables Work in Ansible — Step 3 Explained</div>
-  <div class="subtitle">Where <code style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#e5c000;background:#1e2d3d;padding:1px 6px;border-radius:3px;">{{ vlan_config[inventory_hostname].id }}</code> comes from, and how one task runs differently on each device</div>
+  <div class="title">Running the Playbook — What Happens Under the Hood</div>
+  <div class="subtitle">Before you run <code style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#e5c000;background:#1e2d3d;padding:1px 6px;border-radius:3px;">ansible-playbook ce-access-vlan.yml</code>, here's exactly what Ansible does with your variables</div>
   <div class="divider"></div>
   <div class="divider-thin"></div>
 
@@ -177,7 +177,7 @@
     <div class="card">
       <div class="card-accent" style="background:#00aaff;"></div>
       <div class="card-body">
-        <div class="card-label">ce-access-vlan.yml — the vars: block you fill in</div>
+        <div class="card-label">ce-access-vlan.yml — your completed vars: block</div>
         <pre><span class="k">vars</span><span class="w">:</span>
   <span class="k">vlan_config</span><span class="w">:</span>        <span class="c"># ① top-level variable name</span>
     <span class="k">n9k-ce01</span><span class="w">:</span>         <span class="c"># ② key = device name</span>

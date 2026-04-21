@@ -157,20 +157,6 @@ Before filling in the variables, take a minute to understand what you just read.
 
 ### Step 3: Fill in the Variables
 
-Here's exactly what happens when Ansible runs the task on `n9k-ce01`:
-
-![How variables resolve in Ansible — resolution trace](images/task1-variables-explainer.png)
-
-| Step | What happens |
-|---|---|
-| **A** | `hosts: nxos` → Ansible finds `n9k-ce01` and `n9k-ce02` in inventory |
-| **B** | Ansible starts executing tasks on `n9k-ce01` |
-| **C** | Ansible sets `inventory_hostname = "n9k-ce01"` automatically |
-| **D** | `vlan_config["n9k-ce01"]` → looks up the `n9k-ce01` entry in your vars |
-| **E** | `.id` → reads the `id` field → **23** |
-
-The expression `{{ vlan_config[inventory_hostname].id }}` resolves to `23` on `n9k-ce01` and `34` on `n9k-ce02` — using the exact same playbook, with no `if/else` logic anywhere.
-
 Now scroll to the `vars:` section in the playbook. You'll see TODO placeholders:
 
 ```yaml
@@ -198,6 +184,20 @@ Save the file when done.
 ```bash
 ansible-playbook ~/ce-access-vlan.yml
 ```
+
+Before you run it, here's exactly what Ansible does with the variables you just filled in:
+
+![Running the Playbook — What Happens Under the Hood](images/task1-variables-explainer.png)
+
+| Step | What happens |
+|---|---|
+| **A** | `hosts: nxos` → Ansible finds `n9k-ce01` and `n9k-ce02` in inventory |
+| **B** | Ansible starts executing tasks on `n9k-ce01` |
+| **C** | Ansible sets `inventory_hostname = "n9k-ce01"` automatically |
+| **D** | `vlan_config["n9k-ce01"]` → looks up the `n9k-ce01` entry in your vars |
+| **E** | `.id` → reads the `id` field → **23** |
+
+The expression `{{ vlan_config[inventory_hostname].id }}` resolves to `23` on `n9k-ce01` and `34` on `n9k-ce02` — using the exact same playbook, with no `if/else` logic anywhere.
 
 Watch the output as it runs. Ansible uses color-coded status for each task:
 
