@@ -91,6 +91,8 @@ nano ~/ce-access-vlan.yml
 
 ![Step 2: Read the Playbook](images/task1-step2-read-playbook.png)
 
+![Step 2: Clean playbook view](images/task1-step2-playbook-clean.png)
+
 Read through the tasks in the playbook. Notice how each task maps to one of
 the three things a VLAN configuration requires:
 

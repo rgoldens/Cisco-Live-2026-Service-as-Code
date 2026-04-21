@@ -18,6 +18,7 @@ The HTML template used to generate these images is stored at `/tmp/ansible-outpu
 | **`changed:` lines** | `#e5c000` | Golden yellow — matches Ansible terminal output |
 | **`ok:` lines** | `#00cc44` | Bright green — matches Ansible terminal output |
 | **Pause / informational text** | `#cccccc` | Light grey — non-status output lines |
+| **YAML module FQCNs** | `#c792ea` | Purple — used for Ansible module names (e.g. `cisco.nxos.nxos_vlans`) |
 
 ---
 
@@ -41,6 +42,7 @@ The HTML template used to generate these images is stored at `/tmp/ansible-outpu
 | `skipping` | Cyan | `#00aaaa` |
 | Headers / plain text | Bright white | `#e8e8e8` |
 | Informational text | Light grey | `#cccccc` |
+| YAML module FQCNs | Purple | `#c792ea` |
 
 ---
 
@@ -93,4 +95,5 @@ across the lab guide. Always use `--window-size=980,<height>` when exporting.
 | `task3-vrf-routes-output.png` | Task 3 — XRd VRF route table (6 prefixes, 6 paths) |
 | `task3-csr-bgp-summary-output.png` | Task 3 — CSR PE BGP summary (4 prefixes received) |
 | `task3-ping-output.png` | Task 3 — Cross-site ping results (4 clients) + PLAY RECAP |
-| `task4-teardown-output.png` | Task 4 — XRd teardown playbook (4 tasks, all changed) |
+| `task1-step2-read-playbook.png` | Task 1 Step 2 — nano editor screenshot showing full playbook with comments |
+| `task1-step2-playbook-clean.png` | Task 1 Step 2 — syntax-highlighted clean playbook view (no block comments, TODO inline comments kept) |
