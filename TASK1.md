@@ -89,7 +89,9 @@ Before making any changes, open the playbook and read through it:
 nano ~/ce-access-vlan.yml
 ```
 
-![Step 2: Read the Playbook](images/task1-step2-read-playbook.png)
+> **Note:** The image below has comments removed for brevity — it shows only the YAML structure you need to understand.
+
+![Step 2: Clean playbook view](images/task1-step2-playbook-clean.png)
 
 Read through the playbook carefully. Here's what each section does:
 
@@ -105,9 +107,9 @@ Read through the playbook carefully. Here's what each section does:
 
 > **💡 Automation Insight:** Three tasks. Three modules. Three concerns separated cleanly — *create* the VLAN, *set port mode* to Layer 2, *assign* the VLAN to the ports. All three modules are *declarative*: describe the desired state, Ansible figures out what to change. The `{{ variable }}` syntax removed duplication across switches. This is how automation scales: data changes, logic doesn't.
 
-> **Note:** The image below has comments removed for brevity — it shows only the YAML structure you need to understand.
+> **For reference:** The image below shows the same playbook as it appears in nano, including all inline comments.
 
-![Step 2: Clean playbook view](images/task1-step2-playbook-clean.png)
+![Step 2: Read the Playbook](images/task1-step2-read-playbook.png)
 
 ---
 
