@@ -62,12 +62,7 @@ ssh linux-client1 ping -c 3 23.23.23.2
 
 You should see **100% packet loss**:
 
-```
-PING 23.23.23.2 (23.23.23.2) 56(84) bytes of data.
-
---- 23.23.23.2 ping statistics ---
-3 packets transmitted, 0 received, 100% packet loss, time 2002ms
-```
+![Baseline ping — 100% packet loss](images/task1-baseline-ping-output.png)
 
 Try the east side the same way:
 
