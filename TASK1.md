@@ -135,12 +135,6 @@ Before filling in the variables, take a minute to understand what you just read.
 | **Collection** | `nxos` | The platform. `cisco.nxos` contains ~100 modules — one per NX-OS resource: VLANs, interfaces, BGP, VRFs, ACLs, OSPF, and more |
 | **Module** | `nxos_vlans` | The specific resource module. Swap it for `nxos_bgp_global` and you're managing BGP — same pattern, different resource |
 
-To install the collection on any Ansible control node:
-
-```bash
-ansible-galaxy collection install cisco.nxos
-```
-
 #### Key Parameters
 
 **`config:`** — A list of resources you want to configure. Each item is one resource instance (one VLAN). You can configure multiple VLANs in a single task by adding more list items.
