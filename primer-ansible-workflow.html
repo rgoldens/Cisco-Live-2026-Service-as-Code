@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=1200"/>
+<title>How Ansible Works</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0e1621; font-family: 'Inter', sans-serif; }
+
+  .slide {
+    background: #0e1621;
+    width: 1200px;
+    padding: 22px 36px 40px 36px;
+  }
+
+  /* Header */
+  .breadcrumb { font-size: 11px; color: #00aaff; margin-bottom: 4px; letter-spacing: 0.04em; }
+  .breadcrumb span { color: #5a6a7a; }
+  .title { font-size: 26px; font-weight: 700; color: #fff; margin-bottom: 3px; }
+  .subtitle { font-size: 13px; color: #5a6a7a; margin-bottom: 10px; }
+  .divider      { width: 100%; height: 3px; background: #00aaff; margin-bottom: 3px; border-radius: 1px; }
+  .divider-thin { width: 100%; height: 1px; background: #00d4ff; margin-bottom: 32px; }
+
+  /* Diagram layout */
+  .diagram {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    margin-bottom: 28px;
+  }
+
+  /* Playbook node */
+  .node-playbook {
+    background: #141e2b;
+    border: 2px solid #00aaff;
+    border-radius: 8px;
+    width: 148px;
+    padding: 18px 14px;
+    text-align: center;
+    position: relative;
+    flex-shrink: 0;
+  }
+  .node-playbook::after {
+    content: '';
+    position: absolute;
+    right: -2px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0; height: 0;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-left: 10px solid #00aaff;
+  }
+  .node-playbook .node-icon { font-size: 28px; margin-bottom: 8px; }
+  .node-playbook .node-title { font-size: 14px; font-weight: 700; color: #00aaff; }
+  .node-playbook .node-sub { font-size: 11px; color: #5a6a7a; margin-top: 3px; font-family: 'JetBrains Mono', monospace; }
+
+  /* Arrow + label */
+  .arrow-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+    width: 80px;
+  }
+  .arrow-label { font-size: 10px; color: #5a6a7a; margin-bottom: 4px; letter-spacing: 0.05em; }
+  .arrow-line {
+    width: 60px;
+    height: 2px;
+    background: #4a5568;
+    position: relative;
+  }
+  .arrow-line::after {
+    content: '';
+    position: absolute;
+    right: -1px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0; height: 0;
+    border-top: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+    border-left: 8px solid #4a5568;
+  }
+
+  /* Ansible Engine node */
+  .node-engine {
+    background: #141e2b;
+    border: 2px solid #7b68ee;
+    border-radius: 8px;
+    width: 190px;
+    padding: 20px 14px 16px;
+    text-align: center;
+    flex-shrink: 0;
+    position: relative;
+  }
+  .node-engine .node-icon { font-size: 32px; margin-bottom: 8px; }
+  .node-engine .node-title { font-size: 16px; font-weight: 700; color: #7b68ee; }
+  .node-engine .node-sub { font-size: 11px; color: #5a6a7a; margin-top: 6px; }
+
+  /* Fan of SSH arrows */
+  .fan-wrap {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 4px;
+    width: 90px;
+    flex-shrink: 0;
+    padding: 8px 0;
+  }
+  .fan-arrow {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .fan-line {
+    flex: 1;
+    height: 2px;
+    background: #4a5568;
+    position: relative;
+  }
+  .fan-line::after {
+    content: '';
+    position: absolute;
+    right: -1px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0; height: 0;
+    border-top: 4px solid transparent;
+    border-bottom: 4px solid transparent;
+    border-left: 6px solid #4a5568;
+  }
+  .fan-label { font-size: 9px; color: #5a6a7a; white-space: nowrap; letter-spacing: 0.04em; }
+
+  /* Device nodes column */
+  .devices-col {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  .node-device {
+    border-radius: 6px;
+    padding: 10px 16px;
+    width: 200px;
+    border-left: 3px solid;
+  }
+  .node-device .dev-title { font-size: 13px; font-weight: 700; margin-bottom: 2px; }
+  .node-device .dev-hosts { font-size: 10px; color: #5a6a7a; font-family: 'JetBrains Mono', monospace; }
+
+  .dev-nxos  { background: #0e2818; border-color: #00cc66; }
+  .dev-nxos .dev-title  { color: #00cc66; }
+
+  .dev-iosxe { background: #1a1a0e; border-color: #e5c000; }
+  .dev-iosxe .dev-title { color: #e5c000; }
+
+  .dev-iosxr { background: #0e1a28; border-color: #00aaff; }
+  .dev-iosxr .dev-title { color: #00aaff; }
+
+  .dev-linux { background: #1a0e28; border-color: #7b68ee; }
+  .dev-linux .dev-title { color: #7b68ee; }
+
+  /* Section labels under diagram */
+  .diagram-labels {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 10px;
+    margin-bottom: 32px;
+  }
+  .diag-label { font-size: 10px; color: #5a6a7a; letter-spacing: 0.06em; text-transform: uppercase; }
+
+  /* Properties cards row */
+  .props-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+  .prop-card {
+    background: #141e2b;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .prop-accent { height: 3px; }
+  .prop-body { padding: 14px 16px 16px; }
+  .prop-title { font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+  .prop-desc  { font-size: 11px; color: #c8d0d8; line-height: 1.6; }
+  .prop-desc em { color: #fff; font-style: normal; font-weight: 600; }
+
+  /* Insight bar */
+  .insight {
+    background: #141e2b;
+    border-left: 3px solid #00cc66;
+    border-radius: 6px;
+    padding: 12px 18px;
+    font-size: 12px;
+    color: #c8d0d8;
+    line-height: 1.65;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .insight strong { color: #00cc66; }
+  .insight code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #7b68ee;
+    background: #1e2d3d;
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+</style>
+</head>
+<body>
+<div class="slide">
+
+  <!-- Header -->
+  <div class="breadcrumb">LTRATO-1001 <span>|</span> Ansible Lab</div>
+  <div class="title">How Ansible Works</div>
+  <div class="subtitle">Agentless, declarative automation — one control node manages all devices over SSH</div>
+  <div class="divider"></div>
+  <div class="divider-thin"></div>
+
+  <!-- Diagram -->
+  <div class="diagram">
+
+    <!-- Playbook node -->
+    <div class="node-playbook">
+      <div class="node-icon">📄</div>
+      <div class="node-title">Playbook</div>
+      <div class="node-sub">(YAML)</div>
+    </div>
+
+    <!-- reads arrow -->
+    <div class="arrow-wrap">
+      <div class="arrow-label">reads</div>
+      <div class="arrow-line"></div>
+    </div>
+
+    <!-- Ansible Engine -->
+    <div class="node-engine">
+      <div class="node-icon">⚙️</div>
+      <div class="node-title">Ansible Engine</div>
+      <div class="node-sub">Control Node<br>(dCloud Server)</div>
+    </div>
+
+    <!-- SSH fan arrows -->
+    <div class="fan-wrap">
+      <div class="fan-arrow">
+        <div class="fan-label">SSH</div>
+        <div class="fan-line"></div>
+      </div>
+      <div class="fan-arrow">
+        <div class="fan-label">SSH</div>
+        <div class="fan-line"></div>
+      </div>
+      <div class="fan-arrow">
+        <div class="fan-label">SSH</div>
+        <div class="fan-line"></div>
+      </div>
+      <div class="fan-arrow">
+        <div class="fan-label">SSH</div>
+        <div class="fan-line"></div>
+      </div>
+    </div>
+
+    <!-- Devices -->
+    <div class="devices-col">
+      <div class="node-device dev-nxos">
+        <div class="dev-title">NX-OS</div>
+        <div class="dev-hosts">n9k-ce01, n9k-ce02</div>
+      </div>
+      <div class="node-device dev-iosxe">
+        <div class="dev-title">IOS-XE</div>
+        <div class="dev-hosts">csr-pe01, csr-pe02</div>
+      </div>
+      <div class="node-device dev-iosxr">
+        <div class="dev-title">IOS-XR</div>
+        <div class="dev-hosts">xrd01, xrd02</div>
+      </div>
+      <div class="node-device dev-linux">
+        <div class="dev-title">Linux</div>
+        <div class="dev-hosts">client1-4</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Diagram section labels -->
+  <div class="diagram-labels">
+    <span class="diag-label" style="margin-left:230px;">No agents installed on devices — Ansible connects over SSH</span>
+    <span class="diag-label" style="margin-right:10px;">Managed Devices (10 nodes)</span>
+  </div>
+
+  <!-- Properties -->
+  <div class="props-grid">
+
+    <div class="prop-card">
+      <div class="prop-accent" style="background:#00aaff;"></div>
+      <div class="prop-body">
+        <div class="prop-title">Agentless</div>
+        <div class="prop-desc">No software needs to be installed on managed devices. Ansible connects over <em>SSH</em> — the same way you would manually.</div>
+      </div>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-accent" style="background:#00cc66;"></div>
+      <div class="prop-body">
+        <div class="prop-title">Declarative</div>
+        <div class="prop-desc">You describe <em>what</em> the state should be, not the exact steps to get there. Ansible figures out what commands to send.</div>
+      </div>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-accent" style="background:#7b68ee;"></div>
+      <div class="prop-body">
+        <div class="prop-title">Idempotent</div>
+        <div class="prop-desc">Running the same playbook twice produces the same result. If the config is <em>already correct</em>, Ansible makes no changes.</div>
+      </div>
+    </div>
+
+    <div class="prop-card">
+      <div class="prop-accent" style="background:#ff8800;"></div>
+      <div class="prop-body">
+        <div class="prop-title">Multi-Vendor</div>
+        <div class="prop-desc">One tool handles NX-OS, IOS-XE, IOS-XR, Linux, and more. Platform-specific <em>collections</em> handle the differences.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Insight bar -->
+  <div class="insight">
+    <div style="flex-shrink:0;margin-top:1px;">
+      <svg width="20" height="20" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="10" fill="#00cc6620" stroke="#00cc66" stroke-width="1.5"/>
+        <line x1="12" y1="8" x2="12" y2="13" stroke="#00cc66" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="12" cy="16" r="1" fill="#00cc66"/>
+      </svg>
+    </div>
+    <div>
+      <strong>In this lab, the dCloud server is the control node.</strong>
+      You write YAML playbooks, run <code>ansible-playbook</code>, and Ansible handles connecting to every device, sending the right commands, and verifying results — no manual SSH sessions required.
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
