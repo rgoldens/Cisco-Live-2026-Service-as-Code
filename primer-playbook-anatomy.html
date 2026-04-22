@@ -12,174 +12,170 @@
   .slide {
     background: #0e1621;
     width: 1200px;
-    padding: 22px 36px 40px 36px;
+    padding: 22px 36px 36px 36px;
   }
 
-  /* Header */
   .breadcrumb { font-size: 11px; color: #00aaff; margin-bottom: 4px; letter-spacing: 0.04em; }
   .breadcrumb span { color: #5a6a7a; }
-  .title { font-size: 26px; font-weight: 700; color: #fff; margin-bottom: 3px; }
+  .title    { font-size: 26px; font-weight: 700; color: #fff; margin-bottom: 3px; }
   .subtitle { font-size: 13px; color: #5a6a7a; margin-bottom: 10px; }
   .divider      { width: 100%; height: 3px; background: #00aaff; margin-bottom: 3px; border-radius: 1px; }
-  .divider-thin { width: 100%; height: 1px; background: #00d4ff; margin-bottom: 28px; }
+  .divider-thin { width: 100%; height: 1px; background: #00d4ff; margin-bottom: 24px; }
 
-  /* Main diagram layout: code panel left, callouts right */
-  .diagram-wrap {
+  /* ── Diagram row: SVG canvas takes full width ── */
+  .diagram-row {
+    position: relative;
+    width: 1128px;   /* slide inner width */
+    margin-bottom: 20px;
+  }
+
+  svg.arrows {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    pointer-events: none;
+    overflow: visible;
+  }
+
+  /* ── Two-column layout inside diagram-row ── */
+  .cols {
     display: flex;
-    gap: 32px;
+    gap: 0;
     align-items: flex-start;
-    margin-bottom: 24px;
   }
 
-  /* ── Left: code panel ── */
-  .code-panel {
-    flex: 0 0 640px;
-    background: #141e2b;
+  /* ── LEFT: nested playbook diagram ── */
+  .left-panel {
+    flex: 0 0 590px;
+  }
+
+  /* Outer playbook file box */
+  .pb-outer {
+    border: 2px dashed #4a5568;
     border-radius: 10px;
-    overflow: hidden;
-    border: 1px solid #1e2d3d;
+    padding: 14px 14px 14px 14px;
+    background: #0e1621;
   }
-  .code-panel-header {
-    background: #1e2d3d;
-    padding: 8px 16px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .dot { width: 10px; height: 10px; border-radius: 50%; }
-  .dot-r { background: #e06c75; }
-  .dot-y { background: #e5c000; }
-  .dot-g { background: #00cc66; }
-  .file-name {
+  .pb-filename {
     font-family: 'JetBrains Mono', monospace;
     font-size: 11px;
     color: #5a6a7a;
-    margin-left: 6px;
+    margin-bottom: 10px;
+    letter-spacing: 0.04em;
   }
-  .code-body { padding: 0; }
 
-  /* Play section */
-  .section-play {
-    border-left: 3px solid #7b68ee;
-    margin: 14px 14px 0 14px;
-    background: #0e1621;
-    border-radius: 6px 6px 0 0;
-    padding: 12px 16px 10px;
+  /* PLAY box */
+  .pb-play {
+    border: 2px solid #7b68ee;
+    border-radius: 8px;
+    padding: 12px 14px 14px;
+    background: #12162a;
   }
-  .section-label-tag {
+  .pb-section-tag {
     font-family: 'JetBrains Mono', monospace;
     font-size: 11px;
     font-weight: 700;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
   }
-  .code-line {
+  .cl { /* code line */
     font-family: 'JetBrains Mono', monospace;
     font-size: 12px;
-    line-height: 1.8;
+    line-height: 1.85;
     white-space: pre;
   }
 
-  /* Vars section */
-  .section-vars {
-    border-left: 3px solid #ff8800;
-    margin: 0 14px 0 14px;
-    background: #1a1506;
-    padding: 12px 16px 12px;
+  /* VARS nested box */
+  .pb-vars {
+    border: 2px solid #ff8800;
+    border-radius: 6px;
+    padding: 10px 12px 10px;
+    background: #160f02;
+    margin: 10px 0 0 0;
   }
 
-  /* Tasks section */
-  .section-tasks {
-    border-left: 3px solid #00aaff;
-    margin: 0 14px 14px 14px;
-    background: #060e1a;
-    border-radius: 0 0 6px 6px;
-    padding: 12px 16px 12px;
+  /* TASKS nested box */
+  .pb-tasks {
+    border: 2px solid #00aaff;
+    border-radius: 6px;
+    padding: 10px 12px 10px;
+    background: #020c16;
+    margin: 8px 0 0 0;
   }
 
-  /* Module highlight box inside tasks */
-  .module-box {
-    background: #0e2818;
-    border: 1px solid #00cc6640;
-    border-radius: 4px;
-    padding: 4px 10px;
+  /* Task inner box (name + module) */
+  .pb-task-inner {
+    border: 1px dashed #5a6a7a;
+    border-radius: 5px;
+    padding: 8px 10px 8px;
+    margin: 6px 0 0 16px;
+  }
+
+  /* Module pill */
+  .module-pill {
     display: inline-block;
-    margin: 2px 0;
+    background: #0e2818;
+    border: 1px solid #00cc6650;
+    border-radius: 4px;
+    padding: 3px 10px;
     font-family: 'JetBrains Mono', monospace;
     font-size: 12px;
     color: #00cc66;
+    margin: 2px 0 2px 16px;
   }
 
-  /* Variable highlight */
-  .var-highlight {
-    background: #1a0e28;
+  /* Var highlight box */
+  .pb-var-box {
     border: 1px dashed #7b68ee60;
     border-radius: 4px;
-    padding: 2px 0 2px 10px;
-    margin: 2px 0;
+    padding: 4px 8px;
+    background: #1a0e28;
+    margin: 4px 0 0 16px;
   }
 
-  /* ── Right: callout column ── */
-  .callouts {
+  /* ── RIGHT: callout column ── */
+  .right-panel {
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    padding-top: 8px;
+    gap: 10px;
+    padding-left: 48px;  /* space for arrows */
+    padding-top: 4px;
   }
 
   .callout {
     border-radius: 6px;
-    padding: 10px 14px;
+    padding: 9px 13px;
     border-left: 3px solid;
   }
-  .callout-title {
-    font-size: 12px;
-    font-weight: 700;
-    margin-bottom: 3px;
-  }
-  .callout-desc {
-    font-size: 11px;
-    color: #c8d0d8;
-    line-height: 1.5;
-  }
+  .callout-title { font-size: 12px; font-weight: 700; margin-bottom: 2px; }
+  .callout-desc  { font-size: 11px; color: #c8d0d8; line-height: 1.5; }
   .callout-desc em { color: #fff; font-style: normal; font-weight: 600; }
 
-  .callout-play   { background: #14182b; border-color: #7b68ee; }
-  .callout-play .callout-title { color: #7b68ee; }
+  .c-play   { background: #14182b; border-color: #7b68ee; }
+  .c-play .callout-title   { color: #7b68ee; }
+  .c-hosts  { background: #0b1420; border-color: #00aaff; }
+  .c-hosts .callout-title  { color: #00aaff; }
+  .c-vars   { background: #160f02; border-color: #ff8800; }
+  .c-vars .callout-title   { color: #ff8800; }
+  .c-tasks  { background: #020c16; border-color: #00aaff; }
+  .c-tasks .callout-title  { color: #00aaff; }
+  .c-name   { background: #141e2b; border-color: #5a6a7a; }
+  .c-name .callout-title   { color: #c8d0d8; }
+  .c-module { background: #0e2818; border-color: #00cc66; }
+  .c-module .callout-title { color: #00cc66; }
+  .c-var    { background: #1a0e28; border-color: #7b68ee; }
+  .c-var .callout-title    { color: #c792ea; }
 
-  .callout-hosts  { background: #0e1621; border-color: #00aaff; }
-  .callout-hosts .callout-title { color: #00aaff; }
-
-  .callout-vars   { background: #1a1506; border-color: #ff8800; }
-  .callout-vars .callout-title { color: #ff8800; }
-
-  .callout-tasks  { background: #060e1a; border-color: #00aaff; }
-  .callout-tasks .callout-title { color: #00aaff; }
-
-  .callout-name   { background: #141e2b; border-color: #5a6a7a; }
-  .callout-name .callout-title { color: #c8d0d8; }
-
-  .callout-module { background: #0e2818; border-color: #00cc66; }
-  .callout-module .callout-title { color: #00cc66; }
-
-  .callout-var    { background: #1a0e28; border-color: #7b68ee; }
-  .callout-var .callout-title { color: #7b68ee; }
-
-  /* Spacer between callout groups */
-  .callout-spacer { height: 8px; }
-
-  /* Flow bar */
+  /* ── Flow bar ── */
   .flow-bar {
     background: #141e2b;
     border-radius: 8px;
-    padding: 14px 20px;
+    padding: 12px 20px;
     display: flex;
     align-items: center;
-    gap: 0;
-    margin-bottom: 16px;
-    overflow: hidden;
+    margin-bottom: 14px;
   }
   .flow-step {
     flex: 1;
@@ -190,23 +186,23 @@
   .flow-step::after {
     content: '→';
     position: absolute;
-    right: -8px;
+    right: -10px;
     top: 50%;
     transform: translateY(-50%);
     color: #4a5568;
     font-size: 16px;
   }
   .flow-step:last-child::after { display: none; }
-  .flow-icon { font-size: 18px; margin-bottom: 4px; }
+  .flow-icon  { font-size: 18px; margin-bottom: 3px; }
   .flow-label { font-size: 11px; font-weight: 600; color: #fff; }
-  .flow-sub   { font-size: 10px; color: #5a6a7a; margin-top: 2px; }
+  .flow-sub   { font-size: 10px; color: #5a6a7a; margin-top: 1px; }
 
-  /* Insight bar */
+  /* ── Insight bar ── */
   .insight {
     background: #141e2b;
     border-left: 3px solid #00cc66;
     border-radius: 6px;
-    padding: 12px 18px;
+    padding: 11px 16px;
     font-size: 12px;
     color: #c8d0d8;
     line-height: 1.65;
@@ -235,96 +231,112 @@
   <div class="divider"></div>
   <div class="divider-thin"></div>
 
-  <!-- Diagram -->
-  <div class="diagram-wrap">
+  <!-- Diagram row -->
+  <div class="diagram-row" id="drow">
 
-    <!-- Code panel -->
-    <div class="code-panel">
-      <div class="code-panel-header">
-        <div class="dot dot-r"></div>
-        <div class="dot dot-y"></div>
-        <div class="dot dot-g"></div>
-        <div class="file-name">ce-access-vlan.yml</div>
-      </div>
-      <div class="code-body">
+    <!-- SVG arrows drawn by JS after layout -->
+    <svg class="arrows" id="arrows" height="600"><defs>
+      <marker id="arr-purple" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L8,3 z" fill="#7b68ee"/>
+      </marker>
+      <marker id="arr-blue" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L8,3 z" fill="#00aaff"/>
+      </marker>
+      <marker id="arr-orange" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L8,3 z" fill="#ff8800"/>
+      </marker>
+      <marker id="arr-green" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L8,3 z" fill="#00cc66"/>
+      </marker>
+      <marker id="arr-grey" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L8,3 z" fill="#5a6a7a"/>
+      </marker>
+      <marker id="arr-purple2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L8,3 z" fill="#c792ea"/>
+      </marker>
+    </defs></svg>
 
-        <!-- PLAY -->
-        <div class="section-play">
-          <div class="section-label-tag" style="color:#7b68ee;">— PLAY</div>
-          <div class="code-line"><span style="color:#c8d0d8;">- </span><span style="color:#00aaff;">name</span><span style="color:#c8d0d8;">: "Configure access VLANs"</span></div>
-          <div class="code-line">  <span style="color:#00aaff;">hosts</span><span style="color:#c8d0d8;">: nxos</span></div>
-          <div class="code-line">  <span style="color:#00aaff;">gather_facts</span><span style="color:#c8d0d8;">: false</span></div>
+    <div class="cols">
+
+      <!-- ── LEFT nested diagram ── -->
+      <div class="left-panel">
+        <div class="pb-outer">
+          <div class="pb-filename">ce-access-vlan.yml</div>
+
+          <!-- PLAY box -->
+          <div class="pb-play" id="box-play">
+            <div class="pb-section-tag" style="color:#7b68ee;">PLAY</div>
+            <div class="cl"><span style="color:#c8d0d8;">- </span><span style="color:#00aaff;">name</span><span style="color:#c8d0d8;">: "Configure access VLANs"</span></div>
+            <div class="cl" id="line-hosts">  <span style="color:#00aaff;">hosts</span><span style="color:#c8d0d8;">: nxos</span></div>
+            <div class="cl">  <span style="color:#00aaff;">gather_facts</span><span style="color:#c8d0d8;">: false</span></div>
+
+            <!-- VARS nested inside PLAY -->
+            <div class="pb-vars" id="box-vars">
+              <div class="pb-section-tag" style="color:#ff8800;">vars:</div>
+              <div class="cl">    <span style="color:#c8d0d8;">vlan_config:</span></div>
+              <div class="cl">      <span style="color:#c8d0d8;">n9k-ce01:</span></div>
+              <div class="cl">        <span style="color:#00aaff;">id</span><span style="color:#c8d0d8;">: </span><span style="color:#e5c000;">23</span></div>
+              <div class="cl">        <span style="color:#00aaff;">name</span><span style="color:#c8d0d8;">: </span><span style="color:#c792ea;">"CLIENT-VLAN-23"</span></div>
+              <div class="cl">      <span style="color:#c8d0d8;">n9k-ce02:</span></div>
+              <div class="cl">        <span style="color:#00aaff;">id</span><span style="color:#c8d0d8;">: </span><span style="color:#e5c000;">34</span></div>
+              <div class="cl">        <span style="color:#00aaff;">name</span><span style="color:#c8d0d8;">: </span><span style="color:#c792ea;">"CLIENT-VLAN-34"</span></div>
+            </div>
+
+            <!-- TASKS nested inside PLAY -->
+            <div class="pb-tasks" id="box-tasks">
+              <div class="pb-section-tag" style="color:#00aaff;">tasks:</div>
+
+              <!-- Task inner box -->
+              <div class="pb-task-inner">
+                <div class="cl" id="line-name">  <span style="color:#c8d0d8;">- </span><span style="color:#00aaff;">name</span><span style="color:#c8d0d8;">: </span><span style="color:#c792ea;">"Create access VLAN"</span></div>
+                <div class="module-pill" id="box-module">cisco.nxos.nxos_vlans:</div>
+                <div class="cl">      <span style="color:#00aaff;">config</span><span style="color:#c8d0d8;">:</span></div>
+                <div class="pb-var-box" id="box-var">
+                  <div class="cl">        <span style="color:#c8d0d8;">- </span><span style="color:#00aaff;">vlan_id</span><span style="color:#c8d0d8;">: </span><span style="color:#e5c000;">{{</span><span style="color:#c792ea;"> vlan_config[inventory_hostname].id </span><span style="color:#e5c000;">}}</span></div>
+                  <div class="cl">          <span style="color:#00aaff;">name</span><span style="color:#c8d0d8;">: </span><span style="color:#e5c000;">{{</span><span style="color:#c792ea;"> vlan_config[inventory_hostname].name </span><span style="color:#e5c000;">}}</span></div>
+                </div>
+                <div class="cl" style="margin-top:2px;">      <span style="color:#00aaff;">state</span><span style="color:#c8d0d8;">: </span><span style="color:#00cc66;">merged</span></div>
+              </div>
+
+            </div><!-- /tasks -->
+          </div><!-- /play -->
+        </div><!-- /outer -->
+      </div><!-- /left-panel -->
+
+      <!-- ── RIGHT callouts ── -->
+      <div class="right-panel">
+        <div class="callout c-play" id="c-play">
+          <div class="callout-title">PLAY — Targets a group of devices</div>
+          <div class="callout-desc">One play = one group of devices + a list of tasks to run on them.</div>
         </div>
-
-        <!-- VARS -->
-        <div class="section-vars">
-          <div class="section-label-tag" style="color:#ff8800;">— VARS <span style="color:#5a6a7a;font-weight:400;text-transform:none;letter-spacing:0;">(data — you edit this)</span></div>
-          <div class="code-line">  <span style="color:#ff8800;">vars</span><span style="color:#c8d0d8;">:</span></div>
-          <div class="code-line">    <span style="color:#c8d0d8;">vlan_config</span><span style="color:#c8d0d8;">:</span></div>
-          <div class="code-line">      <span style="color:#c8d0d8;">n9k-ce01</span><span style="color:#c8d0d8;">:</span></div>
-          <div class="code-line">        <span style="color:#00aaff;">id</span><span style="color:#c8d0d8;">: </span><span style="color:#e5c000;">23</span></div>
-          <div class="code-line">        <span style="color:#00aaff;">name</span><span style="color:#c8d0d8;">: </span><span style="color:#c792ea;">"CLIENT-VLAN-23"</span></div>
-          <div class="code-line">      <span style="color:#c8d0d8;">n9k-ce02</span><span style="color:#c8d0d8;">:</span></div>
-          <div class="code-line">        <span style="color:#00aaff;">id</span><span style="color:#c8d0d8;">: </span><span style="color:#e5c000;">34</span></div>
-          <div class="code-line">        <span style="color:#00aaff;">name</span><span style="color:#c8d0d8;">: </span><span style="color:#c792ea;">"CLIENT-VLAN-34"</span></div>
+        <div class="callout c-hosts" id="c-hosts">
+          <div class="callout-title">hosts: nxos — Which devices from inventory</div>
+          <div class="callout-desc">The group <em>nxos</em> contains n9k-ce01 and n9k-ce02. Ansible runs every task on both automatically.</div>
         </div>
-
-        <!-- TASKS -->
-        <div class="section-tasks">
-          <div class="section-label-tag" style="color:#00aaff;">— TASKS <span style="color:#5a6a7a;font-weight:400;text-transform:none;letter-spacing:0;">(logic — already written for you)</span></div>
-          <div class="code-line">  <span style="color:#00aaff;">tasks</span><span style="color:#c8d0d8;">:</span></div>
-          <div class="code-line">    <span style="color:#c8d0d8;">- </span><span style="color:#00aaff;">name</span><span style="color:#c8d0d8;">: </span><span style="color:#c792ea;">"Create access VLAN"</span></div>
-          <div style="margin: 4px 0 4px 24px;"><div class="module-box">cisco.nxos.nxos_vlans:</div></div>
-          <div class="code-line">        <span style="color:#00aaff;">config</span><span style="color:#c8d0d8;">:</span></div>
-          <div class="var-highlight">
-            <div class="code-line">          <span style="color:#c8d0d8;">- </span><span style="color:#00aaff;">vlan_id</span><span style="color:#c8d0d8;">: </span><span style="color:#e5c000;">{{</span><span style="color:#c792ea;"> vlan_config[inventory_hostname].id </span><span style="color:#e5c000;">}}</span></div>
-            <div class="code-line">            <span style="color:#00aaff;">name</span><span style="color:#c8d0d8;">: </span><span style="color:#e5c000;">{{</span><span style="color:#c792ea;"> vlan_config[inventory_hostname].name </span><span style="color:#e5c000;">}}</span></div>
-          </div>
-          <div class="code-line" style="margin-top:4px;">        <span style="color:#00aaff;">state</span><span style="color:#c8d0d8;">: </span><span style="color:#00cc66;">merged</span></div>
+        <div class="callout c-vars" id="c-vars">
+          <div class="callout-title">vars: — DATA, you edit this</div>
+          <div class="callout-desc">VLAN IDs, names, IP addresses — the values specific to your network. The only section you touch in this lab.</div>
         </div>
+        <div class="callout c-tasks" id="c-tasks">
+          <div class="callout-title">tasks: — LOGIC, already written for you</div>
+          <div class="callout-desc">The automation steps. Each task calls one module. Logic stays the same across every deployment.</div>
+        </div>
+        <div class="callout c-name" id="c-name">
+          <div class="callout-title">name: — Human-readable description</div>
+          <div class="callout-desc">Displayed in output so you know which step is running. No functional effect.</div>
+        </div>
+        <div class="callout c-module" id="c-module">
+          <div class="callout-title">cisco.nxos.nxos_vlans — Module (the plugin)</div>
+          <div class="callout-desc"><em>namespace.collection.module</em> — three parts that tell Ansible exactly what code to run on the device.</div>
+        </div>
+        <div class="callout c-var" id="c-var">
+          <div class="callout-title">{{ variable }} — Variable substitution</div>
+          <div class="callout-desc">Double curly braces pull a value from <em>vars</em> at runtime. <em>inventory_hostname</em> resolves to the current device name automatically.</div>
+        </div>
+      </div><!-- /right-panel -->
 
-      </div>
-    </div>
-
-    <!-- Callouts -->
-    <div class="callouts">
-
-      <div class="callout callout-play">
-        <div class="callout-title">PLAY — Targets a group of devices</div>
-        <div class="callout-desc">One play = one group of devices + a list of tasks. A playbook can contain multiple plays targeting different device groups.</div>
-      </div>
-
-      <div class="callout callout-hosts">
-        <div class="callout-title">hosts: nxos</div>
-        <div class="callout-desc">Which devices from <em>inventory.yml</em> to configure. The group <em>nxos</em> contains n9k-ce01 and n9k-ce02 — Ansible runs every task on both automatically.</div>
-      </div>
-
-      <div class="callout-spacer"></div>
-
-      <div class="callout callout-vars">
-        <div class="callout-title">vars: — DATA, you edit this</div>
-        <div class="callout-desc">The values specific to your network — VLAN IDs, names, IP addresses. This is the only section you touch in this lab.</div>
-      </div>
-
-      <div class="callout-spacer"></div>
-
-      <div class="callout callout-tasks">
-        <div class="callout-title">tasks: — LOGIC, already written for you</div>
-        <div class="callout-desc">The automation steps. Each task calls one module. The logic stays the same across all deployments — only the vars change.</div>
-      </div>
-
-      <div class="callout callout-module">
-        <div class="callout-title">cisco.nxos.nxos_vlans — Module</div>
-        <div class="callout-desc">The Ansible plugin that performs the work. <em>namespace.collection.module</em> — three parts that tell Ansible exactly what code to run.</div>
-      </div>
-
-      <div class="callout callout-var">
-        <div class="callout-title">{{ "{{ variable }}" }} — Variable substitution</div>
-        <div class="callout-desc">Double curly braces pull a value from <em>vars</em> at runtime. <em>inventory_hostname</em> is set automatically by Ansible to the current device name.</div>
-      </div>
-
-    </div>
-  </div>
+    </div><!-- /cols -->
+  </div><!-- /diagram-row -->
 
   <!-- Flow bar -->
   <div class="flow-bar">
@@ -366,5 +378,68 @@
   </div>
 
 </div>
+
+<script>
+// Draw arrows from a source element's right edge to a target callout's left edge
+function midY(el, container) {
+  const er = el.getBoundingClientRect();
+  const cr = container.getBoundingClientRect();
+  return er.top - cr.top + er.height / 2;
+}
+function rightX(el, container) {
+  const er = el.getBoundingClientRect();
+  const cr = container.getBoundingClientRect();
+  return er.right - cr.left;
+}
+function leftX(el, container) {
+  const er = el.getBoundingClientRect();
+  const cr = container.getBoundingClientRect();
+  return er.left - cr.left;
+}
+
+window.addEventListener('load', () => {
+  const svg    = document.getElementById('arrows');
+  const drow   = document.getElementById('drow');
+  const drowR  = drow.getBoundingClientRect();
+
+  // Update SVG height to match content
+  svg.setAttribute('height', drow.offsetHeight);
+
+  const arrows = [
+    { from: 'box-play',   to: 'c-play',   color: '#7b68ee', marker: 'arr-purple' },
+    { from: 'line-hosts', to: 'c-hosts',  color: '#00aaff', marker: 'arr-blue'   },
+    { from: 'box-vars',   to: 'c-vars',   color: '#ff8800', marker: 'arr-orange' },
+    { from: 'box-tasks',  to: 'c-tasks',  color: '#00aaff', marker: 'arr-blue'   },
+    { from: 'line-name',  to: 'c-name',   color: '#5a6a7a', marker: 'arr-grey'   },
+    { from: 'box-module', to: 'c-module', color: '#00cc66', marker: 'arr-green'  },
+    { from: 'box-var',    to: 'c-var',    color: '#c792ea', marker: 'arr-purple2'},
+  ];
+
+  arrows.forEach(({ from, to, color, marker }) => {
+    const fromEl = document.getElementById(from);
+    const toEl   = document.getElementById(to);
+    if (!fromEl || !toEl) return;
+
+    const x1 = rightX(fromEl, drow);
+    const y1 = midY(fromEl, drow);
+    const x2 = leftX(toEl, drow);
+    const y2 = midY(toEl, drow);
+
+    // Elbow path: go right from source, then across, then into target
+    const mx = x1 + (x2 - x1) * 0.45;
+    const d  = `M ${x1} ${y1} C ${mx} ${y1}, ${mx} ${y2}, ${x2} ${y2}`;
+
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', d);
+    path.setAttribute('stroke', color);
+    path.setAttribute('stroke-width', '1.5');
+    path.setAttribute('fill', 'none');
+    path.setAttribute('marker-end', `url(#${marker})`);
+    path.setAttribute('opacity', '0.85');
+    svg.appendChild(path);
+  });
+});
+</script>
+
 </body>
 </html>
