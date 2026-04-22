@@ -85,6 +85,20 @@
     padding: 4px 8px; background: #1a0e28; margin: 4px 0 0 16px;
   }
 
+  /* Inline highlight boxes for specific lines */
+  .line-highlight-blue {
+    display: inline-block;
+    border: 1.5px solid #00aaff;
+    border-radius: 4px;
+    padding: 1px 6px 1px 4px;
+  }
+  .line-highlight-grey {
+    display: inline-block;
+    border: 1.5px solid #5a6a7a;
+    border-radius: 4px;
+    padding: 1px 6px 1px 4px;
+  }
+
   /* RIGHT: evenly spaced callout stack — stretch to match left panel height */
   .right-panel {
     flex: 1;
@@ -175,7 +189,7 @@
         <div class="pb-play" id="box-play">
           <div class="pb-section-tag" style="color:#7b68ee;">PLAY</div>
           <div class="cl"><span style="color:#c8d0d8;">- </span><span style="color:#00aaff;">name</span><span style="color:#c8d0d8;">: "Configure access VLANs"</span></div>
-          <div class="cl" id="line-hosts">  <span style="color:#00aaff;">hosts</span><span style="color:#c8d0d8;">: nxos</span></div>
+          <div class="cl">  <span class="line-highlight-blue" id="box-hosts"><span style="color:#00aaff;">hosts</span><span style="color:#c8d0d8;">: nxos</span></span></div>
           <div class="cl">  <span style="color:#00aaff;">gather_facts</span><span style="color:#c8d0d8;">: false</span></div>
 
           <div class="pb-vars" id="box-vars">
@@ -192,7 +206,7 @@
           <div class="pb-tasks" id="box-tasks">
             <div class="pb-section-tag" style="color:#00aaff;">tasks:</div>
             <div class="pb-task-inner">
-              <div class="cl" id="line-name">  <span style="color:#c8d0d8;">- </span><span style="color:#00aaff;">name</span><span style="color:#c8d0d8;">: </span><span style="color:#c792ea;">"Create access VLAN"</span></div>
+              <div class="cl">  <span class="line-highlight-grey" id="box-name"><span style="color:#c8d0d8;">- </span><span style="color:#00aaff;">name</span><span style="color:#c8d0d8;">: </span><span style="color:#c792ea;">"Create access VLAN"</span></span></div>
               <div class="module-pill" id="box-module">cisco.nxos.nxos_vlans:</div>
               <div class="cl">      <span style="color:#00aaff;">config</span><span style="color:#c8d0d8;">:</span></div>
               <div class="pb-var-box" id="box-var">
@@ -273,20 +287,16 @@ window.addEventListener('load', () => {
   svg.setAttribute('height', wrap.offsetHeight);
 
   // Each spec: source element + where to anchor on it, target callout, color
-  // srcMode: 'top-right' = top-right corner, 'mid-right' = right edge at midY
+  // srcMode: 'top-right' | 'mid-right' | 'bot-right'
   const specs = [
-    { src: 'box-play',   srcMode: 'top-right', tgt: 'c-play',   color: '#7b68ee', marker: 'm-purple' },
-    { src: 'line-hosts', srcMode: 'mid-right',  tgt: 'c-hosts',  color: '#00aaff', marker: 'm-blue'   },
-    { src: 'box-vars',   srcMode: 'top-right',  tgt: 'c-vars',   color: '#ff8800', marker: 'm-orange' },
+    { src: 'box-play',   srcMode: 'mid-right',  tgt: 'c-play',   color: '#7b68ee', marker: 'm-purple' },
+    { src: 'box-hosts',  srcMode: 'mid-right',  tgt: 'c-hosts',  color: '#00aaff', marker: 'm-blue'   },
+    { src: 'box-vars',   srcMode: 'bot-right',  tgt: 'c-vars',   color: '#ff8800', marker: 'm-orange' },
     { src: 'box-tasks',  srcMode: 'top-right',  tgt: 'c-tasks',  color: '#00aaff', marker: 'm-blue'   },
-    { src: 'line-name',  srcMode: 'mid-right',  tgt: 'c-name',   color: '#5a6a7a', marker: 'm-grey'   },
+    { src: 'box-name',   srcMode: 'mid-right',  tgt: 'c-name',   color: '#5a6a7a', marker: 'm-grey'   },
     { src: 'box-module', srcMode: 'mid-right',  tgt: 'c-module', color: '#00cc66', marker: 'm-green'  },
     { src: 'box-var',    srcMode: 'top-right',  tgt: 'c-var',    color: '#c792ea', marker: 'm-lilac'  },
   ];
-
-  // All arrows start from the left panel's right edge for a clean vertical origin line
-  const leftPanel = document.querySelector('.left-panel');
-  const lpRight = leftPanel.getBoundingClientRect().right - wrapR.left;
 
   specs.forEach(({ src, srcMode, tgt, color, marker }) => {
     const srcEl = document.getElementById(src);
@@ -294,19 +304,24 @@ window.addEventListener('load', () => {
     const sr = srcEl.getBoundingClientRect();
     const tr = tgtEl.getBoundingClientRect();
 
-    // Source x always = left panel right edge
-    // Source y = element top (for boxes) or element midY (for lines)
-    const x1 = lpRight;
+    // Source x = actual element right edge; y based on mode
+    const x1 = sr.right - wrapR.left;
     const y1 = srcMode === 'top-right'
-      ? sr.top  - wrapR.top
-      : (sr.top + sr.bottom) / 2 - wrapR.top;
+      ? sr.top    - wrapR.top
+      : srcMode === 'bot-right'
+        ? sr.bottom - wrapR.top
+        : (sr.top + sr.bottom) / 2 - wrapR.top;
 
     // Target: left edge of callout at its vertical centre
     const x2 = tr.left  - wrapR.left;
     const y2 = (tr.top + tr.bottom) / 2 - wrapR.top;
 
+    // Use a cubic bezier: control points pull horizontally outward so
+    // lines curve smoothly rather than cutting diagonally across the diagram
+    const cx1 = x1 + (x2 - x1) * 0.6;
+    const cx2 = x2 - (x2 - x1) * 0.3;
     const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    path.setAttribute('d', `M ${x1} ${y1} L ${x2} ${y2}`);
+    path.setAttribute('d', `M ${x1} ${y1} C ${cx1} ${y1}, ${cx2} ${y2}, ${x2} ${y2}`);
     path.setAttribute('stroke', color);
     path.setAttribute('stroke-width', '1.5');
     path.setAttribute('fill', 'none');
