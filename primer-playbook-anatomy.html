@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=1200"/>
+<title>Anatomy of an Ansible Playbook</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0e1621; font-family: 'Inter', sans-serif; }
+
+  .slide {
+    background: #0e1621;
+    width: 1200px;
+    padding: 22px 36px 40px 36px;
+  }
+
+  /* Header */
+  .breadcrumb { font-size: 11px; color: #00aaff; margin-bottom: 4px; letter-spacing: 0.04em; }
+  .breadcrumb span { color: #5a6a7a; }
+  .title { font-size: 26px; font-weight: 700; color: #fff; margin-bottom: 3px; }
+  .subtitle { font-size: 13px; color: #5a6a7a; margin-bottom: 10px; }
+  .divider      { width: 100%; height: 3px; background: #00aaff; margin-bottom: 3px; border-radius: 1px; }
+  .divider-thin { width: 100%; height: 1px; background: #00d4ff; margin-bottom: 28px; }
+
+  /* Main diagram layout: code panel left, callouts right */
+  .diagram-wrap {
+    display: flex;
+    gap: 32px;
+    align-items: flex-start;
+    margin-bottom: 24px;
+  }
+
+  /* ── Left: code panel ── */
+  .code-panel {
+    flex: 0 0 640px;
+    background: #141e2b;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #1e2d3d;
+  }
+  .code-panel-header {
+    background: #1e2d3d;
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot-r { background: #e06c75; }
+  .dot-y { background: #e5c000; }
+  .dot-g { background: #00cc66; }
+  .file-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #5a6a7a;
+    margin-left: 6px;
+  }
+  .code-body { padding: 0; }
+
+  /* Play section */
+  .section-play {
+    border-left: 3px solid #7b68ee;
+    margin: 14px 14px 0 14px;
+    background: #0e1621;
+    border-radius: 6px 6px 0 0;
+    padding: 12px 16px 10px;
+  }
+  .section-label-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .code-line {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    line-height: 1.8;
+    white-space: pre;
+  }
+
+  /* Vars section */
+  .section-vars {
+    border-left: 3px solid #ff8800;
+    margin: 0 14px 0 14px;
+    background: #1a1506;
+    padding: 12px 16px 12px;
+  }
+
+  /* Tasks section */
+  .section-tasks {
+    border-left: 3px solid #00aaff;
+    margin: 0 14px 14px 14px;
+    background: #060e1a;
+    border-radius: 0 0 6px 6px;
+    padding: 12px 16px 12px;
+  }
+
+  /* Module highlight box inside tasks */
+  .module-box {
+    background: #0e2818;
+    border: 1px solid #00cc6640;
+    border-radius: 4px;
+    padding: 4px 10px;
+    display: inline-block;
+    margin: 2px 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: #00cc66;
+  }
+
+  /* Variable highlight */
+  .var-highlight {
+    background: #1a0e28;
+    border: 1px dashed #7b68ee60;
+    border-radius: 4px;
+    padding: 2px 0 2px 10px;
+    margin: 2px 0;
+  }
+
+  /* ── Right: callout column ── */
+  .callouts {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-top: 8px;
+  }
+
+  .callout {
+    border-radius: 6px;
+    padding: 10px 14px;
+    border-left: 3px solid;
+  }
+  .callout-title {
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 3px;
+  }
+  .callout-desc {
+    font-size: 11px;
+    color: #c8d0d8;
+    line-height: 1.5;
+  }
+  .callout-desc em { color: #fff; font-style: normal; font-weight: 600; }
+
+  .callout-play   { background: #14182b; border-color: #7b68ee; }
+  .callout-play .callout-title { color: #7b68ee; }
+
+  .callout-hosts  { background: #0e1621; border-color: #00aaff; }
+  .callout-hosts .callout-title { color: #00aaff; }
+
+  .callout-vars   { background: #1a1506; border-color: #ff8800; }
+  .callout-vars .callout-title { color: #ff8800; }
+
+  .callout-tasks  { background: #060e1a; border-color: #00aaff; }
+  .callout-tasks .callout-title { color: #00aaff; }
+
+  .callout-name   { background: #141e2b; border-color: #5a6a7a; }
+  .callout-name .callout-title { color: #c8d0d8; }
+
+  .callout-module { background: #0e2818; border-color: #00cc66; }
+  .callout-module .callout-title { color: #00cc66; }
+
+  .callout-var    { background: #1a0e28; border-color: #7b68ee; }
+  .callout-var .callout-title { color: #7b68ee; }
+
+  /* Spacer between callout groups */
+  .callout-spacer { height: 8px; }
+
+  /* Flow bar */
+  .flow-bar {
+    background: #141e2b;
+    border-radius: 8px;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 16px;
+    overflow: hidden;
+  }
+  .flow-step {
+    flex: 1;
+    text-align: center;
+    padding: 0 8px;
+    position: relative;
+  }
+  .flow-step::after {
+    content: '→';
+    position: absolute;
+    right: -8px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #4a5568;
+    font-size: 16px;
+  }
+  .flow-step:last-child::after { display: none; }
+  .flow-icon { font-size: 18px; margin-bottom: 4px; }
+  .flow-label { font-size: 11px; font-weight: 600; color: #fff; }
+  .flow-sub   { font-size: 10px; color: #5a6a7a; margin-top: 2px; }
+
+  /* Insight bar */
+  .insight {
+    background: #141e2b;
+    border-left: 3px solid #00cc66;
+    border-radius: 6px;
+    padding: 12px 18px;
+    font-size: 12px;
+    color: #c8d0d8;
+    line-height: 1.65;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .insight strong { color: #00cc66; }
+  .insight code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #7b68ee;
+    background: #1e2d3d;
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+</style>
+</head>
+<body>
+<div class="slide">
+
+  <!-- Header -->
+  <div class="breadcrumb">LTRATO-1001 <span>|</span> Service Insertion as Code: From Concept to Commit</div>
+  <div class="title">Anatomy of an Ansible Playbook</div>
+  <div class="subtitle">Every playbook has the same three sections — PLAY, vars, tasks — learn this once and you can read any playbook in the lab</div>
+  <div class="divider"></div>
+  <div class="divider-thin"></div>
+
+  <!-- Diagram -->
+  <div class="diagram-wrap">
+
+    <!-- Code panel -->
+    <div class="code-panel">
+      <div class="code-panel-header">
+        <div class="dot dot-r"></div>
+        <div class="dot dot-y"></div>
+        <div class="dot dot-g"></div>
+        <div class="file-name">ce-access-vlan.yml</div>
+      </div>
+      <div class="code-body">
+
+        <!-- PLAY -->
+        <div class="section-play">
+          <div class="section-label-tag" style="color:#7b68ee;">— PLAY</div>
+          <div class="code-line"><span style="color:#c8d0d8;">- </span><span style="color:#00aaff;">name</span><span style="color:#c8d0d8;">: "Configure access VLANs"</span></div>
+          <div class="code-line">  <span style="color:#00aaff;">hosts</span><span style="color:#c8d0d8;">: nxos</span></div>
+          <div class="code-line">  <span style="color:#00aaff;">gather_facts</span><span style="color:#c8d0d8;">: false</span></div>
+        </div>
+
+        <!-- VARS -->
+        <div class="section-vars">
+          <div class="section-label-tag" style="color:#ff8800;">— VARS <span style="color:#5a6a7a;font-weight:400;text-transform:none;letter-spacing:0;">(data — you edit this)</span></div>
+          <div class="code-line">  <span style="color:#ff8800;">vars</span><span style="color:#c8d0d8;">:</span></div>
+          <div class="code-line">    <span style="color:#c8d0d8;">vlan_config</span><span style="color:#c8d0d8;">:</span></div>
+          <div class="code-line">      <span style="color:#c8d0d8;">n9k-ce01</span><span style="color:#c8d0d8;">:</span></div>
+          <div class="code-line">        <span style="color:#00aaff;">id</span><span style="color:#c8d0d8;">: </span><span style="color:#e5c000;">23</span></div>
+          <div class="code-line">        <span style="color:#00aaff;">name</span><span style="color:#c8d0d8;">: </span><span style="color:#c792ea;">"CLIENT-VLAN-23"</span></div>
+          <div class="code-line">      <span style="color:#c8d0d8;">n9k-ce02</span><span style="color:#c8d0d8;">:</span></div>
+          <div class="code-line">        <span style="color:#00aaff;">id</span><span style="color:#c8d0d8;">: </span><span style="color:#e5c000;">34</span></div>
+          <div class="code-line">        <span style="color:#00aaff;">name</span><span style="color:#c8d0d8;">: </span><span style="color:#c792ea;">"CLIENT-VLAN-34"</span></div>
+        </div>
+
+        <!-- TASKS -->
+        <div class="section-tasks">
+          <div class="section-label-tag" style="color:#00aaff;">— TASKS <span style="color:#5a6a7a;font-weight:400;text-transform:none;letter-spacing:0;">(logic — already written for you)</span></div>
+          <div class="code-line">  <span style="color:#00aaff;">tasks</span><span style="color:#c8d0d8;">:</span></div>
+          <div class="code-line">    <span style="color:#c8d0d8;">- </span><span style="color:#00aaff;">name</span><span style="color:#c8d0d8;">: </span><span style="color:#c792ea;">"Create access VLAN"</span></div>
+          <div style="margin: 4px 0 4px 24px;"><div class="module-box">cisco.nxos.nxos_vlans:</div></div>
+          <div class="code-line">        <span style="color:#00aaff;">config</span><span style="color:#c8d0d8;">:</span></div>
+          <div class="var-highlight">
+            <div class="code-line">          <span style="color:#c8d0d8;">- </span><span style="color:#00aaff;">vlan_id</span><span style="color:#c8d0d8;">: </span><span style="color:#e5c000;">{{</span><span style="color:#c792ea;"> vlan_config[inventory_hostname].id </span><span style="color:#e5c000;">}}</span></div>
+            <div class="code-line">            <span style="color:#00aaff;">name</span><span style="color:#c8d0d8;">: </span><span style="color:#e5c000;">{{</span><span style="color:#c792ea;"> vlan_config[inventory_hostname].name </span><span style="color:#e5c000;">}}</span></div>
+          </div>
+          <div class="code-line" style="margin-top:4px;">        <span style="color:#00aaff;">state</span><span style="color:#c8d0d8;">: </span><span style="color:#00cc66;">merged</span></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Callouts -->
+    <div class="callouts">
+
+      <div class="callout callout-play">
+        <div class="callout-title">PLAY — Targets a group of devices</div>
+        <div class="callout-desc">One play = one group of devices + a list of tasks. A playbook can contain multiple plays targeting different device groups.</div>
+      </div>
+
+      <div class="callout callout-hosts">
+        <div class="callout-title">hosts: nxos</div>
+        <div class="callout-desc">Which devices from <em>inventory.yml</em> to configure. The group <em>nxos</em> contains n9k-ce01 and n9k-ce02 — Ansible runs every task on both automatically.</div>
+      </div>
+
+      <div class="callout-spacer"></div>
+
+      <div class="callout callout-vars">
+        <div class="callout-title">vars: — DATA, you edit this</div>
+        <div class="callout-desc">The values specific to your network — VLAN IDs, names, IP addresses. This is the only section you touch in this lab.</div>
+      </div>
+
+      <div class="callout-spacer"></div>
+
+      <div class="callout callout-tasks">
+        <div class="callout-title">tasks: — LOGIC, already written for you</div>
+        <div class="callout-desc">The automation steps. Each task calls one module. The logic stays the same across all deployments — only the vars change.</div>
+      </div>
+
+      <div class="callout callout-module">
+        <div class="callout-title">cisco.nxos.nxos_vlans — Module</div>
+        <div class="callout-desc">The Ansible plugin that performs the work. <em>namespace.collection.module</em> — three parts that tell Ansible exactly what code to run.</div>
+      </div>
+
+      <div class="callout callout-var">
+        <div class="callout-title">{{ "{{ variable }}" }} — Variable substitution</div>
+        <div class="callout-desc">Double curly braces pull a value from <em>vars</em> at runtime. <em>inventory_hostname</em> is set automatically by Ansible to the current device name.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Flow bar -->
+  <div class="flow-bar">
+    <div class="flow-step">
+      <div class="flow-icon">📄</div>
+      <div class="flow-label">Read playbook</div>
+      <div class="flow-sub">YAML parsed</div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-icon">🔌</div>
+      <div class="flow-label">Connect to hosts</div>
+      <div class="flow-sub">SSH to each device in group</div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-icon">⚙️</div>
+      <div class="flow-label">Run tasks in order</div>
+      <div class="flow-sub">One task at a time, per host</div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-icon">✅</div>
+      <div class="flow-label">Report results</div>
+      <div class="flow-sub">changed / ok / failed per task</div>
+    </div>
+  </div>
+
+  <!-- Insight -->
+  <div class="insight">
+    <div style="flex-shrink:0;margin-top:1px;">
+      <svg width="20" height="20" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="10" fill="#00cc6620" stroke="#00cc66" stroke-width="1.5"/>
+        <line x1="12" y1="8" x2="12" y2="13" stroke="#00cc66" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="12" cy="16" r="1" fill="#00cc66"/>
+      </svg>
+    </div>
+    <div>
+      <strong>In this lab, you edit the vars — not the tasks.</strong>
+      The <code>tasks:</code> section is already written and tested. Your job is to fill in the correct values in <code>vars:</code> for your network. This mirrors real-world IaC practice: engineers update data, the automation logic stays unchanged across every deployment.
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
