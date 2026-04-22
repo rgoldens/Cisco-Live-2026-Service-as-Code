@@ -103,7 +103,7 @@
   .right-panel {
     flex: 1;
     position: relative;
-    min-height: 680px;
+    min-height: 660px;
   }
   .callout {
     border-radius: 6px; padding: 9px 13px; border-left: 3px solid;
@@ -219,11 +219,11 @@
 
     <!-- RIGHT panel -->
     <div class="right-panel">
-      <div class="callout c-play"   id="c-play"   style="top:8px;">
+      <div class="callout c-play"   id="c-play"   style="top:34px;">
         <div class="callout-title">PLAY — Targets a group of devices</div>
         <div class="callout-desc">One play = one group of devices + a list of tasks to run on them.</div>
       </div>
-      <div class="callout c-hosts"  id="c-hosts"  style="top:77px;">
+      <div class="callout c-hosts"  id="c-hosts"  style="top:92px;">
         <div class="callout-title">hosts: nxos — Which devices from inventory</div>
         <div class="callout-desc">The group <em>nxos</em> contains n9k-ce01 and n9k-ce02. Ansible runs every task on both automatically.</div>
       </div>
@@ -231,19 +231,19 @@
         <div class="callout-title">vars: — DATA, you edit this</div>
         <div class="callout-desc">VLAN IDs, names — the values specific to your network. The only section you touch in this lab.</div>
       </div>
-      <div class="callout c-tasks"  id="c-tasks"  style="top:512px;">
+      <div class="callout c-tasks"  id="c-tasks"  style="top:504px;">
         <div class="callout-title">tasks: — LOGIC, already written for you</div>
         <div class="callout-desc">The automation steps. Each task calls one module. Logic stays unchanged across every deployment.</div>
       </div>
-      <div class="callout c-name"   id="c-name"   style="top:396px;">
+      <div class="callout c-name"   id="c-name"   style="top:388px;">
         <div class="callout-title">name: — Human-readable description</div>
         <div class="callout-desc">Displayed in output so you know which step is running. No functional effect.</div>
       </div>
-      <div class="callout c-module" id="c-module" style="top:454px;">
+      <div class="callout c-module" id="c-module" style="top:446px;">
         <div class="callout-title">cisco.nxos.nxos_vlans — Module (the plugin)</div>
         <div class="callout-desc"><em>namespace.collection.module</em> — three parts that tell Ansible exactly what code to run.</div>
       </div>
-      <div class="callout c-var"    id="c-var"    style="top:586px;">
+      <div class="callout c-var"    id="c-var"    style="top:578px;">
         <div class="callout-title">{{ variable }} — Variable substitution</div>
         <div class="callout-desc">Curly braces pull a value from <em>vars</em> at runtime. <em>inventory_hostname</em> resolves to the current device name automatically.</div>
       </div>
@@ -286,7 +286,7 @@ window.addEventListener('load', () => {
   // Each spec: source element + where to anchor on it, target callout, color
   // srcMode: 'top-right' | 'mid-right' | 'bot-right'
   const specs = [
-    { src: 'box-play',   srcMode: 'mid-right',  tgt: 'c-play',   color: '#7b68ee', marker: 'm-purple' },
+    { src: 'box-play',   srcMode: 'top-right',  tgt: 'c-play',   color: '#7b68ee', marker: 'm-purple' },
     { src: 'box-hosts',  srcMode: 'mid-right',  tgt: 'c-hosts',  color: '#00aaff', marker: 'm-blue'   },
     { src: 'box-vars',   srcMode: 'bot-right',  tgt: 'c-vars',   color: '#ff8800', marker: 'm-orange' },
     { src: 'box-tasks',  srcMode: 'top-right',  tgt: 'c-tasks',  color: '#00aaff', marker: 'm-blue'   },
