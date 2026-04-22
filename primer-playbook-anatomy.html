@@ -85,13 +85,15 @@
     padding: 4px 8px; background: #1a0e28; margin: 4px 0 0 16px;
   }
 
-  /* RIGHT: evenly spaced callout stack */
+  /* RIGHT: evenly spaced callout stack — stretch to match left panel height */
   .right-panel {
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 0;
     padding-top: 8px;
+    justify-content: space-between;
+    align-self: stretch;
   }
   .callout {
     border-radius: 6px; padding: 9px 13px; border-left: 3px solid;
@@ -282,19 +284,24 @@ window.addEventListener('load', () => {
     { src: 'box-var',    srcMode: 'top-right',  tgt: 'c-var',    color: '#c792ea', marker: 'm-lilac'  },
   ];
 
+  // All arrows start from the left panel's right edge for a clean vertical origin line
+  const leftPanel = document.querySelector('.left-panel');
+  const lpRight = leftPanel.getBoundingClientRect().right - wrapR.left;
+
   specs.forEach(({ src, srcMode, tgt, color, marker }) => {
     const srcEl = document.getElementById(src);
     const tgtEl = document.getElementById(tgt);
     const sr = srcEl.getBoundingClientRect();
     const tr = tgtEl.getBoundingClientRect();
 
-    // Source point — relative to diagram-wrap top-left
-    const x1 = sr.right - wrapR.left;
+    // Source x always = left panel right edge
+    // Source y = element top (for boxes) or element midY (for lines)
+    const x1 = lpRight;
     const y1 = srcMode === 'top-right'
       ? sr.top  - wrapR.top
       : (sr.top + sr.bottom) / 2 - wrapR.top;
 
-    // Target point — left edge of callout, vertical centre
+    // Target: left edge of callout at its vertical centre
     const x2 = tr.left  - wrapR.left;
     const y2 = (tr.top + tr.bottom) / 2 - wrapR.top;
 
