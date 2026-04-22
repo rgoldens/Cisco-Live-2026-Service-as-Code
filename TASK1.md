@@ -150,6 +150,55 @@ Before filling in the variables, take a minute to understand what you just read.
 
 ---
 
+#### Finding Documentation for Any Module
+
+The playbook in this lab was written for you — but if you ever want to understand a module more deeply, add a new resource, or build your own playbook from scratch, the Ansible documentation is where you start. Here's the workflow.
+
+**1. Go to the `cisco.nxos` collection index:**
+
+> <https://docs.ansible.com/projects/ansible/latest/collections/cisco/nxos/>
+
+This page lists every module in the collection — one per NX-OS resource. Scroll down to the **Modules** section to browse. You'll find `nxos_vlans`, `nxos_bgp_global`, `nxos_ospf_interfaces`, and ~100 others. Each one is a clickable link to its full documentation page.
+
+**2. Click the module you want — for example `nxos_vlans`:**
+
+> <https://docs.ansible.com/projects/ansible/latest/collections/cisco/nxos/nxos_vlans_module.html>
+
+Every module page has the same structure. Read in this order:
+
+- **Synopsis** — one sentence describing what the module manages
+- **Parameters** — everything you can configure, with types and defaults
+- **Examples** — working before/after YAML for each `state:` value — the fastest way to understand what the module actually does
+
+**3. Read the Parameters table.** Here's what it looks like for `nxos_vlans` — the module you just used:
+
+| Parameter | Type | Required | What it does |
+|---|---|---|---|
+| `config` | list | no | List of VLAN dictionaries — one item per VLAN you want to configure |
+| `config.vlan_id` | integer | **yes** | The VLAN number (1–4094) — used to identify the VLAN on the device |
+| `config.name` | string | no | Human-readable name for the VLAN |
+| `config.state` | string | no | Operational state of the VLAN itself — `active` or `suspend` |
+| `config.enabled` | boolean | no | Admin state — `true` = no shutdown, `false` = shutdown |
+| `state` | string | no | Module behavior — `merged` (default), `replaced`, `overridden`, `deleted` |
+
+> **`config.state` vs. top-level `state:` — don't mix these up.** `config.state` controls whether the VLAN itself is active or suspended on the device. The top-level `state:` controls what Ansible *does* — whether it merges, replaces, overrides, or deletes. This distinction exists in every resource module.
+
+**4. The URL pattern works for every module in this lab:**
+
+```
+https://docs.ansible.com/projects/ansible/latest/collections/cisco/nxos/<module_name>_module.html
+```
+
+| Module used in this lab | Documentation URL |
+|---|---|
+| `nxos_vlans` | `…/nxos_vlans_module.html` |
+| `nxos_interfaces` | `…/nxos_interfaces_module.html` |
+| `nxos_l2_interfaces` | `…/nxos_l2_interfaces_module.html` |
+
+In later tasks you'll use `nxos_l3_interfaces` and `nxos_ospf_interfaces` — same pattern, different resource name in the URL.
+
+---
+
 ### Step 3: Fill in the Variables
 
 Now scroll to the `vars:` section in the playbook. You'll see TODO placeholders:
