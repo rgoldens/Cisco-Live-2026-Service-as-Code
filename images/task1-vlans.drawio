@@ -11,7 +11,7 @@
         </mxCell>
 
         <!-- Breadcrumb: LTRATO-1001 | Ansible Lab -->
-        <mxCell id="breadcrumb" parent="1" style="text;html=1;fontSize=11;align=left;verticalAlign=middle;fontColor=#00aaff;" value="&lt;font color=&quot;#00aaff&quot;&gt;LTRATO-1001&lt;/font&gt;&lt;font color=&quot;#5a6a7a&quot;&gt; | &lt;/font&gt;&lt;font color=&quot;#00aaff&quot;&gt;Ansible Lab&lt;/font&gt;" vertex="1">
+        <mxCell id="breadcrumb" parent="1" style="text;html=1;fontSize=11;align=left;verticalAlign=middle;fontColor=#00aaff;" value="&lt;font color=&quot;#00aaff&quot;&gt;LTRATO-1001&lt;/font&gt;&lt;font color=&quot;#5a6a7a&quot;&gt; | &lt;/font&gt;&lt;font color=&quot;#00aaff&quot;&gt;Service Insertion as Code: From Concept to Commit&lt;/font&gt;" vertex="1">
           <mxGeometry x="25" y="12" width="280" height="20" as="geometry" />
         </mxCell>
 
@@ -41,7 +41,7 @@
         <mxCell id="zone-west-label" parent="1" style="text;html=1;fontSize=13;align=center;verticalAlign=top;fontColor=#00aaff;fontStyle=1;" value="WEST SITE" vertex="1">
           <mxGeometry x="90" y="95" width="420" height="25" as="geometry" />
         </mxCell>
-        <mxCell id="zone-west-vlan" parent="1" style="text;html=1;fontSize=11;align=center;verticalAlign=top;fontColor=#00d4ff;" value="VLAN ??? / CLIENT-VLAN-???" vertex="1">
+        <mxCell id="zone-west-vlan" parent="1" style="text;html=1;fontSize=11;align=center;verticalAlign=top;fontColor=#00d4ff;" value="VLAN 23 / CLIENT-VLAN-23" vertex="1">
           <mxGeometry x="90" y="118" width="420" height="20" as="geometry" />
         </mxCell>
 
@@ -52,7 +52,7 @@
         <mxCell id="zone-east-label" parent="1" style="text;html=1;fontSize=13;align=center;verticalAlign=top;fontColor=#ff8800;fontStyle=1;" value="EAST SITE" vertex="1">
           <mxGeometry x="685" y="95" width="420" height="25" as="geometry" />
         </mxCell>
-        <mxCell id="zone-east-vlan" parent="1" style="text;html=1;fontSize=11;align=center;verticalAlign=top;fontColor=#00d4ff;" value="VLAN ??? / CLIENT-VLAN-???" vertex="1">
+        <mxCell id="zone-east-vlan" parent="1" style="text;html=1;fontSize=11;align=center;verticalAlign=top;fontColor=#00d4ff;" value="VLAN 34 / CLIENT-VLAN-34" vertex="1">
           <mxGeometry x="685" y="118" width="420" height="20" as="geometry" />
         </mxCell>
 
@@ -158,12 +158,12 @@
         </mxCell>
 
         <!-- You configure card - WEST -->
-        <mxCell id="vlan-west" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1e2d3d;strokeColor=#00aaff;strokeWidth=2;fontSize=11;align=left;spacingLeft=10;verticalAlign=middle;" value="&lt;font color=&quot;#00d4ff&quot;&gt;&lt;b&gt;You configure:&lt;/b&gt;&lt;/font&gt;&lt;br&gt;&lt;font color=&quot;#c8d0d8&quot;&gt;- VLAN ID: ???&lt;br&gt;- VLAN Name: ???&lt;br&gt;- Assign Eth1/3, Eth1/4&lt;/font&gt;" vertex="1">
+        <mxCell id="vlan-west" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1e2d3d;strokeColor=#00aaff;strokeWidth=2;fontSize=11;align=left;spacingLeft=10;verticalAlign=middle;" value="&lt;font color=&quot;#00d4ff&quot;&gt;&lt;b&gt;You configure:&lt;/b&gt;&lt;/font&gt;&lt;br&gt;&lt;font color=&quot;#c8d0d8&quot;&gt;- VLAN ID: 23&lt;br&gt;- VLAN Name: CLIENT-VLAN-23&lt;br&gt;- Assign Eth1/3, Eth1/4&lt;/font&gt;" vertex="1">
           <mxGeometry x="130" y="515" width="240" height="80" as="geometry" />
         </mxCell>
 
         <!-- You configure card - EAST -->
-        <mxCell id="vlan-east" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1e2d3d;strokeColor=#ff8800;strokeWidth=2;fontSize=11;align=left;spacingLeft=10;verticalAlign=middle;" value="&lt;font color=&quot;#ff8800&quot;&gt;&lt;b&gt;You configure:&lt;/b&gt;&lt;/font&gt;&lt;br&gt;&lt;font color=&quot;#c8d0d8&quot;&gt;- VLAN ID: ???&lt;br&gt;- VLAN Name: ???&lt;br&gt;- Assign Eth1/3, Eth1/4&lt;/font&gt;" vertex="1">
+        <mxCell id="vlan-east" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1e2d3d;strokeColor=#ff8800;strokeWidth=2;fontSize=11;align=left;spacingLeft=10;verticalAlign=middle;" value="&lt;font color=&quot;#ff8800&quot;&gt;&lt;b&gt;You configure:&lt;/b&gt;&lt;/font&gt;&lt;br&gt;&lt;font color=&quot;#c8d0d8&quot;&gt;- VLAN ID: 34&lt;br&gt;- VLAN Name: CLIENT-VLAN-34&lt;br&gt;- Assign Eth1/3, Eth1/4&lt;/font&gt;" vertex="1">
           <mxGeometry x="830" y="515" width="240" height="80" as="geometry" />
         </mxCell>
 
