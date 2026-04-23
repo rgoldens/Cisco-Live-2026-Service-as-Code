@@ -100,39 +100,12 @@
   .node-engine .node-title { font-size: 16px; font-weight: 700; color: #7b68ee; }
   .node-engine .node-sub { font-size: 11px; color: #5a6a7a; margin-top: 6px; }
 
-  /* Fan of SSH arrows */
+  /* Fan gap — SVG drawn by JS */
   .fan-wrap {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    gap: 4px;
     width: 90px;
     flex-shrink: 0;
-    padding: 8px 0;
-  }
-  .fan-arrow {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .fan-line {
-    flex: 1;
-    height: 2px;
-    background: #4a5568;
     position: relative;
   }
-  .fan-line::after {
-    content: '';
-    position: absolute;
-    right: -1px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 0; height: 0;
-    border-top: 4px solid transparent;
-    border-bottom: 4px solid transparent;
-    border-left: 6px solid #4a5568;
-  }
-  .fan-label { font-size: 9px; color: #5a6a7a; white-space: nowrap; letter-spacing: 0.04em; }
 
   /* Device nodes column */
   .devices-col {
@@ -240,47 +213,32 @@
     </div>
 
     <!-- Ansible Engine -->
-    <div class="node-engine">
+    <div class="node-engine" id="node-engine">
       <div class="node-icon">⚙️</div>
       <div class="node-title">Ansible Engine</div>
       <div class="node-sub">Control Node<br>(dCloud Server)</div>
     </div>
 
-    <!-- SSH fan arrows -->
-    <div class="fan-wrap">
-      <div class="fan-arrow">
-        <div class="fan-label">SSH</div>
-        <div class="fan-line"></div>
-      </div>
-      <div class="fan-arrow">
-        <div class="fan-label">SSH</div>
-        <div class="fan-line"></div>
-      </div>
-      <div class="fan-arrow">
-        <div class="fan-label">SSH</div>
-        <div class="fan-line"></div>
-      </div>
-      <div class="fan-arrow">
-        <div class="fan-label">SSH</div>
-        <div class="fan-line"></div>
-      </div>
+    <!-- SSH fan arrows — drawn by JS -->
+    <div class="fan-wrap" id="fan-wrap">
+      <svg id="fan-svg" style="position:absolute;top:0;left:0;overflow:visible;pointer-events:none;" width="10" height="10"></svg>
     </div>
 
     <!-- Devices -->
     <div class="devices-col">
-      <div class="node-device dev-nxos">
+      <div class="node-device dev-nxos" id="dev-nxos">
         <div class="dev-title">NX-OS</div>
         <div class="dev-hosts">n9k-ce01, n9k-ce02</div>
       </div>
-      <div class="node-device dev-iosxe">
+      <div class="node-device dev-iosxe" id="dev-iosxe">
         <div class="dev-title">IOS-XE</div>
         <div class="dev-hosts">csr-pe01, csr-pe02</div>
       </div>
-      <div class="node-device dev-iosxr">
+      <div class="node-device dev-iosxr" id="dev-iosxr">
         <div class="dev-title">IOS-XR</div>
         <div class="dev-hosts">xrd01, xrd02</div>
       </div>
-      <div class="node-device dev-linux">
+      <div class="node-device dev-linux" id="dev-linux">
         <div class="dev-title">Linux</div>
         <div class="dev-hosts">client1-4</div>
       </div>
@@ -347,5 +305,88 @@
   </div>
 
 </div>
+<script>
+window.addEventListener('load', () => {
+  const diagram  = document.querySelector('.diagram');
+  const diagR    = diagram.getBoundingClientRect();
+  const svg      = document.getElementById('fan-svg');
+  const fanWrap  = document.getElementById('fan-wrap');
+  const fanR     = fanWrap.getBoundingClientRect();
+
+  // Size SVG to cover the full diagram row
+  svg.setAttribute('width',  diagram.offsetWidth);
+  svg.setAttribute('height', diagram.offsetHeight);
+  // Offset so coords are relative to diagram
+  svg.style.left = (diagR.left - fanR.left) + 'px';
+  svg.style.top  = (diagR.top  - fanR.top)  + 'px';
+
+  const engineEl = document.getElementById('node-engine');
+  const devices  = [
+    { id: 'dev-nxos',  color: '#00cc66' },
+    { id: 'dev-iosxe', color: '#e5c000' },
+    { id: 'dev-iosxr', color: '#00aaff' },
+    { id: 'dev-linux', color: '#7b68ee' },
+  ];
+
+  // Arrow marker defs
+  const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+  devices.forEach(({ id, color }) => {
+    const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
+    marker.setAttribute('id', 'm-' + id);
+    marker.setAttribute('markerWidth', '7');
+    marker.setAttribute('markerHeight', '7');
+    marker.setAttribute('refX', '6');
+    marker.setAttribute('refY', '3');
+    marker.setAttribute('orient', 'auto');
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', 'M0,0 L0,6 L7,3 z');
+    path.setAttribute('fill', color);
+    marker.appendChild(path);
+    defs.appendChild(marker);
+  });
+  svg.appendChild(defs);
+
+  const eR = engineEl.getBoundingClientRect();
+  // Source: right edge of engine, at its vertical midpoint
+  const x1 = eR.right - diagR.left;
+  const eMidY = (eR.top + eR.bottom) / 2 - diagR.top;
+
+  devices.forEach(({ id, color }) => {
+    const devEl = document.getElementById(id);
+    const dR = devEl.getBoundingClientRect();
+    // Target: left edge of device box, at its vertical midpoint
+    const x2 = dR.left - diagR.left;
+    const y2 = (dR.top + dR.bottom) / 2 - diagR.top;
+
+    // Cubic bezier — starts horizontally from engine midY, curves to device midY
+    const cx1 = x1 + (x2 - x1) * 0.5;
+    const cx2 = x2 - (x2 - x1) * 0.2;
+
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    line.setAttribute('d', `M ${x1} ${eMidY} C ${cx1} ${eMidY}, ${cx2} ${y2}, ${x2} ${y2}`);
+    line.setAttribute('stroke', color);
+    line.setAttribute('stroke-width', '1.8');
+    line.setAttribute('fill', 'none');
+    line.setAttribute('marker-end', `url(#m-${id})`);
+    line.setAttribute('opacity', '0.9');
+    svg.appendChild(line);
+
+    // SSH label — midpoint of curve
+    const lx = (x1 + x2) / 2;
+    const ly = (eMidY + y2) / 2 - 5;
+    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    text.setAttribute('x', lx);
+    text.setAttribute('y', ly);
+    text.setAttribute('fill', color);
+    text.setAttribute('font-size', '9');
+    text.setAttribute('opacity', '0.7');
+    text.setAttribute('text-anchor', 'middle');
+    text.setAttribute('font-family', 'Inter, sans-serif');
+    text.setAttribute('letter-spacing', '0.05em');
+    text.textContent = 'SSH';
+    svg.appendChild(text);
+  });
+});
+</script>
 </body>
 </html>
