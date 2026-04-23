@@ -7,7 +7,7 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: #0e1621; font-family: 'Inter', sans-serif; }
+  body { background: #0e1621; font-family: 'Inter', sans-serif; overflow: hidden; }
 
   .slide {
     background: #0e1621;
@@ -322,10 +322,10 @@ window.addEventListener('load', () => {
 
   const engineEl = document.getElementById('node-engine');
   const devices  = [
-    { id: 'dev-nxos',  color: '#00cc66' },
-    { id: 'dev-iosxe', color: '#e5c000' },
-    { id: 'dev-iosxr', color: '#00aaff' },
-    { id: 'dev-linux', color: '#7b68ee' },
+    { id: 'dev-nxos',  color: '#00cc66', t: 0.55 },
+    { id: 'dev-iosxe', color: '#e5c000', t: 0.50 },
+    { id: 'dev-iosxr', color: '#00aaff', t: 0.50 },
+    { id: 'dev-linux', color: '#7b68ee', t: 0.55 },
   ];
 
   // Arrow marker defs
@@ -351,7 +351,7 @@ window.addEventListener('load', () => {
   const x1 = eR.right - diagR.left;
   const eMidY = (eR.top + eR.bottom) / 2 - diagR.top;
 
-  devices.forEach(({ id, color }) => {
+  devices.forEach(({ id, color, t }) => {
     const devEl = document.getElementById(id);
     const dR = devEl.getBoundingClientRect();
     // Target: left edge of device box, at its vertical midpoint
@@ -371,9 +371,11 @@ window.addEventListener('load', () => {
     line.setAttribute('opacity', '0.9');
     svg.appendChild(line);
 
-    // SSH label — midpoint of curve
-    const lx = (x1 + x2) / 2;
-    const ly = (eMidY + y2) / 2 - 5;
+    // SSH label — sample curve at device-specific t, offset 13px above
+    const mt = 1 - t;
+    // Cubic bezier point: B(t)
+    const lx = mt*mt*mt*x1 + 3*mt*mt*t*cx1 + 3*mt*t*t*cx2 + t*t*t*x2;
+    const ly = mt*mt*mt*eMidY + 3*mt*mt*t*eMidY + 3*mt*t*t*y2 + t*t*t*y2 - 13;
     const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     text.setAttribute('x', lx);
     text.setAttribute('y', ly);
