@@ -104,10 +104,7 @@ In this lab, **you edit the data (vars), not the logic (tasks).** This mirrors
 real-world IaC practice: engineers change variables in a data file, and the
 automation logic stays the same across environments.
 
-The expression `{{ vlan_config[inventory_hostname].id }}` means: "Look up the
-current device's hostname in the `vlan_config` dictionary, then get its `id`
-field." When Ansible runs on `n9k-ce01`, this resolves to `23`. When it runs
-on `n9k-ce02`, it resolves to whatever you set for that switch.
+The expression `{{ vlan_config[inventory_hostname].id }}` works in two steps. First, `inventory_hostname` is a **magic variable** Ansible sets automatically at runtime — it equals the name of the device currently being configured (e.g., `n9k-ce01`). Second, that name is used as a dictionary key to look up the right entry in `vlan_config`. This is why the keys in the `vars` block are written to **exactly match the hostnames in your inventory** — `n9k-ce01` in `vars` must match `n9k-ce01` in `inventory.yml`. When Ansible runs on `n9k-ce01`, `inventory_hostname` resolves to `"n9k-ce01"`, so `vlan_config["n9k-ce01"].id` returns `23`. When it runs on `n9k-ce02`, it returns whatever you set for that switch.
 
 > **Automation Insight:** This data/logic split is the pattern behind every scalable automation system. Think of it this way: the playbook is a template you write once. The variables are a spreadsheet your team fills in. When a new site comes online, nobody touches the automation code — they just add a row to the data.
 
