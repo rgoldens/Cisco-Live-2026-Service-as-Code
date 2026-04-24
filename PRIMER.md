@@ -132,7 +132,7 @@ Cisco publishes resource modules for NX-OS, IOS-XE, IOS-XR, and more — all fol
 
 ![Deep Dive: How NX-OS Modules Work in Ansible](images/task1-deep-dive-modules.png)
 
-Every task in this lab uses modules from the `cisco.nxos` collection. Understanding the naming convention and `state:` behavior once means you can read any task in the lab — and build your own.
+Every task in **Task 1** uses modules from the `cisco.nxos` collection. Understanding the naming convention and `state:` behavior once means you can read any task in the lab — and build your own.
 
 #### Module Naming — What does `cisco.nxos.nxos_vlans` actually mean?
 
