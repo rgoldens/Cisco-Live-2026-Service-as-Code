@@ -137,7 +137,7 @@ Using **Table 1: VLAN Assignments**, fill in the 4 values:
 3. **n9k-ce02 VLAN ID:** The VLAN for east-side clients (client3, client4)
 4. **n9k-ce02 VLAN name:** Use the naming convention `CLIENT-VLAN-<id>`
 
-Save the file when done.
+Save the file when done. If using `nano`: `Ctrl+O` → `Enter` to save, then `Ctrl+X` to exit.
 
 ### Step 4: Run the Playbook
 
