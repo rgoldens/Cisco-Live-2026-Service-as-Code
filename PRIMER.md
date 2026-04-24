@@ -27,6 +27,29 @@ commands, and verifying results.
 - **Multi-vendor** — One tool handles NX-OS, IOS-XE, IOS-XR, Linux, and more.
   Platform-specific "collections" (plugins) handle the differences.
 
+### What is an Inventory?
+
+Before Ansible can connect to anything, it needs to know **what devices exist and how to reach them**. That list is the **inventory** — a file (in this lab, `inventory.yml`) that defines every device, its IP address, and which group it belongs to.
+
+```yaml
+# inventory.yml (simplified)
+nxos:               # ← group name — used in playbooks as hosts: nxos
+  hosts:
+    n9k-ce01:
+      ansible_host: 172.20.20.30   # management IP
+    n9k-ce02:
+      ansible_host: 172.20.20.31
+
+csr:                # ← a different group for IOS-XE devices
+  hosts:
+    csr-pe01:
+      ansible_host: 172.20.20.20
+```
+
+**Groups** let you target a subset of devices in a play. When a playbook says `hosts: nxos`, Ansible runs that play on every host in the `nxos` group — in this lab, `n9k-ce01` and `n9k-ce02`. Each group can also carry shared variables like `ansible_network_os` and connection settings so you don't repeat them per device.
+
+> **In this lab the inventory is already set up for you.** You won't need to edit it — just know that `hosts: nxos` in a playbook means "run on both Nexus switches."
+
 ### Playbook Structure
 
 ![Anatomy of an Ansible Playbook](images/playbook-anatomy.png)
@@ -38,7 +61,8 @@ targets a group of devices and runs a series of **tasks**:
 ---                              # YAML document start
 - name: "My Play"               # A PLAY targets a group of devices
   hosts: nxos                    # Which devices from inventory to configure
-  gather_facts: false            # Skip auto-discovery (required for network devices)
+  gather_facts: false            # Ansible can auto-discover server details (OS, IPs, memory) — called "facts".
+                                 # Network devices don't support this, so we always turn it off.
 
   vars:                          # VARIABLES — data that tasks reference
     my_vlan: 23
@@ -97,7 +121,7 @@ on `n9k-ce02`, it resolves to whatever you set for that switch.
 | **Variable** | Data referenced with `{{ }}` — keeps config values separate from logic |
 | **Collection** | A package of modules for a specific platform (e.g., `cisco.nxos`) |
 | **`hosts:`** | Which inventory group to target (e.g., `nxos`, `csr`, `xrd`, `linux`) |
-| **`gather_facts: false`** | Must be set for network devices (they don't support default fact gathering) |
+| **`gather_facts: false`** | Ansible can auto-discover server details ("facts") before running tasks. Network devices don't support this — always set it to `false` for network plays |
 | **`state: merged`** | Add/update config without removing anything that already exists |
 | **`register:`** | Save command output into a variable for later display or inspection |
 | **`loop:`** | Run the same task multiple times, once per item in a list |
@@ -122,7 +146,7 @@ nano ~/ce-access-vlan.yml
 > file is set to 2-space indentation. If you see "Tab Size: 4", click it
 > and switch to spaces.
 
-> **Automation Insight:** This TODO pattern mirrors how real teams work. A senior engineer writes the playbook logic and tests it. A junior engineer or even a NOC operator fills in the variables for each deployment. The automation skill ceiling is low — if you can read a table and type a number, you can deploy infrastructure. That's how automation democratizes network operations.
+> **Automation Insight:** The data/logic split you see in this lab mirrors how real teams work. A senior engineer writes the playbook logic and tests it once. A junior engineer or NOC operator fills in the variables for each deployment. If you can read a table and type a number, you can deploy infrastructure — that's how automation democratizes network operations.
 
 ---
 
@@ -130,9 +154,9 @@ nano ~/ce-access-vlan.yml
 
 Cisco publishes resource modules for NX-OS, IOS-XE, IOS-XR, and more — all following the same naming convention, parameter structure, and `state:` behavior. In Task 1 we use the **NX-OS VLAN module** (`cisco.nxos.nxos_vlans`) as a concrete example, but everything you learn here applies equally to `cisco.ios.ios_vlans`, `cisco.iosxr.iosxr_bgp_global`, and any other Cisco resource module.
 
-![Deep Dive: How NX-OS Modules Work in Ansible](images/task1-deep-dive-modules.png)
+These modules are distributed as **collections** — think of a collection as an app store package for Ansible. Cisco publishes its collections on **Ansible Galaxy** (`galaxy.ansible.com`), and they are pre-installed in this lab. The collection name `cisco.nxos` means: published by Cisco, for NX-OS. It contains ~100 modules — one per resource type (VLANs, interfaces, BGP, ACLs, OSPF, and more). Understanding one module's naming and behavior means you can immediately read any other module in the collection.
 
-Every task in **Task 1** uses modules from the `cisco.nxos` collection. Understanding the naming convention and `state:` behavior once means you can read any task in the lab — and build your own.
+![Deep Dive: How NX-OS Modules Work in Ansible](images/task1-deep-dive-modules.png)
 
 #### Module Naming — What does `cisco.nxos.nxos_vlans` actually mean?
 
