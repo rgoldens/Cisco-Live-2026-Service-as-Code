@@ -127,21 +127,20 @@ The expression `{{ vlan_config[inventory_hostname].id }}` works in two steps. Fi
 
 ### How to Edit Playbooks
 
-Use VS Code (already connected via Remote-SSH) to open and edit the YAML
-files. You can also use `nano` or `vi` from the terminal:
+In the real world, playbooks are typically edited in a desktop editor like VS Code, PyCharm, or whatever your team uses. **In this lab, you will edit files directly in the terminal** — the dCloud environment is a remote Linux server, so a terminal editor is the right tool.
+
+You can use any terminal editor you prefer — `nano`, `vi`, or `vim`. All examples in this lab use `nano` (recommended if you're unsure, as it shows key shortcuts at the bottom of the screen):
 
 ```bash
 nano ~/ce-access-vlan.yml
 ```
 
+To save and exit `nano`: `Ctrl+O` → `Enter` to save, then `Ctrl+X` to exit.
+
 > **YAML is whitespace-sensitive.** Use spaces (not tabs), and make sure
 > your indentation matches the surrounding lines. If your playbook fails
 > with a syntax error, check indentation first. A common mistake is using
 > 3 spaces instead of 2, or mixing tabs and spaces.
-
-> **Tip:** In VS Code, the bottom status bar shows "Spaces: 2" when the
-> file is set to 2-space indentation. If you see "Tab Size: 4", click it
-> and switch to spaces.
 
 > **Automation Insight:** The data/logic split you see in this lab mirrors how real teams work. A senior engineer writes the playbook logic and tests it once. A junior engineer or NOC operator fills in the variables for each deployment. If you can read a table and type a number, you can deploy infrastructure — that's how automation democratizes network operations.
 
