@@ -126,7 +126,9 @@ nano ~/ce-access-vlan.yml
 
 ---
 
-### Cisco NX-OS Resource Modules
+### Cisco Resource Modules
+
+Cisco publishes resource modules for NX-OS, IOS-XE, IOS-XR, and more — all following the same naming convention, parameter structure, and `state:` behavior. In Task 1 we use the **NX-OS VLAN module** (`cisco.nxos.nxos_vlans`) as a concrete example, but everything you learn here applies equally to `cisco.ios.ios_vlans`, `cisco.iosxr.iosxr_bgp_global`, and any other Cisco resource module.
 
 ![Deep Dive: How NX-OS Modules Work in Ansible](images/task1-deep-dive-modules.png)
 
