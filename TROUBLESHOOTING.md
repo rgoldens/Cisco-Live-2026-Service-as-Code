@@ -1,31 +1,36 @@
-← [Task 4](TASK4.md) | [Lab Guide](LAB-GUIDE.md) | [Reference Tables](REFERENCE.md)
+← [Task 5](TASK5.md) | [Task 6](TASK6.md) | [Lab Guide](LAB-GUIDE.md) | [Reference Tables](REFERENCE.md)
 
 ---
 
 ## What You've Accomplished
 
-By completing all 4 tasks, you've automated the configuration of a full
-service provider network from the ground up — using two different tools:
+By completing all tasks, you've automated the configuration of a full
+service provider network from the ground up — using two different tools
+and three different protocols:
 
 | Layer | What You Built | Devices Configured | Task |
 |-------|---------------|-------------------|------|
 | **L2 Switching** | VLANs, access ports | 2 NX-OS switches | Task 1 |
 | **L3 Routing (IGP)** | IS-IS adjacencies, SVIs, static routes | 2 NX-OS + 2 IOS-XE + 4 Linux | Task 2 |
 | **L3 VPN (BGP)** | VRFs, iBGP VPNv4, eBGP, redistribution | 2 IOS-XR + 2 IOS-XE + 4 Linux | Task 3 |
-| **Terraform IaC** | Same XRd config via gNMI | 2 IOS-XR | Task 4 |
+| **Terraform (gNMI)** | Same XRd config via gNMI | 2 IOS-XR | Task 4 |
+| **Terraform (RESTCONF)** | IOS-XE config via RESTCONF + Docker infra | 1 IOS-XE + 2 Linux | Task 5 |
+| **Version Control** | Commit and push completed work to GitHub | — | Task 6 |
 | **Verification** | Automated show commands and ping tests | All 10 devices | Every task |
 
 **By the numbers:**
-- **10 devices** managed from a single control node
+- **10+ devices** managed from a single control node
 - **4 different platforms** (NX-OS, IOS-XE, IOS-XR, Linux) with 3 different
   connection methods (network_cli with keys, network_cli with password, raw SSH)
 - **2 IaC tools** (Ansible + Terraform) compared side-by-side on the same
-  configuration
+  configuration, plus a second Terraform lab using RESTCONF
 - **~32 configuration values** you filled in by hand, referencing topology
   diagrams and IP tables — just like real network planning
-- **3 Ansible playbooks** + **1 Terraform config** — replacing what would be
+- **3 Ansible playbooks** + **2 Terraform configs** — replacing what would be
   hundreds of manual CLI commands across a dozen SSH sessions
 - **0 manual device logins** — everything was done through automation
+- **Version-controlled workflow** — your changes are committed and pushed to
+  Git, just like a production IaC pipeline
 
 ### Key Takeaways
 
@@ -59,7 +64,7 @@ service provider network from the ground up — using two different tools:
    ad-hoc commands). Terraform excels at provisioning, state tracking, and
    clean lifecycle management (plan, apply, destroy). Most teams use both.
 
-> **Automation Insight:** Everything you built today is in version-controllable YAML and HCL files. In a production workflow, these go into a Git repo. Someone opens a pull request to change a VLAN ID, a teammate reviews it, CI runs the playbook in a test environment, and only then does it hit production. No more mystery changes — every change has an author, a timestamp, and a review trail.
+> **Automation Insight:** Everything you built today is in version-controllable YAML and HCL files — and you pushed them to a Git repository in Task 6. In a production workflow, someone opens a pull request to change a VLAN ID, a teammate reviews it, CI runs the playbook in a test environment, and only then does it hit production. No more mystery changes — every change has an author, a timestamp, and a review trail.
 
 ---
 
@@ -175,9 +180,9 @@ ansible csr -m cisco.ios.ios_command -a "commands='show ip bgp summary'"
 - **Check the solution files** — If you're stuck, peek at `solutions/` for
   the correct values:
   ```bash
-  cat ~/interactive/solutions/ce-access-vlan.yml | head -20
+  cat ~/solutions/ce-access-vlan.yml | head -20
   ```
 
 ---
 
-← [Task 4](TASK4.md) | [Lab Guide](LAB-GUIDE.md) | [Reference Tables](REFERENCE.md)
+← [Task 5](TASK5.md) | [Task 6](TASK6.md) | [Lab Guide](LAB-GUIDE.md) | [Reference Tables](REFERENCE.md)
