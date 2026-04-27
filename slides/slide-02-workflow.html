@@ -44,36 +44,44 @@
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    position: relative;
   }
 
   .step-accent { height: 3px; }
-  .step-body { padding: 20px 18px 20px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px; flex: 1; }
+  .step-body {
+    padding: 18px 14px 18px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    flex: 1;
+  }
 
   .step-name {
     font-size: 13px;
     font-weight: 700;
     letter-spacing: 0.02em;
-  }
-
-  .step-num {
-    font-size: 80px;
-    font-weight: 700;
-    color: #ffffff08;
-    line-height: 1;
-    position: absolute;
-    bottom: 60px;
-    left: 50%;
-    transform: translateX(-50%);
-    user-select: none;
-    pointer-events: none;
+    margin-bottom: 12px;
   }
 
   .step-desc {
     font-size: 12px;
     color: #c8d0d8;
     line-height: 1.65;
-    z-index: 1;
+  }
+
+  .step-num {
+    font-size: 100px;
+    font-weight: 700;
+    color: #ffffff0d;
+    line-height: 1;
+    user-select: none;
+    pointer-events: none;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin: 8px 0;
   }
 
   .step-cmd {
@@ -83,8 +91,8 @@
     font-family: 'JetBrains Mono', monospace;
     font-size: 11px;
     font-weight: 600;
-    margin-top: auto;
-    z-index: 1;
+    width: 100%;
+    text-align: center;
   }
 
   .arrow-col {
@@ -117,12 +125,12 @@
       <div class="step-accent" style="background:#5a6a7a;"></div>
       <div class="step-body">
         <div class="step-name" style="color:#c8d0d8;">Write</div>
-        <div class="step-num">1</div>
         <div class="step-desc">Define resources<br>in .tf config files.<br>HCL is readable by<br>humans &amp; machines.</div>
-        <div style="margin-top:14px; z-index:1;">
-          <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#5a6a7a; background:#0e1621; border-radius:4px; padding:4px 8px; margin-bottom:4px;">main.tf</div>
-          <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#5a6a7a; background:#0e1621; border-radius:4px; padding:4px 8px; margin-bottom:4px;">variables.tf</div>
-          <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#5a6a7a; background:#0e1621; border-radius:4px; padding:4px 8px;">outputs.tf</div>
+        <div class="step-num">1</div>
+        <div style="width:100%; display:flex; flex-direction:column; gap:4px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#5a6a7a; background:#0e1621; border-radius:4px; padding:4px 8px; text-align:center;">main.tf</div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#5a6a7a; background:#0e1621; border-radius:4px; padding:4px 8px; text-align:center;">variables.tf</div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#5a6a7a; background:#0e1621; border-radius:4px; padding:4px 8px; text-align:center;">outputs.tf</div>
         </div>
       </div>
     </div>
@@ -138,8 +146,8 @@
       <div class="step-accent" style="background:#00aaff;"></div>
       <div class="step-body">
         <div class="step-name" style="color:#00aaff;">terraform init</div>
-        <div class="step-num">2</div>
         <div class="step-desc">Download provider<br>plugins.<br>Run once per project<br>or new provider.</div>
+        <div class="step-num">2</div>
         <div class="step-cmd" style="color:#00aaff;">$ terraform init</div>
       </div>
     </div>
@@ -155,8 +163,8 @@
       <div class="step-accent" style="background:#00d4ff;"></div>
       <div class="step-body">
         <div class="step-name" style="color:#00d4ff;">terraform plan</div>
-        <div class="step-num">3</div>
         <div class="step-desc">Preview every change<br>before it happens.<br>Shows +add /~change<br>/−destroy counts.</div>
+        <div class="step-num">3</div>
         <div class="step-cmd" style="color:#00d4ff;">$ terraform plan</div>
       </div>
     </div>
@@ -172,8 +180,8 @@
       <div class="step-accent" style="background:#00cc66;"></div>
       <div class="step-body">
         <div class="step-name" style="color:#00cc66;">terraform apply</div>
-        <div class="step-num">4</div>
         <div class="step-desc">Create or update<br>real infrastructure.<br>Confirm with 'yes'<br>after reviewing plan.</div>
+        <div class="step-num">4</div>
         <div class="step-cmd" style="color:#00cc66;">$ terraform apply</div>
       </div>
     </div>
@@ -189,8 +197,8 @@
       <div class="step-accent" style="background:#ff8800;"></div>
       <div class="step-body">
         <div class="step-name" style="color:#ff8800;">terraform destroy</div>
-        <div class="step-num">5</div>
         <div class="step-desc">Remove everything<br>Terraform created.<br>Correct order,<br>nothing left behind.</div>
+        <div class="step-num">5</div>
         <div class="step-cmd" style="color:#ff8800;">$ terraform destroy</div>
       </div>
     </div>
