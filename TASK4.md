@@ -77,13 +77,13 @@ If this is your first time with Terraform, here are the key concepts:
 
 **The workflow:**
 
-```
+<pre>
 terraform init    →  Download the IOS-XR provider plugin
 terraform plan    →  Preview exactly what will be created (read this!)
 terraform apply   →  Push the configuration to the devices
 terraform plan    →  Run again — should show "No changes" (idempotency)
 terraform destroy →  Clean removal of everything Terraform created
-```
+</pre>
 
 **How it connects to the routers:**
 
@@ -109,10 +109,10 @@ nano terraform.tfvars
 
 Find the two `___` placeholders for BGP:
 
-```hcl
+<pre>
 bgp_asn      = "___"       # TODO: SP core AS number (XRd routers)
 customer_asn = "___"       # TODO: Customer PE AS number (CSR routers)
-```
+</pre>
 
 Using **Table 3: BGP Peering**, fill in:
 
@@ -126,7 +126,7 @@ Using **Table 3: BGP Peering**, fill in:
 Scroll down to the `xrd_config` block — same variables you filled in for
 Task 3, same reference tables:
 
-```hcl
+<pre>
 xrd_config = {
   xrd01 = {
     remote_lo = "___"       # TODO: xrd02's Loopback0 IP
@@ -141,7 +141,7 @@ xrd_config = {
     csr_peer  = "___"       # TODO: csr-pe02's IP on the same /30 link
   }
 }
-```
+</pre>
 
 Using **Table 2** and **Table 3**, fill in:
 
@@ -223,7 +223,7 @@ terraform init
 
 Expected output:
 
-```
+<pre>
 Initializing the backend...
 Initializing provider plugins...
 - Finding ciscodevnet/iosxr versions matching ">= 0.5.0"...
@@ -257,7 +257,7 @@ should now work.
 If you ever set or change modules or backend configuration for Terraform,
 rerun this command to reinitialize your working directory. If you forget, other
 commands will detect it and remind you to do so if necessary.
-```
+</pre>
 
 > **Don't worry about the warnings.** The "unauthenticated" and "incomplete lock
 > file" messages are expected — we're using a local filesystem mirror for the
@@ -280,7 +280,7 @@ both XRd routers (9 per router).
 <details>
 <summary>Full terraform plan output (click to expand)</summary>
 
-```
+<pre>
 Terraform used the selected providers to generate the following execution
 plan. Resource actions are indicated with the following symbols:
   + create
@@ -520,7 +520,7 @@ Terraform will perform the following actions:
     }
 
 Plan: 18 to add, 0 to change, 0 to destroy.
-```
+</pre>
 
 </details>
 
@@ -559,19 +559,19 @@ terraform apply
 
 Terraform will show the full plan again and ask for confirmation. Type `yes`:
 
-```
+<pre>
 Do you want to perform these actions?
   Terraform will perform the actions described above.
   Only 'yes' will be accepted to approve.
 
   Enter a value: yes
-```
+</pre>
 
 Watch the resources being created — Terraform automatically determines the
 correct order based on `depends_on` relationships (VRF before interface,
 BGP before VRF-BGP):
 
-```
+<pre>
 iosxr_route_policy.pass_all_xrd01: Creating...
 iosxr_route_policy.pass_all_xrd02: Creating...
 iosxr_vrf.customer_clive_xrd01: Creating...
@@ -608,7 +608,7 @@ iosxr_router_bgp_vrf_address_family.vrf_af_xrd02: Creation complete after 0s
 iosxr_router_bgp_vrf_address_family.vrf_af_xrd01: Creation complete after 1s
 
 Apply complete! Resources: 18 added, 0 changed, 0 destroyed.
-```
+</pre>
 
 > **Timing race note:** On the first apply, you may see an error on the last
 > 2 resources (`vrf_nbr_af_xrd01` / `vrf_nbr_af_xrd02`) with the message
@@ -645,7 +645,7 @@ terraform plan
 Terraform reads the live configuration from both routers via gNMI, compares
 it against the desired state in your `.tf` files, and reports:
 
-```
+<pre>
 iosxr_route_policy.pass_all_xrd02: Refreshing state...
 iosxr_route_policy.pass_all_xrd01: Refreshing state...
 iosxr_vrf.customer_clive_xrd02: Refreshing state...
@@ -669,7 +669,7 @@ No changes. Your infrastructure matches the configuration.
 
 Terraform has compared your real infrastructure against your configuration
 and found no differences, so no changes are needed.
-```
+</pre>
 
 Notice the "Refreshing state..." lines — Terraform is actively reading the
 live device config via gNMI and comparing every attribute against what it
@@ -696,7 +696,7 @@ ansible -i inventory.yml linux-client1 -m raw -a "ping -c 3 34.34.34.1"
 
 Expected output — 100% success:
 
-```
+<pre>
 linux-client1 | CHANGED | rc=0 >>
 PING 34.34.34.1 (34.34.34.1) 56(84) bytes of data.
 64 bytes from 34.34.34.1: icmp_seq=1 ttl=58 time=13.4 ms
@@ -706,7 +706,7 @@ PING 34.34.34.1 (34.34.34.1) 56(84) bytes of data.
 --- 34.34.34.1 ping statistics ---
 3 packets transmitted, 3 received, 0% packet loss, time 2003ms
 rtt min/avg/max/mdev = 10.117/11.334/13.350/1.435 ms
-```
+</pre>
 
 Full east-west connectivity — rebuilt entirely with Terraform. The traffic
 path is identical to Task 3: client1 (23.23.23.1) → n9k-ce01 → csr-pe01 →
@@ -728,7 +728,7 @@ dependency order — leaf resources first, then their parents:
 <details>
 <summary>Full terraform destroy output (click to expand)</summary>
 
-```
+<pre>
 Terraform will perform the following actions:
 
   # iosxr_interface_ethernet.gi1_xrd01 will be destroyed
@@ -795,7 +795,7 @@ iosxr_router_bgp.bgp_xrd01: Destruction complete after 0s
 iosxr_router_bgp.bgp_xrd02: Destruction complete after 1s
 
 Destroy complete! Resources: 18 destroyed.
-```
+</pre>
 
 </details>
 
@@ -814,13 +814,13 @@ ansible -i inventory.yml linux-client1 -m raw -a "ping -c 3 -W 2 34.34.34.1"
 
 Expected output — 100% loss:
 
-```
+<pre>
 linux-client1 | FAILED | rc=1 >>
 PING 34.34.34.1 (34.34.34.1) 56(84) bytes of data.
 
 --- 34.34.34.1 ping statistics ---
 3 packets transmitted, 0 received, 100% packet loss, time 2025ms
-```
+</pre>
 
 The VRF, BGP, and route-policies have been cleanly removed from both XRd
 routers. The data plane is down because the SP core no longer carries the
@@ -922,13 +922,13 @@ ansible -i inventory.yml linux-client1 -m raw -a "ping -c 3 -W 2 34.34.34.1"
 
 Expected output — 100% packet loss:
 
-```
+<pre>
 linux-client1 | FAILED | rc=1 >>
 PING 34.34.34.1 (34.34.34.1) 56(84) bytes of data.
 
 --- 34.34.34.1 ping statistics ---
 3 packets transmitted, 0 received, 100% packet loss, time 2048ms
-```
+</pre>
 
 The interface is down, so the eBGP VRF session to csr-pe01 drops, VPN
 routes are withdrawn, and client1 has no path to reach client3's network.
@@ -945,7 +945,7 @@ terraform plan
 Terraform reads the live device configuration via gNMI, compares it against
 the desired state in your `.tf` files, and shows you exactly what drifted:
 
-```
+<pre>
 iosxr_route_policy.pass_all_xrd01: Refreshing state...
 iosxr_route_policy.pass_all_xrd02: Refreshing state...
 iosxr_vrf.customer_clive_xrd02: Refreshing state...
@@ -980,7 +980,7 @@ Terraform will perform the following actions:
     }
 
 Plan: 0 to add, 1 to change, 0 to destroy.
-```
+</pre>
 
 Read this output carefully — it's packed with information:
 
@@ -1017,7 +1017,7 @@ terraform apply -auto-approve
 Expected output — watch Terraform refresh all 18 resources, find the one
 that drifted, and fix only that:
 
-```
+<pre>
 iosxr_route_policy.pass_all_xrd02: Refreshing state...
 iosxr_route_policy.pass_all_xrd01: Refreshing state...
 iosxr_vrf.customer_clive_xrd01: Refreshing state...
@@ -1056,7 +1056,7 @@ iosxr_interface_ethernet.gi1_xrd01: Modifying...
 iosxr_interface_ethernet.gi1_xrd01: Modifications complete after 0s
 
 Apply complete! Resources: 0 added, 1 changed, 0 destroyed.
-```
+</pre>
 
 Notice: **0 added, 1 changed, 0 destroyed.** Terraform only touched the
 one resource that drifted — `gi1_xrd01` on `xrd01`. The other 17 resources
@@ -1078,7 +1078,7 @@ ansible -i inventory.yml linux-client1 -m raw -a "ping -c 3 34.34.34.1"
 
 Expected output — 100% success:
 
-```
+<pre>
 linux-client1 | CHANGED | rc=0 >>
 PING 34.34.34.1 (34.34.34.1) 56(84) bytes of data.
 64 bytes from 34.34.34.1: icmp_seq=1 ttl=58 time=13.4 ms
@@ -1088,7 +1088,7 @@ PING 34.34.34.1 (34.34.34.1) 56(84) bytes of data.
 --- 34.34.34.1 ping statistics ---
 3 packets transmitted, 3 received, 0% packet loss, time 2003ms
 rtt min/avg/max/mdev = 10.117/11.334/13.350/1.435 ms
-```
+</pre>
 
 Now confirm Terraform sees no remaining drift:
 
@@ -1097,7 +1097,7 @@ cd ~/task4-terraform
 terraform plan
 ```
 
-```
+<pre>
 iosxr_route_policy.pass_all_xrd01: Refreshing state...
 iosxr_route_policy.pass_all_xrd02: Refreshing state...
 iosxr_vrf.customer_clive_xrd02: Refreshing state...
@@ -1121,7 +1121,7 @@ No changes. Your infrastructure matches the configuration.
 
 Terraform has compared your real infrastructure against your configuration
 and found no differences, so no changes are needed.
-```
+</pre>
 
 All 18 resources refreshed, all 18 match. The drift has been fully
 remediated. The full cycle is complete:
