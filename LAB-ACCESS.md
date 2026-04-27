@@ -25,7 +25,7 @@ the following information. Confirm you have all four values before proceeding:
 | **VPN Address** | `dcloud-sjc-anyconnect.cisco.com` | _______________ |
 | **VPN Username** | `v123user1` | _______________ |
 | **VPN Password** | `a1b2c3` | _______________ |
-| **Lab Server IP** | `198.18.134.100` | _______________ |
+| **Lab Server IP** | `198.18.134.90` | _______________ |
 
 > **Do not have your credentials?** Raise your hand and a proctor will bring
 > them to you. Do not proceed without them.
@@ -155,10 +155,10 @@ asking for the SSH host.
    cisco@<LAB-SERVER-IP>
    ```
 
-   For example, if your lab server IP is `198.18.134.100`:
+   For example, if your lab server IP is `198.18.134.90`:
 
    ```
-   cisco@198.18.134.100
+   cisco@198.18.134.90
    ```
 
 2. Press **Enter**.
@@ -210,7 +210,7 @@ After entering the password, VS Code will:
 You will know you are connected when:
 
 - The **bottom-left corner** of VS Code shows a green bar that reads
-  **`SSH: <LAB-SERVER-IP>`** (e.g., `SSH: 198.18.134.100`).
+  **`SSH: <LAB-SERVER-IP>`** (e.g., `SSH: 198.18.134.90`).
 - The Explorer panel shows the remote file system (not your local PC).
 
 ---
