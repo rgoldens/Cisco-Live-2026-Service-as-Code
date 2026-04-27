@@ -97,6 +97,14 @@ data flow diagrams). Command blocks students need to type remain as fenced code.
 
 ---
 
+### 1.1.6 — ContainerLab Primer
+
+Added `ContainerLab-Primer.md` — informational primer for students explaining what
+ContainerLab is, how it works under the hood, common commands, the VS Code extension,
+and key concepts. The lab is pre-built for students; this provides background context.
+
+---
+
 ### 1.1.5 — Terraform Workflow Diagram
 
 Added dark-themed draw.io diagram for the 5-step Terraform workflow
