@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1200" />
+<title>The Terraform Workflow</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #0e1621;
+    display: block;
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .slide {
+    background: #0e1621;
+    width: 1200px;
+    padding: 22px 36px 48px 36px;
+    position: relative;
+  }
+
+  .breadcrumb { font-size: 11px; color: #00aaff; margin-bottom: 4px; letter-spacing: 0.04em; }
+  .breadcrumb span { color: #5a6a7a; }
+  .title { font-size: 42px; font-weight: 700; color: #fff; margin-bottom: 3px; }
+  .divider      { width: 100%; height: 3px; background: #00aaff; margin-bottom: 3px; border-radius: 1px; }
+  .divider-thin { width: 100%; height: 1px; background: #00d4ff; margin-bottom: 28px; }
+
+  .pipeline {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    margin-bottom: 28px;
+  }
+
+  .step {
+    flex: 1;
+    background: #141e2b;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .step-accent { height: 3px; }
+  .step-body { padding: 20px 18px 20px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px; flex: 1; }
+
+  .step-name {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  .step-num {
+    font-size: 80px;
+    font-weight: 700;
+    color: #ffffff08;
+    line-height: 1;
+    position: absolute;
+    bottom: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    user-select: none;
+    pointer-events: none;
+  }
+
+  .step-desc {
+    font-size: 12px;
+    color: #c8d0d8;
+    line-height: 1.65;
+    z-index: 1;
+  }
+
+  .step-cmd {
+    background: #0e1621;
+    border-radius: 6px;
+    padding: 7px 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    margin-top: auto;
+    z-index: 1;
+  }
+
+  .arrow-col {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    flex-shrink: 0;
+  }
+
+  .footnote {
+    font-size: 12px;
+    color: #5a6a7a;
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+<div class="slide">
+
+  <div class="breadcrumb">LTRATO-1001 <span>|</span> Service Insertion as Code: From Concept to Commit</div>
+  <div class="title">The Terraform Workflow</div>
+  <div class="divider"></div>
+  <div class="divider-thin"></div>
+
+  <div class="pipeline">
+
+    <!-- Write -->
+    <div class="step">
+      <div class="step-accent" style="background:#5a6a7a;"></div>
+      <div class="step-body">
+        <div class="step-name" style="color:#c8d0d8;">Write</div>
+        <div class="step-num">1</div>
+        <div class="step-desc">Define resources<br>in .tf config files.<br>HCL is readable by<br>humans &amp; machines.</div>
+        <div style="margin-top:14px; z-index:1;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#5a6a7a; background:#0e1621; border-radius:4px; padding:4px 8px; margin-bottom:4px;">main.tf</div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#5a6a7a; background:#0e1621; border-radius:4px; padding:4px 8px; margin-bottom:4px;">variables.tf</div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#5a6a7a; background:#0e1621; border-radius:4px; padding:4px 8px;">outputs.tf</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="arrow-col">
+      <svg width="36" height="36" viewBox="0 0 36 36">
+        <path d="M6 18 H28 M22 11 L30 18 L22 25" stroke="#4a5568" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+
+    <!-- init -->
+    <div class="step">
+      <div class="step-accent" style="background:#00aaff;"></div>
+      <div class="step-body">
+        <div class="step-name" style="color:#00aaff;">terraform init</div>
+        <div class="step-num">2</div>
+        <div class="step-desc">Download provider<br>plugins.<br>Run once per project<br>or new provider.</div>
+        <div class="step-cmd" style="color:#00aaff;">$ terraform init</div>
+      </div>
+    </div>
+
+    <div class="arrow-col">
+      <svg width="36" height="36" viewBox="0 0 36 36">
+        <path d="M6 18 H28 M22 11 L30 18 L22 25" stroke="#4a5568" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+
+    <!-- plan -->
+    <div class="step">
+      <div class="step-accent" style="background:#00d4ff;"></div>
+      <div class="step-body">
+        <div class="step-name" style="color:#00d4ff;">terraform plan</div>
+        <div class="step-num">3</div>
+        <div class="step-desc">Preview every change<br>before it happens.<br>Shows +add /~change<br>/−destroy counts.</div>
+        <div class="step-cmd" style="color:#00d4ff;">$ terraform plan</div>
+      </div>
+    </div>
+
+    <div class="arrow-col">
+      <svg width="36" height="36" viewBox="0 0 36 36">
+        <path d="M6 18 H28 M22 11 L30 18 L22 25" stroke="#4a5568" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+
+    <!-- apply -->
+    <div class="step">
+      <div class="step-accent" style="background:#00cc66;"></div>
+      <div class="step-body">
+        <div class="step-name" style="color:#00cc66;">terraform apply</div>
+        <div class="step-num">4</div>
+        <div class="step-desc">Create or update<br>real infrastructure.<br>Confirm with 'yes'<br>after reviewing plan.</div>
+        <div class="step-cmd" style="color:#00cc66;">$ terraform apply</div>
+      </div>
+    </div>
+
+    <div class="arrow-col">
+      <svg width="36" height="36" viewBox="0 0 36 36">
+        <path d="M6 18 H28 M22 11 L30 18 L22 25" stroke="#4a5568" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+
+    <!-- destroy -->
+    <div class="step">
+      <div class="step-accent" style="background:#ff8800;"></div>
+      <div class="step-body">
+        <div class="step-name" style="color:#ff8800;">terraform destroy</div>
+        <div class="step-num">5</div>
+        <div class="step-desc">Remove everything<br>Terraform created.<br>Correct order,<br>nothing left behind.</div>
+        <div class="step-cmd" style="color:#ff8800;">$ terraform destroy</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footnote">
+    The write → plan → apply cycle repeats with every change.<br>
+    terraform destroy is a separate teardown operation, not a routine next step.
+  </div>
+
+  <div style="position:absolute; bottom:16px; right:36px; font-size:11px; color:#3a4a5a;">2/6</div>
+</div>
+</body>
+</html>

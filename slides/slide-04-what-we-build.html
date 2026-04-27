@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1200" />
+<title>What This Lab Builds</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #0e1621;
+    display: block;
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .slide {
+    background: #0e1621;
+    width: 1200px;
+    padding: 22px 36px 48px 36px;
+    position: relative;
+  }
+
+  .breadcrumb { font-size: 11px; color: #00aaff; margin-bottom: 4px; letter-spacing: 0.04em; }
+  .breadcrumb span { color: #5a6a7a; }
+  .title { font-size: 42px; font-weight: 700; color: #fff; margin-bottom: 3px; }
+  .divider      { width: 100%; height: 3px; background: #00aaff; margin-bottom: 3px; border-radius: 1px; }
+  .divider-thin { width: 100%; height: 1px; background: #00d4ff; margin-bottom: 28px; }
+
+  .layout {
+    display: flex;
+    gap: 28px;
+    align-items: flex-start;
+  }
+
+  /* Left panel */
+  .left {
+    width: 400px;
+    flex-shrink: 0;
+  }
+  .left-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #00aaff;
+    margin-bottom: 16px;
+  }
+  .file-row {
+    background: #141e2b;
+    border-radius: 6px;
+    padding: 14px 18px;
+    margin-bottom: 10px;
+  }
+  .file-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 3px;
+  }
+  .file-desc {
+    font-size: 12px;
+    color: #5a6a7a;
+  }
+
+  .arrow-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 120px;
+    flex-shrink: 0;
+    padding-top: 60px;
+  }
+  .apply-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    color: #00aaff;
+    margin-bottom: 6px;
+    white-space: nowrap;
+  }
+  .restconf-label {
+    font-size: 11px;
+    color: #5a6a7a;
+    margin-top: 4px;
+  }
+
+  /* Right panel */
+  .right {
+    flex: 1;
+  }
+  .docker-box {
+    border: 2px solid #00aaff;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .docker-header {
+    background: #00aaff22;
+    border-bottom: 1px solid #00aaff44;
+    padding: 10px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #00aaff;
+  }
+  .docker-body {
+    padding: 20px 18px 18px;
+    display: flex;
+    gap: 14px;
+  }
+  .container-card {
+    flex: 1;
+    background: #0e1621;
+    border-radius: 6px;
+    border: 1px solid #2a3a4a;
+    padding: 14px 12px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .container-card.highlight {
+    border-color: #00aaff44;
+    background: #00aaff08;
+  }
+  .c-name { font-size: 13px; font-weight: 700; color: #fff; }
+  .c-sub  { font-size: 11px; color: #5a6a7a; }
+  .c-ip   { font-size: 13px; font-weight: 700; color: #00aaff; font-family: 'JetBrains Mono', monospace; }
+  .c-role { font-size: 11px; color: #c8d0d8; }
+  .divider-v { width: 1px; background: #2a3a4a; align-self: stretch; }
+
+  .footnote-row {
+    margin-top: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #00aaff;
+    line-height: 1.7;
+  }
+</style>
+</head>
+<body>
+<div class="slide">
+
+  <div class="breadcrumb">LTRATO-1001 <span>|</span> Service Insertion as Code: From Concept to Commit</div>
+  <div class="title">What This Lab Builds</div>
+  <div class="divider"></div>
+  <div class="divider-thin"></div>
+
+  <div class="layout">
+
+    <div class="left">
+      <div class="left-title">Terraform Config</div>
+      <div class="file-row">
+        <div class="file-name">main.tf</div>
+        <div class="file-desc">Root — wires modules together</div>
+      </div>
+      <div class="file-row">
+        <div class="file-name">variables.tf</div>
+        <div class="file-desc">Input values with defaults</div>
+      </div>
+      <div class="file-row">
+        <div class="file-name">outputs.tf</div>
+        <div class="file-desc">Printed after apply</div>
+      </div>
+      <div class="file-row">
+        <div class="file-name">modules/</div>
+        <div class="file-desc">docker-infra + iosxe-config</div>
+      </div>
+    </div>
+
+    <div class="arrow-area">
+      <div class="apply-label">terraform apply</div>
+      <svg width="100" height="24" viewBox="0 0 100 24">
+        <path d="M4 12 H88 M78 5 L96 12 L78 19" stroke="#00aaff" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div class="restconf-label">RESTCONF</div>
+    </div>
+
+    <div class="right">
+      <div class="docker-box">
+        <div class="docker-header">Docker bridge: terraform-net&nbsp;&nbsp;(172.20.21.0/24)</div>
+        <div class="docker-body">
+
+          <div class="container-card highlight">
+            <div class="c-name">csr-terraform</div>
+            <div class="c-sub">IOS XE 16.12</div>
+            <div class="c-ip">172.20.21.10</div>
+            <div class="c-role" style="color:#5a6a7a;">Terraform</div>
+            <div class="c-role" style="color:#5a6a7a;">target</div>
+          </div>
+
+          <div class="container-card">
+            <div class="c-name">linux-terraform1</div>
+            <div class="c-sub">network-multitool</div>
+            <div class="c-ip" style="color:#00cc66;">172.20.21.20</div>
+            <div class="c-role">Linux</div>
+            <div class="c-role">client</div>
+          </div>
+
+          <div class="container-card">
+            <div class="c-name">linux-terraform2</div>
+            <div class="c-sub">network-multitool</div>
+            <div class="c-ip" style="color:#00cc66;">172.20.21.21</div>
+            <div class="c-role">Linux</div>
+            <div class="c-role">client</div>
+          </div>
+
+        </div>
+      </div>
+      <div class="footnote-row">
+        hostname → csr-terraform<br>
+        Loopback0 → 10.99.99.1/32
+      </div>
+    </div>
+
+  </div>
+
+  <div style="position:absolute; bottom:16px; right:36px; font-size:11px; color:#3a4a5a;">4/6</div>
+</div>
+</body>
+</html>

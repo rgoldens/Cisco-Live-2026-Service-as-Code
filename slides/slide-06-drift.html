@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1200" />
+<title>Infrastructure Drift</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #0e1621;
+    display: block;
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .slide {
+    background: #0e1621;
+    width: 1200px;
+    padding: 22px 36px 48px 36px;
+    position: relative;
+  }
+
+  .breadcrumb { font-size: 11px; color: #00aaff; margin-bottom: 4px; letter-spacing: 0.04em; }
+  .breadcrumb span { color: #5a6a7a; }
+  .title { font-size: 42px; font-weight: 700; color: #fff; margin-bottom: 3px; }
+  .divider      { width: 100%; height: 3px; background: #00aaff; margin-bottom: 3px; border-radius: 1px; }
+  .divider-thin { width: 100%; height: 1px; background: #00d4ff; margin-bottom: 28px; }
+
+  .topo-wrap {
+    background: #141e2b;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .topo-header {
+    background: #00aaff;
+    padding: 14px 24px;
+    font-size: 15px;
+    font-weight: 700;
+    color: #0e1621;
+    text-align: center;
+  }
+
+  .topo-body {
+    padding: 0 60px 30px;
+  }
+
+  .gw-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 10px 0 0;
+    font-size: 11px;
+    color: #5a6a7a;
+    font-family: 'JetBrains Mono', monospace;
+    position: relative;
+  }
+  .gw-line { flex: 1; height: 2px; background: #00aaff44; }
+  .gw-dot  { width: 8px; height: 8px; border-radius: 50%; background: #00aaff; flex-shrink: 0; }
+
+  .nodes-row {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    padding: 0;
+  }
+
+  .node-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 220px;
+  }
+
+  .stem { width: 2px; height: 40px; background: linear-gradient(to bottom, #00aaff44, #5a6a7a44); }
+
+  .icon-area { margin: 4px 0 8px; position: relative; }
+
+  .node-card {
+    width: 100%;
+    background: #0e1621;
+    border-radius: 6px;
+    border-top: 3px solid #00aaff;
+    padding: 12px 14px;
+    text-align: center;
+    position: relative;
+  }
+  .node-card.green-top  { border-top-color: #00cc66; }
+  .node-card.deleted    { border-top-color: #cc2222; background: #220a0a; }
+
+  .node-name  { font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+  .node-ip    { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; color: #00aaff; margin-bottom: 4px; }
+  .node-ip.green  { color: #00cc66; }
+  .node-ip.red    { color: #cc4444; }
+  .node-desc  { font-size: 11px; color: #c8d0d8; margin-bottom: 6px; }
+  .node-image { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #3a4a5a; margin-top: 4px; }
+
+  .deleted-badge {
+    display: inline-block;
+    background: #cc222244;
+    color: #ff4444;
+    border-radius: 4px;
+    padding: 3px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    margin: 4px 0;
+  }
+
+  /* big red X overlay */
+  .red-x {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+  }
+
+  /* drift footer */
+  .drift-bar {
+    margin-top: 20px;
+    background: #0e1621;
+    border-left: 3px solid #cc2222;
+    border-radius: 6px;
+    padding: 10px 16px;
+    font-size: 12px;
+    color: #c8d0d8;
+    line-height: 1.7;
+  }
+  .drift-bar strong { color: #ff4444; }
+</style>
+</head>
+<body>
+<div class="slide">
+
+  <div class="breadcrumb">LTRATO-1001 <span>|</span> Service Insertion as Code: From Concept to Commit</div>
+  <div class="title">Infrastructure Drift</div>
+  <div class="divider"></div>
+  <div class="divider-thin"></div>
+
+  <div class="topo-wrap">
+    <div class="topo-header">Docker bridge network:&nbsp; terraform-net&nbsp;&nbsp; (172.20.21.0/24)</div>
+    <div class="topo-body">
+
+      <div class="gw-row">
+        <div class="gw-line"></div>
+        <span>gateway&nbsp; 172.20.21.1</span>
+        <div class="gw-dot"></div>
+        <div class="gw-line"></div>
+      </div>
+
+      <div class="nodes-row">
+
+        <!-- csr-terraform (healthy) -->
+        <div class="node-col">
+          <div class="stem"></div>
+          <div class="icon-area">
+            <svg width="70" height="60" viewBox="0 0 70 60">
+              <ellipse cx="35" cy="14" rx="28" ry="10" fill="#00aaff33" stroke="#00aaff" stroke-width="1.5"/>
+              <rect x="7" y="14" width="56" height="24" fill="#00aaff22"/>
+              <ellipse cx="35" cy="38" rx="28" ry="10" fill="#00aaff33" stroke="#00aaff" stroke-width="1.5"/>
+              <line x1="7" y1="14" x2="7" y2="38" stroke="#00aaff" stroke-width="1.5"/>
+              <line x1="63" y1="14" x2="63" y2="38" stroke="#00aaff" stroke-width="1.5"/>
+              <line x1="20" y1="38" x2="20" y2="48" stroke="#00aaff88" stroke-width="1.5"/>
+              <line x1="35" y1="38" x2="35" y2="50" stroke="#00aaff88" stroke-width="1.5"/>
+              <line x1="50" y1="38" x2="50" y2="48" stroke="#00aaff88" stroke-width="1.5"/>
+            </svg>
+          </div>
+          <div class="node-card">
+            <div class="node-name">csr-terraform</div>
+            <div class="node-ip">172.20.21.10</div>
+            <div class="node-desc">Cisco IOS XE 16.12</div>
+            <div class="node-image">vrnetlab/vr-csr:16.12.05</div>
+          </div>
+        </div>
+
+        <!-- linux-terraform1 (healthy) -->
+        <div class="node-col">
+          <div class="stem"></div>
+          <div class="icon-area">
+            <svg width="70" height="60" viewBox="0 0 70 60">
+              <rect x="10" y="8" width="50" height="34" rx="4" fill="#00cc6622" stroke="#00cc66" stroke-width="1.5"/>
+              <line x1="35" y1="42" x2="35" y2="52" stroke="#00cc66" stroke-width="1.5"/>
+              <rect x="20" y="52" width="30" height="4" rx="2" fill="#00cc6644"/>
+              <rect x="14" y="12" width="42" height="26" rx="2" fill="#0e1621"/>
+              <line x1="18" y1="19" x2="30" y2="19" stroke="#00cc66" stroke-width="1.2"/>
+              <line x1="18" y1="24" x2="36" y2="24" stroke="#00cc6688" stroke-width="1.2"/>
+              <line x1="18" y1="29" x2="28" y2="29" stroke="#00cc6644" stroke-width="1.2"/>
+            </svg>
+          </div>
+          <div class="node-card green-top">
+            <div class="node-name">linux-terraform1</div>
+            <div class="node-ip green">172.20.21.20</div>
+            <div class="node-desc">Linux client 1</div>
+            <div class="node-image">hellt/network-multitool</div>
+          </div>
+        </div>
+
+        <!-- linux-terraform2 (DELETED) -->
+        <div class="node-col">
+          <div class="stem" style="background: linear-gradient(to bottom, #cc222244, #3a0a0a44);"></div>
+          <div class="icon-area">
+            <!-- dimmed monitor + red X overlay -->
+            <svg width="70" height="60" viewBox="0 0 70 60">
+              <rect x="10" y="8" width="50" height="34" rx="4" fill="#cc222222" stroke="#cc2222" stroke-width="1.5"/>
+              <line x1="35" y1="42" x2="35" y2="52" stroke="#cc222288" stroke-width="1.5"/>
+              <rect x="20" y="52" width="30" height="4" rx="2" fill="#cc222244"/>
+              <rect x="14" y="12" width="42" height="26" rx="2" fill="#0e1621"/>
+              <line x1="18" y1="19" x2="30" y2="19" stroke="#cc222266" stroke-width="1.2"/>
+              <line x1="18" y1="24" x2="36" y2="24" stroke="#cc222244" stroke-width="1.2"/>
+              <line x1="18" y1="29" x2="28" y2="29" stroke="#cc222233" stroke-width="1.2"/>
+              <!-- big red X -->
+              <line x1="8" y1="4" x2="62" y2="56" stroke="#cc2222" stroke-width="4" stroke-linecap="round" opacity="0.85"/>
+              <line x1="62" y1="4" x2="8" y2="56" stroke="#cc2222" stroke-width="4" stroke-linecap="round" opacity="0.85"/>
+            </svg>
+          </div>
+          <div class="node-card deleted">
+            <div class="node-name" style="color:#cc4444;">linux-terraform2</div>
+            <div class="node-ip red">172.20.21.21</div>
+            <div class="node-desc" style="color:#5a3a3a;">Linux client 2</div>
+            <div class="deleted-badge">DELETED</div>
+            <div class="node-image">hellt/network-multitool</div>
+          </div>
+        </div>
+
+      </div><!-- nodes-row -->
+
+      <div class="drift-bar">
+        <strong>Drift detected:</strong><br>
+        linux-terraform2 was manually removed outside Terraform
+      </div>
+
+    </div><!-- topo-body -->
+  </div><!-- topo-wrap -->
+
+  <div style="position:absolute; bottom:16px; right:36px; font-size:11px; color:#3a4a5a;">6/6</div>
+</div>
+</body>
+</html>
