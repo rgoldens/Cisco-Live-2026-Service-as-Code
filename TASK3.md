@@ -84,7 +84,7 @@ share the same AS number.
 
 Here's the complete data flow when client1 pings client3:
 
-```
+<pre>
 client1 (23.23.23.1)
   → n9k-ce01 SVI (23.23.23.254)     ← static route via SVI gateway
   → csr-pe01 (IS-IS route)          ← IS-IS learned this route from the CE
@@ -93,7 +93,7 @@ client1 (23.23.23.1)
   → csr-pe02 (eBGP from XRd)        ← eBGP pushes it to the remote CSR
   → n9k-ce02 SVI (IS-IS route)      ← IS-IS redistributes it locally
   → client3 (34.34.34.1)            ← arrives at destination
-```
+</pre>
 
 Every layer you configured (VLANs, IS-IS, BGP, VRF, static routes) plays
 a role in this path. Remove any one, and the packet can't get through.
@@ -115,7 +115,7 @@ verification/test plays. The TODO placeholders are only in the first 3 plays.
 
 Scroll to the first `vars:` section:
 
-```yaml
+<pre>
 vars:
   xrd_config:
     xrd01:
@@ -128,7 +128,7 @@ vars:
       gi1_ip: ___              # TODO: xrd02's Gi0/0/0/1 IP toward csr-pe02
       gi1_mask: ___            # TODO: Subnet mask for the /30 link
       csr_peer: ___            # TODO: csr-pe02's IP on the same /30 link
-```
+</pre>
 
 Using **Table 2** and **Table 3**, fill in:
 
@@ -157,14 +157,14 @@ Using **Table 2** and **Table 3**, fill in:
 
 Scroll to the second `vars:` section:
 
-```yaml
+<pre>
 vars:
   bgp_config:
     csr-pe01:
       xrd_peer: ___          # TODO: xrd01's Gi0/0/0/1 IP (eBGP neighbor)
     csr-pe02:
       xrd_peer: ___          # TODO: xrd02's Gi0/0/0/1 IP (eBGP neighbor)
-```
+</pre>
 
 Using **Table 3**, fill in:
 
@@ -183,7 +183,7 @@ Using **Table 3**, fill in:
 
 Scroll to the third `vars:` section:
 
-```yaml
+<pre>
 vars:
   cross_routes:
     linux-client1:
@@ -198,7 +198,7 @@ vars:
     linux-client4:
       dest: ___              # TODO: Same as client3 (same switch)
       gw: ___                # TODO: Same as client3
-```
+</pre>
 
 Using **Table 2**, fill in:
 
@@ -425,18 +425,18 @@ ansible-playbook ~/ce-access-vlan.yml
 Compare the output to your first run. Notice the differences:
 
 **First run:**
-```
+<pre>
 TASK [Step 1 — Create VLAN on each CE switch] **********************************
 changed: [n9k-ce01]
 changed: [n9k-ce02]
-```
+</pre>
 
 **Second run:**
-```
+<pre>
 TASK [Step 1 — Create VLAN on each CE switch] **********************************
 ok: [n9k-ce01]
 ok: [n9k-ce02]
-```
+</pre>
 
 The `changed` → `ok` shift means Ansible checked the device, found the VLAN
 already exists with the correct config, and made no changes. The PLAY RECAP
