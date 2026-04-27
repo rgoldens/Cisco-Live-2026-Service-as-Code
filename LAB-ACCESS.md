@@ -208,19 +208,17 @@ You do **not** need to SSH into individual devices to complete this lab — Ansi
 
 ### Step 17 — Click the SSH Icon Next to a Device
 
-In the ContainerLab Explorer, hover over any device. Click the **SSH icon** that appears to the right of the device name.
+In the ContainerLab Explorer, hover over any device. Click the **SSH icon** (highlighted in red) that appears to the right of the device name to open a terminal session directly to that device.
 
-![SSH icon next to device in explorer](images/access-device-ssh.png)
-
-An SSH session to that device will open in the terminal panel.
+![SSH icon highlighted next to n9k-ce01 in the ContainerLab Explorer](images/access-device-sessions.png)
 
 ---
 
-### Step 18 — Switch Between Sessions
+### Step 18 — SSH Session Opens; Toggle Between Sessions
 
-Multiple terminal sessions will appear on the right side of the terminal panel. Click any session name to switch between them. The **bash** session is your main workspace — keep it accessible.
+The SSH session opens in the terminal panel at the bottom. Multiple sessions appear on the right side of the panel — **bash** is your main workspace, and each SSH connection is listed below it. Click any session name to switch between them.
 
-![Multiple terminal sessions — bash and SSH sessions listed](images/access-device-sessions.png)
+![Active SSH session open with sessions panel highlighted — bash, n9k-ce01, n9k-ce02](images/access-device-ssh.png)
 
 ---
 
