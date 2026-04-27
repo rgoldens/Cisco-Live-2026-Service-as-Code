@@ -93,23 +93,21 @@ data flow diagrams). Command blocks students need to type remain as fenced code.
 | `TASK2.md` | 3 (TODO placeholders) |
 | `TASK3.md` | 6 (TODO placeholders, data flow, idempotency outputs) |
 | `TASK4.md` | 17 (terraform init/plan/apply/destroy outputs, ping outputs, TODO placeholders, timing race note) |
+| `TASK5.md` | 32 (terraform init/plan/apply/destroy outputs, docker ps/inspect outputs, RESTCONF JSON, SSH session outputs, state file outputs) |
 
 ---
 
-### 1.1.4 — Remove GitHub Copy Buttons from Output Blocks
+### 1.1.5 — Terraform Workflow Diagram
 
-Converted output/example code blocks from fenced markdown (`` ``` ``) to raw HTML
-`<pre>` tags across all task files. This removes the GitHub "copy" button from
-blocks students should never need to copy (expected outputs, TODO placeholders,
-data flow diagrams). Command blocks students need to type remain as fenced code.
+Added dark-themed draw.io diagram for the 5-step Terraform workflow
+(`init → plan → apply → plan → destroy`). Replaces the text-only `<pre>` block
+in TASK4.md with a visual diagram matching the style of all other lab diagrams.
 
-| File | Blocks converted |
-|------|-----------------|
-| `TASK1.md` | 1 (TODO placeholder) |
-| `TASK2.md` | 3 (TODO placeholders) |
-| `TASK3.md` | 6 (TODO placeholders, data flow, idempotency outputs) |
-| `TASK4.md` | 17 (terraform init/plan/apply/destroy outputs, ping outputs, TODO placeholders, timing race note) |
-| `TASK5.md` | 32 (terraform init/plan/apply/destroy outputs, docker ps/inspect outputs, RESTCONF JSON, SSH session outputs, state file outputs) |
+| File | Change |
+|------|--------|
+| `images/terraform-workflow.drawio` | New draw.io source (dark theme, breadcrumb, numbered steps, detail section) |
+| `images/terraform-workflow.png` | Exported PNG |
+| `TASK4.md` | Replaced `<pre>` workflow block with image reference |
 
 ---
 
