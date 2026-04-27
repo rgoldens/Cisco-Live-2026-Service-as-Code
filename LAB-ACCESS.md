@@ -18,14 +18,15 @@ the Windows PC at your desk. You will:
 ## What You Need Before Starting
 
 You should have received a **lab credential sheet** (printed or emailed) with
-the following information. Confirm you have all four values before proceeding:
+the following information. Confirm you have all three values before proceeding:
 
-| Item | Example | Your Value |
-|------|---------|------------|
-| **VPN Address** | `dcloud-sjc-anyconnect.cisco.com` | _______________ |
-| **VPN Username** | `v123user1` | _______________ |
-| **VPN Password** | `a1b2c3` | _______________ |
-| **Lab Server IP** | `198.18.134.90` | _______________ |
+| Item | Value |
+|------|-------|
+| **VPN Address** | `dcloud-sjc-anyconnect.cisco.com` |
+| **VPN Username** | _(on your credential sheet)_ |
+| **VPN Password** | _(on your credential sheet)_ |
+| **Lab Server IP** | `198.18.134.90` (same for all students) |
+| **SSH Password** | `C1sco12345` |
 
 > **Do not have your credentials?** Raise your hand and a proctor will bring
 > them to you. Do not proceed without them.
@@ -148,14 +149,7 @@ Welcome tab — you can close it.
 After selecting **Remote-SSH: Connect to Host...**, you will see a text field
 asking for the SSH host.
 
-1. Type the following, replacing `<LAB-SERVER-IP>` with the IP address from
-   your credential sheet:
-
-   ```
-   cisco@<LAB-SERVER-IP>
-   ```
-
-   For example, if your lab server IP is `198.18.134.90`:
+1. Type the following:
 
    ```
    cisco@198.18.134.90
@@ -210,7 +204,7 @@ After entering the password, VS Code will:
 You will know you are connected when:
 
 - The **bottom-left corner** of VS Code shows a green bar that reads
-  **`SSH: <LAB-SERVER-IP>`** (e.g., `SSH: 198.18.134.90`).
+  **`SSH: 198.18.134.90`**.
 - The Explorer panel shows the remote file system (not your local PC).
 
 ---
@@ -414,7 +408,7 @@ Your environment is ready. You are now:
 | What | How |
 |------|-----|
 | **Reconnect VPN** | Open AnyConnect → type VPN address → Connect → enter credentials |
-| **Reconnect VS Code SSH** | `Ctrl + Shift + P` → `Remote-SSH: Connect to Host` → `cisco@<LAB-SERVER-IP>` |
+| **Reconnect VS Code SSH** | `Ctrl + Shift + P` → `Remote-SSH: Connect to Host` → `cisco@198.18.134.90` |
 | **SSH password** | `C1sco12345` |
 | **Open a terminal** | `Ctrl + `` ` `` (backtick) or Terminal → New Terminal |
 | **Check VPN status** | Look for AnyConnect shield icon in system tray (bottom-right) |
