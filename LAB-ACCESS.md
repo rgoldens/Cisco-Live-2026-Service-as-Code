@@ -230,6 +230,16 @@ If you accidentally close the main bash terminal, click the **`+`** button in th
 
 ---
 
+### Step 20 — Restore the Terminal Panel if It Has Disappeared
+
+If the entire terminal panel is gone (no panel visible at the bottom at all), press **`Ctrl+J`** or click the **Toggle Panel** button in the upper-right toolbar to bring it back.
+
+![Toggle Panel button highlighted](images/access-terminal-toggle.png)
+
+> The panel reappears with your previous terminal sessions intact. If no sessions remain, click **`+`** to open a new bash terminal (see Step 19).
+
+---
+
 ## You're Ready
 
 Confirm all of the following before moving on:
