@@ -22,7 +22,7 @@ the following information. Confirm you have all four values before proceeding:
 
 | Item | Example | Your Value |
 |------|---------|------------|
-| **VPN Address** | `dcloud-lon-anyconnect.cisco.com` | _______________ |
+| **VPN Address** | `dcloud-sjc-anyconnect.cisco.com` | _______________ |
 | **VPN Username** | `v123user1` | _______________ |
 | **VPN Password** | `a1b2c3` | _______________ |
 | **Lab Server IP** | `198.18.134.100` | _______________ |
@@ -56,7 +56,7 @@ A small AnyConnect window will open with an empty text field and a
 1. In the AnyConnect window, you will see a text field labeled
    **"VPN: Ready to connect"** (or simply an empty connection box).
 2. **Type or paste** your **VPN Address** into this field.
-   - Example: `dcloud-lon-anyconnect.cisco.com`
+   - Example: `dcloud-sjc-anyconnect.cisco.com`
 3. Click the **Connect** button.
 
 > **If a previous address is shown,** clear it completely before typing yours.
