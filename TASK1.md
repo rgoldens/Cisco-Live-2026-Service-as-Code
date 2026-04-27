@@ -120,14 +120,14 @@ Read through the playbook carefully. Here's what each section does:
 Now scroll to the `vars:` section in the playbook. You'll see TODO placeholders:
 
 
->     vars:
->       vlan_config:
->         n9k-ce01:
->           id: ___          # TODO: VLAN ID for west-side clients (see Table 1)
->           name: "___"      # TODO: Name this VLAN (convention: CLIENT-VLAN-<id>)
->         n9k-ce02:
->           id: ___          # TODO: VLAN ID for east-side clients (see Table 1)
->           name: "___"      # TODO: Name this VLAN (convention: CLIENT-VLAN-<id>)
+> `vars:`
+> &nbsp;&nbsp;`vlan_config:`
+> &nbsp;&nbsp;&nbsp;&nbsp;`n9k-ce01:`
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`id: ___` — TODO: VLAN ID for west-side clients (see Table 1)
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`name: "___"` — TODO: Name this VLAN (convention: CLIENT-VLAN-&lt;id&gt;)
+> &nbsp;&nbsp;&nbsp;&nbsp;`n9k-ce02:`
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`id: ___` — TODO: VLAN ID for east-side clients (see Table 1)
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`name: "___"` — TODO: Name this VLAN (convention: CLIENT-VLAN-&lt;id&gt;)
 
 Using **Table 1: VLAN Assignments**, fill in the 4 values:
 
