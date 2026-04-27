@@ -94,6 +94,20 @@ Added `LAB-ACCESS.md` — detailed Windows lab access guide for dCloud:
 
 ---
 
+### 1.1.8 — Move Accomplishments to Task 6, Clean Up TROUBLESHOOTING.md
+
+Moved the "What You've Accomplished" section (summary table, stats, key takeaways)
+from `TROUBLESHOOTING.md` to `TASK6.md` — it belongs at the end of the lab, not in
+a troubleshooting guide. `TROUBLESHOOTING.md` now starts directly with troubleshooting
+content.
+
+Also updated `LAB-ACCESS.md`:
+- Hardcoded VPN address (`dcloud-sjc-anyconnect.cisco.com`) and lab server IP
+  (`198.18.134.90`) — same for all students
+- Simplified credential table and removed `<LAB-SERVER-IP>` placeholders
+
+---
+
 ### 1.1.4 — Remove GitHub Copy Buttons from Output Blocks
 
 Converted output/example code blocks from fenced markdown (`` ``` ``) to raw HTML
