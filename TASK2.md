@@ -75,7 +75,7 @@ nano ~/igp-pe-ce.yml
 
 Scroll to the first `vars:` section. You'll see these TODO placeholders:
 
-```yaml
+<pre>
 vars:
   isis_config:
     n9k-ce01:
@@ -86,7 +86,7 @@ vars:
       net: "___"         # TODO: IS-IS NET for n9k-ce02
       vlan_id: ___       # TODO: Must match the VLAN ID you used in Task 1
       svi_ip: "___"      # TODO: Gateway IP/mask for east clients (see Table 2)
-```
+</pre>
 
 Using **Table 4** and **Table 2**, fill in these values:
 
@@ -111,14 +111,14 @@ Using **Table 4** and **Table 2**, fill in these values:
 
 Scroll down to the second `vars:` section:
 
-```yaml
+<pre>
 vars:
   isis_config:
     csr-pe01:
       net: "___"         # TODO: IS-IS NET for csr-pe01
     csr-pe02:
       net: "___"         # TODO: IS-IS NET for csr-pe02
-```
+</pre>
 
 Using **Table 4**, fill in:
 
@@ -136,7 +136,7 @@ Using **Table 4**, fill in:
 
 Scroll down to the third `vars:` section:
 
-```yaml
+<pre>
 vars:
   route_config:
     linux-client1:
@@ -159,7 +159,7 @@ vars:
       routes:
         - ___              # TODO: Same routes as client3
         - ___
-```
+</pre>
 
 Using **Table 2**, fill in:
 
