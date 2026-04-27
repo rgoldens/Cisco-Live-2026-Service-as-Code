@@ -618,11 +618,11 @@ Apply complete! Resources: 18 added, 0 changed, 0 destroyed.
 > Simply run `terraform apply` again and Terraform will create just the 2
 > remaining resources:
 >
-> ```
+> <pre>
 > Plan: 2 to add, 0 to change, 0 to destroy.
 > ...
 > Apply complete! Resources: 2 added, 0 changed, 0 destroyed.
-> ```
+> </pre>
 >
 > This is a great teaching moment: Terraform is **idempotent and resumable**.
 > A partial failure doesn't corrupt anything — you just re-apply and it
