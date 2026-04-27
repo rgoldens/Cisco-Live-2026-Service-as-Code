@@ -6,6 +6,80 @@
 
 ---
 
+## Version 1.1 — Dark Theme Diagrams, Task 5 (Terraform), File Reorganization
+
+**Date:** 2026-04-27
+
+### Summary
+
+Standardized all draw.io diagram source files to a consistent dark theme matching
+`task1-vlans.drawio`. Added Task 5 (Terraform lab) with supporting files. Split
+primer documents into dedicated files. Added student lab access guide.
+
+---
+
+### 1.1.0 — Dark Theme Standardization for All Diagrams
+
+Rewrote 7 draw.io source files to match the exact dark theme of `task1-vlans.drawio`:
+
+- `images/task2-isis.drawio`
+- `images/task3-bgp-vpn.drawio`
+- `images/ansible-workflow.drawio`
+- `images/isis-net-derivation.drawio`
+- `images/playbook-anatomy.drawio`
+- `images/before-after.drawio`
+- `images/full-topology.drawio`
+
+**Dark theme spec (matching task1-vlans.drawio):**
+- Background: `#0e1621` full-page rectangle
+- Breadcrumb: `#00aaff` with `#5a6a7a` separator, positioned at x=25 y=12
+- Title: `fontSize=20;fontStyle=1;fontColor=#ffffff;align=left`
+- Dual-line divider: thick `#00aaff` (strokeWidth=3) at y=66 + thin `#00d4ff` at y=72
+- Zone fills: `#141e2b` (containers), `#1e2d3d` (inner cards)
+- Text: `fontColor=#ffffff` / `#c8d0d8`, `labelBackgroundColor=none`
+- Accents: `#00aaff` (cyan/west), `#ff8800` (orange/east), `#00cc66` (green), `#ff4444` (red), `#cc88ff` (purple)
+
+All PNGs re-exported from the updated drawio source files.
+
+---
+
+### 1.1.1 — Task 5: Terraform Lab (IOS-XE via gNMI)
+
+Added Terraform lab as Task 5, pulled from `origin/main:terraform-lab-guide.md`:
+
+| File | Purpose |
+|------|---------|
+| `TASK5.md` | Task 5 hands-on lab (topology through teardown) |
+| `Terraform-Primer.md` | Terraform primer (What is Terraform, workflow, key concepts) |
+| `task5-terraform/` | Terraform config files (`l3vpn.tf`, `providers.tf`, `variables.tf`, `outputs.tf`, `terraform.tfvars`) |
+| `slides/slide-01-what-is-terraform.png` through `slide-06-drift.png` | 6 Terraform slide images |
+
+Path references updated: `~/terraform-lab/terraform/` → `~/task5-terraform/`
+
+---
+
+### 1.1.2 — File Reorganization
+
+**Renamed:**
+- `PRIMER.md` → `Ansible-Primer.md` — clearer name for Ansible-specific content
+
+**Split:**
+- `TASK5.md` split into `Terraform-Primer.md` (intro/concepts) + `TASK5.md` (hands-on lab)
+
+**Updated references** in `GETTING-STARTED.md`, `TASK1.md`, `REFERENCE.md`, `CHANGELOG.md`
+
+---
+
+### 1.1.3 — Student Lab Access Guide
+
+Added `LAB-ACCESS.md` — detailed Windows lab access guide for dCloud:
+- Cisco AnyConnect VPN connection steps
+- VS Code Remote-SSH setup
+- ContainerLab VS Code extension usage
+- Credential placeholder table, Quick Reference, Troubleshooting
+
+---
+
 ## Version 1.0 — Interactive Lab: Fully Tested, Student-Ready
 
 **Date:** 2026-04-15
@@ -29,7 +103,7 @@ New repo layout — all files at repo root so students `git clone` directly into
 | File | Purpose |
 |------|---------|
 | `LAB-GUIDE.md` | Complete lab guide (single document, ~3300 lines) |
-| `PRIMER.md` | Ansible Quick Primer (extracted for standalone reading) |
+| `Ansible-Primer.md` | Ansible Quick Primer (extracted for standalone reading) |
 | `TASK1.md` | Task 1: L2 VLANs + Task 1b: Drift & Remediation |
 | `TASK2.md` | Task 2: IS-IS PE-CE Routing |
 | `TASK3.md` | Task 3: Inter-AS Option A + Idempotency Check |
@@ -78,7 +152,7 @@ Issues discovered during end-to-end testing on a fresh server:
 
 Split LAB-GUIDE.md into 7 standalone documents for focused reading:
 
-- `PRIMER.md` — Ansible Quick Primer
+- `Ansible-Primer.md` — Ansible Quick Primer
 - `TASK1.md` — Task 1 + Task 1b (VLANs + Drift)
 - `TASK2.md` — Task 2 (IS-IS)
 - `TASK3.md` — Task 3 (BGP VPN) + Idempotency Check

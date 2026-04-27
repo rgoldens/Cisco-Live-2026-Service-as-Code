@@ -1,4 +1,4 @@
-[Lab Guide](LAB-GUIDE.md) | [Reference Tables](REFERENCE.md) | [Primer →](PRIMER.md)
+[Lab Guide](LAB-GUIDE.md) | [Reference Tables](REFERENCE.md) | [Primer →](Ansible-Primer.md)
 
 ---
 
@@ -318,7 +318,7 @@ templates are reusable and operators fill in site-specific values.
 > your playbook against the solution to find the difference. You can also ask
 > your instructor for help.
 
-> **New to Ansible?** Read the [Ansible Quick Primer](PRIMER.md) before
+> **New to Ansible?** Read the [Ansible Quick Primer](Ansible-Primer.md) before
 > starting Task 1. It takes about 5 minutes and covers everything you need
 > to know.
 

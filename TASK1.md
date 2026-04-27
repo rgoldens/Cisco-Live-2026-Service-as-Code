@@ -1,4 +1,4 @@
-← [Primer](PRIMER.md) | [Lab Guide](LAB-GUIDE.md) | [Task 2 →](TASK2.md)
+← [Primer](Ansible-Primer.md) | [Lab Guide](LAB-GUIDE.md) | [Task 2 →](TASK2.md)
 
 ---
 
@@ -113,7 +113,7 @@ Read through the playbook carefully. Here's what each section does:
 
 ---
 
-> **New to Ansible resource modules?** Before filling in the variables, the [Ansible Primer](PRIMER.md#cisco-nxos-resource-modules) covers module naming, `state:` behavior, and how to look up documentation for any module in this lab.
+> **New to Ansible resource modules?** Before filling in the variables, the [Ansible Primer](Ansible-Primer.md#cisco-nxos-resource-modules) covers module naming, `state:` behavior, and how to look up documentation for any module in this lab.
 
 ### Step 3: Fill in the Variables
 
@@ -403,4 +403,4 @@ you.
 
 ---
 
-← [Primer](PRIMER.md) | [Lab Guide](LAB-GUIDE.md) | [Task 2 →](TASK2.md)
+← [Primer](Ansible-Primer.md) | [Lab Guide](LAB-GUIDE.md) | [Task 2 →](TASK2.md)

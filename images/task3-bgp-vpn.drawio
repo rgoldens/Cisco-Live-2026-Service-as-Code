@@ -1,244 +1,191 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<mxfile host="draw.io" type="device">
+<mxfile host="Electron" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.5.2 Chrome/142.0.7444.265 Electron/39.6.1 Safari/537.36" version="29.5.2">
   <diagram id="task3-bgp-vpn" name="Task 3: Inter-AS Option A (BGP VPN)">
-    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="900" math="0" shadow="0">
+    <mxGraphModel dx="1234" dy="916" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="900" math="0" shadow="0">
       <root>
-        <mxCell id="0"/>
-        <mxCell id="1" parent="0"/>
-
-        <!-- Title -->
-        <mxCell id="title" value="&lt;b&gt;Task 3: Inter-AS Option A (BGP VPN)&lt;/b&gt;" style="text;html=1;fontSize=20;align=center;verticalAlign=middle;whiteSpace=wrap;" vertex="1" parent="1">
-          <mxGeometry x="450" y="10" width="500" height="40" as="geometry"/>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="bg" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#0e1621;strokeColor=none;" value="" vertex="1">
+          <mxGeometry height="900" width="1400" x="13" as="geometry" />
         </mxCell>
-
-        <!-- West Site Label -->
-        <mxCell id="west-label" value="&lt;b&gt;West Site&lt;/b&gt;" style="text;html=1;fontSize=14;align=center;verticalAlign=middle;fontColor=#333333;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="150" y="55" width="120" height="30" as="geometry"/>
+        <mxCell id="breadcrumb" parent="1" style="text;html=1;fontSize=11;align=left;verticalAlign=middle;fontColor=#00aaff;" value="&lt;font color=&quot;#00aaff&quot;&gt;LTRATO-1001&lt;/font&gt;&lt;font color=&quot;#5a6a7a&quot;&gt; | &lt;/font&gt;&lt;font color=&quot;#00aaff&quot;&gt;Service Insertion as Code: From Concept to Commit&lt;/font&gt;" vertex="1">
+          <mxGeometry height="20" width="350" x="25" y="12" as="geometry" />
         </mxCell>
-
-        <!-- East Site Label -->
-        <mxCell id="east-label" value="&lt;b&gt;East Site&lt;/b&gt;" style="text;html=1;fontSize=14;align=center;verticalAlign=middle;fontColor=#333333;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="1100" y="55" width="120" height="30" as="geometry"/>
+        <mxCell id="title" parent="1" style="text;html=1;fontSize=20;fontStyle=1;align=left;verticalAlign=middle;fontColor=#ffffff;" value="Task 3: Inter-AS Option A (BGP VPN)" vertex="1">
+          <mxGeometry height="35" width="500" x="25" y="30" as="geometry" />
         </mxCell>
-
-        <!-- West site boundary -->
-        <mxCell id="west-boundary" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#AAAAAA;strokeWidth=1;dashed=1;arcSize=8;" vertex="1" parent="1">
-          <mxGeometry x="40" y="80" width="350" height="780" as="geometry"/>
-        </mxCell>
-
-        <!-- East site boundary -->
-        <mxCell id="east-boundary" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#AAAAAA;strokeWidth=1;dashed=1;arcSize=8;" vertex="1" parent="1">
-          <mxGeometry x="1010" y="80" width="350" height="780" as="geometry"/>
-        </mxCell>
-
-        <!-- ==================== DEVICES ==================== -->
-
-        <!-- xrd01 - Blue XRd Core Router (West) -->
-        <mxCell id="xrd01" value="&lt;b&gt;xrd01&lt;/b&gt;&lt;br&gt;Lo0: 192.168.0.1&lt;br&gt;AS 65000" style="shape=mxgraph.cisco19.rect;prIcon=router;html=1;whiteSpace=wrap;fillColor=#4A90D9;fontColor=#000000;strokeColor=#2A6CB0;fontSize=11;labelPosition=right;verticalLabelPosition=middle;align=left;labelBackgroundColor=#FFFFFF;" vertex="1" parent="1">
-          <mxGeometry x="170" y="120" width="80" height="60" as="geometry"/>
-        </mxCell>
-
-        <!-- xrd02 - Blue XRd Core Router (East) -->
-        <mxCell id="xrd02" value="&lt;b&gt;xrd02&lt;/b&gt;&lt;br&gt;Lo0: 192.168.0.2&lt;br&gt;AS 65000" style="shape=mxgraph.cisco19.rect;prIcon=router;html=1;whiteSpace=wrap;fillColor=#4A90D9;fontColor=#000000;strokeColor=#2A6CB0;fontSize=11;labelPosition=right;verticalLabelPosition=middle;align=left;labelBackgroundColor=#FFFFFF;" vertex="1" parent="1">
-          <mxGeometry x="1120" y="120" width="80" height="60" as="geometry"/>
-        </mxCell>
-
-        <!-- csr-pe01 - Orange CSR PE Router (West) -->
-        <mxCell id="csr-pe01" value="&lt;b&gt;csr-pe01&lt;/b&gt;&lt;br&gt;Lo0: 192.168.10.11&lt;br&gt;AS 65001" style="shape=mxgraph.cisco19.rect;prIcon=router;html=1;whiteSpace=wrap;fillColor=#FF9800;fontColor=#000000;strokeColor=#E68A00;fontSize=11;labelPosition=right;verticalLabelPosition=middle;align=left;labelBackgroundColor=#FFFFFF;" vertex="1" parent="1">
-          <mxGeometry x="170" y="340" width="80" height="60" as="geometry"/>
-        </mxCell>
-
-        <!-- csr-pe02 - Orange CSR PE Router (East) -->
-        <mxCell id="csr-pe02" value="&lt;b&gt;csr-pe02&lt;/b&gt;&lt;br&gt;Lo0: 192.168.10.12&lt;br&gt;AS 65001" style="shape=mxgraph.cisco19.rect;prIcon=router;html=1;whiteSpace=wrap;fillColor=#FF9800;fontColor=#000000;strokeColor=#E68A00;fontSize=11;labelPosition=right;verticalLabelPosition=middle;align=left;labelBackgroundColor=#FFFFFF;" vertex="1" parent="1">
-          <mxGeometry x="1120" y="340" width="80" height="60" as="geometry"/>
-        </mxCell>
-
-        <!-- n9k-ce01 - Green N9K CE Switch (West) -->
-        <mxCell id="n9k-ce01" value="&lt;b&gt;n9k-ce01&lt;/b&gt;&lt;br&gt;Lo0: 192.168.20.21" style="shape=mxgraph.cisco19.rect;prIcon=l2_switch;html=1;whiteSpace=wrap;fillColor=#4CAF50;fontColor=#000000;strokeColor=#388E3C;fontSize=11;labelPosition=right;verticalLabelPosition=middle;align=left;labelBackgroundColor=#FFFFFF;" vertex="1" parent="1">
-          <mxGeometry x="170" y="540" width="80" height="60" as="geometry"/>
-        </mxCell>
-
-        <!-- n9k-ce02 - Green N9K CE Switch (East) -->
-        <mxCell id="n9k-ce02" value="&lt;b&gt;n9k-ce02&lt;/b&gt;&lt;br&gt;Lo0: 192.168.20.22" style="shape=mxgraph.cisco19.rect;prIcon=l2_switch;html=1;whiteSpace=wrap;fillColor=#4CAF50;fontColor=#000000;strokeColor=#388E3C;fontSize=11;labelPosition=right;verticalLabelPosition=middle;align=left;labelBackgroundColor=#FFFFFF;" vertex="1" parent="1">
-          <mxGeometry x="1120" y="540" width="80" height="60" as="geometry"/>
-        </mxCell>
-
-        <!-- client1 - Purple Linux Client (West, under n9k-ce01) -->
-        <mxCell id="client1" value="&lt;b&gt;client1&lt;/b&gt;&lt;br&gt;23.23.23.1" style="shape=mxgraph.cisco19.rect;prIcon=pc;html=1;whiteSpace=wrap;fillColor=#9C27B0;fontColor=#000000;strokeColor=#7B1FA2;fontSize=11;labelPosition=right;verticalLabelPosition=middle;align=left;labelBackgroundColor=#FFFFFF;" vertex="1" parent="1">
-          <mxGeometry x="100" y="720" width="60" height="50" as="geometry"/>
-        </mxCell>
-
-        <!-- client2 - Purple Linux Client (West, under n9k-ce01) -->
-        <mxCell id="client2" value="&lt;b&gt;client2&lt;/b&gt;&lt;br&gt;23.23.23.2" style="shape=mxgraph.cisco19.rect;prIcon=pc;html=1;whiteSpace=wrap;fillColor=#9C27B0;fontColor=#000000;strokeColor=#7B1FA2;fontSize=11;labelPosition=right;verticalLabelPosition=middle;align=left;labelBackgroundColor=#FFFFFF;" vertex="1" parent="1">
-          <mxGeometry x="250" y="720" width="60" height="50" as="geometry"/>
-        </mxCell>
-
-        <!-- client3 - Purple Linux Client (East, under n9k-ce02) -->
-        <mxCell id="client3" value="&lt;b&gt;client3&lt;/b&gt;&lt;br&gt;34.34.34.1" style="shape=mxgraph.cisco19.rect;prIcon=pc;html=1;whiteSpace=wrap;fillColor=#9C27B0;fontColor=#000000;strokeColor=#7B1FA2;fontSize=11;labelPosition=right;verticalLabelPosition=middle;align=left;labelBackgroundColor=#FFFFFF;" vertex="1" parent="1">
-          <mxGeometry x="1050" y="720" width="60" height="50" as="geometry"/>
-        </mxCell>
-
-        <!-- client4 - Purple Linux Client (East, under n9k-ce02) -->
-        <mxCell id="client4" value="&lt;b&gt;client4&lt;/b&gt;&lt;br&gt;34.34.34.2" style="shape=mxgraph.cisco19.rect;prIcon=pc;html=1;whiteSpace=wrap;fillColor=#9C27B0;fontColor=#000000;strokeColor=#7B1FA2;fontSize=11;labelPosition=right;verticalLabelPosition=middle;align=left;labelBackgroundColor=#FFFFFF;" vertex="1" parent="1">
-          <mxGeometry x="1200" y="720" width="60" height="50" as="geometry"/>
-        </mxCell>
-
-        <!-- ==================== LINKS ==================== -->
-
-        <!-- xrd01 ↔ xrd02: iBGP VPNv4 (THICK blue line) -->
-        <mxCell id="link-xrd" value="&lt;b&gt;iBGP VPNv4&lt;/b&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#4A90D9;strokeWidth=4;fontStyle=1;fontSize=12;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="xrd01" target="xrd02">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
-
-        <!-- xrd01-xrd02 IP labels -->
-        <mxCell id="link-xrd-ip-left" value="Gi0/0/0/0&lt;br&gt;10.0.0.1" style="text;html=1;fontSize=9;align=left;verticalAlign=middle;fontColor=#4A90D9;labelBackgroundColor=#FFFFFF;" vertex="1" parent="1">
-          <mxGeometry x="270" y="120" width="90" height="30" as="geometry"/>
-        </mxCell>
-        <mxCell id="link-xrd-ip-right" value="Gi0/0/0/0&lt;br&gt;10.0.0.2" style="text;html=1;fontSize=9;align=right;verticalAlign=middle;fontColor=#4A90D9;labelBackgroundColor=#FFFFFF;" vertex="1" parent="1">
-          <mxGeometry x="1020" y="120" width="90" height="30" as="geometry"/>
-        </mxCell>
-
-        <!-- xrd01 ↔ csr-pe01: eBGP (VRF) -->
-        <mxCell id="link-west-pe" value="&lt;b&gt;eBGP (VRF)&lt;/b&gt;" style="rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;strokeWidth=2;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="xrd01" target="csr-pe01">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
-        <mxCell id="link-west-pe-ip-top" value="Gi0/0/0/1&lt;br&gt;10.1.0.5" style="text;html=1;fontSize=9;align=left;verticalAlign=middle;fontColor=#555555;labelBackgroundColor=#FFFFFF;" vertex="1" parent="1">
-          <mxGeometry x="220" y="210" width="80" height="30" as="geometry"/>
-        </mxCell>
-        <mxCell id="link-west-pe-ip-bot" value="Gi2&lt;br&gt;10.1.0.6" style="text;html=1;fontSize=9;align=left;verticalAlign=middle;fontColor=#555555;labelBackgroundColor=#FFFFFF;" vertex="1" parent="1">
-          <mxGeometry x="220" y="300" width="80" height="30" as="geometry"/>
-        </mxCell>
-
-        <!-- xrd02 ↔ csr-pe02: eBGP (VRF) -->
-        <mxCell id="link-east-pe" value="&lt;b&gt;eBGP (VRF)&lt;/b&gt;" style="rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;strokeWidth=2;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="xrd02" target="csr-pe02">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
-        <mxCell id="link-east-pe-ip-top" value="Gi0/0/0/1&lt;br&gt;10.1.0.9" style="text;html=1;fontSize=9;align=right;verticalAlign=middle;fontColor=#555555;labelBackgroundColor=#FFFFFF;" vertex="1" parent="1">
-          <mxGeometry x="1070" y="210" width="80" height="30" as="geometry"/>
-        </mxCell>
-        <mxCell id="link-east-pe-ip-bot" value="Gi2&lt;br&gt;10.1.0.10" style="text;html=1;fontSize=9;align=right;verticalAlign=middle;fontColor=#555555;labelBackgroundColor=#FFFFFF;" vertex="1" parent="1">
-          <mxGeometry x="1070" y="300" width="80" height="30" as="geometry"/>
-        </mxCell>
-
-        <!-- csr-pe01 ↔ n9k-ce01: IS-IS -->
-        <mxCell id="link-west-ce" value="&lt;b&gt;IS-IS&lt;/b&gt;" style="rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;strokeWidth=2;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="csr-pe01" target="n9k-ce01">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
-        <mxCell id="link-west-ce-ip-top" value="Gi4" style="text;html=1;fontSize=9;align=left;verticalAlign=middle;fontColor=#555555;labelBackgroundColor=#FFFFFF;" vertex="1" parent="1">
-          <mxGeometry x="220" y="420" width="50" height="20" as="geometry"/>
-        </mxCell>
-        <mxCell id="link-west-ce-ip-bot" value="Eth1/1" style="text;html=1;fontSize=9;align=left;verticalAlign=middle;fontColor=#555555;labelBackgroundColor=#FFFFFF;" vertex="1" parent="1">
-          <mxGeometry x="220" y="510" width="50" height="20" as="geometry"/>
-        </mxCell>
-
-        <!-- csr-pe02 ↔ n9k-ce02: IS-IS -->
-        <mxCell id="link-east-ce" value="&lt;b&gt;IS-IS&lt;/b&gt;" style="rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;strokeWidth=2;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="csr-pe02" target="n9k-ce02">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
-        <mxCell id="link-east-ce-ip-top" value="Gi4" style="text;html=1;fontSize=9;align=right;verticalAlign=middle;fontColor=#555555;labelBackgroundColor=#FFFFFF;" vertex="1" parent="1">
-          <mxGeometry x="1100" y="420" width="50" height="20" as="geometry"/>
-        </mxCell>
-        <mxCell id="link-east-ce-ip-bot" value="Eth1/1" style="text;html=1;fontSize=9;align=right;verticalAlign=middle;fontColor=#555555;labelBackgroundColor=#FFFFFF;" vertex="1" parent="1">
-          <mxGeometry x="1100" y="510" width="50" height="20" as="geometry"/>
-        </mxCell>
-
-        <!-- n9k-ce01 ↔ client1 -->
-        <mxCell id="link-w-c1" style="rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#666666;strokeWidth=1;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="n9k-ce01" target="client1">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
-
-        <!-- n9k-ce01 ↔ client2 -->
-        <mxCell id="link-w-c2" style="rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#666666;strokeWidth=1;exitX=0.75;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="n9k-ce01" target="client2">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
-
-        <!-- n9k-ce02 ↔ client3 -->
-        <mxCell id="link-e-c3" style="rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#666666;strokeWidth=1;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="n9k-ce02" target="client3">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
-
-        <!-- n9k-ce02 ↔ client4 -->
-        <mxCell id="link-e-c4" style="rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#666666;strokeWidth=1;exitX=0.75;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="n9k-ce02" target="client4">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
-
-        <!-- ==================== VRF CALLOUT ==================== -->
-
-        <!-- VRF callout on West XRd -->
-        <mxCell id="vrf-west" value="&lt;b&gt;VRF:&lt;/b&gt; Customer-CLIVE&lt;br&gt;&lt;b&gt;RD:&lt;/b&gt; 65000:1&lt;br&gt;&lt;b&gt;RT:&lt;/b&gt; 65000:1" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;size=15;position=0.75;base=15;fillColor=#E8F0FE;strokeColor=#4A90D9;fontSize=9;align=left;spacingLeft=5;rounded=1;" vertex="1" parent="1">
-          <mxGeometry x="55" y="100" width="130" height="60" as="geometry"/>
-        </mxCell>
-
-        <!-- VRF callout on East XRd -->
-        <mxCell id="vrf-east" value="&lt;b&gt;VRF:&lt;/b&gt; Customer-CLIVE&lt;br&gt;&lt;b&gt;RD:&lt;/b&gt; 65000:1&lt;br&gt;&lt;b&gt;RT:&lt;/b&gt; 65000:1" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;size=15;position=0.25;base=15;fillColor=#E8F0FE;strokeColor=#4A90D9;fontSize=9;align=left;spacingLeft=5;rounded=1;" vertex="1" parent="1">
-          <mxGeometry x="1200" y="100" width="130" height="60" as="geometry"/>
-        </mxCell>
-
-        <!-- ==================== "YOU CONFIGURE" YELLOW BOXES ==================== -->
-
-        <!-- You configure: iBGP VPNv4 neighbor IPs -->
-        <mxCell id="yc-ibgp" value="&#x1f449; &lt;b&gt;You configure:&lt;/b&gt;&lt;br&gt;iBGP VPNv4 neighbor IPs" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF9C4;strokeColor=#F9A825;fontSize=10;align=center;shadow=1;" vertex="1" parent="1">
-          <mxGeometry x="600" y="85" width="190" height="45" as="geometry"/>
-        </mxCell>
-        <!-- Arrow from yc-ibgp to the iBGP link area -->
-        <mxCell id="yc-ibgp-arrow" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#F9A825;strokeWidth=1;dashed=1;endArrow=block;endFill=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="yc-ibgp">
+        <mxCell id="div1" edge="1" parent="1" style="endArrow=none;html=1;strokeColor=#00aaff;strokeWidth=3;">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="695" y="150" as="targetPoint"/>
+            <mxPoint x="25" y="66" as="sourcePoint" />
+            <mxPoint x="1375" y="66" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-
-        <!-- You configure: eBGP peer IPs -->
-        <mxCell id="yc-ebgp" value="&#x1f449; &lt;b&gt;You configure:&lt;/b&gt;&lt;br&gt;eBGP peer IPs" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF9C4;strokeColor=#F9A825;fontSize=10;align=center;shadow=1;" vertex="1" parent="1">
-          <mxGeometry x="440" y="250" width="160" height="40" as="geometry"/>
-        </mxCell>
-
-        <!-- You configure: VRF interface IPs -->
-        <mxCell id="yc-vrf" value="&#x1f449; &lt;b&gt;You configure:&lt;/b&gt;&lt;br&gt;VRF interface IPs" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF9C4;strokeColor=#F9A825;fontSize=10;align=center;shadow=1;" vertex="1" parent="1">
-          <mxGeometry x="440" y="345" width="160" height="40" as="geometry"/>
-        </mxCell>
-
-        <!-- You configure: Cross-site Linux routes -->
-        <mxCell id="yc-routes" value="&#x1f449; &lt;b&gt;You configure:&lt;/b&gt;&lt;br&gt;Cross-site Linux routes" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF9C4;strokeColor=#F9A825;fontSize=10;align=center;shadow=1;" vertex="1" parent="1">
-          <mxGeometry x="560" y="750" width="180" height="40" as="geometry"/>
-        </mxCell>
-
-        <!-- ==================== TRAFFIC PATH (thick green arrow) ==================== -->
-
-        <!-- Green traffic flow: West clients → n9k-ce01 → csr-pe01 → xrd01 → xrd02 → csr-pe02 → n9k-ce02 → East clients -->
-        <mxCell id="traffic-path" value="" style="shape=flexArrow;endArrow=classic;startArrow=classic;html=1;strokeColor=#4CAF50;fillColor=#C8E6C9;strokeWidth=2;opacity=50;rounded=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1">
+        <mxCell id="div2" edge="1" parent="1" style="endArrow=none;html=1;strokeColor=#00d4ff;strokeWidth=1;">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="160" y="745" as="sourcePoint"/>
-            <mxPoint x="1260" y="745" as="targetPoint"/>
+            <mxPoint x="25" y="72" as="sourcePoint" />
+            <mxPoint x="1375" y="72" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="zone-west" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#141e2b;strokeColor=#00aaff;strokeWidth=2;dashed=1;dashPattern=8 4;" value="" vertex="1">
+          <mxGeometry height="790" width="370" x="25" y="85" as="geometry" />
+        </mxCell>
+        <mxCell id="zone-west-label" parent="1" style="text;html=1;fontSize=13;align=center;verticalAlign=top;fontColor=#00aaff;fontStyle=1;" value="WEST SITE" vertex="1">
+          <mxGeometry height="25" width="160" x="130" y="95" as="geometry" />
+        </mxCell>
+        <mxCell id="zone-east" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#141e2b;strokeColor=#ff8800;strokeWidth=2;dashed=1;dashPattern=8 4;" value="" vertex="1">
+          <mxGeometry height="790" width="370" x="1005" y="85" as="geometry" />
+        </mxCell>
+        <mxCell id="zone-east-label" parent="1" style="text;html=1;fontSize=13;align=center;verticalAlign=top;fontColor=#ff8800;fontStyle=1;" value="EAST SITE" vertex="1">
+          <mxGeometry height="25" width="160" x="1110" y="95" as="geometry" />
+        </mxCell>
+        <mxCell id="vrf-west" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1e2d3d;strokeColor=#00aaff;strokeWidth=1;fontSize=9;align=left;spacingLeft=5;verticalAlign=middle;" value="&lt;font color=&quot;#00aaff&quot;&gt;&lt;b&gt;VRF:&lt;/b&gt; Customer-CLIVE&lt;br&gt;&lt;b&gt;RD:&lt;/b&gt; 65000:1&lt;br&gt;&lt;b&gt;RT:&lt;/b&gt; 65000:1&lt;/font&gt;" vertex="1">
+          <mxGeometry height="55" width="130" x="35" y="100" as="geometry" />
+        </mxCell>
+        <mxCell id="vrf-east" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1e2d3d;strokeColor=#ff8800;strokeWidth=1;fontSize=9;align=left;spacingLeft=5;verticalAlign=middle;" value="&lt;font color=&quot;#ff8800&quot;&gt;&lt;b&gt;VRF:&lt;/b&gt; Customer-CLIVE&lt;br&gt;&lt;b&gt;RD:&lt;/b&gt; 65000:1&lt;br&gt;&lt;b&gt;RT:&lt;/b&gt; 65000:1&lt;/font&gt;" vertex="1">
+          <mxGeometry height="55" width="130" x="1235" y="100" as="geometry" />
+        </mxCell>
+        <mxCell id="xrd01" parent="1" style="shape=mxgraph.cisco19.router;html=1;whiteSpace=wrap;fillColor=#00aaff;fontColor=#ffffff;strokeColor=#00d4ff;fontSize=11;labelPosition=right;verticalLabelPosition=middle;align=left;labelBackgroundColor=none;imageWidth=80;imageHeight=50;" value="&lt;font color=&quot;#ffffff&quot;&gt;&lt;b&gt;xrd01&lt;/b&gt;&lt;br&gt;Lo0:&lt;br&gt;192.168.0.1&lt;br&gt;AS 65000&lt;/font&gt;" vertex="1">
+          <mxGeometry height="50" width="80" x="170" y="170" as="geometry" />
+        </mxCell>
+        <mxCell id="xrd02" parent="1" style="shape=mxgraph.cisco19.router;html=1;whiteSpace=wrap;fillColor=#ff8800;fontColor=#ffffff;strokeColor=#ffaa44;fontSize=11;labelPosition=right;verticalLabelPosition=middle;align=left;labelBackgroundColor=none;imageWidth=80;imageHeight=50;" value="&lt;font color=&quot;#ffffff&quot;&gt;&lt;b&gt;xrd02&lt;/b&gt;&lt;br&gt;Lo0:&lt;br&gt;192.168.0.2&lt;br&gt;AS 65000&lt;/font&gt;" vertex="1">
+          <mxGeometry height="50" width="80" x="1120" y="170" as="geometry" />
+        </mxCell>
+        <mxCell id="link-xrd" edge="1" parent="1" source="xrd01" style="endArrow=none;html=1;strokeColor=#00aaff;strokeWidth=4;dashed=1;dashPattern=8 4;" target="xrd02" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="link-xrd-label" parent="1" style="text;html=1;fontSize=12;fontStyle=1;fontColor=#00d4ff;align=center;verticalAlign=middle;labelBackgroundColor=none;" value="iBGP VPNv4" vertex="1">
+          <mxGeometry height="25" width="140" x="630" y="170" as="geometry" />
+        </mxCell>
+        <mxCell id="link-xrd-ip-left" parent="1" style="text;html=1;fontSize=9;fontColor=#c8d0d8;align=left;labelBackgroundColor=none;" value="Gi0/0/0/0&lt;br&gt;10.0.0.1" vertex="1">
+          <mxGeometry height="30" width="80" x="270" y="165" as="geometry" />
+        </mxCell>
+        <mxCell id="link-xrd-ip-right" parent="1" style="text;html=1;fontSize=9;fontColor=#c8d0d8;align=right;labelBackgroundColor=none;" value="Gi0/0/0/0&lt;br&gt;10.0.0.2" vertex="1">
+          <mxGeometry height="30" width="80" x="1020" y="165" as="geometry" />
+        </mxCell>
+        <mxCell id="csr-pe01" parent="1" style="shape=mxgraph.cisco19.router;html=1;whiteSpace=wrap;fillColor=#ff8800;fontColor=#ffffff;strokeColor=#cc6e00;fontSize=11;labelPosition=right;verticalLabelPosition=middle;align=left;labelBackgroundColor=none;imageWidth=80;imageHeight=50;" value="&lt;font color=&quot;#ffffff&quot;&gt;&lt;b&gt;csr-pe01&lt;/b&gt;&lt;br&gt;Lo0:&lt;br&gt;192.168.10.11&lt;br&gt;AS 65001&lt;/font&gt;" vertex="1">
+          <mxGeometry height="50" width="80" x="170" y="380" as="geometry" />
+        </mxCell>
+        <mxCell id="csr-pe02" parent="1" style="shape=mxgraph.cisco19.router;html=1;whiteSpace=wrap;fillColor=#ff8800;fontColor=#ffffff;strokeColor=#cc6e00;fontSize=11;labelPosition=right;verticalLabelPosition=middle;align=left;labelBackgroundColor=none;imageWidth=80;imageHeight=50;" value="&lt;font color=&quot;#ffffff&quot;&gt;&lt;b&gt;csr-pe02&lt;/b&gt;&lt;br&gt;Lo0:&lt;br&gt;192.168.10.12&lt;br&gt;AS 65001&lt;/font&gt;" vertex="1">
+          <mxGeometry height="50" width="80" x="1120" y="380" as="geometry" />
+        </mxCell>
+        <mxCell id="link-west-pe" edge="1" parent="1" source="xrd01" style="endArrow=none;html=1;strokeColor=#00d4ff;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="csr-pe01">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="link-west-pe-label" parent="1" style="text;html=1;fontSize=10;fontStyle=1;fontColor=#c8d0d8;align=left;labelBackgroundColor=none;" value="&lt;b&gt;eBGP (VRF)&lt;/b&gt;" vertex="1">
+          <mxGeometry height="20" width="100" x="35" y="290" as="geometry" />
+        </mxCell>
+        <mxCell id="link-west-pe-ip-top" parent="1" style="text;html=1;fontSize=9;fontColor=#c8d0d8;align=left;labelBackgroundColor=none;" value="Gi0/0/0/1&lt;br&gt;10.1.0.5" vertex="1">
+          <mxGeometry height="30" width="80" x="220" y="240" as="geometry" />
+        </mxCell>
+        <mxCell id="link-west-pe-ip-bot" parent="1" style="text;html=1;fontSize=9;fontColor=#c8d0d8;align=left;labelBackgroundColor=none;" value="Gi2&lt;br&gt;10.1.0.6" vertex="1">
+          <mxGeometry height="30" width="80" x="220" y="340" as="geometry" />
+        </mxCell>
+        <mxCell id="link-east-pe" edge="1" parent="1" source="xrd02" style="endArrow=none;html=1;strokeColor=#ffaa44;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="csr-pe02">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="link-east-pe-label" parent="1" style="text;html=1;fontSize=10;fontStyle=1;fontColor=#c8d0d8;align=right;labelBackgroundColor=none;" value="&lt;b&gt;eBGP (VRF)&lt;/b&gt;" vertex="1">
+          <mxGeometry height="20" width="100" x="1265" y="290" as="geometry" />
+        </mxCell>
+        <mxCell id="link-east-pe-ip-top" parent="1" style="text;html=1;fontSize=9;fontColor=#c8d0d8;align=right;labelBackgroundColor=none;" value="Gi0/0/0/1&lt;br&gt;10.1.0.9" vertex="1">
+          <mxGeometry height="30" width="80" x="1070" y="240" as="geometry" />
+        </mxCell>
+        <mxCell id="link-east-pe-ip-bot" parent="1" style="text;html=1;fontSize=9;fontColor=#c8d0d8;align=right;labelBackgroundColor=none;" value="Gi2&lt;br&gt;10.1.0.10" vertex="1">
+          <mxGeometry height="30" width="80" x="1070" y="340" as="geometry" />
+        </mxCell>
+        <mxCell id="link-west-ce" edge="1" parent="1" source="csr-pe01" style="endArrow=none;html=1;strokeColor=#00d4ff;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="n9k-ce01">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="link-west-ce-label" parent="1" style="text;html=1;fontSize=10;fontStyle=1;fontColor=#00cc66;align=left;labelBackgroundColor=none;" value="&lt;b&gt;IS-IS&lt;/b&gt;" vertex="1">
+          <mxGeometry height="20" width="50" x="35" y="480" as="geometry" />
+        </mxCell>
+        <mxCell id="link-west-ce-ip-top" parent="1" style="text;html=1;fontSize=9;fontColor=#c8d0d8;align=left;labelBackgroundColor=none;" value="Gi4" vertex="1">
+          <mxGeometry height="20" width="50" x="220" y="450" as="geometry" />
+        </mxCell>
+        <mxCell id="link-west-ce-ip-bot" parent="1" style="text;html=1;fontSize=9;fontColor=#c8d0d8;align=left;labelBackgroundColor=none;" value="Eth1/1" vertex="1">
+          <mxGeometry height="20" width="50" x="220" y="540" as="geometry" />
+        </mxCell>
+        <mxCell id="link-east-ce" edge="1" parent="1" source="csr-pe02" style="endArrow=none;html=1;strokeColor=#ffaa44;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="n9k-ce02">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="link-east-ce-label" parent="1" style="text;html=1;fontSize=10;fontStyle=1;fontColor=#00cc66;align=right;labelBackgroundColor=none;" value="&lt;b&gt;IS-IS&lt;/b&gt;" vertex="1">
+          <mxGeometry height="20" width="50" x="1315" y="480" as="geometry" />
+        </mxCell>
+        <mxCell id="link-east-ce-ip-top" parent="1" style="text;html=1;fontSize=9;fontColor=#c8d0d8;align=right;labelBackgroundColor=none;" value="Gi4" vertex="1">
+          <mxGeometry height="20" width="50" x="1100" y="450" as="geometry" />
+        </mxCell>
+        <mxCell id="link-east-ce-ip-bot" parent="1" style="text;html=1;fontSize=9;fontColor=#c8d0d8;align=right;labelBackgroundColor=none;" value="Eth1/1" vertex="1">
+          <mxGeometry height="20" width="50" x="1100" y="540" as="geometry" />
+        </mxCell>
+        <mxCell id="n9k-ce01" parent="1" style="shape=mxgraph.cisco19.workgroup_switch;html=1;whiteSpace=wrap;fillColor=#00aaff;fontColor=#ffffff;strokeColor=#00d4ff;fontSize=11;labelPosition=right;verticalLabelPosition=middle;align=left;labelBackgroundColor=none;imageWidth=80;imageHeight=50;" value="&lt;font color=&quot;#ffffff&quot;&gt;&lt;b&gt;n9k-ce01&lt;/b&gt;&lt;br&gt;Lo0:&lt;br&gt;192.168.20.21&lt;/font&gt;" vertex="1">
+          <mxGeometry height="50" width="80" x="170" y="570" as="geometry" />
+        </mxCell>
+        <mxCell id="n9k-ce02" parent="1" style="shape=mxgraph.cisco19.workgroup_switch;html=1;whiteSpace=wrap;fillColor=#ff8800;fontColor=#ffffff;strokeColor=#ffaa44;fontSize=11;labelPosition=right;verticalLabelPosition=middle;align=left;labelBackgroundColor=none;imageWidth=80;imageHeight=50;" value="&lt;font color=&quot;#ffffff&quot;&gt;&lt;b&gt;n9k-ce02&lt;/b&gt;&lt;br&gt;Lo0:&lt;br&gt;192.168.20.22&lt;/font&gt;" vertex="1">
+          <mxGeometry height="50" width="80" x="1120" y="570" as="geometry" />
+        </mxCell>
+        <mxCell id="client1" parent="1" style="shape=mxgraph.cisco19.pc;html=1;whiteSpace=wrap;fillColor=#141e2b;fontColor=#ffffff;strokeColor=#00aaff;fontSize=11;labelPosition=right;verticalLabelPosition=middle;align=left;labelBackgroundColor=none;imageWidth=50;imageHeight=35;" value="&lt;font color=&quot;#c8d0d8&quot;&gt;&lt;b&gt;client1&lt;/b&gt;&lt;br&gt;23.23.23.1&lt;/font&gt;" vertex="1">
+          <mxGeometry height="35" width="50" x="100" y="730" as="geometry" />
+        </mxCell>
+        <mxCell id="client2" parent="1" style="shape=mxgraph.cisco19.pc;html=1;whiteSpace=wrap;fillColor=#141e2b;fontColor=#ffffff;strokeColor=#00aaff;fontSize=11;labelPosition=right;verticalLabelPosition=middle;align=left;labelBackgroundColor=none;imageWidth=50;imageHeight=35;" value="&lt;font color=&quot;#c8d0d8&quot;&gt;&lt;b&gt;client2&lt;/b&gt;&lt;br&gt;23.23.23.2&lt;/font&gt;" vertex="1">
+          <mxGeometry height="35" width="50" x="260" y="730" as="geometry" />
+        </mxCell>
+        <mxCell id="client3" parent="1" style="shape=mxgraph.cisco19.pc;html=1;whiteSpace=wrap;fillColor=#141e2b;fontColor=#ffffff;strokeColor=#ff8800;fontSize=11;labelPosition=right;verticalLabelPosition=middle;align=left;labelBackgroundColor=none;imageWidth=50;imageHeight=35;" value="&lt;font color=&quot;#c8d0d8&quot;&gt;&lt;b&gt;client3&lt;/b&gt;&lt;br&gt;34.34.34.1&lt;/font&gt;" vertex="1">
+          <mxGeometry height="35" width="50" x="1060" y="730" as="geometry" />
+        </mxCell>
+        <mxCell id="client4" parent="1" style="shape=mxgraph.cisco19.pc;html=1;whiteSpace=wrap;fillColor=#141e2b;fontColor=#ffffff;strokeColor=#ff8800;fontSize=11;labelPosition=right;verticalLabelPosition=middle;align=left;labelBackgroundColor=none;imageWidth=50;imageHeight=35;" value="&lt;font color=&quot;#c8d0d8&quot;&gt;&lt;b&gt;client4&lt;/b&gt;&lt;br&gt;34.34.34.2&lt;/font&gt;" vertex="1">
+          <mxGeometry height="35" width="50" x="1220" y="730" as="geometry" />
+        </mxCell>
+        <mxCell id="link-w-c1" edge="1" parent="1" source="n9k-ce01" style="endArrow=none;html=1;strokeColor=#00aaff;strokeWidth=1;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="client1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="link-w-c2" edge="1" parent="1" source="n9k-ce01" style="endArrow=none;html=1;strokeColor=#00aaff;strokeWidth=1;exitX=0.75;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="client2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="link-e-c3" edge="1" parent="1" source="n9k-ce02" style="endArrow=none;html=1;strokeColor=#ff8800;strokeWidth=1;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="client3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="link-e-c4" edge="1" parent="1" source="n9k-ce02" style="endArrow=none;html=1;strokeColor=#ff8800;strokeWidth=1;exitX=0.75;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="client4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ping13" edge="1" parent="1" source="client1" style="html=1;strokeColor=#00cc66;strokeWidth=2;dashed=1;dashPattern=8 4;curved=1;endArrow=classic;startArrow=classic;" target="client3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ping13-label" connectable="0" parent="ping13" style="edgeLabel;html=1;fontSize=10;fontColor=#00cc66;fontStyle=1;labelBackgroundColor=none;" value="&lt;b&gt;Ping test ✓&lt;/b&gt;" vertex="1">
+          <mxGeometry relative="1" x="0.1" as="geometry" />
+        </mxCell>
+        <mxCell id="ping24" edge="1" parent="1" source="client2" style="html=1;strokeColor=#00cc66;strokeWidth=2;dashed=1;dashPattern=8 4;curved=1;endArrow=classic;startArrow=classic;" target="client4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ping24-label" connectable="0" parent="ping24" style="edgeLabel;html=1;fontSize=10;fontColor=#00cc66;fontStyle=1;labelBackgroundColor=none;" value="&lt;b&gt;Ping test ✓&lt;/b&gt;" vertex="1">
+          <mxGeometry relative="1" x="-0.1" as="geometry" />
+        </mxCell>
+        <mxCell id="yc-ibgp" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1e2d3d;strokeColor=#00d4ff;strokeWidth=2;fontSize=10;align=center;" value="&lt;font color=&quot;#00d4ff&quot;&gt;&lt;b&gt;You configure:&lt;/b&gt;&lt;/font&gt;&lt;br&gt;&lt;font color=&quot;#c8d0d8&quot;&gt;iBGP VPNv4 neighbor IPs&lt;/font&gt;" vertex="1">
+          <mxGeometry height="45" width="200" x="600" y="85" as="geometry" />
+        </mxCell>
+        <mxCell id="yc-ebgp" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1e2d3d;strokeColor=#00d4ff;strokeWidth=2;fontSize=10;align=center;" value="&lt;font color=&quot;#00d4ff&quot;&gt;&lt;b&gt;You configure:&lt;/b&gt;&lt;/font&gt;&lt;br&gt;&lt;font color=&quot;#c8d0d8&quot;&gt;eBGP peer IPs&lt;/font&gt;" vertex="1">
+          <mxGeometry height="40" width="160" x="620" y="277" as="geometry" />
+        </mxCell>
+        <mxCell id="yc-vrf" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1e2d3d;strokeColor=#00d4ff;strokeWidth=2;fontSize=10;align=center;" value="&lt;font color=&quot;#00d4ff&quot;&gt;&lt;b&gt;You configure:&lt;/b&gt;&lt;/font&gt;&lt;br&gt;&lt;font color=&quot;#c8d0d8&quot;&gt;VRF interface IPs&lt;/font&gt;" vertex="1">
+          <mxGeometry height="40" width="160" x="620" y="382" as="geometry" />
+        </mxCell>
+        <mxCell id="yc-routes" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1e2d3d;strokeColor=#00d4ff;strokeWidth=2;fontSize=10;align=center;" value="&lt;font color=&quot;#00d4ff&quot;&gt;&lt;b&gt;You configure:&lt;/b&gt;&lt;/font&gt;&lt;br&gt;&lt;font color=&quot;#c8d0d8&quot;&gt;Cross-site Linux routes&lt;/font&gt;" vertex="1">
+          <mxGeometry height="40" width="180" x="610" y="770" as="geometry" />
+        </mxCell>
+        <mxCell id="traffic-path" edge="1" parent="1" style="shape=flexArrow;endArrow=classic;startArrow=classic;html=1;strokeColor=#00cc66;fillColor=#1e3d2d;strokeWidth=2;opacity=50;rounded=1;">
+          <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="210" y="650"/>
-              <mxPoint x="210" y="470"/>
-              <mxPoint x="210" y="270"/>
-              <mxPoint x="210" y="150"/>
-              <mxPoint x="700" y="150"/>
-              <mxPoint x="1160" y="150"/>
-              <mxPoint x="1160" y="270"/>
-              <mxPoint x="1160" y="470"/>
-              <mxPoint x="1160" y="650"/>
+              <mxPoint x="210" y="650" />
+              <mxPoint x="210" y="470" />
+              <mxPoint x="210" y="270" />
+              <mxPoint x="210" y="195" />
+              <mxPoint x="700" y="195" />
+              <mxPoint x="1160" y="195" />
+              <mxPoint x="1160" y="270" />
+              <mxPoint x="1160" y="470" />
+              <mxPoint x="1160" y="650" />
             </Array>
+            <mxPoint x="125" y="730" as="sourcePoint" />
+            <mxPoint x="1245" y="730" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-
-        <!-- ==================== PING TEST ARROWS ==================== -->
-
-        <!-- Ping: client1 ↔ client3 -->
-        <mxCell id="ping13" value="Ping test &#x2713;" style="html=1;strokeColor=#4CAF50;strokeWidth=2;dashed=1;dashPattern=8 4;fontSize=10;fontColor=#4CAF50;fontStyle=1;labelBackgroundColor=#FFFFFF;curved=1;endArrow=block;endFill=1;startArrow=block;startFill=1;" edge="1" parent="1" source="client1" target="client3">
-          <mxGeometry x="0.1" relative="1" as="geometry">
-            <mxPoint as="offset"/>
-          </mxGeometry>
-        </mxCell>
-
-        <!-- Ping: client2 ↔ client4 -->
-        <mxCell id="ping24" value="Ping test &#x2713;" style="html=1;strokeColor=#4CAF50;strokeWidth=2;dashed=1;dashPattern=8 4;fontSize=10;fontColor=#4CAF50;fontStyle=1;labelBackgroundColor=#FFFFFF;curved=1;endArrow=block;endFill=1;startArrow=block;startFill=1;" edge="1" parent="1" source="client2" target="client4">
-          <mxGeometry x="-0.1" relative="1" as="geometry">
-            <mxPoint as="offset"/>
-          </mxGeometry>
-        </mxCell>
-
       </root>
     </mxGraphModel>
   </diagram>

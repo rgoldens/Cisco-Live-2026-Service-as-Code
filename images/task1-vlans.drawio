@@ -10,7 +10,7 @@
           <mxGeometry x="0" y="0" width="1200" height="700" as="geometry" />
         </mxCell>
 
-        <!-- Breadcrumb: LTRATO-1001 | Ansible Lab -->
+        <!-- Breadcrumb: LTRATO-1001 | Service Insertion as Code: From Concept to Commit -->
         <mxCell id="breadcrumb" parent="1" style="text;html=1;fontSize=11;align=left;verticalAlign=middle;fontColor=#00aaff;" value="&lt;font color=&quot;#00aaff&quot;&gt;LTRATO-1001&lt;/font&gt;&lt;font color=&quot;#5a6a7a&quot;&gt; | &lt;/font&gt;&lt;font color=&quot;#00aaff&quot;&gt;Service Insertion as Code: From Concept to Commit&lt;/font&gt;" vertex="1">
           <mxGeometry x="25" y="12" width="280" height="20" as="geometry" />
         </mxCell>
