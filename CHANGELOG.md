@@ -80,6 +80,20 @@ Added `LAB-ACCESS.md` — detailed Windows lab access guide for dCloud:
 
 ---
 
+### 1.1.7 — Git Primer, Lab Repo Clone Step, and Task 6
+
+**Added:**
+- `Git-Primer.md` — primer explaining what Git is, why it matters for IaC, key
+  concepts (repo, branch, commit, push), and the six commands students need
+- `TASK6.md` — final task where students commit and push their completed work to
+  GitHub on their own `student-XX` branch
+
+**Modified:**
+- `LAB-ACCESS.md` — added Part 4 (Steps 18–20): clone the lab repo, verify files,
+  and create student branch before starting Task 1
+
+---
+
 ### 1.1.4 — Remove GitHub Copy Buttons from Output Blocks
 
 Converted output/example code blocks from fenced markdown (`` ``` ``) to raw HTML

@@ -343,6 +343,57 @@ You can:
 
 ---
 
+## Part 4: Clone the Lab Repository
+
+> **New to Git?** Read the [Git Primer](Git-Primer.md) for a quick overview of
+> what Git is and why we use it in this lab.
+
+The lab files (playbooks, Terraform configs, reference docs) are stored in a GitHub
+repository. You need to clone them onto your lab server so you can edit and run them.
+
+### Step 18 — Clone the Repo into Your Home Directory
+
+The Ansible configuration expects lab files to live directly in your home directory
+(`/home/cisco/`). Run these commands in your VS Code terminal:
+
+```bash
+cd ~
+git clone https://github.com/rgoldens/Cisco-Live-2026-Service-as-Code.git .lab-tmp
+mv .lab-tmp/* .lab-tmp/.* . 2>/dev/null
+rm -rf .lab-tmp
+```
+
+> **Why the temp directory?** Git cannot clone into a non-empty directory. Your
+> home directory already has files (`.bashrc`, `.ssh/`, etc.), so we clone into
+> a temporary folder and move everything out. The `2>/dev/null` suppresses
+> harmless warnings about `.` and `..`.
+
+### Step 19 — Verify the Files Are in Place
+
+```bash
+ls ~/inventory.yml ~/ansible.cfg ~/ce-access-vlan.yml
+```
+
+You should see all three files listed without errors. If you see
+`No such file or directory`, re-run the clone commands from Step 18.
+
+### Step 20 — Set Up Git for Your Student Branch
+
+Configure your git identity and create your personal branch. Replace `XX` with
+your assigned pod/seat number (e.g., `01`, `12`):
+
+```bash
+git config user.name "Student XX"
+git config user.email "student@ciscolive.com"
+git checkout -b student-XX
+```
+
+> **Your branch name is your seat number.** Check your credential sheet or ask
+> a proctor if you're unsure which number to use. This branch keeps your work
+> separate from other students — you'll push it to GitHub in the final task.
+
+---
+
 ## You're In!
 
 Your environment is ready. You are now:
@@ -352,9 +403,9 @@ Your environment is ready. You are now:
 - **Working in a terminal** on the lab server
 - **ContainerLab extension** available to view, inspect, and connect to your
   lab devices
+- **Lab repo cloned** and on your own student branch
 
-**Next step:** Proceed to the [Getting Started](GETTING-STARTED.md) guide to
-set up your lab files and verify connectivity.
+**Next step:** Proceed to [Task 1](TASK1.md) to start the lab.
 
 ---
 
