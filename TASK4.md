@@ -77,13 +77,7 @@ If this is your first time with Terraform, here are the key concepts:
 
 **The workflow:**
 
-<pre>
-terraform init    →  Download the IOS-XR provider plugin
-terraform plan    →  Preview exactly what will be created (read this!)
-terraform apply   →  Push the configuration to the devices
-terraform plan    →  Run again — should show "No changes" (idempotency)
-terraform destroy →  Clean removal of everything Terraform created
-</pre>
+![Terraform Workflow](images/terraform-workflow.png)
 
 **How it connects to the routers:**
 

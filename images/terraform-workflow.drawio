@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="Electron" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.5.2 Chrome/142.0.7444.265 Electron/39.6.1 Safari/537.36" version="29.5.2">
+  <diagram name="Terraform Workflow" id="terraform-workflow">
+    <mxGraphModel dx="1100" dy="600" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="600" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- Slide background -->
+        <mxCell id="bg" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#0e1621;strokeColor=none;" value="" vertex="1">
+          <mxGeometry x="0" y="0" width="1100" height="600" as="geometry" />
+        </mxCell>
+
+        <!-- Breadcrumb -->
+        <mxCell id="breadcrumb" parent="1" style="text;html=1;fontSize=11;align=left;verticalAlign=middle;fontColor=#00aaff;" value="&lt;font color=&quot;#00aaff&quot;&gt;LTRATO-1001&lt;/font&gt;&lt;font color=&quot;#5a6a7a&quot;&gt; | &lt;/font&gt;&lt;font color=&quot;#00aaff&quot;&gt;Service Insertion as Code: From Concept to Commit&lt;/font&gt;" vertex="1">
+          <mxGeometry x="25" y="12" width="500" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- Title -->
+        <mxCell id="title" parent="1" style="text;html=1;fontSize=20;fontStyle=1;align=left;verticalAlign=middle;fontColor=#ffffff;" value="Terraform Workflow" vertex="1">
+          <mxGeometry x="25" y="30" width="400" height="35" as="geometry"/>
+        </mxCell>
+
+        <!-- Subtitle -->
+        <mxCell id="subtitle" parent="1" style="text;html=1;fontSize=12;align=left;verticalAlign=middle;fontColor=#5a6a7a;" value="Write → Plan → Apply → Verify → Destroy" vertex="1">
+          <mxGeometry x="25" y="55" width="400" height="20" as="geometry"/>
+        </mxCell>
+
+        <!-- Dual-line divider -->
+        <mxCell id="div1" parent="1" style="endArrow=none;html=1;strokeColor=#00aaff;strokeWidth=3;" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="25" y="78" as="sourcePoint" />
+            <mxPoint x="1075" y="78" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="div2" parent="1" style="endArrow=none;html=1;strokeColor=#00d4ff;strokeWidth=1;" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="25" y="84" as="sourcePoint" />
+            <mxPoint x="1075" y="84" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Step number badges -->
+        <mxCell id="badge1" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#00aaff;strokeColor=none;fontColor=#0e1621;fontSize=14;fontStyle=1;" value="1" vertex="1">
+          <mxGeometry x="52" y="120" width="30" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="badge2" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#00aaff;strokeColor=none;fontColor=#0e1621;fontSize=14;fontStyle=1;" value="2" vertex="1">
+          <mxGeometry x="262" y="120" width="30" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="badge3" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#00aaff;strokeColor=none;fontColor=#0e1621;fontSize=14;fontStyle=1;" value="3" vertex="1">
+          <mxGeometry x="472" y="120" width="30" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="badge4" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#00aaff;strokeColor=none;fontColor=#0e1621;fontSize=14;fontStyle=1;" value="4" vertex="1">
+          <mxGeometry x="682" y="120" width="30" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="badge5" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#00aaff;strokeColor=none;fontColor=#0e1621;fontSize=14;fontStyle=1;" value="5" vertex="1">
+          <mxGeometry x="892" y="120" width="30" height="30" as="geometry"/>
+        </mxCell>
+
+        <!-- Step 1: terraform init -->
+        <mxCell id="step1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1e2d3d;strokeColor=#00aaff;strokeWidth=2;fontSize=14;fontStyle=1;fontColor=#ffffff;arcSize=15;" value="terraform init" vertex="1">
+          <mxGeometry x="25" y="170" width="165" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="desc1" parent="1" style="text;html=1;fontSize=11;align=center;verticalAlign=top;fontColor=#c8d0d8;whiteSpace=wrap;" value="Download the IOS-XR&lt;br&gt;provider plugin" vertex="1">
+          <mxGeometry x="25" y="240" width="165" height="40" as="geometry"/>
+        </mxCell>
+
+        <!-- Step 2: terraform plan -->
+        <mxCell id="step2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1e2d3d;strokeColor=#00aaff;strokeWidth=2;fontSize=14;fontStyle=1;fontColor=#ffffff;arcSize=15;" value="terraform plan" vertex="1">
+          <mxGeometry x="235" y="170" width="165" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="desc2" parent="1" style="text;html=1;fontSize=11;align=center;verticalAlign=top;fontColor=#c8d0d8;whiteSpace=wrap;" value="Preview exactly what will&lt;br&gt;be created &lt;i&gt;(read this!)&lt;/i&gt;" vertex="1">
+          <mxGeometry x="235" y="240" width="165" height="40" as="geometry"/>
+        </mxCell>
+
+        <!-- Step 3: terraform apply -->
+        <mxCell id="step3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1e2d3d;strokeColor=#00cc66;strokeWidth=2;fontSize=14;fontStyle=1;fontColor=#ffffff;arcSize=15;" value="terraform apply" vertex="1">
+          <mxGeometry x="445" y="170" width="165" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="desc3" parent="1" style="text;html=1;fontSize=11;align=center;verticalAlign=top;fontColor=#c8d0d8;whiteSpace=wrap;" value="Push the configuration&lt;br&gt;to the devices" vertex="1">
+          <mxGeometry x="445" y="240" width="165" height="40" as="geometry"/>
+        </mxCell>
+
+        <!-- Step 4: terraform plan (verify) -->
+        <mxCell id="step4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1e2d3d;strokeColor=#ff8800;strokeWidth=2;fontSize=14;fontStyle=1;fontColor=#ffffff;arcSize=15;" value="terraform plan" vertex="1">
+          <mxGeometry x="655" y="170" width="165" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="desc4" parent="1" style="text;html=1;fontSize=11;align=center;verticalAlign=top;fontColor=#c8d0d8;whiteSpace=wrap;" value="Run again — should show&lt;br&gt;&quot;No changes&quot; (idempotency)" vertex="1">
+          <mxGeometry x="655" y="240" width="165" height="40" as="geometry"/>
+        </mxCell>
+
+        <!-- Step 5: terraform destroy -->
+        <mxCell id="step5" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1e2d3d;strokeColor=#ff4444;strokeWidth=2;fontSize=14;fontStyle=1;fontColor=#ffffff;arcSize=15;" value="terraform destroy" vertex="1">
+          <mxGeometry x="865" y="170" width="165" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="desc5" parent="1" style="text;html=1;fontSize=11;align=center;verticalAlign=top;fontColor=#c8d0d8;whiteSpace=wrap;" value="Clean removal of everything&lt;br&gt;Terraform created" vertex="1">
+          <mxGeometry x="865" y="240" width="165" height="40" as="geometry"/>
+        </mxCell>
+
+        <!-- Arrows between steps -->
+        <mxCell id="arrow12" parent="1" style="endArrow=block;endFill=1;html=1;strokeWidth=2;strokeColor=#5a6a7a;labelBackgroundColor=none;" edge="1" source="step1" target="step2">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="arrow23" parent="1" style="endArrow=block;endFill=1;html=1;strokeWidth=2;strokeColor=#5a6a7a;labelBackgroundColor=none;" edge="1" source="step2" target="step3">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="arrow34" parent="1" style="endArrow=block;endFill=1;html=1;strokeWidth=2;strokeColor=#5a6a7a;labelBackgroundColor=none;" edge="1" source="step3" target="step4">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="arrow45" parent="1" style="endArrow=block;endFill=1;html=1;strokeWidth=2;strokeColor=#5a6a7a;labelBackgroundColor=none;" edge="1" source="step4" target="step5">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Bottom section: What each phase does -->
+        <mxCell id="section_label" parent="1" style="text;html=1;fontSize=14;fontStyle=1;align=left;verticalAlign=middle;fontColor=#ffffff;" value="What happens at each phase:" vertex="1">
+          <mxGeometry x="25" y="310" width="300" height="30" as="geometry"/>
+        </mxCell>
+
+        <!-- Phase detail boxes -->
+        <mxCell id="detail_bg" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#141e2b;strokeColor=#2a3a4a;strokeWidth=1;arcSize=5;" value="" vertex="1">
+          <mxGeometry x="25" y="345" width="1050" height="230" as="geometry"/>
+        </mxCell>
+
+        <!-- Init detail -->
+        <mxCell id="detail1_title" parent="1" style="text;html=1;fontSize=12;fontStyle=1;align=center;verticalAlign=middle;fontColor=#00aaff;" value="init" vertex="1">
+          <mxGeometry x="25" y="355" width="210" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="detail1" parent="1" style="text;html=1;fontSize=10;align=left;verticalAlign=top;fontColor=#c8d0d8;whiteSpace=wrap;" value="• Reads provider requirements&lt;br&gt;  from .tf files&lt;br&gt;• Links provider binaries from&lt;br&gt;  local filesystem mirror&lt;br&gt;• Creates .terraform/ directory&lt;br&gt;• One-time setup per project" vertex="1">
+          <mxGeometry x="35" y="380" width="190" height="100" as="geometry"/>
+        </mxCell>
+
+        <!-- Plan detail -->
+        <mxCell id="detail2_title" parent="1" style="text;html=1;fontSize=12;fontStyle=1;align=center;verticalAlign=middle;fontColor=#00aaff;" value="plan" vertex="1">
+          <mxGeometry x="235" y="355" width="210" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="detail2" parent="1" style="text;html=1;fontSize=10;align=left;verticalAlign=top;fontColor=#c8d0d8;whiteSpace=wrap;" value="• Reads live device config&lt;br&gt;  via gNMI&lt;br&gt;• Compares against .tf files&lt;br&gt;• Shows exact diff of changes&lt;br&gt;• &lt;b&gt;Read-only — changes nothing&lt;/b&gt;&lt;br&gt;• Safe to run anytime" vertex="1">
+          <mxGeometry x="245" y="380" width="190" height="100" as="geometry"/>
+        </mxCell>
+
+        <!-- Apply detail -->
+        <mxCell id="detail3_title" parent="1" style="text;html=1;fontSize=12;fontStyle=1;align=center;verticalAlign=middle;fontColor=#00cc66;" value="apply" vertex="1">
+          <mxGeometry x="445" y="355" width="210" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="detail3" parent="1" style="text;html=1;fontSize=10;align=left;verticalAlign=top;fontColor=#c8d0d8;whiteSpace=wrap;" value="• Pushes config to devices&lt;br&gt;  via gNMI&lt;br&gt;• Creates resources in&lt;br&gt;  dependency order&lt;br&gt;• Records state in .tfstate&lt;br&gt;• Parallel where possible" vertex="1">
+          <mxGeometry x="455" y="380" width="190" height="100" as="geometry"/>
+        </mxCell>
+
+        <!-- Verify detail -->
+        <mxCell id="detail4_title" parent="1" style="text;html=1;fontSize=12;fontStyle=1;align=center;verticalAlign=middle;fontColor=#ff8800;" value="plan (verify)" vertex="1">
+          <mxGeometry x="655" y="355" width="210" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="detail4" parent="1" style="text;html=1;fontSize=10;align=left;verticalAlign=top;fontColor=#c8d0d8;whiteSpace=wrap;" value="• Re-reads all live config&lt;br&gt;• Compares against .tf files&lt;br&gt;• Should show &quot;No changes&quot;&lt;br&gt;• Confirms idempotency&lt;br&gt;• Detects any drift since&lt;br&gt;  the apply" vertex="1">
+          <mxGeometry x="665" y="380" width="190" height="100" as="geometry"/>
+        </mxCell>
+
+        <!-- Destroy detail -->
+        <mxCell id="detail5_title" parent="1" style="text;html=1;fontSize=12;fontStyle=1;align=center;verticalAlign=middle;fontColor=#ff4444;" value="destroy" vertex="1">
+          <mxGeometry x="865" y="355" width="210" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="detail5" parent="1" style="text;html=1;fontSize=10;align=left;verticalAlign=top;fontColor=#c8d0d8;whiteSpace=wrap;" value="• Removes all managed&lt;br&gt;  resources&lt;br&gt;• Reverse dependency order&lt;br&gt;  (leaf → parent)&lt;br&gt;• Updates state file&lt;br&gt;• Clean teardown" vertex="1">
+          <mxGeometry x="875" y="380" width="190" height="100" as="geometry"/>
+        </mxCell>
+
+        <!-- Vertical separators in detail section -->
+        <mxCell id="sep1" parent="1" style="endArrow=none;html=1;strokeColor=#2a3a4a;strokeWidth=1;" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="235" y="355" as="sourcePoint" />
+            <mxPoint x="235" y="565" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="sep2" parent="1" style="endArrow=none;html=1;strokeColor=#2a3a4a;strokeWidth=1;" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="445" y="355" as="sourcePoint" />
+            <mxPoint x="445" y="565" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="sep3" parent="1" style="endArrow=none;html=1;strokeColor=#2a3a4a;strokeWidth=1;" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="655" y="355" as="sourcePoint" />
+            <mxPoint x="655" y="565" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="sep4" parent="1" style="endArrow=none;html=1;strokeColor=#2a3a4a;strokeWidth=1;" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="865" y="355" as="sourcePoint" />
+            <mxPoint x="865" y="565" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
