@@ -80,6 +80,39 @@ Added `LAB-ACCESS.md` — detailed Windows lab access guide for dCloud:
 
 ---
 
+### 1.1.4 — Remove GitHub Copy Buttons from Output Blocks
+
+Converted output/example code blocks from fenced markdown (`` ``` ``) to raw HTML
+`<pre>` tags across all task files. This removes the GitHub "copy" button from
+blocks students should never need to copy (expected outputs, TODO placeholders,
+data flow diagrams). Command blocks students need to type remain as fenced code.
+
+| File | Blocks converted |
+|------|-----------------|
+| `TASK1.md` | 1 (TODO placeholder) |
+| `TASK2.md` | 3 (TODO placeholders) |
+| `TASK3.md` | 6 (TODO placeholders, data flow, idempotency outputs) |
+| `TASK4.md` | 17 (terraform init/plan/apply/destroy outputs, ping outputs, TODO placeholders, timing race note) |
+
+---
+
+### 1.1.4 — Remove GitHub Copy Buttons from Output Blocks
+
+Converted output/example code blocks from fenced markdown (`` ``` ``) to raw HTML
+`<pre>` tags across all task files. This removes the GitHub "copy" button from
+blocks students should never need to copy (expected outputs, TODO placeholders,
+data flow diagrams). Command blocks students need to type remain as fenced code.
+
+| File | Blocks converted |
+|------|-----------------|
+| `TASK1.md` | 1 (TODO placeholder) |
+| `TASK2.md` | 3 (TODO placeholders) |
+| `TASK3.md` | 6 (TODO placeholders, data flow, idempotency outputs) |
+| `TASK4.md` | 17 (terraform init/plan/apply/destroy outputs, ping outputs, TODO placeholders, timing race note) |
+| `TASK5.md` | 32 (terraform init/plan/apply/destroy outputs, docker ps/inspect outputs, RESTCONF JSON, SSH session outputs, state file outputs) |
+
+---
+
 ## Version 1.0 — Interactive Lab: Fully Tested, Student-Ready
 
 **Date:** 2026-04-15
