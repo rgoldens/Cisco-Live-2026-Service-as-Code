@@ -1,5 +1,7 @@
 # LTRATO-1001: Automating Service Provider Networks with Ansible
 
+[← Lab Access](LAB-ACCESS.md) | [Getting Started](GETTING-STARTED.md) | [Reference Tables](REFERENCE.md) | [Primer](PRIMER.md)
+
 ## Lab Guide
 
 ---
@@ -150,16 +152,11 @@ Keep this section open while you work.
 
 ## Getting Started
 
-### Step 1: Connect to Your Lab Server
+### Step 1: Open Your Terminal
 
-Open VS Code and use **Remote-SSH** to connect to your dCloud server.
-Once connected, open a terminal (Terminal > New Terminal).
+If you completed [Lab Access](LAB-ACCESS.md), your terminal is already open in VS Code with the prompt `cisco@ubuntu:~$`. Use that same terminal for all commands below.
 
-Alternatively, SSH from any terminal:
-
-```bash
-ssh cisco@<your-dcloud-server-ip>
-```
+> **Not set up yet?** Go to [Lab Access](LAB-ACCESS.md) first.
 
 ### Step 2: Clone the Lab Repository
 

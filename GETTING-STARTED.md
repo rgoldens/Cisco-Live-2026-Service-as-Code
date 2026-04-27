@@ -1,4 +1,4 @@
-[Lab Guide](LAB-GUIDE.md) | [Reference Tables](REFERENCE.md) | [Primer →](Ansible-Primer.md)
+[← Lab Access](LAB-ACCESS.md) | [Lab Guide](LAB-GUIDE.md) | [Reference Tables](REFERENCE.md) | [Primer →](PRIMER.md)
 
 ---
 
@@ -94,18 +94,11 @@ Your lab has **10 devices** across 4 platforms:
 
 ---
 
-## Step 1: Connect to Your Lab Server
+## Step 1: Open Your Terminal
 
-Open VS Code and use **Remote-SSH** to connect to your dCloud server.
-Once connected, open a terminal (Terminal > New Terminal).
+If you completed [Lab Access](LAB-ACCESS.md), your terminal is already open in VS Code with the prompt `cisco@ubuntu:~$`. Use that same terminal for all commands in this guide.
 
-Alternatively, SSH from any terminal:
-
-```bash
-ssh cisco@<your-dcloud-server-ip>
-```
-
-> **Credentials:** Username: `cisco` / Password: `C1sco12345`
+> **Not set up yet?** Go to [Lab Access](LAB-ACCESS.md) first — it walks you through VPN, VS Code Remote-SSH, and opening your terminal.
 
 ---
 
@@ -287,7 +280,7 @@ look up VLAN IDs, IP addresses, BGP AS numbers, and IS-IS NET addresses.
 
 Before starting Task 1, confirm all of the following:
 
-- [ ] Connected to the lab server via SSH or VS Code Remote-SSH
+- [ ] Connected to the lab server — VS Code shows `SSH: 198.18.134.90` in blue and terminal prompt is `cisco@ubuntu:~$`
 - [ ] Repository cloned and files are in `/home/cisco/`
 - [ ] `ansible --version` shows Ansible core 2.x
 - [ ] `terraform --version` shows Terraform v1.x
@@ -324,4 +317,4 @@ templates are reusable and operators fill in site-specific values.
 
 ---
 
-[Lab Guide](LAB-GUIDE.md) | [Reference Tables](REFERENCE.md) | [Task 1 →](TASK1.md)
+[← Lab Access](LAB-ACCESS.md) | [Lab Guide](LAB-GUIDE.md) | [Reference Tables](REFERENCE.md) | [Task 1 →](TASK1.md)
