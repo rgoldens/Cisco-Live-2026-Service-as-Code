@@ -80,6 +80,45 @@ Added `LAB-ACCESS.md` — detailed Windows lab access guide for dCloud:
 
 ---
 
+### 1.1.4 — Remove GitHub Copy Buttons from Output Blocks
+
+Converted output/example code blocks from fenced markdown (`` ``` ``) to raw HTML
+`<pre>` tags across all task files. This removes the GitHub "copy" button from
+blocks students should never need to copy (expected outputs, TODO placeholders,
+data flow diagrams). Command blocks students need to type remain as fenced code.
+
+| File | Blocks converted |
+|------|-----------------|
+| `TASK1.md` | 1 (TODO placeholder) |
+| `TASK2.md` | 3 (TODO placeholders) |
+| `TASK3.md` | 6 (TODO placeholders, data flow, idempotency outputs) |
+| `TASK4.md` | 17 (terraform init/plan/apply/destroy outputs, ping outputs, TODO placeholders, timing race note) |
+| `TASK5.md` | 32 (terraform init/plan/apply/destroy outputs, docker ps/inspect outputs, RESTCONF JSON, SSH session outputs, state file outputs) |
+
+---
+
+### 1.1.5 — Terraform Workflow Diagram
+
+Added dark-themed draw.io diagram for the 5-step Terraform workflow
+(`init → plan → apply → plan → destroy`). Replaces the text-only `<pre>` block
+in TASK4.md with a visual diagram matching the style of all other lab diagrams.
+
+| File | Change |
+|------|--------|
+| `images/terraform-workflow.drawio` | New draw.io source (dark theme, breadcrumb, numbered steps, detail section) |
+| `images/terraform-workflow.png` | Exported PNG |
+| `TASK4.md` | Replaced `<pre>` workflow block with image reference |
+
+---
+
+### 1.1.6 — ContainerLab Primer
+
+Added `ContainerLab-Primer.md` — informational primer for students explaining what
+ContainerLab is, how it works under the hood, common commands, the VS Code extension,
+and key concepts. The lab is pre-built for students; this provides background context.
+
+---
+
 ### 1.1.7 — Git Primer, Lab Repo Clone Step, and Task 6
 
 **Added:**
@@ -121,46 +160,40 @@ for a cleaner look that better represents the Alpine Linux containers.
 | `images/task3-bgp-vpn.drawio` | client1–4 |
 | `images/full-topology.drawio` | client1–4 |
 
-PNGs need re-export from the updated drawio files.
+---
+
+### 1.1.10 — Fix TASK4 Navigation Links
+
+Updated TASK4.md top and bottom nav bars to link to Task 5 instead of
+Troubleshooting, matching the sequential task flow.
 
 ---
 
-### 1.1.4 — Remove GitHub Copy Buttons from Output Blocks
+### 1.1.11 — Update Getting Started with Actual Server Output
 
-Converted output/example code blocks from fenced markdown (`` ``` ``) to raw HTML
-`<pre>` tags across all task files. This removes the GitHub "copy" button from
-blocks students should never need to copy (expected outputs, TODO placeholders,
-data flow diagrams). Command blocks students need to type remain as fenced code.
-
-| File | Blocks converted |
-|------|-----------------|
-| `TASK1.md` | 1 (TODO placeholder) |
-| `TASK2.md` | 3 (TODO placeholders) |
-| `TASK3.md` | 6 (TODO placeholders, data flow, idempotency outputs) |
-| `TASK4.md` | 17 (terraform init/plan/apply/destroy outputs, ping outputs, TODO placeholders, timing race note) |
-| `TASK5.md` | 32 (terraform init/plan/apply/destroy outputs, docker ps/inspect outputs, RESTCONF JSON, SSH session outputs, state file outputs) |
+Updated `GETTING-STARTED.md` to match real dCloud server:
+- Ansible version: `2.20.3` (was `2.14.x`), Python `3.12.3`
+- Terraform version: `v1.14.7` (was `v1.5.7`)
+- `ansible all -m ping` output updated to match newer Ansible error format
+- Rewrote Step 2 (clone instructions) with clear sub-steps (2a–2e), `.lab-tmp`
+  pattern, shared PAT URL, and student branch creation
 
 ---
 
-### 1.1.6 — ContainerLab Primer
+### 1.1.12 — Color-Coded Playbook Screenshots for Tasks 2 and 3
 
-Added `ContainerLab-Primer.md` — informational primer for students explaining what
-ContainerLab is, how it works under the hood, common commands, the VS Code extension,
-and key concepts. The lab is pre-built for students; this provides background context.
+Added nano syntax-highlighted screenshots for all 6 playbook variable sections
+across Tasks 2 and 3. Replaced `<pre>` TODO blocks with images showing the same
+content with color-coded YAML (matching Task 1's style).
 
----
-
-### 1.1.5 — Terraform Workflow Diagram
-
-Added dark-themed draw.io diagram for the 5-step Terraform workflow
-(`init → plan → apply → plan → destroy`). Replaces the text-only `<pre>` block
-in TASK4.md with a visual diagram matching the style of all other lab diagrams.
-
-| File | Change |
-|------|--------|
-| `images/terraform-workflow.drawio` | New draw.io source (dark theme, breadcrumb, numbered steps, detail section) |
-| `images/terraform-workflow.png` | Exported PNG |
-| `TASK4.md` | Replaced `<pre>` workflow block with image reference |
+| File | Screenshot | Content |
+|------|-----------|---------|
+| `TASK2.md` | `task2-play1.png` | Play 1 — NX-OS IS-IS vars (NET, VLAN ID, SVI IP) |
+| `TASK2.md` | `task2-play2.png` | Play 2 — CSR PE IS-IS vars (NET) |
+| `TASK2.md` | `task2-play3.png` | Play 3 — Linux client route vars (gateway, routes) |
+| `TASK3.md` | `task3-play1.png` | Play 1 — XRd vars (remote_lo, gi1_ip, gi1_mask, csr_peer) |
+| `TASK3.md` | `task3-play2.png` | Play 2 — CSR BGP vars (xrd_peer) |
+| `TASK3.md` | `task3-play3.png` | Play 3 — Linux cross-site route vars (dest, gw) |
 
 ---
 
