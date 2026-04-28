@@ -153,10 +153,10 @@ ansible --version
 You should see Ansible core 2.x with Python 3.x. Example:
 
 ```
-ansible [core 2.14.x]
+ansible [core 2.20.3]
   config file = /home/cisco/ansible.cfg
   ...
-  python version = 3.x.x
+  python version = 3.12.3
 ```
 
 > **Key check:** Make sure `config file` points to `/home/cisco/ansible.cfg`.
@@ -173,7 +173,7 @@ terraform --version
 You should see Terraform v1.x.x. Example:
 
 ```
-Terraform v1.5.7
+Terraform v1.14.7
 on linux_amd64
 ```
 
@@ -220,6 +220,14 @@ The **6 network devices** should return `SUCCESS`. The **4 Linux clients will
 FAIL** — this is expected and explained below.
 
 ```
+n9k-ce01 | SUCCESS => {
+    "changed": false,
+    "ping": "pong"
+}
+csr-pe01 | SUCCESS => {
+    "changed": false,
+    "ping": "pong"
+}
 xrd01 | SUCCESS => {
     "changed": false,
     "ping": "pong"
@@ -228,15 +236,7 @@ xrd02 | SUCCESS => {
     "changed": false,
     "ping": "pong"
 }
-csr-pe01 | SUCCESS => {
-    "changed": false,
-    "ping": "pong"
-}
 csr-pe02 | SUCCESS => {
-    "changed": false,
-    "ping": "pong"
-}
-n9k-ce01 | SUCCESS => {
     "changed": false,
     "ping": "pong"
 }
@@ -245,10 +245,14 @@ n9k-ce02 | SUCCESS => {
     "ping": "pong"
 }
 linux-client1 | FAILED! => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
     "changed": false,
-    "module_stderr": "/bin/sh: python: not found\n",
-    "module_stdout": "",
-    "msg": "The module failed to execute correctly..."
+    "module_stderr": "Shared connection to 172.20.20.40 closed.\r\n",
+    "module_stdout": "/bin/sh: /usr/bin/python3: not found\r\n",
+    "msg": "The module interpreter '/usr/bin/python3' was not found.",
+    "rc": 127
 }
 linux-client2 | FAILED! => { ... }
 linux-client3 | FAILED! => { ... }
@@ -257,10 +261,11 @@ linux-client4 | FAILED! => { ... }
 
 > **Why do the Linux clients fail?** Don't worry — this is expected. The
 > `ping` module requires Python on the remote host, but our Linux containers
-> are minimal Alpine images with no Python installed. This does **not** mean
-> Ansible can't manage them. Our playbooks use the `raw` module for Linux
-> tasks, which sends commands directly over SSH without needing Python.
-> You'll see this in action in Tasks 1 and 2.
+> are minimal Alpine images with no Python installed. That's why you see
+> `"/usr/bin/python3: not found"`. This does **not** mean Ansible can't manage
+> them. Our playbooks use the `raw` module for Linux tasks, which sends
+> commands directly over SSH without needing Python. You'll see this in action
+> in Tasks 1 and 2.
 
 If any of the **6 network devices** show `UNREACHABLE`, let your instructor
 know — a device may still be booting or SSH keys may need to be re-injected.
