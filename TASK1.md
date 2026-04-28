@@ -119,16 +119,7 @@ Read through the playbook carefully. Here's what each section does:
 
 Now scroll to the `vars:` section in the playbook. You'll see TODO placeholders:
 
-<pre>
-vars:
-  vlan_config:
-    n9k-ce01:
-      id: ___          # TODO: VLAN ID for west-side clients (see Table 1)
-      name: "___"      # TODO: Name this VLAN (convention: CLIENT-VLAN-&lt;id&gt;)
-    n9k-ce02:
-      id: ___          # TODO: VLAN ID for east-side clients (see Table 1)
-      name: "___"      # TODO: Name this VLAN (convention: CLIENT-VLAN-&lt;id&gt;)
-</pre>
+![vars block](images/task1-vars-block.png)
 
 Using **Table 1: VLAN Assignments**, fill in the 4 values:
 

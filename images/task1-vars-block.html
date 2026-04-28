@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1200" />
+<title>task1 vars block</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { overflow: hidden; }
+
+  body {
+    background: #000000;
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+  }
+
+  .terminal {
+    background: #000000;
+    width: 860px;
+    padding: 22px 28px 22px 28px;
+    font-size: 13.5px;
+    line-height: 1.7;
+  }
+
+  /* color tokens */
+  .k  { color: #98c379; }          /* YAML keys (green) */
+  .s  { color: #c8d0d8; }          /* plain / string values (light gray) */
+  .ph { color: #c678dd; }          /* ___ placeholders (purple) */
+  .cm { color: #5a6a7a; font-style: italic; } /* comments (dark gray italic) */
+  .id { color: #e5c07b; font-style: italic; } /* <id> inside comments (yellow) */
+  .d  { color: #e5c07b; }          /* dashes (yellow) */
+  .p  { color: #c8d0d8; }          /* play-level keys (light gray) */
+</style>
+</head>
+<body>
+<div class="terminal">
+<pre><span class="p">vars:</span>
+  <span class="p">vlan_config:</span>
+    <span class="p">n9k-ce01:</span>
+      <span class="k">id:</span> <span class="ph">___</span>          <span class="cm"># TODO: VLAN ID for west-side clients (see Table 1)</span>
+      <span class="k">name:</span> <span class="s">"</span><span class="ph">___</span><span class="s">"</span>      <span class="cm"># TODO: Name this VLAN (convention: CLIENT-VLAN-&lt;<span class="id">id</span>&gt;)</span>
+    <span class="p">n9k-ce02:</span>
+      <span class="k">id:</span> <span class="ph">___</span>          <span class="cm"># TODO: VLAN ID for east-side clients (see Table 1)</span>
+      <span class="k">name:</span> <span class="s">"</span><span class="ph">___</span><span class="s">"</span>      <span class="cm"># TODO: Name this VLAN (convention: CLIENT-VLAN-&lt;<span class="id">id</span>&gt;)</span></pre>
+</div>
+</body>
+</html>
