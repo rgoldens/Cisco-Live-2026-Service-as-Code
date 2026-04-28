@@ -105,32 +105,54 @@ If you completed [Lab Access](LAB-ACCESS.md), your terminal is already open in V
 ## Step 2: Clone the Lab Repository
 
 The lab files need to live directly in your home directory (`/home/cisco/`)
-because the Ansible configuration expects them there:
+because the Ansible configuration expects them there. Since the home directory
+already has other files in it, we clone into a temporary folder first, then
+move everything into place.
+
+**2a.** Make sure you are in your home directory:
 
 ```bash
 cd ~
+```
+
+**2b.** Clone the repository into a temporary folder:
+
+```bash
 git clone https://<TOKEN>@github.com/rgoldens/Cisco-Live-2026-Service-as-Code.git .lab-tmp
-mv .lab-tmp/* .lab-tmp/.* . 2>/dev/null
-rm -rf .lab-tmp
 ```
 
 > **Note:** Your instructor will provide the `<TOKEN>` value. This is a shared
 > access token that allows everyone to clone and push to the repository.
 
-Next, create your own branch. Replace `XX` with your student number
+**2c.** Move all files (including hidden `.git` folder) from the temporary folder
+into your home directory, then remove the empty temporary folder:
+
+```bash
+mv .lab-tmp/* .lab-tmp/.* . 2>/dev/null
+rm -rf .lab-tmp
+```
+
+> The `2>/dev/null` suppresses harmless warnings about `.` and `..` — you can
+> safely ignore any that appear.
+
+**2d.** Create your own branch. Replace `XX` with your student number
 (e.g., `student-01`, `student-12`):
 
 ```bash
 git checkout -b student-XX
 ```
 
-Verify the files are in place:
+**2e.** Verify the files are in place:
 
 ```bash
 ls ~/inventory.yml ~/ansible.cfg ~/ce-access-vlan.yml
 ```
 
-You should see all three files listed without errors.
+You should see all three files listed without errors:
+
+<pre>
+/home/cisco/ansible.cfg  /home/cisco/ce-access-vlan.yml  /home/cisco/inventory.yml
+</pre>
 
 > **What did you just clone?** The repository contains:
 > - `ansible.cfg` — Ansible configuration (tells Ansible where the inventory is)
@@ -140,7 +162,6 @@ You should see all three files listed without errors.
 > - `inter-as-option-a.yml` — Task 3 playbook (BGP VPN)
 > - `task5-terraform/` — Terraform files for Task 5
 > - `solutions/` — Completed playbooks (if you get stuck)
-> - `LAB-GUIDE.md` — The full lab guide (also split into per-task files)
 
 ---
 
