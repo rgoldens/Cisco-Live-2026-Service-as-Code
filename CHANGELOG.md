@@ -108,6 +108,23 @@ Also updated `LAB-ACCESS.md`:
 
 ---
 
+### 1.1.9 — Replace Linux Client Icons in Topology Diagrams
+
+Changed Linux client icons from `mxgraph.cisco19.pc` (desktop PC) to
+`mxgraph.ios7.icons.monitor` (monitor) across all 4 topology draw.io files
+for a cleaner look that better represents the Alpine Linux containers.
+
+| File | Clients updated |
+|------|----------------|
+| `images/task1-vlans.drawio` | client1–4 |
+| `images/task2-isis.drawio` | client1–4 |
+| `images/task3-bgp-vpn.drawio` | client1–4 |
+| `images/full-topology.drawio` | client1–4 |
+
+PNGs need re-export from the updated drawio files.
+
+---
+
 ### 1.1.4 — Remove GitHub Copy Buttons from Output Blocks
 
 Converted output/example code blocks from fenced markdown (`` ``` ``) to raw HTML

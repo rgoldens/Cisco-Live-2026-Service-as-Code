@@ -136,16 +136,16 @@
         </mxCell>
 
         <!-- Clients -->
-        <mxCell id="client1" parent="1" style="shape=mxgraph.cisco19.pc;html=1;whiteSpace=wrap;fillColor=#141e2b;fontColor=#ffffff;strokeColor=#00aaff;fontSize=11;labelPosition=right;verticalLabelPosition=middle;align=left;labelBackgroundColor=none;imageWidth=50;imageHeight=35;" value="&lt;font color=&quot;#c8d0d8&quot;&gt;&lt;b&gt;client1&lt;/b&gt;&lt;br&gt;23.23.23.1&lt;/font&gt;" vertex="1">
+        <mxCell id="client1" parent="1" style="shape=mxgraph.ios7.icons.monitor;html=1;whiteSpace=wrap;fillColor=#141e2b;fontColor=#ffffff;strokeColor=#00aaff;fontSize=11;labelPosition=right;verticalLabelPosition=middle;align=left;labelBackgroundColor=none;imageWidth=50;imageHeight=35;" value="&lt;font color=&quot;#c8d0d8&quot;&gt;&lt;b&gt;client1&lt;/b&gt;&lt;br&gt;23.23.23.1&lt;/font&gt;" vertex="1">
           <mxGeometry x="140" y="570" width="50" height="35" as="geometry" />
         </mxCell>
-        <mxCell id="client2" parent="1" style="shape=mxgraph.cisco19.pc;html=1;whiteSpace=wrap;fillColor=#141e2b;fontColor=#ffffff;strokeColor=#00aaff;fontSize=11;labelPosition=right;verticalLabelPosition=middle;align=left;labelBackgroundColor=none;imageWidth=50;imageHeight=35;" value="&lt;font color=&quot;#c8d0d8&quot;&gt;&lt;b&gt;client2&lt;/b&gt;&lt;br&gt;23.23.23.2&lt;/font&gt;" vertex="1">
+        <mxCell id="client2" parent="1" style="shape=mxgraph.ios7.icons.monitor;html=1;whiteSpace=wrap;fillColor=#141e2b;fontColor=#ffffff;strokeColor=#00aaff;fontSize=11;labelPosition=right;verticalLabelPosition=middle;align=left;labelBackgroundColor=none;imageWidth=50;imageHeight=35;" value="&lt;font color=&quot;#c8d0d8&quot;&gt;&lt;b&gt;client2&lt;/b&gt;&lt;br&gt;23.23.23.2&lt;/font&gt;" vertex="1">
           <mxGeometry x="370" y="570" width="50" height="35" as="geometry" />
         </mxCell>
-        <mxCell id="client3" parent="1" style="shape=mxgraph.cisco19.pc;html=1;whiteSpace=wrap;fillColor=#141e2b;fontColor=#ffffff;strokeColor=#ff8800;fontSize=11;labelPosition=right;verticalLabelPosition=middle;align=left;labelBackgroundColor=none;imageWidth=50;imageHeight=35;" value="&lt;font color=&quot;#c8d0d8&quot;&gt;&lt;b&gt;client3&lt;/b&gt;&lt;br&gt;34.34.34.1&lt;/font&gt;" vertex="1">
+        <mxCell id="client3" parent="1" style="shape=mxgraph.ios7.icons.monitor;html=1;whiteSpace=wrap;fillColor=#141e2b;fontColor=#ffffff;strokeColor=#ff8800;fontSize=11;labelPosition=right;verticalLabelPosition=middle;align=left;labelBackgroundColor=none;imageWidth=50;imageHeight=35;" value="&lt;font color=&quot;#c8d0d8&quot;&gt;&lt;b&gt;client3&lt;/b&gt;&lt;br&gt;34.34.34.1&lt;/font&gt;" vertex="1">
           <mxGeometry x="740" y="570" width="50" height="35" as="geometry" />
         </mxCell>
-        <mxCell id="client4" parent="1" style="shape=mxgraph.cisco19.pc;html=1;whiteSpace=wrap;fillColor=#141e2b;fontColor=#ffffff;strokeColor=#ff8800;fontSize=11;labelPosition=right;verticalLabelPosition=middle;align=left;labelBackgroundColor=none;imageWidth=50;imageHeight=35;" value="&lt;font color=&quot;#c8d0d8&quot;&gt;&lt;b&gt;client4&lt;/b&gt;&lt;br&gt;34.34.34.2&lt;/font&gt;" vertex="1">
+        <mxCell id="client4" parent="1" style="shape=mxgraph.ios7.icons.monitor;html=1;whiteSpace=wrap;fillColor=#141e2b;fontColor=#ffffff;strokeColor=#ff8800;fontSize=11;labelPosition=right;verticalLabelPosition=middle;align=left;labelBackgroundColor=none;imageWidth=50;imageHeight=35;" value="&lt;font color=&quot;#c8d0d8&quot;&gt;&lt;b&gt;client4&lt;/b&gt;&lt;br&gt;34.34.34.2&lt;/font&gt;" vertex="1">
           <mxGeometry x="970" y="570" width="50" height="35" as="geometry" />
         </mxCell>
 
