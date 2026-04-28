@@ -88,20 +88,8 @@ ls -la
 ```
 
 > Expected output (timestamps and sizes may differ slightly — that is normal):
-<pre>
-total 100
-drwxrwxr-x 4 cisco cisco  4096 Mar 22 17:48 .
-drwxrwxr-x 3 cisco cisco  4096 Mar 19 22:32 ..
-drwxrwxr-x 4 cisco cisco  4096 Mar 19 22:32 .terraform
--rw-r--r-- 1 cisco cisco  1513 Mar 19 22:33 .terraform.lock.hcl
--rw-r--r-- 1 cisco cisco  2331 Mar 20 18:51 main.tf
-drwxrwxr-x 4 cisco cisco  4096 Mar 19 22:32 modules
--rw-r--r-- 1 cisco cisco   807 Mar 19 22:32 outputs.tf
--rw-rw-r-- 1 cisco cisco   183 Mar 22 17:48 terraform.tfstate
--rw-rw-r-- 1 cisco cisco 28878 Mar 20 18:48 terraform.tfstate.1774032510.backup
--rw-rw-r-- 1 cisco cisco 28804 Mar 22 17:48 terraform.tfstate.backup
--rw-r--r-- 1 cisco cisco  3357 Mar 19 22:32 variables.tf
-</pre>
+
+![ls -la output](images/task5-ls-output.png)
 
 > **Why are there state files already?**
 > On a brand-new Terraform project, `terraform.tfstate` would not exist until after the
