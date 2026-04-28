@@ -65,7 +65,7 @@ The lab server already has everything pre-installed and initialized:
 > pre-installed in a local filesystem mirror. `terraform init` reads from there — no
 > download needed.
 
-All Terraform files are in: **`~/task5-terraform/`**
+All Terraform files are in: **`~/terraform-lab/terraform/`**
 
 ---
 
@@ -76,7 +76,7 @@ Before deploying anything, take a few minutes to understand what Terraform will 
 ### Step 1 — Navigate to the Working Directory
 
 ```bash
-cd ~/task5-terraform
+cd ~/terraform-lab/terraform
 ```
 
 ### Step 2 — Explore the File Structure
