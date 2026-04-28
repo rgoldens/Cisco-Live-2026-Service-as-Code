@@ -115,20 +115,7 @@ verification/test plays. The TODO placeholders are only in the first 3 plays.
 
 Scroll to the first `vars:` section:
 
-<pre>
-vars:
-  xrd_config:
-    xrd01:
-      remote_lo: ___           # TODO: xrd02's Loopback0 IP (iBGP VPNv4 peer)
-      gi1_ip: ___              # TODO: xrd01's Gi0/0/0/1 IP toward csr-pe01
-      gi1_mask: ___            # TODO: Subnet mask for the /30 link
-      csr_peer: ___            # TODO: csr-pe01's IP on the same /30 link
-    xrd02:
-      remote_lo: ___           # TODO: xrd01's Loopback0 IP (iBGP VPNv4 peer)
-      gi1_ip: ___              # TODO: xrd02's Gi0/0/0/1 IP toward csr-pe02
-      gi1_mask: ___            # TODO: Subnet mask for the /30 link
-      csr_peer: ___            # TODO: csr-pe02's IP on the same /30 link
-</pre>
+![Play 1 — XRd VRF and BGP variables](images/task3-play1.png)
 
 Using **Table 2** and **Table 3**, fill in:
 
@@ -157,14 +144,7 @@ Using **Table 2** and **Table 3**, fill in:
 
 Scroll to the second `vars:` section:
 
-<pre>
-vars:
-  bgp_config:
-    csr-pe01:
-      xrd_peer: ___          # TODO: xrd01's Gi0/0/0/1 IP (eBGP neighbor)
-    csr-pe02:
-      xrd_peer: ___          # TODO: xrd02's Gi0/0/0/1 IP (eBGP neighbor)
-</pre>
+![Play 2 — CSR PE BGP variables](images/task3-play2.png)
 
 Using **Table 3**, fill in:
 
@@ -183,22 +163,7 @@ Using **Table 3**, fill in:
 
 Scroll to the third `vars:` section:
 
-<pre>
-vars:
-  cross_routes:
-    linux-client1:
-      dest: ___              # TODO: East-side client subnet (x.x.x.0/24)
-      gw: ___                # TODO: West SVI gateway IP
-    linux-client2:
-      dest: ___              # TODO: Same as client1 (same switch)
-      gw: ___                # TODO: Same as client1
-    linux-client3:
-      dest: ___              # TODO: West-side client subnet (x.x.x.0/24)
-      gw: ___                # TODO: East SVI gateway IP
-    linux-client4:
-      dest: ___              # TODO: Same as client3 (same switch)
-      gw: ___                # TODO: Same as client3
-</pre>
+![Play 3 — Linux cross-site route variables](images/task3-play3.png)
 
 Using **Table 2**, fill in:
 

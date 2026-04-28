@@ -75,18 +75,7 @@ nano ~/igp-pe-ce.yml
 
 Scroll to the first `vars:` section. You'll see these TODO placeholders:
 
-<pre>
-vars:
-  isis_config:
-    n9k-ce01:
-      net: "___"         # TODO: IS-IS NET for n9k-ce01 (see "Deriving IS-IS NET Addresses")
-      vlan_id: ___       # TODO: Must match the VLAN ID you used in Task 1
-      svi_ip: "___"      # TODO: Gateway IP/mask for west clients (see Table 2)
-    n9k-ce02:
-      net: "___"         # TODO: IS-IS NET for n9k-ce02
-      vlan_id: ___       # TODO: Must match the VLAN ID you used in Task 1
-      svi_ip: "___"      # TODO: Gateway IP/mask for east clients (see Table 2)
-</pre>
+![Play 1 — NX-OS IS-IS variables](images/task2-play1.png)
 
 Using **Table 4** and **Table 2**, fill in these values:
 
@@ -111,14 +100,7 @@ Using **Table 4** and **Table 2**, fill in these values:
 
 Scroll down to the second `vars:` section:
 
-<pre>
-vars:
-  isis_config:
-    csr-pe01:
-      net: "___"         # TODO: IS-IS NET for csr-pe01
-    csr-pe02:
-      net: "___"         # TODO: IS-IS NET for csr-pe02
-</pre>
+<img src="images/task2-play2.png" alt="Play 2 — CSR PE IS-IS variables" width="600">
 
 Using **Table 4**, fill in:
 
@@ -136,30 +118,7 @@ Using **Table 4**, fill in:
 
 Scroll down to the third `vars:` section:
 
-<pre>
-vars:
-  route_config:
-    linux-client1:
-      gateway: ___         # TODO: SVI gateway IP for west clients
-      routes:
-        - ___              # TODO: CSR PE loopback subnet (e.g., x.x.x.0/24)
-        - ___              # TODO: West PE-CE link subnet (see Table 2)
-    linux-client2:
-      gateway: ___         # TODO: Same gateway as client1 (same switch)
-      routes:
-        - ___              # TODO: Same routes as client1
-        - ___
-    linux-client3:
-      gateway: ___         # TODO: SVI gateway IP for east clients
-      routes:
-        - ___              # TODO: CSR PE loopback subnet
-        - ___              # TODO: East PE-CE link subnet (see Table 2)
-    linux-client4:
-      gateway: ___         # TODO: Same gateway as client3 (same switch)
-      routes:
-        - ___              # TODO: Same routes as client3
-        - ___
-</pre>
+![Play 3 — Linux client route variables](images/task2-play3.png)
 
 Using **Table 2**, fill in:
 
