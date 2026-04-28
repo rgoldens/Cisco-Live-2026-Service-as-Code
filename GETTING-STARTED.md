@@ -109,9 +109,19 @@ because the Ansible configuration expects them there:
 
 ```bash
 cd ~
-git clone <REPO_URL> .lab-tmp
+git clone https://<TOKEN>@github.com/rgoldens/Cisco-Live-2026-Service-as-Code.git .lab-tmp
 mv .lab-tmp/* .lab-tmp/.* . 2>/dev/null
 rm -rf .lab-tmp
+```
+
+> **Note:** Your instructor will provide the `<TOKEN>` value. This is a shared
+> access token that allows everyone to clone and push to the repository.
+
+Next, create your own branch. Replace `XX` with your student number
+(e.g., `student-01`, `student-12`):
+
+```bash
+git checkout -b student-XX
 ```
 
 Verify the files are in place:
@@ -128,7 +138,7 @@ You should see all three files listed without errors.
 > - `ce-access-vlan.yml` — Task 1 playbook (VLANs)
 > - `igp-pe-ce.yml` — Task 2 playbook (IS-IS)
 > - `inter-as-option-a.yml` — Task 3 playbook (BGP VPN)
-> - `task4-terraform/` — Terraform files for Task 4
+> - `task5-terraform/` — Terraform files for Task 5
 > - `solutions/` — Completed playbooks (if you get stuck)
 > - `LAB-GUIDE.md` — The full lab guide (also split into per-task files)
 
