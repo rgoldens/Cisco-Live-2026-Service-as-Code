@@ -1,20 +1,51 @@
-## Lab Topology
+← [Task 4](TASK4.md) | [Lab Guide](LAB-GUIDE.md) | [Task 6 →](TASK6.md)
+
+---
+
+## Task 5 — Infrastructure as Code with Terraform
 
 ![What This Lab Builds](slides/slide-04-what-we-build.png)
-![Lab Topology](slides/slide-05-topology.png)
 
-This Terraform lab runs **independently** of the main ContainerLab topology. It uses a
-separate Docker bridge network and does not interfere with the LTRATO-1001 nodes.
+### Objective
+
+Use Terraform to provision a three-container Docker network and configure a Cisco IOS XE
+router entirely via RESTCONF — all from a single `terraform apply`.
+
+**Before Task 5:**
+- No containers running; the `terraform-net` Docker network does not exist
+- The CSR has no hostname or Loopback0 configured
+
+**After Task 5:**
+- Three containers deployed on a dedicated Docker bridge network (`172.20.21.0/24`)
+- CSR hostname set to `csr-terraform` and Loopback0 configured at `10.99.99.1/32` via RESTCONF
+- Drift simulated, detected with `terraform plan`, and remediated with `terraform apply`
+- Everything torn down cleanly with `terraform destroy`
+
+### Why Terraform?
+
+In Tasks 1–3 you used Ansible to push configuration to network devices over SSH.
+Terraform takes a different approach — instead of describing *tasks to run*, you describe
+the *desired end state* and Terraform figures out what to create, change, or destroy to
+get there.
+
+This lab runs **independently** of the main ContainerLab topology. It uses a separate
+Docker bridge network and does not interfere with the LTRATO-1001 nodes.
+
+Terraform also configures the CSR via RESTCONF (not SSH), so you will see a completely
+different protocol in action:
+
+- Hostname → `csr-terraform`
+- Loopback0 → `10.99.99.1/32` (description: "Managed by Terraform")
+
+### Lab Topology
+
+![Lab Topology](slides/slide-05-topology.png)
 
 | Container | Image | IP | Role |
 |---|---|---|---|
 | `csr-terraform` | `vrnetlab/vr-csr:16.12.05` | `172.20.21.10` | Cisco IOS XE router — Terraform target |
 | `linux-terraform1` | `ghcr.io/hellt/network-multitool` | `172.20.21.20` | Linux client |
 | `linux-terraform2` | `ghcr.io/hellt/network-multitool` | `172.20.21.21` | Linux client |
-
-**Terraform also configures the CSR via RESTCONF:**
-- Hostname → `csr-terraform`
-- Loopback0 → `10.99.99.1/32` (description: "Managed by Terraform")
 
 ---
 
@@ -42,13 +73,13 @@ All Terraform files are in: **`~/task5-terraform/`**
 
 Before deploying anything, take a few minutes to understand what Terraform will build.
 
-### Navigate to the working directory
+### Step 1 — Navigate to the Working Directory
 
 ```bash
 cd ~/task5-terraform
 ```
 
-### Look at the file structure
+### Step 2 — Explore the File Structure
 
 Run `ls -la` to see the full directory listing with permissions and sizes:
 
@@ -112,7 +143,7 @@ ls modules/
 docker-infra  iosxe-config
 </pre>
 
-### Read the root module
+### Step 3 — Read the Root Module
 
 ```bash
 cat main.tf
@@ -130,7 +161,7 @@ This is the entry point for the entire lab. Read through it and notice:
   attempting any RESTCONF configuration. Without this, Terraform might try to configure
   the router before it has even started up.
 
-### Read the variables
+### Step 4 — Read the Variables
 
 ```bash
 cat variables.tf
@@ -153,7 +184,7 @@ Key defaults:
 > are pre-loaded keys that allow the lab server to SSH into the Linux containers without
 > a password. You do not need to modify them.
 
-### Read the docker-infra module
+### Step 5 — Read the Docker Infrastructure Module
 
 ```bash
 cat modules/docker-infra/main.tf
@@ -169,7 +200,7 @@ Terraform waits for the CSR to boot:
 - Once RESTCONF responds with HTTP 200, the script exits and Terraform proceeds.
 - The CSR takes approximately **7-8 minutes** to complete its cold boot from a fresh volume.
 
-### Read the iosxe-config module
+### Step 6 — Read the IOS XE Configuration Module
 
 ```bash
 cat modules/iosxe-config/main.tf
@@ -183,7 +214,7 @@ This module is simple — just two resources:
 These two resources only run after `module.docker_infra` is fully complete (due to the
 `depends_on` in `main.tf`).
 
-### Read the outputs
+### Step 7 — Read the Outputs
 
 ```bash
 cat outputs.tf
@@ -192,7 +223,7 @@ cat outputs.tf
 After `terraform apply` finishes, these five values will be printed to the terminal so
 you can see a summary of what was deployed.
 
-### Initialize Terraform
+### Step 8 — Initialize Terraform
 
 `terraform init` prepares the working directory — it reads the provider requirements and
 links them from the local filesystem mirror. Since providers are pre-installed, this is
@@ -231,7 +262,7 @@ commands will detect it and remind you to do so if necessary.
 
 ## Part 2 — Plan and Deploy
 
-### Confirm nothing is running yet
+### Step 9 — Confirm Nothing is Running Yet
 
 Before deploying, verify the Docker environment is clean:
 
@@ -253,7 +284,7 @@ docker network ls --filter name=terraform
 NETWORK ID   NAME      DRIVER    SCOPE
 </pre>
 
-### Preview the deployment with terraform plan
+### Step 10 — Preview the Deployment with terraform plan
 
 `terraform plan` is a dry run. It compares your configuration against the current state
 and shows you exactly what will be created, changed, or destroyed — **without touching
@@ -301,7 +332,7 @@ The `Plan: 8 to add` means Terraform is planning to create 8 resources:
 
 > **Nothing has been deployed yet.** `plan` is always safe to run.
 
-### Deploy with terraform apply
+### Step 11 — Deploy with terraform apply
 
 ```bash
 terraform apply -auto-approve
@@ -381,11 +412,23 @@ loopback0 = "10.99.99.1/255.255.255.255"
 > The hex IDs (like `[id=cf2b394afde8...]`) will be different on your run — they are
 > Docker container IDs generated at creation time.
 
+> **💡 Automation Insight:** Notice the dependency ordering Terraform enforced automatically —
+> the network had to exist before containers could attach to it, the CSR had to be running
+> before RESTCONF config could be applied. You did not write any of that logic. You
+> declared *what* you wanted; Terraform figured out *in what order* to build it.
+
+### Checkpoint — Part 2
+
+- [ ] `docker ps --filter name=terraform` showed empty before deploy
+- [ ] `terraform plan` showed **Plan: 8 to add, 0 to change, 0 to destroy**
+- [ ] `terraform apply` completed with **Apply complete! Resources: 8 added**
+- [ ] Outputs printed: `csr_hostname`, `csr_ip`, `linux1_ip`, `linux2_ip`, `loopback0`
+
 ---
 
 ## Part 3 — Verify the Deployment
 
-### Check running containers
+### Step 12 — Check Running Containers
 
 ```bash
 docker ps --filter name=terraform --format "table {{.ID}}\t{{.Image}}\t{{.Status}}\t{{.Names}}"
@@ -402,7 +445,7 @@ cf2b394afde8   ghcr.io/hellt/network-multitool   Up 7 minutes             linux-
 The CSR shows `(healthy)` — the vrnetlab healthcheck confirms the IOS XE VM is fully
 booted and responding.
 
-### Check container IP addresses
+### Step 13 — Check Container IP Addresses
 
 ```bash
 docker inspect csr-terraform --format '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}'
@@ -431,7 +474,7 @@ docker inspect linux-terraform2 --format '{{range .NetworkSettings.Networks}}{{.
 172.20.21.21
 </pre>
 
-### Check terraform output
+### Step 14 — Check Terraform Output
 
 ```bash
 terraform output
@@ -446,7 +489,7 @@ linux2_ip = "172.20.21.21"
 loopback0 = "10.99.99.1/255.255.255.255"
 </pre>
 
-### Verify RESTCONF is responding on the CSR
+### Step 15 — Verify RESTCONF is Responding on the CSR
 
 ```bash
 curl -sk -u admin:admin \
@@ -461,7 +504,7 @@ curl -sk -u admin:admin \
 }
 </pre>
 
-### Verify Loopback0 exists on the CSR
+### Step 16 — Verify Loopback0 Exists on the CSR
 
 ```bash
 curl -sk -u admin:admin \
@@ -487,7 +530,7 @@ curl -sk -u admin:admin \
 }
 </pre>
 
-### SSH into the CSR and verify
+### Step 17 — SSH into the CSR and Verify
 
 The CSR is an older IOS XE image that uses legacy SSH algorithms. The extra flags below
 tell your SSH client to allow those older algorithms — without them the connection will
@@ -548,7 +591,7 @@ Loopback0 is up, line protocol is up
 
 Type `exit` to leave the CSR.
 
-### SSH into a Linux container and verify
+### Step 18 — SSH into a Linux Container and Verify
 
 > **Before connecting:** If you have connected to `172.20.21.20` before (from a previous
 > lab run), clear the old host key first to avoid an SSH error:
@@ -598,7 +641,7 @@ correct IP address on the `terraform-net` network.
 
 Type `exit` to leave the Linux container and return to the lab server.
 
-### Inspect the state file
+### Step 19 — Inspect the State File
 
 Everything is deployed and verified. Before moving on, take a few minutes to look at
 what Terraform actually recorded — the state file is what makes every subsequent
@@ -699,6 +742,15 @@ of one resource entry so you understand what Terraform is storing:
 >   If you ever need to manipulate state directly, use the `terraform state` subcommands
 >   (`terraform state list`, `terraform state show`, `terraform state rm`).
 
+### Checkpoint — Part 3
+
+- [ ] All three containers show `Up` in `docker ps`
+- [ ] CSR shows `(healthy)` status
+- [ ] `curl` to RESTCONF hostname endpoint returned `"csr-terraform"`
+- [ ] `curl` to RESTCONF Loopback endpoint returned `10.99.99.1` with description `"Managed by Terraform"`
+- [ ] SSH to CSR confirmed `hostname csr-terraform` and `Loopback0 is up`
+- [ ] SSH to linux-terraform1 confirmed IP `172.20.21.20/24` on `eth0`
+
 ---
 
 ## Part 4 — Infrastructure Drift
@@ -720,7 +772,7 @@ Drift can happen when:
 In a traditional environment, drift often goes unnoticed until something breaks.
 Terraform can **detect** it and **fix** it automatically.
 
-### Step 1 — Simulate drift: manually delete a container
+### Step 20 — Simulate Drift: Manually Delete a Container
 
 We are going to pretend to be a colleague who deleted a container by hand, bypassing
 Terraform entirely. Without touching any Terraform files, directly remove
@@ -735,7 +787,7 @@ docker rm -f linux-terraform2
 linux-terraform2
 </pre>
 
-### Step 2 — Confirm it is gone
+### Step 21 — Confirm It Is Gone
 
 ```bash
 docker ps --filter name=terraform --format "table {{.ID}}\t{{.Image}}\t{{.Status}}\t{{.Names}}"
@@ -751,7 +803,7 @@ cf2b394afde8   ghcr.io/hellt/network-multitool   Up 8 minutes             linux-
 `linux-terraform2` is missing. The infrastructure has **drifted** from the Terraform
 configuration.
 
-### Step 3 — Detect drift with terraform plan
+### Step 22 — Detect Drift with terraform plan
 
 Run `terraform plan`. Terraform will first **refresh** its state by checking the actual
 state of every resource against what is recorded in `terraform.tfstate`. When it finds
@@ -773,7 +825,7 @@ Plan: 1 to add, 0 to change, 0 to destroy.
 > state file) but doesn't (it's not running in Docker). Only the missing container needs
 > to be re-created — everything else matches, so Terraform leaves it alone.
 
-### Step 4 — Remediate drift with terraform apply
+### Step 23 — Remediate Drift with terraform apply
 
 Run `terraform apply -auto-approve`. Because the CSR is already running and RESTCONF is
 already active, Terraform only needs to re-create the one missing container. This
@@ -802,7 +854,7 @@ loopback0 = "10.99.99.1/255.255.255.255"
 > Notice that Terraform only created **1** resource — it did not touch the CSR,
 > linux-terraform1, the network, or the volume. It only fixed exactly what was missing.
 
-### Step 5 — Confirm all three containers are running again
+### Step 24 — Confirm All Three Containers Are Running Again
 
 ```bash
 docker ps --filter name=terraform --format "table {{.ID}}\t{{.Image}}\t{{.Status}}\t{{.Names}}"
@@ -819,7 +871,7 @@ cf2b394afde8   ghcr.io/hellt/network-multitool   Up 8 minutes             linux-
 Note that `linux-terraform2` shows a fresh uptime (8 seconds) while the others are still
 at their original age — it was just recreated.
 
-### Step 6 — Verify terraform plan now shows no changes
+### Step 25 — Verify terraform plan Now Shows No Changes
 
 ```bash
 terraform plan
@@ -837,6 +889,21 @@ This is the Terraform "all clear." The real world matches the desired state exac
 In a production IaC pipeline, seeing `No changes` when you run `plan` is the goal —
 it means your infrastructure is exactly where you left it.
 
+> **💡 Automation Insight:** In production, teams run `terraform plan` on a schedule
+> (via CI/CD) against live infrastructure. If the plan shows any changes, it triggers an
+> alert — someone made an out-of-band change. The team can then decide whether to
+> remediate (apply the plan) or update the code to match the new reality. Either way,
+> drift is **visible**, not hidden.
+
+### Checkpoint — Part 4
+
+- [ ] `docker rm -f linux-terraform2` removed the container
+- [ ] `docker ps` confirmed only 2 containers remained
+- [ ] `terraform plan` showed **Plan: 1 to add**
+- [ ] `terraform apply` showed **Resources: 1 added, 0 changed, 0 destroyed**
+- [ ] `docker ps` confirmed all 3 containers running again (`linux-terraform2` with fresh uptime)
+- [ ] `terraform plan` confirmed **No changes**
+
 ---
 
 ## Part 5 — Tear Down
@@ -845,7 +912,7 @@ At the end of this section, **tear down the Terraform environment completely** b
 moving on to the ContainerLab section. The CSR uses significant RAM (~3.5 GiB) that the
 ContainerLab topology needs.
 
-### Destroy all resources
+### Step 26 — Destroy All Resources
 
 > In the lab, use `-auto-approve` to skip the confirmation prompt. In production,
 > always omit this flag and review the destruction plan carefully before confirming.
@@ -882,7 +949,7 @@ module.docker_infra.docker_network.terraform_net: Destruction complete after 2s
 Destroy complete! Resources: 8 destroyed.
 </pre>
 
-### Verify everything is cleaned up
+### Step 27 — Verify Everything Is Cleaned Up
 
 ```bash
 docker ps --filter name=terraform --format "table {{.ID}}\t{{.Image}}\t{{.Status}}\t{{.Names}}"
@@ -911,7 +978,7 @@ docker volume ls --filter name=terraform
 DRIVER    VOLUME NAME
 </pre>
 
-### Confirm Terraform state is empty
+### Step 28 — Confirm Terraform State Is Empty
 
 ```bash
 terraform show
@@ -960,3 +1027,7 @@ In this lab you:
 The key takeaway: with IaC, your infrastructure is **defined, versioned, and repeatable**.
 Drift is detectable and correctable. The same configuration file that built this lab today
 will build the exact same lab tomorrow, next week, or on a completely different server.
+
+---
+
+← [Task 4](TASK4.md) | [Lab Guide](LAB-GUIDE.md) | [Task 6 →](TASK6.md)
