@@ -1,4 +1,4 @@
-← [Task 3](TASK3.md) | [Lab Guide](LAB-GUIDE.md) | [Troubleshooting →](TROUBLESHOOTING.md)
+← [Task 3](TASK3.md) | [Lab Guide](LAB-GUIDE.md) | [Task 5 →](TASK5.md)
 
 ---
 
@@ -1159,4 +1159,4 @@ remediated. The full cycle is complete:
 
 ---
 
-← [Task 3](TASK3.md) | [Lab Guide](LAB-GUIDE.md) | [Troubleshooting →](TROUBLESHOOTING.md)
+← [Task 3](TASK3.md) | [Lab Guide](LAB-GUIDE.md) | [Task 5 →](TASK5.md)
