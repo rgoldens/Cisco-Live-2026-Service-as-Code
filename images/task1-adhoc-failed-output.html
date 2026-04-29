@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1200" />
+<title>task1-adhoc-failed-output</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { overflow: hidden; }
+
+  body {
+    background: #000000;
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+  }
+
+  .terminal {
+    background: #000000;
+    width: 946px;
+    padding: 22px 28px 22px 28px;
+    font-size: 13.5px;
+    line-height: 1.7;
+  }
+
+  .wh  { color: #ffffff; }
+  .ok  { color: #00e676; }
+  .err { color: #ff5555; }
+</style>
+</head>
+<body>
+<div class="terminal">
+<pre><span class="err">[ERROR]: Task failed: Action failed: non-zero return code
+Origin: &lt;adhoc 'raw' task&gt;
+
+{'action': 'raw', 'args': {'_raw_params': 'ping -c 3 -W 2 23.23.23.2'}, 'timeout': 0, 'async_val': 0, 'poll': 15}
+
+linux-client1 | FAILED | rc=1 &gt;&gt;
+PING 23.23.23.2 (23.23.23.2) 56(84) bytes of data.
+From 23.23.23.1 icmp_seq=1 Destination Host Unreachable
+From 23.23.23.1 icmp_seq=2 Destination Host Unreachable
+From 23.23.23.1 icmp_seq=3 Destination Host Unreachable
+
+--- 23.23.23.2 ping statistics ---
+3 packets transmitted, 0 received, +3 errors, 100% packet loss, time 2046ms
+pipe 3
+Warning: Permanently added '172.20.20.40' (ED25519) to the list of known hosts.
+Shared connection to 172.20.20.40 closed.
+non-zero return code</span></pre>
+</div>
+</body>
+</html>

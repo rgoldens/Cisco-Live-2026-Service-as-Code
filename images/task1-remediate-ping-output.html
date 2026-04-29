@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1200" />
+<title>task1-remediate-ping-output</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { overflow: hidden; }
+
+  body {
+    background: #000000;
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+  }
+
+  .terminal {
+    background: #000000;
+    width: 860px;
+    padding: 22px 28px 22px 28px;
+    font-size: 13.5px;
+    line-height: 1.7;
+  }
+
+  .wh  { color: #ffffff; }
+  .ok  { color: #00e676; }
+  .chg { color: #e5c07b; }
+  .cm  { color: #00b8c8; font-style: italic; }
+</style>
+</head>
+<body>
+<div class="terminal">
+<pre><span class="wh">PLAY [Test - Ping between clients on the same switch] *********************************************</span>
+
+<span class="wh">TASK [Test - client1 ping client2 (23.23.23.1 -&gt; 23.23.23.2)] ************************************</span>
+<span class="chg">changed: [linux-client1]</span>
+<span class="chg">changed: [linux-client2]</span>
+<span class="chg">changed: [linux-client3]</span>
+<span class="chg">changed: [linux-client4]</span>
+
+<span class="wh">TASK [Show ping result (client1 -&gt; client2)] ******************************************************</span>
+<span class="ok">ok: [linux-client1]</span> =&gt; {
+    <span class="wh">"msg": [</span>
+        <span class="wh">"PING 23.23.23.2 (23.23.23.2) 56(84) bytes of data.",</span>
+        <span class="wh">"64 bytes from 23.23.23.2: icmp_seq=1 ttl=64 time=1.93 ms",</span>
+        <span class="wh">"64 bytes from 23.23.23.2: icmp_seq=2 ttl=64 time=1.88 ms",</span>
+        <span class="wh">"64 bytes from 23.23.23.2: icmp_seq=3 ttl=64 time=1.84 ms",</span>
+        <span class="wh">"",</span>
+        <span class="wh">"--- 23.23.23.2 ping statistics ---",</span>
+        <span class="wh">"3 packets transmitted, 3 received, 0% packet loss, time 2006ms",</span>
+        <span class="wh">"rtt min/avg/max/mdev = 1.840/1.883/1.931/0.037 ms"</span>
+    <span class="wh">]</span>
+<span class="wh">}</span>
+
+<span class="wh">TASK [Test - client3 ping client4 (34.34.34.1 -&gt; 34.34.34.2)] ************************************</span>
+<span class="chg">changed: [linux-client3]</span>
+<span class="chg">changed: [linux-client4]</span>
+
+<span class="wh">TASK [Show ping result (client3 -&gt; client4)] ******************************************************</span>
+<span class="ok">ok: [linux-client3]</span> =&gt; {
+    <span class="wh">"msg": [</span>
+        <span class="wh">"PING 34.34.34.2 (34.34.34.2) 56(84) bytes of data.",</span>
+        <span class="wh">"64 bytes from 34.34.34.2: icmp_seq=1 ttl=64 time=1.82 ms",</span>
+        <span class="wh">"64 bytes from 34.34.34.2: icmp_seq=2 ttl=64 time=1.79 ms",</span>
+        <span class="wh">"64 bytes from 34.34.34.2: icmp_seq=3 ttl=64 time=1.88 ms",</span>
+        <span class="wh">"",</span>
+        <span class="wh">"--- 34.34.34.2 ping statistics ---",</span>
+        <span class="wh">"3 packets transmitted, 3 received, 0% packet loss, time 2006ms",</span>
+        <span class="wh">"rtt min/avg/max/mdev = 1.790/1.830/1.880/0.037 ms"</span>
+    <span class="wh">]</span>
+<span class="wh">}</span>
+
+<span class="cm"># Output reduced to relevant items for brevity</span></pre>
+</div>
+</body>
+</html>

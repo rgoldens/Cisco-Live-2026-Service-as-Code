@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1200" />
+<title>task1-step4-output</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { overflow: hidden; }
+
+  body {
+    background: #000000;
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+  }
+
+  .terminal {
+    background: #000000;
+    width: 860px;
+    padding: 22px 28px 22px 28px;
+    font-size: 13.5px;
+    line-height: 1.7;
+  }
+
+  .wh  { color: #ffffff; }
+  .ok  { color: #00e676; }
+  .chg { color: #e5c07b; }
+  .cm  { color: #00b8c8; font-style: italic; }
+</style>
+</head>
+<body>
+<div class="terminal">
+<pre><span class="wh">PLAY [Task 1 - Configure L2 access VLANs on NX-OS CE switches] ************************************</span>
+
+<span class="wh">TASK [Step 1 - Create VLAN on each CE switch] *****************************************************</span>
+<span class="chg">changed: [n9k-ce02]</span>
+<span class="chg">changed: [n9k-ce01]</span>
+
+<span class="wh">TASK [Step 2 - Set Eth1/3 and Eth1/4 to Layer 2 (switchport) mode] ********************************</span>
+<span class="chg">changed: [n9k-ce02]</span>
+<span class="chg">changed: [n9k-ce01]</span>
+
+<span class="wh">TASK [Step 3 - Assign access VLAN to Eth1/3 and Eth1/4] *******************************************</span>
+<span class="chg">changed: [n9k-ce02]</span>
+<span class="chg">changed: [n9k-ce01]</span>
+
+<span class="wh">TASK [Step 4 - Save running configuration] ********************************************************</span>
+<span class="ok">ok: [n9k-ce02]</span>
+<span class="ok">ok: [n9k-ce01]</span>
+
+<span class="wh">TASK [Pause 30 seconds for virtual switch dataplane to update] *************************************</span>
+<span class="wh">Pausing for 30 seconds</span>
+<span class="wh">(ctrl+C then 'C' = continue early, ctrl+C then 'A' = abort)</span>
+<span class="wh">[Pause 30 seconds for virtual switch dataplane to update]:</span>
+<span class="wh">Waiting for VLAN changes to take effect...:</span>
+<span class="ok">ok: [n9k-ce01]</span>
+
+<span class="cm"># Output truncated for brevity</span></pre>
+</div>
+</body>
+</html>
