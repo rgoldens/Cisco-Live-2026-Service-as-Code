@@ -100,7 +100,7 @@ Using **Table 4** and **Table 2**, fill in these values:
 
 Scroll down to the second `vars:` section:
 
-<img src="images/task2-play2.png" alt="Play 2 — CSR PE IS-IS variables" width="600">
+![Play 2 — CSR PE IS-IS variables](images/task2-play2.png)
 
 Using **Table 4**, fill in:
 
