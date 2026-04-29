@@ -74,6 +74,7 @@ Screenshot method: measure `scrollHeight` of `.terminal`, resize page to that ex
 |---|---|---|---|
 | `ok:` status lines + host names when ok | `.ok` | `#00e676` | Bright green |
 | `changed:` status lines + host names when changed | `.chg` | `#e5c07b` | Yellow |
+| `skipping:` status lines + host names | `.skp` | `#00b8c8` | Cyan (same hex as warning/comment) |
 | `[ERROR]` block — entire failed output | `.err` | `#ff5555` | Red |
 | `[WARNING]:` lines | `.warn` | `#00b8c8 italic` | Cyan italic (same as `.cm`) |
 | All other text (PLAY headers, TASK headers, output body) | `.wh` | `#ffffff` | White |
@@ -84,6 +85,7 @@ Screenshot method: measure `scrollHeight` of `.terminal`, resize page to that ex
 ```css
 .ok   { color: #00e676; }                      /* ok status — bright green */
 .chg  { color: #e5c07b; }                      /* changed status — yellow */
+.skp  { color: #00b8c8; }                      /* skipping status — cyan */
 .err  { color: #ff5555; }                      /* error/failed block — red */
 .warn { color: #00b8c8; font-style: italic; }  /* warning lines — cyan italic */
 .wh   { color: #ffffff; }                      /* default text — white */
