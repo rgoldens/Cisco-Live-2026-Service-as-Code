@@ -26,6 +26,7 @@
   .wh  { color: #ffffff; }
   .ok  { color: #00e676; }
   .chg { color: #e5c07b; }
+  .skp { color: #00b8c8; }
   .cm  { color: #00b8c8; font-style: italic; }
 </style>
 </head>
@@ -33,13 +34,14 @@
 <div class="terminal">
 <pre><span class="wh">PLAY [Test - Ping between clients on the same switch] *********************************************</span>
 
-<span class="wh">TASK [Test - client1 ping client2 (23.23.23.1 -&gt; 23.23.23.2)] ************************************</span>
+<span class="wh">TASK [Test - client1 pings client2 (23.23.23.1 &#x2192; 23.23.23.2)] **********************************</span>
+<span class="skp">skipping: [linux-client2]</span>
+<span class="skp">skipping: [linux-client3]</span>
+<span class="skp">skipping: [linux-client4]</span>
 <span class="chg">changed: [linux-client1]</span>
-<span class="chg">changed: [linux-client2]</span>
-<span class="chg">changed: [linux-client3]</span>
-<span class="chg">changed: [linux-client4]</span>
 
-<span class="wh">TASK [Show ping result (client1 -&gt; client2)] ******************************************************</span>
+<span class="wh">TASK [Show ping result (client1 &#x2192; client2)] *****************************************************</span>
+<span class="skp">skipping: [linux-client2]</span>
 <span class="ok">ok: [linux-client1]</span> =&gt; {
     <span class="wh">"msg": [</span>
         <span class="wh">"PING 23.23.23.2 (23.23.23.2) 56(84) bytes of data.",</span>
@@ -52,12 +54,19 @@
         <span class="wh">"rtt min/avg/max/mdev = 1.840/1.883/1.931/0.037 ms"</span>
     <span class="wh">]</span>
 <span class="wh">}</span>
+<span class="skp">skipping: [linux-client3]</span>
+<span class="skp">skipping: [linux-client4]</span>
 
-<span class="wh">TASK [Test - client3 ping client4 (34.34.34.1 -&gt; 34.34.34.2)] ************************************</span>
+<span class="wh">TASK [Test - client3 pings client4 (34.34.34.1 &#x2192; 34.34.34.2)] **********************************</span>
+<span class="skp">skipping: [linux-client1]</span>
+<span class="skp">skipping: [linux-client2]</span>
+<span class="skp">skipping: [linux-client4]</span>
 <span class="chg">changed: [linux-client3]</span>
-<span class="chg">changed: [linux-client4]</span>
 
-<span class="wh">TASK [Show ping result (client3 -&gt; client4)] ******************************************************</span>
+<span class="wh">TASK [Show ping result (client3 &#x2192; client4)] *****************************************************</span>
+<span class="skp">skipping: [linux-client1]</span>
+<span class="skp">skipping: [linux-client2]</span>
+<span class="skp">skipping: [linux-client4]</span>
 <span class="ok">ok: [linux-client3]</span> =&gt; {
     <span class="wh">"msg": [</span>
         <span class="wh">"PING 34.34.34.2 (34.34.34.2) 56(84) bytes of data.",</span>
