@@ -24,37 +24,37 @@
   }
 
   .k  { color: #00e676; }                      /* all YAML keys — bright green */
-  .wh { color: #ffffff; }                      /* unquoted values, strings — white */
-  .ph { color: #c678dd; }                      /* ___ placeholders — purple */
-  .jj { color: #e5c07b; }                      /* Jinja2 {{ }} — yellow */
+  .wh { color: #ffffff; }                      /* unquoted values — white */
+  .ph { color: #c678dd; }                      /* quoted strings, placeholders, Jinja2 vars — purple */
+  .jj { color: #e5c07b; }                      /* Jinja2 {{ }} brackets — yellow */
   .d  { color: #e5c07b; }                      /* list dashes — yellow */
   .cm { color: #00b8c8; font-style: italic; }  /* comments — cyan italic */
 </style>
 </head>
 <body>
 <div class="terminal">
-<pre><span class="d">-</span> <span class="k">name:</span> <span class="wh">"Task 1 — Configure L2 access VLANs on NX-OS CE switches"</span>
+<pre><span class="d">-</span> <span class="k">name:</span> <span class="ph">"Task 1 — Configure L2 access VLANs on NX-OS CE switches"</span>
   <span class="k">hosts:</span> <span class="wh">nxos</span>
   <span class="k">gather_facts:</span> <span class="wh">false</span>
   <span class="k">vars:</span>
     <span class="k">vlan_config:</span>
       <span class="k">n9k-ce01:</span>
         <span class="k">id:</span> <span class="ph">___</span>          <span class="cm"># TODO: VLAN ID for west-side clients (see Table 1)</span>
-        <span class="k">name:</span> <span class="wh">"</span><span class="ph">___</span><span class="wh">"</span>      <span class="cm"># TODO: Name this VLAN (convention: CLIENT-VLAN-&lt;id&gt;)</span>
+        <span class="k">name:</span> <span class="ph">"___"</span>      <span class="cm"># TODO: Name this VLAN (convention: CLIENT-VLAN-&lt;id&gt;)</span>
       <span class="k">n9k-ce02:</span>
         <span class="k">id:</span> <span class="ph">___</span>          <span class="cm"># TODO: VLAN ID for east-side clients (see Table 1)</span>
-        <span class="k">name:</span> <span class="wh">"</span><span class="ph">___</span><span class="wh">"</span>      <span class="cm"># TODO: Name this VLAN (convention: CLIENT-VLAN-&lt;id&gt;)</span>
+        <span class="k">name:</span> <span class="ph">"___"</span>      <span class="cm"># TODO: Name this VLAN (convention: CLIENT-VLAN-&lt;id&gt;)</span>
 
   <span class="k">tasks:</span>
-    <span class="d">-</span> <span class="k">name:</span> <span class="wh">"Step 1 — Create VLAN on each CE switch"</span>
+    <span class="d">-</span> <span class="k">name:</span> <span class="ph">"Step 1 — Create VLAN on each CE switch"</span>
       <span class="k">cisco.nxos.nxos_vlans:</span>
         <span class="k">config:</span>
-          <span class="d">-</span> <span class="k">vlan_id:</span> <span class="wh">"</span><span class="jj">{{ vlan_config[inventory_hostname].id }}</span><span class="wh">"</span>
-            <span class="k">name:</span> <span class="wh">"</span><span class="jj">{{ vlan_config[inventory_hostname].name }}</span><span class="wh">"</span>
+          <span class="d">-</span> <span class="k">vlan_id:</span> <span class="jj">{{</span><span class="ph"> vlan_config[inventory_hostname].id </span><span class="jj">}}</span>
+            <span class="k">name:</span> <span class="jj">{{</span><span class="ph"> vlan_config[inventory_hostname].name </span><span class="jj">}}</span>
             <span class="k">state:</span> <span class="wh">active</span>
         <span class="k">state:</span> <span class="wh">merged</span>
 
-    <span class="d">-</span> <span class="k">name:</span> <span class="wh">"Step 2 — Set Eth1/3 and Eth1/4 to Layer 2 (switchport) mode"</span>
+    <span class="d">-</span> <span class="k">name:</span> <span class="ph">"Step 2 — Set Eth1/3 and Eth1/4 to Layer 2 (switchport) mode"</span>
       <span class="k">cisco.nxos.nxos_interfaces:</span>
         <span class="k">config:</span>
           <span class="d">-</span> <span class="k">name:</span> <span class="wh">Ethernet1/3</span>
@@ -63,18 +63,18 @@
             <span class="k">mode:</span> <span class="wh">layer2</span>
         <span class="k">state:</span> <span class="wh">merged</span>
 
-    <span class="d">-</span> <span class="k">name:</span> <span class="wh">"Step 3 — Assign access VLAN to Eth1/3 and Eth1/4"</span>
+    <span class="d">-</span> <span class="k">name:</span> <span class="ph">"Step 3 — Assign access VLAN to Eth1/3 and Eth1/4"</span>
       <span class="k">cisco.nxos.nxos_l2_interfaces:</span>
         <span class="k">config:</span>
           <span class="d">-</span> <span class="k">name:</span> <span class="wh">Ethernet1/3</span>
             <span class="k">access:</span>
-              <span class="k">vlan:</span> <span class="wh">"</span><span class="jj">{{ vlan_config[inventory_hostname].id }}</span><span class="wh">"</span>
+              <span class="k">vlan:</span> <span class="jj">{{</span><span class="ph"> vlan_config[inventory_hostname].id </span><span class="jj">}}</span>
           <span class="d">-</span> <span class="k">name:</span> <span class="wh">Ethernet1/4</span>
             <span class="k">access:</span>
-              <span class="k">vlan:</span> <span class="wh">"</span><span class="jj">{{ vlan_config[inventory_hostname].id }}</span><span class="wh">"</span>
+              <span class="k">vlan:</span> <span class="jj">{{</span><span class="ph"> vlan_config[inventory_hostname].id </span><span class="jj">}}</span>
         <span class="k">state:</span> <span class="wh">merged</span>
 
-    <span class="d">-</span> <span class="k">name:</span> <span class="wh">"Step 4 — Save running configuration"</span>
+    <span class="d">-</span> <span class="k">name:</span> <span class="ph">"Step 4 — Save running configuration"</span>
       <span class="k">cisco.nxos.nxos_config:</span>
         <span class="k">save_when:</span> <span class="wh">modified</span></pre>
 </div>
