@@ -23,26 +23,25 @@
     line-height: 1.7;
   }
 
-  /* color tokens */
-  .k  { color: #98c379; }          /* YAML keys (green) */
-  .s  { color: #c8d0d8; }          /* plain / string values (light gray) */
-  .ph { color: #c678dd; }          /* ___ placeholders (purple) */
-  .cm { color: #5a6a7a; font-style: italic; } /* comments (dark gray italic) */
-  .id { color: #e5c07b; font-style: italic; } /* <id> inside comments (yellow) */
-  .d  { color: #e5c07b; }          /* dashes (yellow) */
-  .p  { color: #c8d0d8; }          /* play-level keys (light gray) */
+  /* color tokens — matched to task1-step2-playbook-clean.png reference */
+  .cy  { color: #00d4ff; }                        /* cyan: section keys, host names */
+  .gr  { color: #98c379; }                        /* green: leaf keys + values */
+  .ph  { color: #98c379; }                        /* placeholders same green as values */
+  .cm  { color: #00d4ff; font-style: italic; }    /* comments: cyan italic */
+  .d   { color: #e5c07b; }                        /* dash: yellow */
+  .wh  { color: #ffffff; }                        /* task name string: white */
 </style>
 </head>
 <body>
 <div class="terminal">
-<pre><span class="p">vars:</span>
-  <span class="p">vlan_config:</span>
-    <span class="p">n9k-ce01:</span>
-      <span class="k">id:</span> <span class="ph">___</span>          <span class="cm"># TODO: VLAN ID for west-side clients (see Table 1)</span>
-      <span class="k">name:</span> <span class="s">"</span><span class="ph">___</span><span class="s">"</span>      <span class="cm"># TODO: Name this VLAN (convention: CLIENT-VLAN-&lt;<span class="id">id</span>&gt;)</span>
-    <span class="p">n9k-ce02:</span>
-      <span class="k">id:</span> <span class="ph">___</span>          <span class="cm"># TODO: VLAN ID for east-side clients (see Table 1)</span>
-      <span class="k">name:</span> <span class="s">"</span><span class="ph">___</span><span class="s">"</span>      <span class="cm"># TODO: Name this VLAN (convention: CLIENT-VLAN-&lt;<span class="id">id</span>&gt;)</span></pre>
+<pre><span class="cy">vars:</span>
+  <span class="cy">vlan_config:</span>
+    <span class="cy">n9k-ce01:</span>
+      <span class="gr">id:</span> <span class="ph">___</span>          <span class="cm"># TODO: VLAN ID for west-side clients (see Table 1)</span>
+      <span class="gr">name:</span> <span class="ph">"___"</span>      <span class="cm"># TODO: Name this VLAN (convention: CLIENT-VLAN-&lt;id&gt;)</span>
+    <span class="cy">n9k-ce02:</span>
+      <span class="gr">id:</span> <span class="ph">___</span>          <span class="cm"># TODO: VLAN ID for east-side clients (see Table 1)</span>
+      <span class="gr">name:</span> <span class="ph">"___"</span>      <span class="cm"># TODO: Name this VLAN (convention: CLIENT-VLAN-&lt;id&gt;)</span></pre>
 </div>
 </body>
 </html>
