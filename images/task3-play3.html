@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1200" />
+<title>task3-play3</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { overflow: hidden; }
+  body { background: #000000; font-family: 'JetBrains Mono', 'Courier New', monospace; }
+  .terminal { background: #000000; width: 860px; padding: 22px 28px 22px 28px; font-size: 13.5px; line-height: 1.7; }
+  .k  { color: #00e676; }
+  .wh { color: #ffffff; }
+  .ph { color: #c678dd; }
+  .d  { color: #e5c07b; }
+  .cm { color: #00b8c8; font-style: italic; }
+</style>
+</head>
+<body>
+<div class="terminal">
+<pre><span class="k">vars:</span>
+  <span class="k">cross_routes:</span>
+    <span class="k">linux-client1:</span>
+      <span class="k">dest:</span> <span class="wh">___</span>          <span class="cm"># TODO: East-side client subnet (x.x.x.0/24)</span>
+      <span class="k">gw:</span> <span class="wh">___</span>            <span class="cm"># TODO: West SVI gateway IP</span>
+    <span class="k">linux-client2:</span>
+      <span class="k">dest:</span> <span class="wh">___</span>          <span class="cm"># TODO: Same as client1 (same switch)</span>
+      <span class="k">gw:</span> <span class="wh">___</span>            <span class="cm"># TODO: Same as client1</span>
+    <span class="k">linux-client3:</span>
+      <span class="k">dest:</span> <span class="wh">___</span>          <span class="cm"># TODO: West-side client subnet (x.x.x.0/24)</span>
+      <span class="k">gw:</span> <span class="wh">___</span>            <span class="cm"># TODO: East SVI gateway IP</span>
+    <span class="k">linux-client4:</span>
+      <span class="k">dest:</span> <span class="wh">___</span>          <span class="cm"># TODO: Same as client3 (same switch)</span>
+      <span class="k">gw:</span> <span class="wh">___</span>            <span class="cm"># TODO: Same as client3</span></pre>
+</div>
+</body>
+</html>
