@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1200" />
+<title>task1-baseline-ping-output</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { overflow: hidden; }
+  body { background: #000000; font-family: 'JetBrains Mono', 'Courier New', monospace; }
+  .terminal { background: #000000; width: 860px; padding: 22px 28px 22px 28px; font-size: 13.5px; line-height: 1.7; color: #ffffff; }
+</style>
+</head>
+<body>
+<div class="terminal">
+<pre>Warning: Permanently added 'linux-client1' (ED25519) to the list of known hosts.
+PING 23.23.23.2 (23.23.23.2) 56(84) bytes of data.
+From 23.23.23.1 icmp_seq=1 Destination Host Unreachable
+From 23.23.23.1 icmp_seq=2 Destination Host Unreachable
+From 23.23.23.1 icmp_seq=3 Destination Host Unreachable
+
+--- 23.23.23.2 ping statistics ---
+3 packets transmitted, 0 received, +3 errors, 100% packet loss, time 2039ms
+pipe 3</pre>
+</div>
+</body>
+</html>
