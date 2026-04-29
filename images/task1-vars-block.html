@@ -23,28 +23,22 @@
     line-height: 1.7;
   }
 
-  /* All keys, section names, module names */
-  .cy  { color: #00b8c8; }
-  /* Unquoted values (nxos, false, active, merged, layer2) */
-  .wh  { color: #ffffff; }
-  /* Purple placeholders ___ */
-  .ph  { color: #c678dd; }
-  /* Yellow dash */
-  .d   { color: #e5c07b; }
-  /* Comments — cyan italic */
-  .cm  { color: #00b8c8; font-style: italic; }
+  .k  { color: #00e676; }                        /* all keys — bright green */
+  .wh { color: #ffffff; }                        /* unquoted values — white */
+  .ph { color: #c678dd; }                        /* ___ placeholders — purple */
+  .cm { color: #00b8c8; font-style: italic; }    /* comments — cyan italic */
 </style>
 </head>
 <body>
 <div class="terminal">
-<pre><span class="cy">vars:</span>
-  <span class="cy">vlan_config:</span>
-    <span class="cy">n9k-ce01:</span>
-      <span class="cy">id:</span> <span class="ph">___</span>          <span class="cm"># TODO: VLAN ID for west-side clients (see Table 1)</span>
-      <span class="cy">name:</span> "<span class="ph">___</span>"      <span class="cm"># TODO: Name this VLAN (convention: CLIENT-VLAN-&lt;id&gt;)</span>
-    <span class="cy">n9k-ce02:</span>
-      <span class="cy">id:</span> <span class="ph">___</span>          <span class="cm"># TODO: VLAN ID for east-side clients (see Table 1)</span>
-      <span class="cy">name:</span> "<span class="ph">___</span>"      <span class="cm"># TODO: Name this VLAN (convention: CLIENT-VLAN-&lt;id&gt;)</span></pre>
+<pre><span class="k">vars:</span>
+  <span class="k">vlan_config:</span>
+    <span class="k">n9k-ce01:</span>
+      <span class="k">id:</span> <span class="ph">___</span>          <span class="cm"># TODO: VLAN ID for west-side clients (see Table 1)</span>
+      <span class="k">name:</span> <span class="wh">"</span><span class="ph">___</span><span class="wh">"</span>      <span class="cm"># TODO: Name this VLAN (convention: CLIENT-VLAN-&lt;id&gt;)</span>
+    <span class="k">n9k-ce02:</span>
+      <span class="k">id:</span> <span class="ph">___</span>          <span class="cm"># TODO: VLAN ID for east-side clients (see Table 1)</span>
+      <span class="k">name:</span> <span class="wh">"</span><span class="ph">___</span><span class="wh">"</span>      <span class="cm"># TODO: Name this VLAN (convention: CLIENT-VLAN-&lt;id&gt;)</span></pre>
 </div>
 </body>
 </html>
