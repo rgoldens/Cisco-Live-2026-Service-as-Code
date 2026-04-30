@@ -120,16 +120,15 @@ Here is what each file does:
 | `terraform.tfstate` | Terraform's memory — currently empty (post-destroy residue). Will be populated after `terraform apply` |
 | `terraform.tfstate.backup` | Automatic backup of the previous state, saved when `destroy` ran |
 
-Now run `ls modules/` to see what modules are available:
+Now run `ls -l modules/` to see what modules are available:
 
 ```bash
-ls modules/
+ls -l modules/
 ```
 
-> Expected output (may appear side by side or on separate lines depending on your terminal width — both are correct):
-<pre>
-docker-infra  iosxe-config
-</pre>
+> Expected output:
+
+![ls -l modules/ output](images/task5-ls-modules-output.png)
 
 ### Step 3 — Read the Root Module
 
