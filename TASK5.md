@@ -136,6 +136,10 @@ ls -l modules/
 cat main.tf
 ```
 
+> Expected output:
+
+![cat main.tf output](images/task5-cat-main-output.png)
+
 This is the entry point for the entire lab. Read through it and notice:
 
 - The `terraform { required_providers { ... } }` block declares which providers this
