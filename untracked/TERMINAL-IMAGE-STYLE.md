@@ -76,9 +76,9 @@ Screenshot method: measure `scrollHeight` of `.terminal`, resize page to that ex
 | `changed:` status lines + host names when changed | `.chg` | `#e5c07b` | Yellow |
 | `skipping:` status lines + host names | `.skp` | `#00b8c8` | Cyan (same hex as warning/comment) |
 | `[ERROR]` block — entire failed output | `.err` | `#ff5555` | Red |
-| `[WARNING]:` lines | `.warn` | `#00b8c8 italic` | Cyan italic (same as `.cm`) |
+| `[WARNING]:` lines | `.warn` | `#e5c07b` | Yellow (same as `.chg`) |
 | All other text (PLAY headers, TASK headers, output body) | `.wh` | `#ffffff` | White |
-| Comment / truncation note `# Output truncated...` | `.cm` | `#00b8c8 italic` | Cyan italic |
+| Comment / truncation note `# Output truncated...` | `.cm` | `#6a7a8a` | Grey italic |
 
 ### CSS Classes (Ansible output)
 
@@ -87,9 +87,9 @@ Screenshot method: measure `scrollHeight` of `.terminal`, resize page to that ex
 .chg  { color: #e5c07b; }                      /* changed status — yellow */
 .skp  { color: #00b8c8; }                      /* skipping status — cyan */
 .err  { color: #ff5555; }                      /* error/failed block — red */
-.warn { color: #00b8c8; font-style: italic; }  /* warning lines — cyan italic */
+.warn { color: #e5c07b; font-style: italic; }  /* warning lines — yellow italic */
 .wh   { color: #ffffff; }                      /* default text — white */
-.cm   { color: #00b8c8; font-style: italic; }  /* comments — cyan italic */
+.cm   { color: #6a7a8a; font-style: italic; }  /* comments — grey italic */
 ```
 
 ---
