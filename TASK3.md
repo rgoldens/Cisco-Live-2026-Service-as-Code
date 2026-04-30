@@ -390,18 +390,12 @@ ansible-playbook ~/ce-access-vlan.yml
 Compare the output to your first run. Notice the differences:
 
 **First run:**
-<pre>
-TASK [Step 1 — Create VLAN on each CE switch] **********************************
-changed: [n9k-ce01]
-changed: [n9k-ce02]
-</pre>
+
+![Task 3: First run — changed](images/task3-first-run-output.png)
 
 **Second run:**
-<pre>
-TASK [Step 1 — Create VLAN on each CE switch] **********************************
-ok: [n9k-ce01]
-ok: [n9k-ce02]
-</pre>
+
+![Task 3: Second run — ok](images/task3-second-run-output.png)
 
 The `changed` → `ok` shift means Ansible checked the device, found the VLAN
 already exists with the correct config, and made no changes. The PLAY RECAP

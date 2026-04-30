@@ -690,17 +690,7 @@ ansible -i inventory.yml linux-client1 -m raw -a "ping -c 3 34.34.34.1"
 
 Expected output — 100% success:
 
-<pre>
-linux-client1 | CHANGED | rc=0 >>
-PING 34.34.34.1 (34.34.34.1) 56(84) bytes of data.
-64 bytes from 34.34.34.1: icmp_seq=1 ttl=58 time=13.4 ms
-64 bytes from 34.34.34.1: icmp_seq=2 ttl=58 time=10.5 ms
-64 bytes from 34.34.34.1: icmp_seq=3 ttl=58 time=10.1 ms
-
---- 34.34.34.1 ping statistics ---
-3 packets transmitted, 3 received, 0% packet loss, time 2003ms
-rtt min/avg/max/mdev = 10.117/11.334/13.350/1.435 ms
-</pre>
+![Task 4: ping success after apply](images/task4-ping-success-output.png)
 
 Full east-west connectivity — rebuilt entirely with Terraform. The traffic
 path is identical to Task 3: client1 (23.23.23.1) → n9k-ce01 → csr-pe01 →
@@ -808,13 +798,7 @@ ansible -i inventory.yml linux-client1 -m raw -a "ping -c 3 -W 2 34.34.34.1"
 
 Expected output — 100% loss:
 
-<pre>
-linux-client1 | FAILED | rc=1 >>
-PING 34.34.34.1 (34.34.34.1) 56(84) bytes of data.
-
---- 34.34.34.1 ping statistics ---
-3 packets transmitted, 0 received, 100% packet loss, time 2025ms
-</pre>
+![Task 4: ping failure after destroy](images/task4-ping-fail-destroy-output.png)
 
 The VRF, BGP, and route-policies have been cleanly removed from both XRd
 routers. The data plane is down because the SP core no longer carries the
@@ -916,13 +900,7 @@ ansible -i inventory.yml linux-client1 -m raw -a "ping -c 3 -W 2 34.34.34.1"
 
 Expected output — 100% packet loss:
 
-<pre>
-linux-client1 | FAILED | rc=1 >>
-PING 34.34.34.1 (34.34.34.1) 56(84) bytes of data.
-
---- 34.34.34.1 ping statistics ---
-3 packets transmitted, 0 received, 100% packet loss, time 2048ms
-</pre>
+![Task 4b: ping failure after drift](images/task4-ping-fail-drift-output.png)
 
 The interface is down, so the eBGP VRF session to csr-pe01 drops, VPN
 routes are withdrawn, and client1 has no path to reach client3's network.
@@ -1072,17 +1050,7 @@ ansible -i inventory.yml linux-client1 -m raw -a "ping -c 3 34.34.34.1"
 
 Expected output — 100% success:
 
-<pre>
-linux-client1 | CHANGED | rc=0 >>
-PING 34.34.34.1 (34.34.34.1) 56(84) bytes of data.
-64 bytes from 34.34.34.1: icmp_seq=1 ttl=58 time=13.4 ms
-64 bytes from 34.34.34.1: icmp_seq=2 ttl=58 time=10.5 ms
-64 bytes from 34.34.34.1: icmp_seq=3 ttl=58 time=10.1 ms
-
---- 34.34.34.1 ping statistics ---
-3 packets transmitted, 3 received, 0% packet loss, time 2003ms
-rtt min/avg/max/mdev = 10.117/11.334/13.350/1.435 ms
-</pre>
+![Task 4b: ping success after remediation](images/task4-ping-remediated-output.png)
 
 Now confirm Terraform sees no remaining drift:
 

@@ -10,10 +10,7 @@
 
 #### Playbook fails with YAML syntax error
 
-```
-ERROR! Syntax Error while loading YAML.
-  mapping values are not allowed in this context
-```
+![Ansible YAML syntax error](images/troubleshooting-yaml-error.png)
 
 This almost always means **indentation is wrong**. YAML uses spaces (not tabs),
 and the number of spaces matters. Common mistakes:
@@ -27,9 +24,7 @@ indentation to the comments on each line.
 
 #### Playbook fails with "variable is undefined"
 
-```
-FAILED! => {"msg": "'___' is undefined"}
-```
+![Ansible undefined variable error](images/troubleshooting-undefined-var-error.png)
 
 This means you left a TODO placeholder (`___`) unfilled. Ansible tried to
 use it as a variable name and couldn't find it. Go back to the playbook
@@ -37,9 +32,7 @@ and fill in all the `___` values.
 
 #### Playbook fails to connect to a device
 
-```
-UNREACHABLE! => {"msg": "Failed to connect to the host via ssh"}
-```
+![Ansible unreachable error](images/troubleshooting-unreachable-error.png)
 
 - Check the device is reachable: `ping 172.20.20.X` (see inventory for IPs)
 - For CSR: SSH may have hung after a config push. Wait 60 seconds and retry.

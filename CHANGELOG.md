@@ -18,6 +18,42 @@ primer documents into dedicated files. Added student lab access guide.
 
 ---
 
+### 1.1.13 — Style-Guide Terminal Images for Tasks 3, 4, 6 and Troubleshooting
+
+Replaced all raw `<pre>` output blocks with styled HTML→PNG terminal images
+following `style-guide/TERMINAL-IMAGE-STYLE.md` and `style-guide/SLIDE-COLOR-SCHEME.md`.
+Removed `INSTRUCTOR-GUIDE.md` and `LAB-GUIDE.md` from the repo root.
+
+**Task 3**
+| File | Description |
+|------|-------------|
+| `images/task3-first-run-output.html/png` | Ansible first run — `changed:` lines (yellow) |
+| `images/task3-second-run-output.html/png` | Ansible second run — `ok:` lines (green) |
+
+**Task 4**
+| File | Description |
+|------|-------------|
+| `images/task4-ping-success-output.html/png` | Ping success after `terraform apply` — yellow `CHANGED` header |
+| `images/task4-ping-fail-destroy-output.html/png` | Ping failure after `terraform destroy` — red `FAILED` header |
+| `images/task4-ping-fail-drift-output.html/png` | Ping failure after interface shutdown (Task 4b) — red `FAILED` header |
+| `images/task4-ping-remediated-output.html/png` | Ping success after drift remediation — yellow `CHANGED` header |
+
+**Task 6**
+| File | Description |
+|------|-------------|
+| `images/task6-git-push-output.html/png` | `git push` terminal output — plain white on black |
+
+**Troubleshooting**
+| File | Description |
+|------|-------------|
+| `images/troubleshooting-yaml-error.html/png` | YAML syntax error — red `ERROR!` + white detail |
+| `images/troubleshooting-undefined-var-error.html/png` | Undefined variable error — red `FAILED!` |
+| `images/troubleshooting-unreachable-error.html/png` | SSH unreachable error — red `UNREACHABLE!` |
+
+**Color scheme:** `.ok` `#00e676`, `.chg` `#e5c07b`, `.err` `#ff5555`, `.wh` `#ffffff` — background `#000000`, JetBrains Mono 13.5px, 860px wide.
+
+---
+
 ### 1.1.0 — Dark Theme Standardization for All Diagrams
 
 Rewrote 7 draw.io source files to match the exact dark theme of `task1-vlans.drawio`:

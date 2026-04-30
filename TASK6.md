@@ -111,17 +111,7 @@ the [Lab Access](LAB-ACCESS.md) setup.
 
 Expected output:
 
-<pre>
-Enumerating objects: 8, done.
-Counting objects: 100% (8/8), done.
-Delta compression using up to 4 threads
-Compressing objects: 100% (5/5), done.
-Writing objects: 100% (5/5), 1.23 KiB | 1.23 MiB/s, done.
-Total 5 (delta 3), reused 0 (delta 0), pack-reused 0
-remote: Resolving deltas: 100% (3/3), completed with 3 local objects.
-To https://github.com/rgoldens/Cisco-Live-2026-Service-as-Code.git
- * [new branch]      student-XX -> student-XX
-</pre>
+![Task 6: git push output](images/task6-git-push-output.png)
 
 ---
 
