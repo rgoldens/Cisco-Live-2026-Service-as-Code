@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1200" />
+<title>task3-ping-output</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { overflow: hidden; }
+
+  body {
+    background: #000000;
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+  }
+
+  .terminal {
+    background: #000000;
+    width: 1020px;
+    padding: 22px 60px 22px 28px;
+    font-size: 13.5px;
+    line-height: 1.7;
+  }
+
+  .ok  { color: #00e676; }
+  .wh  { color: #ffffff; }
+</style>
+</head>
+<body>
+<div class="terminal">
+<pre><span class="wh">PLAY [Test — Full east-west client connectivity] *******************************</span>
+
+<span class="wh">TASK [Show ping result] ********************************************************</span>
+<span class="ok">ok: [linux-client1] => {
+    "ping_result.stdout_lines": [
+        "PING 34.34.34.1 (34.34.34.1) 56(84) bytes of data.",
+        "64 bytes from 34.34.34.1: icmp_seq=1 ttl=58 time=86.4 ms",
+        "64 bytes from 34.34.34.1: icmp_seq=2 ttl=58 time=9.79 ms",
+        "64 bytes from 34.34.34.1: icmp_seq=3 ttl=58 time=35.2 ms",
+        "",
+        "--- 34.34.34.1 ping statistics ---",
+        "3 packets transmitted, 3 received, 0% packet loss, time 2002ms"
+    ]
+}</span>
+<span class="ok">ok: [linux-client2] => {
+    "ping_result.stdout_lines": [
+        "PING 34.34.34.2 (34.34.34.2) 56(84) bytes of data.",
+        "64 bytes from 34.34.34.2: icmp_seq=1 ttl=58 time=93.1 ms",
+        "64 bytes from 34.34.34.2: icmp_seq=2 ttl=58 time=53.6 ms",
+        "64 bytes from 34.34.34.2: icmp_seq=3 ttl=58 time=31.9 ms",
+        "",
+        "--- 34.34.34.2 ping statistics ---",
+        "3 packets transmitted, 3 received, 0% packet loss, time 2001ms"
+    ]
+}</span>
+<span class="ok">ok: [linux-client3] => {
+    "ping_result.stdout_lines": [
+        "PING 23.23.23.1 (23.23.23.1) 56(84) bytes of data.",
+        "64 bytes from 23.23.23.1: icmp_seq=1 ttl=58 time=91.6 ms",
+        "64 bytes from 23.23.23.1: icmp_seq=2 ttl=58 time=11.3 ms",
+        "64 bytes from 23.23.23.1: icmp_seq=3 ttl=58 time=79.7 ms",
+        "",
+        "--- 23.23.23.1 ping statistics ---",
+        "3 packets transmitted, 3 received, 0% packet loss, time 2002ms"
+    ]
+}</span>
+<span class="ok">ok: [linux-client4] => {
+    "ping_result.stdout_lines": [
+        "PING 23.23.23.2 (23.23.23.2) 56(84) bytes of data.",
+        "64 bytes from 23.23.23.2: icmp_seq=1 ttl=58 time=110 ms",
+        "64 bytes from 23.23.23.2: icmp_seq=2 ttl=58 time=37.4 ms",
+        "64 bytes from 23.23.23.2: icmp_seq=3 ttl=58 time=22.1 ms",
+        "",
+        "--- 23.23.23.2 ping statistics ---",
+        "3 packets transmitted, 3 received, 0% packet loss, time 2002ms"
+    ]
+}</span>
+
+<span class="wh">PLAY RECAP *********************************************************************
+linux-client1              : ok=1    changed=0    unreachable=0    failed=0
+linux-client2              : ok=1    changed=0    unreachable=0    failed=0
+linux-client3              : ok=1    changed=0    unreachable=0    failed=0
+linux-client4              : ok=1    changed=0    unreachable=0    failed=0</span></pre>
+</div>
+</body>
+</html>

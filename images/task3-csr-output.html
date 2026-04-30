@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1200" />
+<title>task3-csr-output</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { overflow: hidden; }
+
+  body {
+    background: #000000;
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+  }
+
+  .terminal {
+    background: #000000;
+    width: 860px;
+    padding: 22px 28px 22px 28px;
+    font-size: 13.5px;
+    line-height: 1.7;
+  }
+
+  .ok  { color: #00e676; }
+  .chg { color: #e5c07b; }
+  .wh  { color: #ffffff; }
+</style>
+</head>
+<body>
+<div class="terminal">
+<pre><span class="wh">PLAY [Task 3 — Configure BGP on CSR PE routers] ********************************</span>
+
+<span class="wh">TASK [Step 1 — Configure BGP AS 65001 and eBGP neighbor] ***********************</span>
+<span class="chg">changed: [csr-pe01]</span>
+<span class="chg">changed: [csr-pe02]</span>
+
+<span class="wh">TASK [Step 2 — Configure BGP address-family and redistribution] ****************</span>
+<span class="chg">changed: [csr-pe02]</span>
+<span class="chg">changed: [csr-pe01]</span>
+
+<span class="wh">TASK [Step 3 — Redistribute BGP into IS-IS] ************************************</span>
+<span class="chg">changed: [csr-pe02]</span>
+<span class="chg">changed: [csr-pe01]</span>
+
+<span class="wh">TASK [Step 4 — Wait for CSR to stabilize] **************************************</span>
+<span class="ok">ok: [csr-pe02]</span>
+<span class="ok">ok: [csr-pe01]</span></pre>
+</div>
+</body>
+</html>
