@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1200" />
+<title>task2-ping-output</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { overflow: hidden; }
+
+  body {
+    background: #000000;
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+  }
+
+  .terminal {
+    background: #000000;
+    width: 1020px;
+    padding: 22px 60px 22px 28px;
+    font-size: 13.5px;
+    line-height: 1.7;
+  }
+
+  .wh  { color: #ffffff; }
+  .ok  { color: #00e676; }
+  .chg { color: #e5c07b; }
+</style>
+</head>
+<body>
+<div class="terminal">
+<pre><span class="wh">PLAY [Test - Linux clients ping CSR PE loopback] **************************************************</span>
+
+<span class="wh">TASK [Show ping result] ***************************************************************************</span>
+<span class="ok">ok: [linux-client1]</span> =&gt; {
+    <span class="wh">"ping_result.stdout_lines": [</span>
+        <span class="wh">"PING 192.168.10.11 (192.168.10.11) 56(84) bytes of data.",</span>
+        <span class="wh">"64 bytes from 192.168.10.11: icmp_seq=2 ttl=254 time=4.99 ms",</span>
+        <span class="wh">"64 bytes from 192.168.10.11: icmp_seq=3 ttl=254 time=4.16 ms",</span>
+        <span class="wh">"",</span>
+        <span class="wh">"--- 192.168.10.11 ping statistics ---",</span>
+        <span class="wh">"3 packets transmitted, 2 received, 33.3333% packet loss, time 2014ms"</span>
+    <span class="wh">]</span>
+<span class="wh">}</span>
+
+<span class="wh">PLAY RECAP ****************************************************************************************</span>
+<span class="chg">csr-pe01</span>                   <span class="wh">: ok=9    changed=4    unreachable=0    failed=0</span>
+<span class="chg">csr-pe02</span>                   <span class="wh">: ok=9    changed=4    unreachable=0    failed=0</span>
+<span class="chg">linux-client1</span>              <span class="wh">: ok=3    changed=2    unreachable=0    failed=0</span>
+<span class="chg">linux-client2</span>              <span class="wh">: ok=3    changed=2    unreachable=0    failed=0</span>
+<span class="chg">linux-client3</span>              <span class="wh">: ok=3    changed=2    unreachable=0    failed=0</span>
+<span class="chg">linux-client4</span>              <span class="wh">: ok=3    changed=2    unreachable=0    failed=0</span>
+<span class="chg">n9k-ce01</span>                   <span class="wh">: ok=10   changed=6    unreachable=0    failed=0</span>
+<span class="chg">n9k-ce02</span>                   <span class="wh">: ok=10   changed=6    unreachable=0    failed=0</span></pre>
+</div>
+</body>
+</html>

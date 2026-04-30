@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1200" />
+<title>task2-nxos-output</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { overflow: hidden; }
+
+  body {
+    background: #000000;
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+  }
+
+  .terminal {
+    background: #000000;
+    width: 860px;
+    padding: 22px 28px 22px 28px;
+    font-size: 13.5px;
+    line-height: 1.7;
+  }
+
+  .wh  { color: #ffffff; }
+  .ok  { color: #00e676; }
+  .chg { color: #e5c07b; }
+</style>
+</head>
+<body>
+<div class="terminal">
+<pre><span class="wh">PLAY [Task 2 - Configure IS-IS and gateway SVIs on NX-OS CE switches] *****************************</span>
+
+<span class="wh">TASK [Step 1 - Enable IS-IS feature on NX-OS] *****************************************************</span>
+<span class="chg">changed: [n9k-ce01]</span>
+<span class="chg">changed: [n9k-ce02]</span>
+
+<span class="wh">TASK [Step 2 - Configure IS-IS process] ***********************************************************</span>
+<span class="chg">changed: [n9k-ce01]</span>
+<span class="chg">changed: [n9k-ce02]</span>
+
+<span class="wh">TASK [Step 3 - Create SVI as client gateway and add to IS-IS] *************************************</span>
+<span class="chg">changed: [n9k-ce02]</span>
+<span class="chg">changed: [n9k-ce01]</span>
+
+<span class="wh">TASK [Step 4 - Add uplink Eth1/1 to IS-IS] ********************************************************</span>
+<span class="chg">changed: [n9k-ce02]</span>
+<span class="chg">changed: [n9k-ce01]</span>
+
+<span class="wh">TASK [Step 5 - Add Loopback0 to IS-IS] ************************************************************</span>
+<span class="chg">changed: [n9k-ce01]</span>
+<span class="chg">changed: [n9k-ce02]</span>
+
+<span class="wh">TASK [Step 6 - Save running configuration] ********************************************************</span>
+<span class="chg">changed: [n9k-ce02]</span>
+<span class="chg">changed: [n9k-ce01]</span></pre>
+</div>
+</body>
+</html>
