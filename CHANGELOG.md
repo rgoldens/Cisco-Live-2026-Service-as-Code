@@ -18,6 +18,19 @@ primer documents into dedicated files. Added student lab access guide.
 
 ---
 
+### 1.1.15 — Fix task4-teardown-output to Match Style Guide
+
+Rebuilt `task4-teardown-output` from scratch — original PNG had a dark grey
+background instead of `#000000` and incorrect yellow values. Created missing
+HTML source file.
+
+| File | Description |
+|------|-------------|
+| `images/task4-teardown-output.html` | Created (was missing) — Ansible teardown output |
+| `images/task4-teardown-output.png` | Corrected colors: `#000000` bg, `#e5c07b` changed, `#ffffff` headers |
+
+---
+
 ### 1.1.14 — Style-Guide Terminal Images for Ansible Primer and Git Primer
 
 Converted fenced code blocks to styled HTML→PNG images. Removed `[Lab Guide]`
