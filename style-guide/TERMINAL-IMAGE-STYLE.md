@@ -124,17 +124,35 @@ Screenshot method: measure `scrollHeight` of `.terminal`, resize page to that ex
 
 ---
 
-## Color Tokens — `ls -la` Output  
-*(used in `images/task5-ls-output.html`)*
+## Color Tokens — `ls -l` / `ls -la` Output  
+*(used in `images/task5-ls-output.html`, `images/task5-ls-modules-output.html`)*
+
+> **Important:** `ls -l` and `ls -la` do NOT show inode numbers. Inodes only appear with
+> `ls -li`. Do NOT include an inode column in `ls -l`/`ls -la` images — start each row
+> with the permissions field flush left.
 
 | Element | CSS class | Color |
 |---|---|---|
-| Default text / permissions / owner / group / size / date | `.perms`, `.links`, `.owner`, `.group`, `.size`, `.date`, `.name-file` | `#c8d0d8` |
-| Inode numbers | `.inode` | `#6a7a8a` |
-| Directory names (`.`, `..`, named dirs) | `.name-dir` | `#00aaff` bold |
-| Hidden dirs/files (`.terraform`) | `.name-hidden` | `#00aaff` bold |
-| Regular `.tf` and config files | `.name-tf` | `#c8d0d8` |
+| Permissions / links / owner / group / size / date | `.perms`, `.links`, `.owner`, `.group`, `.size`, `.date` | `#c8d0d8` |
+| Directory names (`.`, `..`, named dirs, hidden dirs) | `.name-dir`, `.name-hidden` | `#00aaff` bold |
+| Regular files (`.tf`, `.hcl`, etc.) | `.name-file` | `#c8d0d8` |
 | `total N` line | `.total` | `#6a7a8a` |
+
+### CSS Classes (`ls -l` output)
+
+```css
+.row      { display: flex; white-space: pre; }
+.perms    { color: #c8d0d8; width: 11ch; flex-shrink: 0; }
+.links    { color: #c8d0d8; width: 2ch; flex-shrink: 0; text-align: right; margin-right: 1ch; }
+.owner    { color: #c8d0d8; width: 6ch; flex-shrink: 0; }
+.group    { color: #c8d0d8; width: 6ch; flex-shrink: 0; }
+.size     { color: #c8d0d8; width: 6ch; flex-shrink: 0; text-align: right; margin-right: 1ch; }
+.date     { color: #c8d0d8; width: 13ch; flex-shrink: 0; }
+.name-dir    { color: #00aaff; font-weight: 600; }   /* directories and hidden dirs */
+.name-hidden { color: #00aaff; font-weight: 600; }   /* same as name-dir */
+.name-file   { color: #c8d0d8; }                     /* regular files */
+.total    { color: #6a7a8a; margin-bottom: 2px; }
+```
 
 ---
 
