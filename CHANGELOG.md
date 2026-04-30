@@ -18,6 +18,27 @@ primer documents into dedicated files. Added student lab access guide.
 
 ---
 
+### 1.1.16 — Convert Terraform Output Pre-Blocks to Styled Images in Task 4
+
+Replaced all standalone `<pre>` terminal output blocks in `TASK4.md` with
+styled HTML→PNG images (JetBrains Mono, `#000000` bg, all white text).
+Also fixed `task4-tf-init-output` colors and created tfvars images.
+
+| File | Description |
+|------|-------------|
+| `images/task4-tf-init-output.html/png` | Fixed: cyan init lines → white, brighter yellow Warning, trailing text restored in green |
+| `images/task4-tfvars-bgp.html/png` | BGP ASN variable block (Monaco, all white) |
+| `images/task4-tfvars-xrd.html/png` | Per-router xrd_config variable block (Monaco, all white) |
+| `images/task4-tf-apply-prompt.html/png` | `terraform apply` confirmation prompt |
+| `images/task4-tf-apply-output.html/png` | `terraform apply` 18-resource creation output |
+| `images/task4-tf-plan-nochanges.html/png` | `terraform plan` — No changes (post-apply) |
+| `images/task4-tf-plan-drift.html/png` | `terraform plan` — drift detected (`shutdown = true -> false`) |
+| `images/task4-tf-apply-remediate.html/png` | `terraform apply -auto-approve` remediation output |
+| `images/task4-tf-plan-nochanges2.html/png` | `terraform plan` — No changes (post-remediation) |
+| `TASK4.md` | Replaced 226 lines of raw pre-blocks with 9 image references |
+
+---
+
 ### 1.1.15 — Fix task4-teardown-output to Match Style Guide
 
 Rebuilt `task4-teardown-output` from scratch — original PNG had a dark grey

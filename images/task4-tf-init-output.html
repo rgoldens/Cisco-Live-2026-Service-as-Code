@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1200" />
+<title>task4-tf-init-output</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { overflow: hidden; }
+  body { background: #000000; font-family: 'JetBrains Mono', 'Courier New', monospace; }
+  .terminal { background: #000000; width: 860px; padding: 22px 28px 22px 28px; font-size: 13.5px; line-height: 1.7; }
+  .wh  { color: #ffffff; }
+  .ok  { color: #00e676; }
+  .warn { color: #ffcc44; }
+  .cm  { color: #00b8c8; }
+</style>
+</head>
+<body>
+<div class="terminal">
+<pre><span class="wh">Initializing the backend...
+Initializing provider plugins...
+- Finding ciscodevnet/iosxr versions matching "&gt;= 0.5.0"...
+- Installing ciscodevnet/iosxr v0.7.1...
+- Installed ciscodevnet/iosxr v0.7.1 (unauthenticated)</span>
+<span class="wh">Terraform has created a lock file .terraform.lock.hcl to record the provider
+selections it made above. Include this file in your version control repository
+so that Terraform can guarantee to make the same selections by default when
+you run "terraform init" in the future.
+
+
+</span><span class="warn">Warning:</span><span class="wh"> Incomplete lock file information for providers
+
+Due to your customized provider installation methods, Terraform was forced to
+calculate lock file checksums locally for the following providers:
+  </span><span class="wh">- ciscodevnet/iosxr</span><span class="wh">
+
+The current .terraform.lock.hcl file only includes checksums for linux_amd64,
+so Terraform running on another platform will fail to install these
+providers.
+
+To calculate additional checksums for another platform, run:
+  terraform providers lock -platform=linux_amd64
+(where linux_amd64 is the platform to generate)
+</span><span class="ok">Terraform has been successfully initialized!
+
+You may now begin working with Terraform. Try running "terraform plan" to see
+any changes that are required for your infrastructure. All Terraform commands
+should now work.
+
+If you ever set or change modules or backend configuration for Terraform,
+rerun this command to reinitialize your working directory. If you forget, other
+commands will detect it and remind you to do so if necessary.</span></pre>
+</div>
+</body>
+</html>
