@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1200" />
+<title>task5-cat-variables-output</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { overflow: hidden; }
+
+  body {
+    background: #000000;
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+  }
+
+  .terminal {
+    background: #000000;
+    width: 860px;
+    padding: 22px 28px 22px 28px;
+    font-size: 13.5px;
+    line-height: 1.7;
+  }
+
+  pre  { color: #ffffff; }
+  .cm  { color: #6a7a8a; font-style: italic; }
+</style>
+</head>
+<body>
+<div class="terminal">
+<pre># ── Root Variables ───────────────────────────────────────────────────────────
+
+# ── Network ──────────────────────────────────────────────────────────────────
+variable "network_name" {
+  description = "Name of the Docker bridge network"
+  type        = string
+  default     = "terraform-net"
+}
+
+variable "network_subnet" {
+  description = "Subnet CIDR for the Docker bridge network"
+  type        = string
+  default     = "172.20.21.0/24"
+}
+
+# ── CSR ──────────────────────────────────────────────────────────────────────
+variable "csr_image" {
+  description = "Docker image for the CSR1000v container"
+  type        = string
+  default     = "vrnetlab/vr-csr:16.12.05"
+}
+
+variable "csr_ip" {
+  description = "Fixed IP address for csr-terraform"
+  type        = string
+  default     = "172.20.21.10"
+}
+
+variable "csr_username" {
+  description = "CSR admin username"
+  type        = string
+  default     = "admin"
+}
+
+variable "csr_password" {
+  description = "CSR admin password"
+  type        = string
+  default     = "admin"
+  sensitive   = true
+}
+
+variable "csr_hostname" {
+  description = "Hostname to configure on the CSR"
+  type        = string
+  default     = "csr-terraform"
+}
+
+# ── Loopback ─────────────────────────────────────────────────────────────────
+variable "loopback_ip" {
+  description = "IPv4 address for Loopback0"
+  type        = string
+  default     = "10.99.99.1"
+}
+
+variable "loopback_mask" {
+  description = "Subnet mask for Loopback0"
+  type        = string
+  default     = "255.255.255.255"
+}
+
+# ── Linux containers ─────────────────────────────────────────────────────────
+variable "linux_image" {
+  description = "Docker image for Linux client containers"
+  type        = string
+  default     = "ghcr.io/hellt/network-multitool"
+}
+
+variable "linux1_ip" {
+  description = "Fixed IP address for linux-terraform1"
+  type        = string
+  default     = "172.20.21.20"
+}
+
+variable "linux2_ip" {
+  description = "Fixed IP address for linux-terraform2"
+  type        = string
+  default     = "172.20.21.21"
+}
+<span class="cm"># Output truncated for brevity</span></pre>
+</div>
+</body>
+</html>

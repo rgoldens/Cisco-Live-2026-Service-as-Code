@@ -133,25 +133,25 @@ Screenshot method: measure `scrollHeight` of `.terminal`, resize page to that ex
 
 | Element | CSS class | Color |
 |---|---|---|
-| Permissions / links / owner / group / size / date | `.perms`, `.links`, `.owner`, `.group`, `.size`, `.date` | `#c8d0d8` |
+| Permissions / links / owner / group / size / date | `.perms`, `.links`, `.owner`, `.group`, `.size`, `.date` | `#ffffff` |
 | Directory names (`.`, `..`, named dirs, hidden dirs) | `.name-dir`, `.name-hidden` | `#00aaff` bold |
-| Regular files (`.tf`, `.hcl`, etc.) | `.name-file` | `#c8d0d8` |
-| `total N` line | `.total` | `#6a7a8a` |
+| Regular files (`.tf`, `.hcl`, etc.) | `.name-file` | `#ffffff` |
+| `total N` line | `.total` | `#ffffff` |
 
 ### CSS Classes (`ls -l` output)
 
 ```css
 .row      { display: flex; white-space: pre; }
-.perms    { color: #c8d0d8; width: 11ch; flex-shrink: 0; }
-.links    { color: #c8d0d8; width: 2ch; flex-shrink: 0; text-align: right; margin-right: 1ch; }
-.owner    { color: #c8d0d8; width: 6ch; flex-shrink: 0; }
-.group    { color: #c8d0d8; width: 6ch; flex-shrink: 0; }
-.size     { color: #c8d0d8; width: 6ch; flex-shrink: 0; text-align: right; margin-right: 1ch; }
-.date     { color: #c8d0d8; width: 13ch; flex-shrink: 0; }
+.perms    { color: #ffffff; width: 11ch; flex-shrink: 0; }
+.links    { color: #ffffff; width: 2ch; flex-shrink: 0; text-align: right; margin-right: 1ch; }
+.owner    { color: #ffffff; width: 6ch; flex-shrink: 0; }
+.group    { color: #ffffff; width: 6ch; flex-shrink: 0; }
+.size     { color: #ffffff; width: 6ch; flex-shrink: 0; text-align: right; margin-right: 1ch; }
+.date     { color: #ffffff; width: 13ch; flex-shrink: 0; }
 .name-dir    { color: #00aaff; font-weight: 600; }   /* directories and hidden dirs */
 .name-hidden { color: #00aaff; font-weight: 600; }   /* same as name-dir */
-.name-file   { color: #c8d0d8; }                     /* regular files */
-.total    { color: #6a7a8a; margin-bottom: 2px; }
+.name-file   { color: #ffffff; }                     /* regular files */
+.total    { color: #ffffff; margin-bottom: 2px; }
 ```
 
 ---

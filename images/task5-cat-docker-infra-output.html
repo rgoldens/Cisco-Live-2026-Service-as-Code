@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1200" />
+<title>task5-cat-docker-infra-output</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { overflow: hidden; }
+
+  body {
+    background: #000000;
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+  }
+
+  .terminal {
+    background: #000000;
+    width: 860px;
+    padding: 22px 28px 22px 28px;
+    font-size: 13.5px;
+    line-height: 1.7;
+  }
+
+  pre  { color: #ffffff; }
+  .cm  { color: #6a7a8a; font-style: italic; }
+</style>
+</head>
+<body>
+<div class="terminal">
+<pre><span class="cm"># Output truncated for brevity</span>
+
+# ── CSR1000v container ───────────────────────────────────────────────────────
+resource "docker_container" "csr" {
+  name  = "csr-terraform"
+  image = var.csr_image
+
+  privileged = true
+  restart    = "no"
+
+  env = [
+    "USERNAME=${var.csr_username}",
+    "PASSWORD=${var.csr_password}",
+  ]
+
+  networks_advanced {
+    name         = docker_network.terraform_net.name
+    ipv4_address = var.csr_ip
+  }
+
+  volumes {
+    volume_name    = docker_volume.csr_storage.name
+    container_path = "/mnt/flash"
+  }
+}
+
+# ── Linux client 1 ───────────────────────────────────────────────────────────
+resource "docker_container" "linux1" {
+  name  = "linux-terraform1"
+  image = var.linux_image
+
+  privileged = true
+  restart    = "no"
+
+  networks_advanced {
+    name         = docker_network.terraform_net.name
+    ipv4_address = var.linux1_ip
+  }
+
+  # Write authorized_keys and start sshd
+  command = [
+    "sh", "-c", join(" && ", [
+      "echo 'https://dl-cdn.alpinelinux.org/alpine/v3.12/main' > /etc/apk/repositories",
+      "echo 'https://dl-cdn.alpinelinux.org/alpine/v3.12/community' >> /etc/apk/repositories",
+      "apk add --no-cache openssh",
+      "ssh-keygen -A",
+      "mkdir -p /root/.ssh",
+      "printf '%s\\n' '${replace(trimspace(var.authorized_keys), \"\\n\", \"' '\")}' > /root/.ssh/authorized_keys",
+      "chmod 700 /root/.ssh",
+      "chmod 600 /root/.ssh/authorized_keys",
+      "echo 'PermitRootLogin yes' > /etc/ssh/sshd_config",
+      "echo 'PubkeyAuthentication yes' >> /etc/ssh/sshd_config",
+      "echo 'AuthorizedKeysFile .ssh/authorized_keys' >> /etc/ssh/sshd_config",
+      "echo 'root:root' | chpasswd",
+      "/usr/sbin/sshd",
+      "tail -f /dev/null",
+    ])
+  ]
+}
+<span class="cm"># Output truncated for brevity</span></pre>
+</div>
+</body>
+</html>

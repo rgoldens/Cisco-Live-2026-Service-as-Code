@@ -158,6 +158,10 @@ This is the entry point for the entire lab. Read through it and notice:
 cat variables.tf
 ```
 
+> Expected output:
+
+![cat variables.tf output](images/task5-cat-variables-output.png)
+
 Each `variable` block defines an input to the configuration. All of them have `default`
 values, so no manual input is required — Terraform uses the defaults automatically.
 
@@ -181,6 +185,10 @@ Key defaults:
 cat modules/docker-infra/main.tf
 ```
 
+> Expected output (excerpt):
+
+![cat modules/docker-infra/main.tf output](images/task5-cat-docker-infra-output.png)
+
 This module creates the Docker network, the storage volume, and the three containers.
 Scroll down to find the `null_resource.csr_ready` block near the bottom. This is where
 Terraform waits for the CSR to boot:
@@ -197,6 +205,10 @@ Terraform waits for the CSR to boot:
 cat modules/iosxe-config/main.tf
 ```
 
+> Expected output:
+
+![cat modules/iosxe-config/main.tf output](images/task5-cat-iosxe-config-output.png)
+
 This module is simple — just two resources:
 - `iosxe_system.this` — sends a RESTCONF call to set the hostname to `csr-terraform`
 - `iosxe_interface_loopback.lo0` — sends a RESTCONF call to create Loopback0 with IP
@@ -210,6 +222,10 @@ These two resources only run after `module.docker_infra` is fully complete (due 
 ```bash
 cat outputs.tf
 ```
+
+> Expected output:
+
+![cat outputs.tf output](images/task5-cat-outputs-output.png)
 
 After `terraform apply` finishes, these five values will be printed to the terminal so
 you can see a summary of what was deployed.
@@ -225,27 +241,8 @@ terraform init
 ```
 
 > Expected output:
-<pre>
-Initializing the backend...
-Initializing modules...
-Initializing provider plugins...
-- Reusing previous version of kreuzwerker/docker from the dependency lock file
-- Reusing previous version of ciscodevnet/iosxe from the dependency lock file
-- Reusing previous version of hashicorp/null from the dependency lock file
-- Using previously-installed ciscodevnet/iosxe v0.16.0
-- Using previously-installed hashicorp/null v3.2.4
-- Using previously-installed kreuzwerker/docker v3.9.0
 
-Terraform has been successfully initialized!
-
-You may now begin working with Terraform. Try running "terraform plan" to see
-any changes that are required for your infrastructure. All Terraform commands
-should now work.
-
-If you ever set or change modules or backend configuration for Terraform,
-rerun this command to reinitialize your working directory. If you forget, other
-commands will detect it and remind you to do so if necessary.
-</pre>
+![terraform init output](images/task5-terraform-init-output.png)
 
 > If you see `Terraform has been successfully initialized!` you are ready to proceed.
 
@@ -262,18 +259,16 @@ docker ps --filter name=terraform
 ```
 
 > Expected output:
-<pre>
-CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
-</pre>
+
+![docker ps empty output](images/task5-docker-ps-empty-output.png)
 
 ```bash
 docker network ls --filter name=terraform
 ```
 
 > Expected output:
-<pre>
-NETWORK ID   NAME      DRIVER    SCOPE
-</pre>
+
+![docker network ls empty output](images/task5-docker-network-empty-output.png)
 
 ### Step 10 — Preview the Deployment with terraform plan
 
