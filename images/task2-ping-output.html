@@ -33,26 +33,26 @@
 <pre><span class="wh">PLAY [Test - Linux clients ping CSR PE loopback] **************************************************</span>
 
 <span class="wh">TASK [Show ping result] ***************************************************************************</span>
-<span class="ok">ok: [linux-client1]</span> =&gt; {
-    <span class="wh">"ping_result.stdout_lines": [</span>
-        <span class="wh">"PING 192.168.10.11 (192.168.10.11) 56(84) bytes of data.",</span>
-        <span class="wh">"64 bytes from 192.168.10.11: icmp_seq=2 ttl=254 time=4.99 ms",</span>
-        <span class="wh">"64 bytes from 192.168.10.11: icmp_seq=3 ttl=254 time=4.16 ms",</span>
-        <span class="wh">"",</span>
-        <span class="wh">"--- 192.168.10.11 ping statistics ---",</span>
-        <span class="wh">"3 packets transmitted, 2 received, 33.3333% packet loss, time 2014ms"</span>
-    <span class="wh">]</span>
-<span class="wh">}</span>
+<span class="ok">ok: [linux-client1] =&gt; {
+    "ping_result.stdout_lines": [
+        "PING 192.168.10.11 (192.168.10.11) 56(84) bytes of data.",
+        "64 bytes from 192.168.10.11: icmp_seq=2 ttl=254 time=4.99 ms",
+        "64 bytes from 192.168.10.11: icmp_seq=3 ttl=254 time=4.16 ms",
+        "",
+        "--- 192.168.10.11 ping statistics ---",
+        "3 packets transmitted, 2 received, 33.3333% packet loss, time 2014ms"
+    ]
+}</span>
 
 <span class="wh">PLAY RECAP ****************************************************************************************</span>
-<span class="chg">csr-pe01</span>                   <span class="wh">: ok=9    changed=4    unreachable=0    failed=0</span>
-<span class="chg">csr-pe02</span>                   <span class="wh">: ok=9    changed=4    unreachable=0    failed=0</span>
-<span class="chg">linux-client1</span>              <span class="wh">: ok=3    changed=2    unreachable=0    failed=0</span>
-<span class="chg">linux-client2</span>              <span class="wh">: ok=3    changed=2    unreachable=0    failed=0</span>
-<span class="chg">linux-client3</span>              <span class="wh">: ok=3    changed=2    unreachable=0    failed=0</span>
-<span class="chg">linux-client4</span>              <span class="wh">: ok=3    changed=2    unreachable=0    failed=0</span>
-<span class="chg">n9k-ce01</span>                   <span class="wh">: ok=10   changed=6    unreachable=0    failed=0</span>
-<span class="chg">n9k-ce02</span>                   <span class="wh">: ok=10   changed=6    unreachable=0    failed=0</span></pre>
+<span class="chg">csr-pe01                   : ok=9    changed=4    unreachable=0    failed=0
+csr-pe02                   : ok=9    changed=4    unreachable=0    failed=0
+linux-client1              : ok=3    changed=2    unreachable=0    failed=0
+linux-client2              : ok=3    changed=2    unreachable=0    failed=0
+linux-client3              : ok=3    changed=2    unreachable=0    failed=0
+linux-client4              : ok=3    changed=2    unreachable=0    failed=0
+n9k-ce01                   : ok=10   changed=6    unreachable=0    failed=0
+n9k-ce02                   : ok=10   changed=6    unreachable=0    failed=0</span></pre>
 </div>
 </body>
 </html>

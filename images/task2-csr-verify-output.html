@@ -33,15 +33,15 @@
 <pre><span class="wh">PLAY [Verify - CSR IS-IS neighbors and routes] ****************************************************</span>
 
 <span class="wh">TASK [Display IS-IS neighbors] ********************************************************************</span>
-<span class="ok">ok: [csr-pe01]</span> =&gt; {
-    <span class="wh">"isis_neighbors.stdout_lines": [</span>
-        <span class="wh">[</span>
-            <span class="wh">"Tag CORE:",</span>
-            <span class="wh">"System Id       Type Interface    IP Address      State Holdtime Circuit Id",</span>
-            <span class="wh">"n9k-ce01        L2   Gi4          10.2.0.2        UP    23       01"</span>
-        <span class="wh">]</span>
-    <span class="wh">]</span>
-<span class="wh">}</span></pre>
+<span class="ok">ok: [csr-pe01] =&gt; {
+    "isis_neighbors.stdout_lines": [
+        [
+            "Tag CORE:",
+            "System Id       Type Interface    IP Address      State Holdtime Circuit Id",
+            "n9k-ce01        L2   Gi4          10.2.0.2        UP    23       01"
+        ]
+    ]
+}</span></pre>
 </div>
 </body>
 </html>

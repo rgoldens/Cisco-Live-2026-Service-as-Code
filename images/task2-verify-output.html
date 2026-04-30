@@ -33,37 +33,37 @@
 <pre><span class="wh">PLAY [Verify - IS-IS neighbors and routes] ********************************************************</span>
 
 <span class="wh">TASK [Display IS-IS neighbors] ********************************************************************</span>
-<span class="ok">ok: [n9k-ce01]</span> =&gt; {
-    <span class="wh">"isis_neighbors.stdout_lines": [</span>
-        <span class="wh">[</span>
-            <span class="wh">"IS-IS process: CORE VRF: default",</span>
-            <span class="wh">"IS-IS adjacency database:",</span>
-            <span class="wh">"System ID       SNPA              Level  State  Hold Time  Interface",</span>
-            <span class="wh">"csr-pe01        N/A               2      UP     00:00:27   Ethernet1/1"</span>
-        <span class="wh">]</span>
-    <span class="wh">]</span>
-<span class="wh">}</span>
-<span class="ok">ok: [n9k-ce02]</span> =&gt; {
-    <span class="wh">"isis_neighbors.stdout_lines": [</span>
-        <span class="wh">[</span>
-            <span class="wh">"IS-IS process: CORE VRF: default",</span>
-            <span class="wh">"IS-IS adjacency database:",</span>
-            <span class="wh">"System ID       SNPA              Level  State  Hold Time  Interface",</span>
-            <span class="wh">"csr-pe02        N/A               2      UP     00:00:27   Ethernet1/1"</span>
-        <span class="wh">]</span>
-    <span class="wh">]</span>
-<span class="wh">}</span>
+<span class="ok">ok: [n9k-ce01] =&gt; {
+    "isis_neighbors.stdout_lines": [
+        [
+            "IS-IS process: CORE VRF: default",
+            "IS-IS adjacency database:",
+            "System ID       SNPA              Level  State  Hold Time  Interface",
+            "csr-pe01        N/A               2      UP     00:00:27   Ethernet1/1"
+        ]
+    ]
+}</span>
+<span class="ok">ok: [n9k-ce02] =&gt; {
+    "isis_neighbors.stdout_lines": [
+        [
+            "IS-IS process: CORE VRF: default",
+            "IS-IS adjacency database:",
+            "System ID       SNPA              Level  State  Hold Time  Interface",
+            "csr-pe02        N/A               2      UP     00:00:27   Ethernet1/1"
+        ]
+    ]
+}</span>
 
 <span class="wh">TASK [Display IS-IS routes] ***********************************************************************</span>
-<span class="ok">ok: [n9k-ce01]</span> =&gt; {
-    <span class="wh">"isis_routes.stdout_lines": [</span>
-        <span class="wh">[</span>
-            <span class="wh">"IP Route Table for VRF \"default\"",</span>
-            <span class="wh">"192.168.10.11/32, ubest/mbest: 1/0",</span>
-            <span class="wh">"    *via 10.2.0.1, Eth1/1, [115/40], isis-CORE, L2"</span>
-        <span class="wh">]</span>
-    <span class="wh">]</span>
-<span class="wh">}</span></pre>
+<span class="ok">ok: [n9k-ce01] =&gt; {
+    "isis_routes.stdout_lines": [
+        [
+            "IP Route Table for VRF \"default\"",
+            "192.168.10.11/32, ubest/mbest: 1/0",
+            "    *via 10.2.0.1, Eth1/1, [115/40], isis-CORE, L2"
+        ]
+    ]
+}</span></pre>
 </div>
 </body>
 </html>
