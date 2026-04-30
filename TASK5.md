@@ -291,19 +291,8 @@ terraform plan
 The summary at the bottom of your output should look like this:
 
 > Expected output (bottom of the plan):
-<pre>
-Plan: 8 to add, 0 to change, 0 to destroy.
 
-Changes to Outputs:
-  + csr_hostname = "csr-terraform"
-  + csr_ip       = "172.20.21.10"
-  + linux1_ip    = "172.20.21.20"
-  + linux2_ip    = "172.20.21.21"
-  + loopback0    = "10.99.99.1/255.255.255.255"
-
-Note: You didn't use the -out option to save this plan, so Terraform can't
-guarantee to take exactly these actions if you run "terraform apply" now.
-</pre>
+![terraform plan output](images/task5-terraform-plan-output.png)
 
 The `Plan: 8 to add` means Terraform is planning to create 8 resources:
 
@@ -359,44 +348,11 @@ Press `Ctrl+C` to stop following the logs.
 > to the screen. That is why you see `(output suppressed due to sensitive value in config)`
 > instead of the polling loop messages.
 
-> Expected output (key lines):
-<pre>
-module.docker_infra.docker_volume.csr_storage: Creating...
-module.docker_infra.docker_network.terraform_net: Creating...
-module.docker_infra.docker_volume.csr_storage: Creation complete after 0s [id=csr-terraform-storage]
-module.docker_infra.docker_network.terraform_net: Creation complete after 2s [id=d1921eb1ab7e...]
-module.docker_infra.docker_container.linux1: Creating...
-module.docker_infra.docker_container.csr: Creating...
-module.docker_infra.docker_container.linux2: Creating...
-module.docker_infra.docker_container.linux1: Creation complete after 1s [id=cf2b394afde8...]
-module.docker_infra.docker_container.linux2: Creation complete after 1s [id=5d90d3868ae6...]
-module.docker_infra.docker_container.csr: Creation complete after 1s [id=8fdc981b800e...]
-module.docker_infra.null_resource.csr_ready: Creating...
-module.docker_infra.null_resource.csr_ready: Provisioning with 'local-exec'...
-module.docker_infra.null_resource.csr_ready (local-exec): (output suppressed due to sensitive value in config)
-module.docker_infra.null_resource.csr_ready: Still creating... [00m10s elapsed]
-module.docker_infra.null_resource.csr_ready: Still creating... [00m20s elapsed]
-...
-module.docker_infra.null_resource.csr_ready: Still creating... [07m30s elapsed]
-module.docker_infra.null_resource.csr_ready: Creation complete after 7m39s [id=8057386960410116714]
-module.iosxe_config.iosxe_interface_loopback.lo0: Creating...
-module.iosxe_config.iosxe_system.this: Creating...
-module.iosxe_config.iosxe_interface_loopback.lo0: Creation complete after 0s [id=Cisco-IOS-XE-native:native/interface/Loopback=0]
-module.iosxe_config.iosxe_system.this: Creation complete after 1s [id=Cisco-IOS-XE-native:native]
+> Expected output:
 
-Apply complete! Resources: 8 added, 0 changed, 0 destroyed.
+![terraform apply output](images/task5-terraform-apply-output.png)
 
-Outputs:
-
-csr_hostname = "csr-terraform"
-csr_ip = "172.20.21.10"
-linux1_ip = "172.20.21.20"
-linux2_ip = "172.20.21.21"
-loopback0 = "10.99.99.1/255.255.255.255"
-</pre>
-
-> The hex IDs (like `[id=cf2b394afde8...]`) will be different on your run — they are
-> Docker container IDs generated at creation time.
+> The hex IDs (like `[id=Cisco-IOS-XE-native:native]`) will be different on your run.
 
 > **💡 Automation Insight:** Notice the dependency ordering Terraform enforced automatically —
 > the network had to exist before containers could attach to it, the CSR had to be running
@@ -421,12 +377,8 @@ docker ps --filter name=terraform --format "table {{.ID}}\t{{.Image}}\t{{.Status
 ```
 
 > Expected output:
-<pre>
-CONTAINER ID   IMAGE                             STATUS                   NAMES
-5d90d3868ae6   ghcr.io/hellt/network-multitool   Up 7 minutes             linux-terraform2
-cf2b394afde8   ghcr.io/hellt/network-multitool   Up 7 minutes             linux-terraform1
-8fdc981b800e   vrnetlab/vr-csr:16.12.05          Up 7 minutes (healthy)   csr-terraform
-</pre>
+
+![docker ps running output](images/task5-docker-ps-running-output.png)
 
 The CSR shows `(healthy)` — the vrnetlab healthcheck confirms the IOS XE VM is fully
 booted and responding.
@@ -438,27 +390,24 @@ docker inspect csr-terraform --format '{{range .NetworkSettings.Networks}}{{.IPA
 ```
 
 > Expected output:
-<pre>
-172.20.21.10
-</pre>
+
+![docker inspect csr-terraform output](images/task5-docker-inspect-csr-output.png)
 
 ```bash
 docker inspect linux-terraform1 --format '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}'
 ```
 
 > Expected output:
-<pre>
-172.20.21.20
-</pre>
+
+![docker inspect linux-terraform1 output](images/task5-docker-inspect-linux1-output.png)
 
 ```bash
 docker inspect linux-terraform2 --format '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}'
 ```
 
 > Expected output:
-<pre>
-172.20.21.21
-</pre>
+
+![docker inspect linux-terraform2 output](images/task5-docker-inspect-linux2-output.png)
 
 ### Step 14 — Check Terraform Output
 
@@ -467,13 +416,8 @@ terraform output
 ```
 
 > Expected output:
-<pre>
-csr_hostname = "csr-terraform"
-csr_ip = "172.20.21.10"
-linux1_ip = "172.20.21.20"
-linux2_ip = "172.20.21.21"
-loopback0 = "10.99.99.1/255.255.255.255"
-</pre>
+
+![terraform output](images/task5-terraform-output-output.png)
 
 ### Step 15 — Verify RESTCONF is Responding on the CSR
 
@@ -484,11 +428,8 @@ curl -sk -u admin:admin \
 ```
 
 > Expected output:
-<pre>
-{
-  "Cisco-IOS-XE-native:hostname": "csr-terraform"
-}
-</pre>
+
+![curl hostname output](images/task5-curl-hostname-output.png)
 
 ### Step 16 — Verify Loopback0 Exists on the CSR
 
@@ -499,22 +440,8 @@ curl -sk -u admin:admin \
 ```
 
 > Expected output:
-<pre>
-{
-  "Cisco-IOS-XE-native:Loopback": {
-    "name": 0,
-    "description": "Managed by Terraform",
-    "ip": {
-      "address": {
-        "primary": {
-          "address": "10.99.99.1",
-          "mask": "255.255.255.255"
-        }
-      }
-    }
-  }
-}
-</pre>
+
+![curl loopback output](images/task5-curl-loopback-output.png)
 
 ### Step 17 — SSH into the CSR and Verify
 
@@ -541,9 +468,8 @@ show running-config | include hostname
 ```
 
 > Expected output:
-<pre>
-hostname csr-terraform
-</pre>
+
+![show hostname output](images/task5-show-hostname-output.png)
 
 Now verify that Loopback0 was created with the correct IP and description:
 
@@ -552,28 +478,8 @@ show interfaces Loopback0
 ```
 
 > Expected output:
-<pre>
-Loopback0 is up, line protocol is up
-  Hardware is Loopback
-  Description: Managed by Terraform
-  Internet address is 10.99.99.1/32
-  MTU 1514 bytes, BW 8000000 Kbit/sec, DLY 5000 usec,
-     reliability 255/255, txload 1/255, rxload 1/255
-  Encapsulation LOOPBACK, loopback not set
-  Keepalive set (10 sec)
-  Last input 00:00:08, output never, output hang never
-  Last clearing of "show interface" counters never
-  Input queue: 0/75/0/0 (size/max/drops/flushes); Total output drops: 0
-  Queueing strategy: fifo
-  Output queue: 0/0 (size/max)
-  5 minute input rate 0 bits/sec, 0 packets/sec
-  5 minute output rate 0 bits/sec, 0 packets/sec
-     0 packets input, 0 bytes, 0 no buffer
-     Received 0 broadcasts (0 IP multicasts)
-     0 runts, 0 giants, 0 throttles
-     0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored, 0 abort
-     4 packets output, 330 bytes, 0 underruns
-</pre>
+
+![show interfaces Loopback0 output](images/task5-show-loopback-output.png)
 
 Type `exit` to leave the CSR.
 

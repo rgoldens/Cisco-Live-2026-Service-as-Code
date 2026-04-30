@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1200" />
+<title>task5-terraform-apply-output</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { overflow: hidden; }
+
+  body {
+    background: #000000;
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+  }
+
+  .terminal {
+    background: #000000;
+    width: 860px;
+    padding: 22px 28px 22px 28px;
+    font-size: 13.5px;
+    line-height: 1.7;
+  }
+
+  pre  { color: #ffffff; }
+  .ok  { color: #00e676; }
+  .cm  { color: #6a7a8a; font-style: italic; }
+</style>
+</head>
+<body>
+<div class="terminal">
+<pre><span class="cm"># Output truncated for brevity</span>
+
+module.iosxe_config.iosxe_interface_loopback.lo0: Creating...
+module.iosxe_config.iosxe_system.this: Creating...
+module.iosxe_config.iosxe_interface_loopback.lo0: Creation complete after 2s [id=Cisco-IOS-XE-native:native/interface/Loopback=0]
+module.iosxe_config.iosxe_system.this: Creation complete after 2s [id=Cisco-IOS-XE-native:native]
+
+<span class="ok">Apply complete! Resources: 8 added, 0 changed, 0 destroyed.</span>
+
+<span class="ok">Outputs:</span>
+
+csr_hostname = "csr-terraform"
+csr_ip       = "172.20.21.10"
+linux1_ip    = "172.20.21.20"
+linux2_ip    = "172.20.21.21"
+loopback0    = "10.99.99.1/255.255.255.255"
+</pre>
+</div>
+</body>
+</html>
