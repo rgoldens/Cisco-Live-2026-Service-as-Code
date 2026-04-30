@@ -18,6 +18,28 @@ primer documents into dedicated files. Added student lab access guide.
 
 ---
 
+### 1.1.14 — Style-Guide Terminal Images for Ansible Primer and Git Primer
+
+Converted fenced code blocks to styled HTML→PNG images. Removed `[Lab Guide]`
+nav links from both files (file removed from branch in 1.1.13).
+
+**Ansible-Primer.md**
+| File | Description |
+|------|-------------|
+| `images/ansible-primer-inventory.html/png` | `inventory.yml` example — YAML color scheme |
+| `images/ansible-primer-playbook-structure.html/png` | Playbook structure — YAML color scheme |
+| `images/ansible-primer-vars-tasks.html/png` | Vars vs tasks separation — YAML color scheme |
+
+**Git-Primer.md**
+| File | Description |
+|------|-------------|
+| `images/git-primer-commands.html/png` | Git commands — white commands, cyan italic comments |
+
+ASCII flow diagram alignment fixed: boxes 1 and 2 corrected to 13-char inner
+width to match box 3 and the top/bottom border lines.
+
+---
+
 ### 1.1.13 — Style-Guide Terminal Images for Tasks 3, 4, 6 and Troubleshooting
 
 Replaced all raw `<pre>` output blocks with styled HTML→PNG terminal images

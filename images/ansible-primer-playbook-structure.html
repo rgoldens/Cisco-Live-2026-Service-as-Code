@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1200" />
+<title>ansible-primer-playbook-structure</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { overflow: hidden; }
+  body { background: #000000; font-family: 'JetBrains Mono', 'Courier New', monospace; }
+  .terminal { background: #000000; width: 860px; padding: 22px 28px 22px 28px; font-size: 13.5px; line-height: 1.7; }
+  .k  { color: #00e676; }
+  .wh { color: #ffffff; }
+  .ph { color: #c678dd; }
+  .jj { color: #e5c07b; }
+  .d  { color: #e5c07b; }
+  .cm { color: #00b8c8; font-style: italic; }
+</style>
+</head>
+<body>
+<div class="terminal">
+<pre><span class="wh">---</span>                              <span class="cm"># YAML document start</span>
+<span class="d">-</span> <span class="k">name:</span> <span class="ph">"My Play"</span>               <span class="cm"># A PLAY targets a group of devices</span>
+  <span class="k">hosts:</span> <span class="wh">nxos</span>                    <span class="cm"># Which devices from inventory to configure</span>
+  <span class="k">gather_facts:</span> <span class="wh">false</span>          <span class="cm"># Disable — network devices don't support facts</span>
+
+  <span class="k">vars:</span>                          <span class="cm"># VARIABLES — data that tasks reference</span>
+    <span class="k">my_vlan:</span> <span class="wh">23</span>
+
+  <span class="k">tasks:</span>                         <span class="cm"># TASKS — the actual work, executed in order</span>
+
+    <span class="d">-</span> <span class="k">name:</span> <span class="ph">"Create VLAN"</span>        <span class="cm"># Human-readable description</span>
+      <span class="k">cisco.nxos.nxos_vlans:</span>     <span class="cm"># MODULE — the Ansible plugin that does the work</span>
+        <span class="k">config:</span>
+          <span class="d">-</span> <span class="k">vlan_id:</span> <span class="ph">"</span><span class="jj">{{</span><span class="ph"> my_vlan </span><span class="jj">}}</span><span class="ph">"</span>   <span class="cm"># {{ }} = variable substitution</span>
+        <span class="k">state:</span> <span class="wh">merged</span>            <span class="cm"># "merged" = add without removing existing config</span></pre>
+</div>
+</body>
+</html>

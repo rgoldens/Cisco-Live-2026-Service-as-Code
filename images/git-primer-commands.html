@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1200" />
+<title>git-primer-commands</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { overflow: hidden; }
+  body { background: #000000; font-family: 'JetBrains Mono', 'Courier New', monospace; }
+  .terminal { background: #000000; width: 860px; padding: 22px 28px 22px 28px; font-size: 13.5px; line-height: 1.7; }
+  .wh { color: #ffffff; }
+  .cm { color: #00b8c8; font-style: italic; }
+</style>
+</head>
+<body>
+<div class="terminal">
+<pre><span class="cm"># At the start — clone the repo and create your branch</span>
+<span class="wh">git clone &lt;REPO_URL&gt;          </span><span class="cm"># Download the repo to your server</span>
+<span class="wh">git checkout -b student-XX    </span><span class="cm"># Create and switch to your own branch</span>
+
+<span class="cm"># At the end — save and upload your work</span>
+<span class="wh">git add &lt;file1&gt; &lt;file2&gt;       </span><span class="cm"># Stage the files you changed</span>
+<span class="wh">git commit -m "Your message"  </span><span class="cm"># Save a snapshot with a description</span>
+<span class="wh">git push origin student-XX    </span><span class="cm"># Upload your branch to GitHub</span></pre>
+</div>
+</body>
+</html>

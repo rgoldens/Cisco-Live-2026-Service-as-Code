@@ -1,4 +1,4 @@
-[Lab Guide](LAB-GUIDE.md) | [Reference Tables](REFERENCE.md) | [Ansible Primer](Ansible-Primer.md) | [Terraform Primer](Terraform-Primer.md) | [ContainerLab Primer](ContainerLab-Primer.md)
+[Reference Tables](REFERENCE.md) | [Ansible Primer](Ansible-Primer.md) | [Terraform Primer](Terraform-Primer.md) | [ContainerLab Primer](ContainerLab-Primer.md)
 
 ---
 
@@ -45,24 +45,15 @@ network.
 
 There are only six Git commands you need for this lab:
 
-```bash
-# At the start — clone the repo and create your branch
-git clone <REPO_URL>          # Download the repo to your server
-git checkout -b student-XX    # Create and switch to your own branch
-
-# At the end — save and upload your work
-git add <file1> <file2>       # Stage the files you changed
-git commit -m "Your message"  # Save a snapshot with a description
-git push origin student-XX    # Upload your branch to GitHub
-```
+![Git commands for this lab](images/git-primer-commands.png)
 
 ### How It Fits Into This Lab
 
 ```
 ┌─────────────┐     clone      ┌─────────────┐    deploy     ┌─────────────┐
-│   GitHub     │ ───────────── │  Lab Server  │ ────────────  │  Network    │
-│   (remote)   │               │  (edit here) │  ansible /    │  Devices    │
-│              │  ◄─────────── │              │  terraform    │             │
+│   GitHub    │ ─────────────► │  Lab Server │ ────────────► │   Network   │
+│  (remote)   │                │ (edit here) │  ansible /    │   Devices   │
+│             │  ◄──────────── │             │  terraform    │             │
 └─────────────┘     push       └─────────────┘               └─────────────┘
 ```
 

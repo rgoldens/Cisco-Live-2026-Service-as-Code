@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1200" />
+<title>ansible-primer-inventory</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { overflow: hidden; }
+  body { background: #000000; font-family: 'JetBrains Mono', 'Courier New', monospace; }
+  .terminal { background: #000000; width: 860px; padding: 22px 28px 22px 28px; font-size: 13.5px; line-height: 1.7; }
+  .k  { color: #00e676; }
+  .wh { color: #ffffff; }
+  .cm { color: #00b8c8; font-style: italic; }
+</style>
+</head>
+<body>
+<div class="terminal">
+<pre><span class="cm"># inventory.yml (simplified)</span>
+<span class="k">nxos:</span><span class="cm">               # ← group name — used in playbooks as hosts: nxos</span>
+  <span class="k">hosts:</span>
+    <span class="k">n9k-ce01:</span>
+      <span class="k">ansible_host:</span> <span class="wh">172.20.20.30</span>   <span class="cm"># management IP</span>
+    <span class="k">n9k-ce02:</span>
+      <span class="k">ansible_host:</span> <span class="wh">172.20.20.31</span>
+
+<span class="k">csr:</span><span class="cm">                # ← a different group for IOS-XE devices</span>
+  <span class="k">hosts:</span>
+    <span class="k">csr-pe01:</span>
+      <span class="k">ansible_host:</span> <span class="wh">172.20.20.20</span></pre>
+</div>
+</body>
+</html>

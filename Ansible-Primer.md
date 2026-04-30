@@ -1,4 +1,4 @@
-← [Getting Started](GETTING-STARTED.md) | [Lab Guide](LAB-GUIDE.md) | [Task 1 →](TASK1.md)
+← [Getting Started](GETTING-STARTED.md) | [Task 1 →](TASK1.md)
 
 ---
 
@@ -31,20 +31,7 @@ commands, and verifying results.
 
 Before Ansible can connect to anything, it needs to know **what devices exist and how to reach them**. That list is the **inventory** — a file (in this lab, `inventory.yml`) that defines every device, its IP address, and which group it belongs to.
 
-```yaml
-# inventory.yml (simplified)
-nxos:               # ← group name — used in playbooks as hosts: nxos
-  hosts:
-    n9k-ce01:
-      ansible_host: 172.20.20.30   # management IP
-    n9k-ce02:
-      ansible_host: 172.20.20.31
-
-csr:                # ← a different group for IOS-XE devices
-  hosts:
-    csr-pe01:
-      ansible_host: 172.20.20.20
-```
+![Ansible inventory.yml example](images/ansible-primer-inventory.png)
 
 **Groups** let you target a subset of devices in a play. When a playbook says `hosts: nxos`, Ansible runs that play on every host in the `nxos` group — in this lab, `n9k-ce01` and `n9k-ce02`. Each group can also carry shared variables like `ansible_network_os` and connection settings so you don't repeat them per device.
 
@@ -57,24 +44,7 @@ csr:                # ← a different group for IOS-XE devices
 A **playbook** is a YAML file containing one or more **plays**. Each play
 targets a group of devices and runs a series of **tasks**:
 
-```yaml
----                              # YAML document start
-- name: "My Play"               # A PLAY targets a group of devices
-  hosts: nxos                    # Which devices from inventory to configure
-  gather_facts: false            # Ansible can auto-discover server details (OS, IPs, memory) — called "facts".
-                                 # Network devices don't support this, so we always turn it off.
-
-  vars:                          # VARIABLES — data that tasks reference
-    my_vlan: 23
-
-  tasks:                         # TASKS — the actual work, executed in order
-
-    - name: "Create VLAN"        # Human-readable description
-      cisco.nxos.nxos_vlans:     # MODULE — the Ansible plugin that does the work
-        config:
-          - vlan_id: "{{ my_vlan }}"   # {{ }} = variable substitution
-        state: merged            # "merged" = add without removing existing config
-```
+![Ansible playbook structure](images/ansible-primer-playbook-structure.png)
 
 **The flow:** Ansible reads the playbook → connects to each host in `hosts:` →
 runs each task in order → reports results. If a task fails, Ansible stops on
@@ -85,18 +55,7 @@ that host (but continues on others).
 The most important concept in this lab is **variable separation**. Look at the
 playbook structure:
 
-```yaml
-vars:                # ← DATA (what to configure — you edit this)
-  vlan_config:
-    n9k-ce01:
-      id: 23
-
-tasks:               # ← LOGIC (how to configure — already written for you)
-  - name: "Create VLAN"
-    cisco.nxos.nxos_vlans:
-      config:
-        - vlan_id: "{{ vlan_config[inventory_hostname].id }}"
-```
+![Ansible vars vs tasks separation](images/ansible-primer-vars-tasks.png)
 
 The `vars` section is the **data** — the specific values for your network.
 The `tasks` section is the **logic** — the Ansible modules and their structure.
@@ -222,4 +181,4 @@ https://docs.ansible.com/projects/ansible/latest/collections/cisco/nxos/<module_
 
 ---
 
-← [Getting Started](GETTING-STARTED.md) | [Lab Guide](LAB-GUIDE.md) | [Task 1 →](TASK1.md)
+← [Getting Started](GETTING-STARTED.md) | [Task 1 →](TASK1.md)
