@@ -671,12 +671,8 @@ docker ps --filter name=terraform --format "table {{.ID}}\t{{.Image}}\t{{.Status
 ```
 
 > Expected output:
-<pre>
-CONTAINER ID   IMAGE                             STATUS                   NAMES
-a3d3c8160a11   ghcr.io/hellt/network-multitool   Up 8 seconds             linux-terraform2
-cf2b394afde8   ghcr.io/hellt/network-multitool   Up 8 minutes             linux-terraform1
-8fdc981b800e   vrnetlab/vr-csr:16.12.05          Up 8 minutes (healthy)   csr-terraform
-</pre>
+
+![docker ps remediated output](images/task5-docker-ps-remediated-output.png)
 
 Note that `linux-terraform2` shows a fresh uptime (8 seconds) while the others are still
 at their original age — it was just recreated.
