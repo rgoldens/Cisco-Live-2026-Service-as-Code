@@ -620,11 +620,8 @@ docker ps --filter name=terraform --format "table {{.ID}}\t{{.Image}}\t{{.Status
 ```
 
 > Expected output:
-<pre>
-CONTAINER ID   IMAGE                             STATUS                   NAMES
-cf2b394afde8   ghcr.io/hellt/network-multitool   Up 8 minutes             linux-terraform1
-8fdc981b800e   vrnetlab/vr-csr:16.12.05          Up 8 minutes (healthy)   csr-terraform
-</pre>
+
+![docker ps drift output](images/task5-docker-ps-drift-output.png)
 
 `linux-terraform2` is missing. The infrastructure has **drifted** from the Terraform
 configuration.
