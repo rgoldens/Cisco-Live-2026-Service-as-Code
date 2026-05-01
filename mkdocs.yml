@@ -1,7 +1,7 @@
 site_name: "LTRATO-1001: Service Insertion as Code: From Concept to Commit"
 site_description: "Cisco Live 2026 Lab Guide — hands-on service insertion automation with Ansible, Terraform, and ContainerLab"
 site_author: "Cisco Live 2026"
-# site_url: "https://rgoldens.github.io/Cisco-Live-2026-Service-as-Code/"
+site_url: "https://rgoldens.github.io/Cisco-Live-2026-Service-as-Code/"
 docs_dir: docs
 
 theme:
