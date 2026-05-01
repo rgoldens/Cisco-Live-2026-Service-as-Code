@@ -766,9 +766,8 @@ terraform show
 ```
 
 > Expected output:
-<pre>
-The state file is empty. No resources are represented.
-</pre>
+
+![terraform show empty output](images/task5-terraform-show-empty-output.png)
 
 Everything is clean. You are ready to move on to the ContainerLab section.
 
