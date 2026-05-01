@@ -683,13 +683,9 @@ at their original age — it was just recreated.
 terraform plan
 ```
 
-> Expected output (bottom of the plan):
-<pre>
-No changes. Your infrastructure matches the configuration.
+> Expected output:
 
-Terraform has compared your real infrastructure against your configuration
-and found no differences, so no changes are needed.
-</pre>
+![terraform plan no changes output](images/task5-terraform-plan-no-changes-output.png)
 
 This is the Terraform "all clear." The real world matches the desired state exactly.
 In a production IaC pipeline, seeing `No changes` when you run `plan` is the goal —
