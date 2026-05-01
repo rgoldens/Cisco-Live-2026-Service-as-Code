@@ -775,17 +775,26 @@ Everything is clean. You are ready to move on to the ContainerLab section.
 
 ## Quick Reference
 
-| Command | What it does |
-|---|---|
-| `terraform init` | Initialize working directory, download providers |
-| `terraform plan` | Preview changes — safe, makes no modifications |
-| `terraform apply -auto-approve` | Deploy or update infrastructure to match config |
-| `terraform destroy -auto-approve` | Remove all Terraform-managed resources |
-| `terraform show` | Display current state in human-readable form |
-| `terraform output` | Print output values |
-| `docker ps --filter name=terraform` | Check which Terraform containers are running |
-| `docker logs -f csr-terraform` | Follow CSR boot log |
-| `curl -sk -u admin:admin -H "Accept: application/yang-data+json" https://<ip>/restconf/...` | Query CSR via RESTCONF |
+<table>
+<colgroup>
+  <col style="width: 50%">
+  <col style="width: 50%">
+</colgroup>
+<thead>
+<tr><th>Command</th><th>What it does</th></tr>
+</thead>
+<tbody>
+<tr><td><code>terraform init</code></td><td>Initialize working directory, download providers</td></tr>
+<tr><td><code>terraform plan</code></td><td>Preview changes — safe, makes no modifications</td></tr>
+<tr><td><code>terraform apply -auto-approve</code></td><td>Deploy or update infrastructure to match config</td></tr>
+<tr><td><code>terraform destroy -auto-approve</code></td><td>Remove all Terraform-managed resources</td></tr>
+<tr><td><code>terraform show</code></td><td>Display current state in human-readable form</td></tr>
+<tr><td><code>terraform output</code></td><td>Print output values</td></tr>
+<tr><td><code>docker ps --filter name=terraform</code></td><td>Check which Terraform containers are running</td></tr>
+<tr><td><code>docker logs -f csr-terraform</code></td><td>Follow CSR boot log</td></tr>
+<tr><td><code>curl -sk -u admin:admin -H "Accept: application/yang-data+json" https://&lt;ip&gt;/restconf/...</code></td><td>Query CSR via RESTCONF</td></tr>
+</tbody>
+</table>
 
 ---
 
