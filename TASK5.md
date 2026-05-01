@@ -658,20 +658,8 @@ terraform apply -auto-approve
 ```
 
 > Expected output:
-<pre>
-module.docker_infra.docker_container.linux2: Creating...
-module.docker_infra.docker_container.linux2: Creation complete after 0s [id=a3d3c8160a11...]
 
-Apply complete! Resources: 1 added, 0 changed, 0 destroyed.
-
-Outputs:
-
-csr_hostname = "csr-terraform"
-csr_ip = "172.20.21.10"
-linux1_ip = "172.20.21.20"
-linux2_ip = "172.20.21.21"
-loopback0 = "10.99.99.1/255.255.255.255"
-</pre>
+![terraform apply drift output](images/task5-terraform-apply-drift-output.png)
 
 > Notice that Terraform only created **1** resource — it did not touch the CSR,
 > linux-terraform1, the network, or the volume. It only fixed exactly what was missing.
