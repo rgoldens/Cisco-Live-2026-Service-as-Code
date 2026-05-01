@@ -729,27 +729,9 @@ containers, then the network and volume.
 terraform destroy -auto-approve
 ```
 
-> Expected output (key lines):
-<pre>
-module.iosxe_config.iosxe_interface_loopback.lo0: Destroying...
-module.iosxe_config.iosxe_system.this: Destroying...
-module.iosxe_config.iosxe_interface_loopback.lo0: Destruction complete after 3s
-module.iosxe_config.iosxe_system.this: Destruction complete after 6s
-module.docker_infra.null_resource.csr_ready: Destroying...
-module.docker_infra.null_resource.csr_ready: Destruction complete after 0s
-module.docker_infra.docker_container.linux1: Destroying...
-module.docker_infra.docker_container.linux2: Destroying...
-module.docker_infra.docker_container.csr: Destroying...
-module.docker_infra.docker_container.linux2: Destruction complete after 1s
-module.docker_infra.docker_container.linux1: Destruction complete after 1s
-module.docker_infra.docker_container.csr: Destruction complete after 1s
-module.docker_infra.docker_volume.csr_storage: Destroying...
-module.docker_infra.docker_network.terraform_net: Destroying...
-module.docker_infra.docker_volume.csr_storage: Destruction complete after 2s
-module.docker_infra.docker_network.terraform_net: Destruction complete after 2s
+> Expected output:
 
-Destroy complete! Resources: 8 destroyed.
-</pre>
+![terraform destroy output](images/task5-terraform-destroy-output.png)
 
 ### Step 27 — Verify Everything Is Cleaned Up
 

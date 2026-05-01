@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1200" />
+<title>task5-terraform-destroy-output</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { overflow: hidden; }
+
+  body {
+    background: #000000;
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+  }
+
+  .terminal {
+    background: #000000;
+    width: 860px;
+    padding: 22px 28px 22px 28px;
+    font-size: 13.5px;
+    line-height: 1.7;
+  }
+
+  pre  { color: #ffffff; }
+  .ok  { color: #00e676; }
+  .cm  { color: #6a7a8a; font-style: italic; }
+  .rm  { color: #ff5252; }
+</style>
+</head>
+<body>
+<div class="terminal">
+<pre><span class="cm"># Output truncated for brevity</span>
+
+Changes to Outputs:
+  <span class="rm">-</span> csr_hostname = "csr-terraform" -> null
+  <span class="rm">-</span> csr_ip       = "172.20.21.10"  -> null
+  <span class="rm">-</span> linux1_ip    = "172.20.21.20"  -> null
+  <span class="rm">-</span> linux2_ip    = "172.20.21.21"  -> null
+  <span class="rm">-</span> loopback0    = "10.99.99.1/255.255.255.255" -> null
+module.iosxe_config.iosxe_interface_loopback.lo0: Destroying... [id=Cisco-IOS-XE-native:native/interface/Loopback=0]
+module.iosxe_config.iosxe_system.this: Destroying... [id=Cisco-IOS-XE-native:native]
+module.iosxe_config.iosxe_interface_loopback.lo0: Destruction complete after 5s
+module.iosxe_config.iosxe_system.this: Destruction complete after 10s
+module.docker_infra.null_resource.csr_ready: Destroying... [id=91968071362833832]
+module.docker_infra.null_resource.csr_ready: Destruction complete after 0s
+module.docker_infra.docker_container.linux1: Destroying... [id=7e72ab85988ea4cad53aae6c5bfe616d87cbd5add1951e167e3ea9b55384047f]
+module.docker_infra.docker_container.linux2: Destroying... [id=7a89050561b5e74884f8a7ba26a7fc82241219f4c9def7115c823ad0812ab4fb]
+module.docker_infra.docker_container.csr: Destroying... [id=b0305a63160379caa610cd54ae65298c4f51ddef3b934324acbbb555d5fdfbdb]
+module.docker_infra.docker_container.linux1: Destruction complete after 0s
+module.docker_infra.docker_container.linux2: Destruction complete after 1s
+module.docker_infra.docker_container.csr: Destruction complete after 1s
+module.docker_infra.docker_volume.csr_storage: Destroying... [id=csr-terraform-storage]
+module.docker_infra.docker_network.terraform_net: Destroying... [id=ea31e370b57469883edb44a394c67ef15ddc4230c8dfc960c35558e44a33e98b]
+module.docker_infra.docker_volume.csr_storage: Destruction complete after 2s
+module.docker_infra.docker_network.terraform_net: Destruction complete after 2s
+
+<span class="ok">Destroy complete! Resources: 8 destroyed.</span></pre>
+</div>
+</body>
+</html>
