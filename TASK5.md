@@ -540,7 +540,7 @@ Terraform reads `terraform.tfstate` and formats it for humans. The output lists 
 resource it manages, with all the attribute values recorded at creation time. The output
 is verbose — scroll through your terminal to see all 8 resources.
 
-Here is a focused excerpt showing the IOS-XE resources and outputs — notice how the `id` fields contain the RESTCONF paths that Terraform used to configure the router:
+Here is a focused excerpt showing the IOS-XE resources and outputs:
 
 > Expected output (truncated — the IOS-XE resources and outputs section):
 
@@ -610,9 +610,8 @@ docker rm -f linux-terraform2
 ```
 
 > Expected output:
-<pre>
-linux-terraform2
-</pre>
+
+![docker rm output](images/task5-docker-rm-output.png)
 
 ### Step 21 — Confirm It Is Gone
 
