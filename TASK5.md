@@ -740,27 +740,24 @@ docker ps --filter name=terraform --format "table {{.ID}}\t{{.Image}}\t{{.Status
 ```
 
 > Expected output:
-<pre>
-CONTAINER ID   IMAGE     STATUS    NAMES
-</pre>
+
+![docker ps empty output](images/task5-docker-ps-empty2-output.png)
 
 ```bash
 docker network ls --filter name=terraform
 ```
 
 > Expected output:
-<pre>
-NETWORK ID   NAME      DRIVER    SCOPE
-</pre>
+
+![docker network empty output](images/task5-docker-network-empty2-output.png)
 
 ```bash
 docker volume ls --filter name=terraform
 ```
 
 > Expected output:
-<pre>
-DRIVER    VOLUME NAME
-</pre>
+
+![docker volume empty output](images/task5-docker-volume-empty-output.png)
 
 ### Step 28 — Confirm Terraform State Is Empty
 
