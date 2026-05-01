@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1200" />
+<title>task5-terraform-plan-drift-output</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { overflow: hidden; }
+
+  body {
+    background: #000000;
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+  }
+
+  .terminal {
+    background: #000000;
+    width: 860px;
+    padding: 22px 28px 22px 28px;
+    font-size: 13.5px;
+    line-height: 1.7;
+  }
+
+  pre  { color: #ffffff; }
+  .ok  { color: #00e676; }
+  .cm  { color: #6a7a8a; font-style: italic; }
+</style>
+</head>
+<body>
+<div class="terminal">
+<pre><span class="cm"># Output truncated for brevity</span>
+
+Terraform used the selected providers to generate the following execution plan. Resource actions are indicated with the following symbols:
+  <span class="ok">+</span> create
+
+Terraform will perform the following actions:
+
+  # module.docker_infra.docker_container.linux2 will be created
+  <span class="ok">+</span> resource "docker_container" "linux2" {
+      <span class="ok">+</span> attach                                      = false
+      <span class="ok">+</span> bridge                                      = (known after apply)
+      <span class="ok">+</span> command                                     = [
+          <span class="ok">+</span> "sh",
+          <span class="ok">+</span> "-c",
+          <span class="ok">+</span> "echo '...' &amp;&amp; apk add --no-cache openssh &amp;&amp; ... &amp;&amp; tail -f /dev/null",
+        ]
+      <span class="ok">+</span> container_logs                              = (known after apply)
+      <span class="ok">+</span> container_read_refresh_timeout_milliseconds = 15000
+      <span class="ok">+</span> entrypoint                                  = (known after apply)
+      <span class="ok">+</span> env                                         = []
+      <span class="ok">+</span> exit_code                                   = (known after apply)
+      <span class="ok">+</span> hostname                                    = (known after apply)
+      <span class="ok">+</span> id                                          = (known after apply)
+      <span class="ok">+</span> image                                       = "ghcr.io/hellt/network-multitool"
+      <span class="ok">+</span> init                                        = (known after apply)
+      <span class="ok">+</span> ipc_mode                                    = (known after apply)
+      <span class="ok">+</span> log_driver                                  = (known after apply)
+      <span class="ok">+</span> logs                                        = false
+      <span class="ok">+</span> memory_reservation                          = 0
+      <span class="ok">+</span> must_run                                    = true
+      <span class="ok">+</span> name                                        = "linux-terraform2"
+      <span class="ok">+</span> network_data                                = (known after apply)
+      <span class="ok">+</span> network_mode                                = "bridge"
+      <span class="ok">+</span> privileged                                  = true
+      <span class="ok">+</span> read_only                                   = false
+      <span class="ok">+</span> remove_volumes                              = true
+      <span class="ok">+</span> restart                                     = "no"
+      <span class="ok">+</span> rm                                          = false
+      <span class="ok">+</span> runtime                                     = (known after apply)
+      <span class="ok">+</span> security_opts                               = (known after apply)
+      <span class="ok">+</span> shm_size                                    = (known after apply)
+      <span class="ok">+</span> start                                       = true
+      <span class="ok">+</span> stdin_open                                  = false
+      <span class="ok">+</span> stop_signal                                 = (known after apply)
+      <span class="ok">+</span> stop_timeout                                = (known after apply)
+      <span class="ok">+</span> tty                                         = false
+      <span class="ok">+</span> wait                                        = false
+      <span class="ok">+</span> wait_timeout                                = 60
+
+      <span class="ok">+</span> healthcheck (known after apply)
+
+      <span class="ok">+</span> labels (known after apply)
+
+      <span class="ok">+</span> networks_advanced {
+          <span class="ok">+</span> aliases      = []
+          <span class="ok">+</span> ipv4_address = "172.20.21.21"
+          <span class="ok">+</span> name         = "terraform-net"
+            <span class="cm"># (2 unchanged attributes hidden)</span>
+        }
+    }
+
+Plan: 1 to add, 0 to change, 0 to destroy.
+
+─────────────────────────────────────────────────────────────────────────────
+
+Note: You didn't use the -out option to save this plan, so Terraform can't
+guarantee to take exactly these actions if you run "terraform apply" now.</pre>
+</div>
+</body>
+</html>

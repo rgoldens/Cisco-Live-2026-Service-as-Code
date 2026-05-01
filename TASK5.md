@@ -639,10 +639,9 @@ terraform plan
 
 Look for this in the output summary at the bottom:
 
-> Expected output (bottom of the plan):
-<pre>
-Plan: 1 to add, 0 to change, 0 to destroy.
-</pre>
+> Expected output:
+
+![terraform plan drift output](images/task5-terraform-plan-drift-output.png)
 
 > **Terraform found the drift.** It knows `linux-terraform2` should exist (it's in the
 > state file) but doesn't (it's not running in Docker). Only the missing container needs
