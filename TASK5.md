@@ -507,11 +507,6 @@ Once logged in:
 hostname
 ```
 
-> Expected output:
-<pre>
-0591fa78ea57
-</pre>
-
 > **Note:** The hostname is the short container ID, not `linux-terraform1`. This is
 > normal — the Terraform config does not explicitly set a hostname inside the container,
 > so Docker uses the container ID by default. Your container ID will be different.
@@ -521,12 +516,8 @@ ip addr show eth0
 ```
 
 > Expected output (interface number and MAC address will differ on your system):
-<pre>
-59: eth0@if60: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default
-    link/ether 02:42:ac:14:15:14 brd ff:ff:ff:ff:ff:ff link-netnsid 0
-    inet 172.20.21.20/24 brd 172.20.21.255 scope global eth0
-       valid_lft forever preferred_lft forever
-</pre>
+
+![ip addr show eth0 output](images/task5-ip-addr-eth0-output.png)
 
 The important line is `inet 172.20.21.20/24` — that confirms the container has the
 correct IP address on the `terraform-net` network.
@@ -549,71 +540,15 @@ Terraform reads `terraform.tfstate` and formats it for humans. The output lists 
 resource it manages, with all the attribute values recorded at creation time. The output
 is verbose — scroll through your terminal to see all 8 resources.
 
-Here is the first resource as an example of what to look for:
+Here is a focused excerpt showing the IOS-XE resources and outputs — notice how the `id` fields contain the RESTCONF paths that Terraform used to configure the router:
 
-> Expected output (first resource — your `id` values will differ):
-<pre>
-# module.docker_infra.docker_network.terraform_net:
-resource "docker_network" "terraform_net" {
-    driver                  = "bridge"
-    id                      = "d1921eb1ab7e8f3c2a4b..."
-    internal                = false
-    name                    = "terraform-net"
+> Expected output (truncated — the IOS-XE resources and outputs section):
 
-    ipam_config {
-        gateway = "172.20.21.1"
-        subnet  = "172.20.21.0/24"
-    }
-}
+![terraform show output](images/task5-terraform-show-output.png)
 
-# (remaining 7 resources follow — scroll to see docker_volume, docker_container x3,
-#  null_resource, iosxe_system, and iosxe_interface_loopback)
-</pre>
-
-> Notice the `id` field — this is a real runtime value that did not exist anywhere in
-> your `.tf` files. Terraform recorded it the moment Docker created the network. Every
-> resource has an `id` like this that Terraform uses to track and manage it going forward.
-
-#### View the raw state file
-
-```bash
-cat terraform.tfstate
-```
-
-The state file is plain JSON. You do not need to read all of it — here is the structure
-of one resource entry so you understand what Terraform is storing:
-
-> Expected output (trimmed — the `docker_network` resource entry):
-<pre>
-{
-  "version": 4,
-  "terraform_version": "1.14.7",
-  "resources": [
-    {
-      "module": "module.docker_infra",
-      "mode": "managed",
-      "type": "docker_network",
-      "name": "terraform_net",
-      "instances": [
-        {
-          "attributes": {
-            "driver": "bridge",
-            "id": "d1921eb1ab7e8f3c2a4b...",
-            "name": "terraform-net",
-            "ipam_config": [
-              {
-                "gateway": "172.20.21.1",
-                "subnet": "172.20.21.0/24"
-              }
-            ]
-          }
-        }
-      ]
-    },
-    ...
-  ]
-}
-</pre>
+> Notice the `id` fields — for the IOS-XE resources these are the RESTCONF paths Terraform
+> used to push config to the router. Terraform recorded them at creation time and will use
+> them for every future `plan`, `apply`, and `destroy`.
 
 > **What the state file is doing for you:**
 >
