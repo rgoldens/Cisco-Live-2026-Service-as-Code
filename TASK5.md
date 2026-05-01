@@ -643,9 +643,9 @@ Look for this in the output summary at the bottom:
 
 ![terraform plan drift output](images/task5-terraform-plan-drift-output.png)
 
-> **Terraform found the drift.** It knows `linux-terraform2` should exist (it's in the
-> state file) but doesn't (it's not running in Docker). Only the missing container needs
-> to be re-created — everything else matches, so Terraform leaves it alone.
+> **Notice** the plan identifies exactly one resource to add — `module.docker_infra.docker_container.linux2` —
+> and confirms it with `Plan: 1 to add, 0 to change, 0 to destroy.` Terraform found the
+> missing container and knows precisely what to fix, without touching anything else.
 
 ### Step 23 — Remediate Drift with terraform apply
 
