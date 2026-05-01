@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="Electron" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.5.2 Chrome/142.0.7444.265 Electron/39.6.1 Safari/537.36" version="29.5.2">
+  <diagram name="Deriving an IS-IS NET Address" id="isis-net-derivation">
+    <mxGraphModel dx="1100" dy="450" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="450" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- Slide background -->
+        <mxCell id="bg" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#0e1621;strokeColor=none;" value="" vertex="1">
+          <mxGeometry x="0" y="0" width="1100" height="450" as="geometry" />
+        </mxCell>
+
+        <!-- Breadcrumb -->
+        <mxCell id="breadcrumb" parent="1" style="text;html=1;fontSize=11;align=left;verticalAlign=middle;fontColor=#00aaff;" value="&lt;font color=&quot;#00aaff&quot;&gt;LTRATO-1001&lt;/font&gt;&lt;font color=&quot;#5a6a7a&quot;&gt; | &lt;/font&gt;&lt;font color=&quot;#00aaff&quot;&gt;Service Insertion as Code: From Concept to Commit&lt;/font&gt;" vertex="1">
+          <mxGeometry x="25" y="12" width="350" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- Title -->
+        <mxCell id="title" parent="1" style="text;html=1;fontSize=20;fontStyle=1;align=left;verticalAlign=middle;fontColor=#ffffff;" value="Deriving an IS-IS NET Address" vertex="1">
+          <mxGeometry x="25" y="30" width="400" height="35" as="geometry"/>
+        </mxCell>
+
+        <!-- Dual-line divider -->
+        <mxCell id="div1" parent="1" style="endArrow=none;html=1;strokeColor=#00aaff;strokeWidth=3;" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="25" y="66" as="sourcePoint" />
+            <mxPoint x="1075" y="66" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="div2" parent="1" style="endArrow=none;html=1;strokeColor=#00d4ff;strokeWidth=1;" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="25" y="72" as="sourcePoint" />
+            <mxPoint x="1075" y="72" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Step boxes -->
+        <mxCell id="step1_box" value="&lt;font color=&quot;#00cc66&quot;&gt;&lt;b&gt;Step 1&lt;/b&gt;&lt;/font&gt;&lt;br&gt;&lt;font color=&quot;#c8d0d8&quot;&gt;Start with Loopback0 IP&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1e2d3d;strokeColor=#00cc66;strokeWidth=2;arcSize=20;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="30" y="85" width="170" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="step1_val" value="&lt;font face=&quot;Courier New&quot; color=&quot;#ff8800&quot; style=&quot;font-size:16px;&quot;&gt;&lt;b&gt;192.168.20.21&lt;/b&gt;&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="30" y="145" width="170" height="30" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="arrow12" style="endArrow=block;endFill=1;html=1;strokeWidth=2;strokeColor=#00cc66;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="200" y="112" as="sourcePoint"/>
+            <mxPoint x="250" y="112" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="step2_box" value="&lt;font color=&quot;#00cc66&quot;&gt;&lt;b&gt;Step 2&lt;/b&gt;&lt;/font&gt;&lt;br&gt;&lt;font color=&quot;#c8d0d8&quot;&gt;Pad each octet to 3 digits&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1e2d3d;strokeColor=#00cc66;strokeWidth=2;arcSize=20;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="250" y="85" width="180" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="step2_val" value="&lt;font face=&quot;Courier New&quot; color=&quot;#ff8800&quot; style=&quot;font-size:16px;&quot;&gt;&lt;b&gt;192.168.020.021&lt;/b&gt;&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="250" y="145" width="180" height="30" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="arrow23" style="endArrow=block;endFill=1;html=1;strokeWidth=2;strokeColor=#00cc66;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="430" y="112" as="sourcePoint"/>
+            <mxPoint x="480" y="112" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="step3_box" value="&lt;font color=&quot;#00cc66&quot;&gt;&lt;b&gt;Step 3&lt;/b&gt;&lt;/font&gt;&lt;br&gt;&lt;font color=&quot;#c8d0d8&quot;&gt;Remove dots, regroup&lt;br&gt;into 4-digit pairs&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1e2d3d;strokeColor=#00cc66;strokeWidth=2;arcSize=20;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="480" y="80" width="180" height="65" as="geometry"/>
+        </mxCell>
+        <mxCell id="step3_val" value="&lt;font face=&quot;Courier New&quot; color=&quot;#ff8800&quot; style=&quot;font-size:16px;&quot;&gt;&lt;b&gt;1921.6802.0021&lt;/b&gt;&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="480" y="150" width="180" height="30" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="arrow34" style="endArrow=block;endFill=1;html=1;strokeWidth=2;strokeColor=#00cc66;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="660" y="112" as="sourcePoint"/>
+            <mxPoint x="710" y="112" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="step4_box" value="&lt;font color=&quot;#00cc66&quot;&gt;&lt;b&gt;Step 4&lt;/b&gt;&lt;/font&gt;&lt;br&gt;&lt;font color=&quot;#c8d0d8&quot;&gt;Add area prefix + suffix&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1e2d3d;strokeColor=#00cc66;strokeWidth=2;arcSize=20;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="710" y="85" width="180" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="step4_val" value="&lt;font face=&quot;Courier New&quot; color=&quot;#00d4ff&quot; style=&quot;font-size:13px;&quot;&gt;&lt;b&gt;49.0002.1921.6802.0021.00&lt;/b&gt;&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="690" y="145" width="220" height="30" as="geometry"/>
+        </mxCell>
+
+        <!-- Result highlight -->
+        <mxCell id="result_box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#00d4ff;strokeWidth=3;arcSize=15;" vertex="1" parent="1">
+          <mxGeometry x="685" y="140" width="230" height="40" as="geometry"/>
+        </mxCell>
+
+        <!-- Breakdown section -->
+        <mxCell id="breakdown_bg" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#141e2b;strokeColor=#5a6a7a;strokeWidth=1;arcSize=8;" vertex="1" parent="1">
+          <mxGeometry x="80" y="200" width="940" height="220" as="geometry"/>
+        </mxCell>
+        <mxCell id="breakdown_title" value="&lt;font color=&quot;#ffffff&quot; style=&quot;font-size:14px;&quot;&gt;&lt;b&gt;NET Address Breakdown&lt;/b&gt;&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="400" y="205" width="220" height="30" as="geometry"/>
+        </mxCell>
+
+        <!-- Full NET display -->
+        <mxCell id="net_full" value="&lt;font face=&quot;Courier New&quot; color=&quot;#ffffff&quot; style=&quot;font-size:22px;&quot;&gt;&lt;b&gt;49&lt;/b&gt;.&lt;b&gt;0002&lt;/b&gt;.&lt;b&gt;1921&lt;/b&gt;.&lt;b&gt;6802&lt;/b&gt;.&lt;b&gt;0021&lt;/b&gt;.&lt;b&gt;00&lt;/b&gt;&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="270" y="240" width="500" height="35" as="geometry"/>
+        </mxCell>
+
+        <!-- Bracket lines -->
+        <mxCell id="afi_bracket" style="endArrow=none;html=1;strokeWidth=2;strokeColor=#ff4444;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="310" y="275" as="sourcePoint"/>
+            <mxPoint x="340" y="275" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="afi_line" style="endArrow=none;html=1;strokeWidth=2;strokeColor=#ff4444;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="325" y="275" as="sourcePoint"/>
+            <mxPoint x="325" y="300" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="afi_label" value="&lt;font color=&quot;#ff4444&quot; style=&quot;font-size:13px;&quot;&gt;&lt;b&gt;49&lt;/b&gt;&lt;br&gt;AFI (private)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#2d1a1a;strokeColor=#ff4444;fontSize=12;arcSize=20;" vertex="1" parent="1">
+          <mxGeometry x="260" y="305" width="130" height="50" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="area_bracket" style="endArrow=none;html=1;strokeWidth=2;strokeColor=#ff8800;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="355" y="275" as="sourcePoint"/>
+            <mxPoint x="415" y="275" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="area_line" style="endArrow=none;html=1;strokeWidth=2;strokeColor=#ff8800;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="385" y="275" as="sourcePoint"/>
+            <mxPoint x="385" y="300" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="area_label" value="&lt;font color=&quot;#ff8800&quot; style=&quot;font-size:13px;&quot;&gt;&lt;b&gt;0002&lt;/b&gt;&lt;br&gt;Area ID&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#2d2210;strokeColor=#ff8800;fontSize=12;arcSize=20;" vertex="1" parent="1">
+          <mxGeometry x="415" y="305" width="130" height="50" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="sysid_bracket" style="endArrow=none;html=1;strokeWidth=2;strokeColor=#00aaff;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="430" y="275" as="sourcePoint"/>
+            <mxPoint x="645" y="275" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="sysid_line" style="endArrow=none;html=1;strokeWidth=2;strokeColor=#00aaff;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="537" y="275" as="sourcePoint"/>
+            <mxPoint x="537" y="300" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="sysid_label" value="&lt;font color=&quot;#00aaff&quot; style=&quot;font-size:13px;&quot;&gt;&lt;b&gt;1921.6802.0021&lt;/b&gt;&lt;br&gt;System ID (from IP)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#0e2035;strokeColor=#00aaff;fontSize=12;arcSize=20;" vertex="1" parent="1">
+          <mxGeometry x="570" y="305" width="190" height="50" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="sel_bracket" style="endArrow=none;html=1;strokeWidth=2;strokeColor=#cc88ff;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="660" y="275" as="sourcePoint"/>
+            <mxPoint x="695" y="275" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="sel_line" style="endArrow=none;html=1;strokeWidth=2;strokeColor=#cc88ff;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="678" y="275" as="sourcePoint"/>
+            <mxPoint x="678" y="300" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="sel_label" value="&lt;font color=&quot;#cc88ff&quot; style=&quot;font-size:13px;&quot;&gt;&lt;b&gt;00&lt;/b&gt;&lt;br&gt;SEL (always 00)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1e1530;strokeColor=#cc88ff;fontSize=12;arcSize=20;" vertex="1" parent="1">
+          <mxGeometry x="785" y="305" width="150" height="50" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1200" />
+<title>task3-bgp-config-output</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { overflow: hidden; }
+
+  body {
+    background: #000000;
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+  }
+
+  .terminal {
+    background: #000000;
+    width: 860px;
+    padding: 22px 28px 22px 28px;
+    font-size: 13.5px;
+    line-height: 1.7;
+  }
+
+  .ok  { color: #00e676; }
+  .wh  { color: #ffffff; }
+</style>
+</head>
+<body>
+<div class="terminal">
+<pre><span class="wh">TASK [Display BGP config] ******************************************************</span>
+<span class="ok">ok: [xrd01] => {
+    "bgp_check.stdout_lines": [
+        [
+            "router bgp 65000",
+            " address-family vpnv4 unicast",
+            " !",
+            " neighbor 192.168.0.2",
+            "  remote-as 65000",
+            "  update-source Loopback0",
+            "  address-family vpnv4 unicast",
+            "   next-hop-self",
+            "  !",
+            " !",
+            " vrf Customer-CLIVE",
+            "  rd 65000:1",
+            "  address-family ipv4 unicast",
+            "   redistribute connected",
+            "  !",
+            "  neighbor 10.1.0.6",
+            "   remote-as 65001",
+            "   address-family ipv4 unicast",
+            "    route-policy PASS-ALL in",
+            "    route-policy PASS-ALL out",
+            "    as-override"
+        ]
+    ]
+}</span></pre>
+</div>
+</body>
+</html>

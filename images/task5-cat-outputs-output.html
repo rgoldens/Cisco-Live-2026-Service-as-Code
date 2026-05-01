@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1200" />
+<title>task5-cat-outputs-output</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { overflow: hidden; }
+
+  body {
+    background: #000000;
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+  }
+
+  .terminal {
+    background: #000000;
+    width: 860px;
+    padding: 22px 28px 22px 28px;
+    font-size: 13.5px;
+    line-height: 1.7;
+  }
+
+  pre { color: #ffffff; }
+</style>
+</head>
+<body>
+<div class="terminal">
+<pre># ── Root Outputs ─────────────────────────────────────────────────────────────
+
+output "csr_ip" {
+  description = "Management IP of the CSR terraform container"
+  value       = module.docker_infra.csr_ip
+}
+
+output "linux1_ip" {
+  description = "IP of linux-terraform1"
+  value       = module.docker_infra.linux1_ip
+}
+
+output "linux2_ip" {
+  description = "IP of linux-terraform2"
+  value       = module.docker_infra.linux2_ip
+}
+
+output "csr_hostname" {
+  description = "Hostname configured on the CSR"
+  value       = module.iosxe_config.hostname
+}
+
+output "loopback0" {
+  description = "Loopback0 address configured on the CSR"
+  value       = module.iosxe_config.loopback0
+}
+</pre>
+</div>
+</body>
+</html>

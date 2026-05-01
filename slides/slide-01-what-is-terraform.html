@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1200" />
+<title>What Is Terraform?</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #0e1621;
+    display: block;
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .slide {
+    background: #0e1621;
+    width: 1200px;
+    padding: 22px 36px 48px 36px;
+    position: relative;
+  }
+
+  .breadcrumb { font-size: 11px; color: #00aaff; margin-bottom: 4px; letter-spacing: 0.04em; }
+  .breadcrumb span { color: #5a6a7a; }
+  .title { font-size: 42px; font-weight: 700; color: #fff; margin-bottom: 3px; }
+  .subtitle { font-size: 13px; color: #5a6a7a; margin-bottom: 10px; }
+  .divider      { width: 100%; height: 3px; background: #00aaff; margin-bottom: 3px; border-radius: 1px; }
+  .divider-thin { width: 100%; height: 1px; background: #00d4ff; margin-bottom: 28px; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .card {
+    background: #141e2b;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .card-accent { height: 3px; }
+  .card-body { padding: 22px 24px 26px; }
+  .card-title { font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 14px; }
+  .card-item { font-size: 13px; color: #c8d0d8; line-height: 1.75; padding-left: 0; }
+  .card-item::before { content: ''; }
+</style>
+</head>
+<body>
+<div class="slide">
+
+  <div class="breadcrumb">LTRATO-1001 <span>|</span> Service Insertion as Code: From Concept to Commit</div>
+  <div class="title">What Is Terraform?</div>
+  <div class="subtitle">Open-source Infrastructure as Code (IaC) tool by HashiCorp</div>
+  <div class="divider"></div>
+  <div class="divider-thin"></div>
+
+  <div class="grid">
+
+    <div class="card">
+      <div class="card-accent" style="background:#00aaff;"></div>
+      <div class="card-body">
+        <div class="card-title">Reproducible</div>
+        <div class="card-item">Same config = same environment, every time.</div>
+        <div class="card-item">No more hand-crafted 'snowflake' servers.</div>
+        <div class="card-item">Run it again — get the exact same result.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-accent" style="background:#00d4ff;"></div>
+      <div class="card-body">
+        <div class="card-title">Version-Controlled</div>
+        <div class="card-item">Infrastructure lives in git alongside your code.</div>
+        <div class="card-item">Every change is tracked, reviewable, reversible.</div>
+        <div class="card-item">Roll back the same way you roll back app code.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-accent" style="background:#ff8800;"></div>
+      <div class="card-body">
+        <div class="card-title">Safe to Change</div>
+        <div class="card-item">terraform plan shows the exact diff first.</div>
+        <div class="card-item">Add / change / destroy counts are explicit.</div>
+        <div class="card-item">Nothing touches real infra until you say yes.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-accent" style="background:#00cc66;"></div>
+      <div class="card-body">
+        <div class="card-title">Easy to Clean Up</div>
+        <div class="card-item">terraform destroy removes everything it made,</div>
+        <div class="card-item">in the correct dependency order.</div>
+        <div class="card-item">No orphaned resources. No manual teardown.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div style="position:absolute; bottom:16px; right:36px; font-size:11px; color:#3a4a5a;">1/6</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,1430 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Cisco Live 2026 Lab Guide — hands-on service insertion automation with Ansible, Terraform, and ContainerLab">
+      
+      
+        <meta name="author" content="Cisco Live 2026">
+      
+      
+        <link rel="canonical" href="https://rgoldens.github.io/Cisco-Live-2026-Service-as-Code/TASK6/">
+      
+      
+        <link rel="prev" href="../TASK5/">
+      
+      
+        <link rel="next" href="../REFERENCE/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Task 6: Validation & Cleanup - LTRATO-1001: Service Insertion as Code: From Concept to Commit</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/cisco.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#task-6-push-your-completed-work-to-github" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="LTRATO-1001: Service Insertion as Code: From Concept to Commit" class="md-header__button md-logo" aria-label="LTRATO-1001: Service Insertion as Code: From Concept to Commit" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            LTRATO-1001: Service Insertion as Code: From Concept to Commit
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Task 6: Validation & Cleanup
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../GETTING-STARTED/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Getting Started
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../LAB-ACCESS/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Lab Access
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../TASK1/" class="md-tabs__link">
+          
+  
+  
+  Lab Tasks
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../REFERENCE/" class="md-tabs__link">
+          
+  
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../Ansible-Primer/" class="md-tabs__link">
+          
+  
+  
+  Primers
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="LTRATO-1001: Service Insertion as Code: From Concept to Commit" class="md-nav__button md-logo" aria-label="LTRATO-1001: Service Insertion as Code: From Concept to Commit" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    LTRATO-1001: Service Insertion as Code: From Concept to Commit
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../GETTING-STARTED/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LAB-ACCESS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lab Access
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lab Tasks
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Lab Tasks
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TASK1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Task 1: Explore the Environment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TASK2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Task 2: Build the Underlay
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TASK3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Task 3: Deploy BGP VPN
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TASK4/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Task 4: Service Insertion with Ansible
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TASK5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Task 5: Drift Detection with Terraform
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Task 6: Validation & Cleanup
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Task 6: Validation & Cleanup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#objective" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Objective
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-you-changed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What You Changed
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-1-review-your-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Review Your Changes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-2-stage-your-changed-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Stage Your Changed Files
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-3-commit-your-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Commit Your Changes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-4-push-to-github" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Push to GitHub
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-5-verify-on-github" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5: Verify on GitHub
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#checkpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Checkpoint
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-youve-accomplished" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What You've Accomplished
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="What You&#39;ve Accomplished">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-takeaways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Takeaways
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../REFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TROUBLESHOOTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Primers
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Primers
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Ansible-Primer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ansible Primer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Terraform-Primer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Terraform Primer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ContainerLab-Primer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ContainerLab Primer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Git-Primer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git Primer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<hr />
+<h1 id="task-6-push-your-completed-work-to-github">Task 6: Push Your Completed Work to GitHub<a class="headerlink" href="#task-6-push-your-completed-work-to-github" title="Permanent link">&para;</a></h1>
+<h2 id="objective">Objective<a class="headerlink" href="#objective" title="Permanent link">&para;</a></h2>
+<p>Save your completed lab work by committing your changes and pushing them to
+GitHub on your student branch. This is the final step in the Infrastructure as
+Code workflow — your network configuration changes are now version-controlled
+and stored in a central repository.</p>
+<blockquote>
+<p><strong>New to Git?</strong> If you haven't read it already, the <a href="../Git-Primer/">Git Primer</a>
+explains the concepts behind the commands in this task.</p>
+</blockquote>
+<hr />
+<h2 id="what-you-changed">What You Changed<a class="headerlink" href="#what-you-changed" title="Permanent link">&para;</a></h2>
+<p>Over the course of Tasks 1–5, you edited several files — filling in TODO
+placeholders with real values and deploying them to the network. Here's a
+summary of what you modified:</p>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>What You Changed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ce-access-vlan.yml</code></td>
+<td>Task 1 — VLAN IDs and names for n9k-ce01 and n9k-ce02</td>
+</tr>
+<tr>
+<td><code>igp-pe-ce.yml</code></td>
+<td>Task 2 — IS-IS configuration for NX-OS and IOS-XE devices</td>
+</tr>
+<tr>
+<td><code>inter-as-option-a.yml</code></td>
+<td>Task 3 — BGP VPN, XRd config, and cross-routes</td>
+</tr>
+<tr>
+<td><code>task4-terraform/*.tf</code></td>
+<td>Task 4 — Terraform variables for IOS-XR via gNMI</td>
+</tr>
+<tr>
+<td><code>task5-terraform/*.tf</code></td>
+<td>Task 5 — Terraform variables for IOS-XE via RESTCONF</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Note:</strong> You may have modified additional files during the lab. The commands
+below will show you exactly what changed — Git tracks everything.</p>
+</blockquote>
+<hr />
+<h2 id="step-1-review-your-changes">Step 1: Review Your Changes<a class="headerlink" href="#step-1-review-your-changes" title="Permanent link">&para;</a></h2>
+<p>Before committing, see what Git thinks has changed. Run:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nb">cd</span><span class="w"> </span>~
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>git<span class="w"> </span>status
+</code></pre></div>
+<p>This shows two categories:</p>
+<ul>
+<li><strong>Modified files</strong> — files that existed in the repo and you edited (your playbooks
+  and Terraform configs)</li>
+<li><strong>Untracked files</strong> — new files created during the lab (like <code>terraform.tfstate</code>)
+  that Git hasn't seen before</li>
+</ul>
+<blockquote>
+<p><strong>Tip:</strong> Red filenames mean the file has changes that haven't been staged yet.
+After you run <code>git add</code>, they turn green.</p>
+</blockquote>
+<hr />
+<h2 id="step-2-stage-your-changed-files">Step 2: Stage Your Changed Files<a class="headerlink" href="#step-2-stage-your-changed-files" title="Permanent link">&para;</a></h2>
+<p>Tell Git which files to include in your commit. Stage all the playbooks and
+Terraform files you modified:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>git<span class="w"> </span>add<span class="w"> </span>ce-access-vlan.yml<span class="w"> </span>igp-pe-ce.yml<span class="w"> </span>inter-as-option-a.yml
+</code></pre></div>
+<blockquote>
+<p><strong>Why not <code>git add .</code> (add everything)?</strong> In a real workflow, you should be
+deliberate about what you commit. Adding everything can accidentally include
+temporary files, state files with sensitive data, or other artifacts that
+don't belong in version control. Listing files explicitly is a good habit.</p>
+</blockquote>
+<p>Verify what's staged:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>git<span class="w"> </span>status
+</code></pre></div>
+<p>You should see your files listed under <strong>"Changes to be committed"</strong> in green.</p>
+<hr />
+<h2 id="step-3-commit-your-changes">Step 3: Commit Your Changes<a class="headerlink" href="#step-3-commit-your-changes" title="Permanent link">&para;</a></h2>
+<p>Create a commit — a snapshot of your staged changes with a message describing
+what you did:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;Completed Tasks 1-5: VLAN, IS-IS, BGP VPN, Terraform IOS-XR and IOS-XE&quot;</span>
+</code></pre></div>
+<blockquote>
+<p><strong>What makes a good commit message?</strong> Describe <em>what</em> changed and <em>why</em> in
+one line. Future you (or your teammate) should be able to read the message
+and understand the change without opening the files.</p>
+</blockquote>
+<hr />
+<h2 id="step-4-push-to-github">Step 4: Push to GitHub<a class="headerlink" href="#step-4-push-to-github" title="Permanent link">&para;</a></h2>
+<p>Upload your branch to the remote repository on GitHub:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>student-XX
+</code></pre></div>
+<p>Replace <code>XX</code> with your pod/seat number — the same branch name you created in
+the <a href="../LAB-ACCESS/">Lab Access</a> setup.</p>
+<blockquote>
+<p><strong>First push?</strong> Git may prompt you for credentials. Use the shared GitHub
+username and token provided by your proctor.</p>
+</blockquote>
+<p>Expected output:</p>
+<p><img alt="Task 6: git push output" src="../images/task6-git-push-output.png" /></p>
+<hr />
+<h2 id="step-5-verify-on-github">Step 5: Verify on GitHub<a class="headerlink" href="#step-5-verify-on-github" title="Permanent link">&para;</a></h2>
+<p>Open a browser and navigate to the repository:</p>
+<p><strong>https://github.com/rgoldens/Cisco-Live-2026-Service-as-Code</strong></p>
+<ol>
+<li>Click the <strong>branch dropdown</strong> (it says <code>main</code> by default)</li>
+<li>Find your branch (<code>student-XX</code>) in the list</li>
+<li>Click on it — you should see your modified files with the changes you made</li>
+</ol>
+<p>You can click on any file to see the exact values you filled in. This is your
+completed lab work, stored permanently in version control.</p>
+<hr />
+<h2 id="checkpoint">Checkpoint<a class="headerlink" href="#checkpoint" title="Permanent link">&para;</a></h2>
+<ul>
+<li>[ ] <code>git status</code> showed your modified files</li>
+<li>[ ] <code>git add</code> staged the playbooks you changed</li>
+<li>[ ] <code>git commit</code> created a snapshot with a descriptive message</li>
+<li>[ ] <code>git push</code> uploaded your branch to GitHub</li>
+<li>[ ] Your branch is visible on GitHub with your changes</li>
+</ul>
+<hr />
+<h2 id="what-youve-accomplished">What You've Accomplished<a class="headerlink" href="#what-youve-accomplished" title="Permanent link">&para;</a></h2>
+<p>By completing all tasks, you've automated the configuration of a full
+service provider network from the ground up — using two different tools
+and three different protocols:</p>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>What You Built</th>
+<th>Devices Configured</th>
+<th>Task</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>L2 Switching</strong></td>
+<td>VLANs, access ports</td>
+<td>2 NX-OS switches</td>
+<td>Task 1</td>
+</tr>
+<tr>
+<td><strong>L3 Routing (IGP)</strong></td>
+<td>IS-IS adjacencies, SVIs, static routes</td>
+<td>2 NX-OS + 2 IOS-XE + 4 Linux</td>
+<td>Task 2</td>
+</tr>
+<tr>
+<td><strong>L3 VPN (BGP)</strong></td>
+<td>VRFs, iBGP VPNv4, eBGP, redistribution</td>
+<td>2 IOS-XR + 2 IOS-XE + 4 Linux</td>
+<td>Task 3</td>
+</tr>
+<tr>
+<td><strong>Terraform (gNMI)</strong></td>
+<td>Same XRd config via gNMI</td>
+<td>2 IOS-XR</td>
+<td>Task 4</td>
+</tr>
+<tr>
+<td><strong>Terraform (RESTCONF)</strong></td>
+<td>IOS-XE config via RESTCONF + Docker infra</td>
+<td>1 IOS-XE + 2 Linux</td>
+<td>Task 5</td>
+</tr>
+<tr>
+<td><strong>Version Control</strong></td>
+<td>Commit and push completed work to GitHub</td>
+<td>—</td>
+<td>Task 6</td>
+</tr>
+<tr>
+<td><strong>Verification</strong></td>
+<td>Automated show commands and ping tests</td>
+<td>All 10 devices</td>
+<td>Every task</td>
+</tr>
+</tbody>
+</table>
+<p><strong>By the numbers:</strong>
+- <strong>10+ devices</strong> managed from a single control node
+- <strong>4 different platforms</strong> (NX-OS, IOS-XE, IOS-XR, Linux) with 3 different
+  connection methods (network_cli with keys, network_cli with password, raw SSH)
+- <strong>2 IaC tools</strong> (Ansible + Terraform) compared side-by-side on the same
+  configuration, plus a second Terraform lab using RESTCONF
+- <strong>~32 configuration values</strong> you filled in by hand, referencing topology
+  diagrams and IP tables — just like real network planning
+- <strong>3 Ansible playbooks</strong> + <strong>2 Terraform configs</strong> — replacing what would be
+  hundreds of manual CLI commands across a dozen SSH sessions
+- <strong>0 manual device logins</strong> — everything was done through automation
+- <strong>Version-controlled workflow</strong> — your changes are committed and pushed to
+  Git, just like a production IaC pipeline</p>
+<h3 id="key-takeaways">Key Takeaways<a class="headerlink" href="#key-takeaways" title="Permanent link">&para;</a></h3>
+<ol>
+<li>
+<p><strong>Separation of data and logic</strong> — Variables hold the "what" (IPs, VLANs,
+   AS numbers), tasks hold the "how" (which module, which CLI commands). In
+   production, you'd move the variables into separate files (group_vars,
+   host_vars) so different teams can manage data and logic independently.</p>
+</li>
+<li>
+<p><strong>Multi-vendor orchestration</strong> — One playbook can configure NX-OS, IOS-XE,
+   IOS-XR, and Linux in sequence. Ansible handles the platform differences
+   through collections (<code>cisco.nxos</code>, <code>cisco.ios</code>, <code>cisco.iosxr</code>). You write
+   one workflow; the collections translate it to each vendor's CLI.</p>
+</li>
+<li>
+<p><strong>Idempotency</strong> — Well-written playbooks are safe to run repeatedly. This
+   is essential for CI/CD pipelines and production automation. You can schedule
+   them to run hourly to catch config drift, or trigger them on git commits.</p>
+</li>
+<li>
+<p><strong>Verification as code</strong> — Every playbook includes verification and testing
+   plays. Never assume config was applied correctly — automate the <code>show</code>
+   commands and ping tests too. In production, these verification plays can
+   trigger rollbacks if expected state isn't met.</p>
+</li>
+<li>
+<p><strong>Infrastructure as Code (IaC)</strong> — Everything you did today is stored in
+   YAML and HCL files that can be version-controlled with Git, reviewed in
+   pull requests, tested in CI pipelines, and audited for compliance. No more
+   mystery changes — every change is documented in code.</p>
+</li>
+<li>
+<p><strong>Right tool for the job</strong> — Ansible and Terraform both automate network
+   configuration, but they approach it differently. Ansible excels at
+   multi-vendor orchestration and day-2 operations (compliance, patching,
+   ad-hoc commands). Terraform excels at provisioning, state tracking, and
+   clean lifecycle management (plan, apply, destroy). Most teams use both.</p>
+</li>
+</ol>
+<blockquote>
+<p><strong>Automation Insight:</strong> Everything you built today is in version-controllable YAML and HCL files — and you pushed them to a Git repository in Task 6. In a production workflow, someone opens a pull request to change a VLAN ID, a teammate reviews it, CI runs the playbook in a test environment, and only then does it hit production. No more mystery changes — every change has an author, a timestamp, and a review trail.</p>
+</blockquote>
+<p><strong>Congratulations — you've completed the lab!</strong></p>
+<hr />
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.expand", "navigation.top", "toc.integrate", "search.highlight", "search.suggest", "content.code.copy", "content.code.annotate"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

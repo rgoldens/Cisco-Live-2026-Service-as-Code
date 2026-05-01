@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1200" />
+<title>task2-linux-routes-output</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { overflow: hidden; }
+
+  body {
+    background: #000000;
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+  }
+
+  .terminal {
+    background: #000000;
+    width: 860px;
+    padding: 22px 28px 22px 28px;
+    font-size: 13.5px;
+    line-height: 1.7;
+  }
+
+  .wh  { color: #ffffff; }
+  .ok  { color: #00e676; }
+  .chg { color: #e5c07b; }
+</style>
+</head>
+<body>
+<div class="terminal">
+<pre><span class="wh">PLAY [Task 2 - Add default routes on Linux clients] ***********************************************</span>
+
+<span class="wh">TASK [Add route to 192.168.10.0/24 via SVI gateway] **********************************************</span>
+<span class="chg">changed: [linux-client1]</span> =&gt; (item=192.168.10.0/24)
+<span class="chg">changed: [linux-client1]</span> =&gt; (item=10.2.0.0/30)
+<span class="chg">changed: [linux-client3]</span> =&gt; (item=192.168.10.0/24)
+<span class="chg">changed: [linux-client3]</span> =&gt; (item=10.2.0.4/30)
+<span class="chg">changed: [linux-client2]</span> =&gt; (item=192.168.10.0/24)
+<span class="chg">changed: [linux-client2]</span> =&gt; (item=10.2.0.0/30)
+<span class="chg">changed: [linux-client4]</span> =&gt; (item=192.168.10.0/24)
+<span class="chg">changed: [linux-client4]</span> =&gt; (item=10.2.0.4/30)</pre>
+</div>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1200" />
+<title>task3-play1</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { overflow: hidden; }
+  body { background: #000000; font-family: 'JetBrains Mono', 'Courier New', monospace; }
+  .terminal { background: #000000; width: 860px; padding: 22px 28px 22px 28px; font-size: 13.5px; line-height: 1.7; }
+  .k  { color: #00e676; }
+  .wh { color: #ffffff; }
+  .ph { color: #c678dd; }
+  .d  { color: #e5c07b; }
+  .cm { color: #00b8c8; font-style: italic; }
+</style>
+</head>
+<body>
+<div class="terminal">
+<pre><span class="k">vars:</span>
+  <span class="k">xrd_config:</span>
+    <span class="k">xrd01:</span>
+      <span class="k">remote_lo:</span> <span class="wh">___</span>     <span class="cm"># TODO: xrd02's Loopback0 IP (iBGP VPNv4 peer)</span>
+      <span class="k">gi1_ip:</span> <span class="wh">___</span>        <span class="cm"># TODO: xrd01's Gi0/0/0/1 IP toward csr-pe01</span>
+      <span class="k">gi1_mask:</span> <span class="wh">___</span>      <span class="cm"># TODO: Subnet mask for the /30 link</span>
+      <span class="k">csr_peer:</span> <span class="wh">___</span>      <span class="cm"># TODO: csr-pe01's IP on the same /30 link</span>
+    <span class="k">xrd02:</span>
+      <span class="k">remote_lo:</span> <span class="wh">___</span>     <span class="cm"># TODO: xrd01's Loopback0 IP (iBGP VPNv4 peer)</span>
+      <span class="k">gi1_ip:</span> <span class="wh">___</span>        <span class="cm"># TODO: xrd02's Gi0/0/0/1 IP toward csr-pe02</span>
+      <span class="k">gi1_mask:</span> <span class="wh">___</span>      <span class="cm"># TODO: Subnet mask for the /30 link</span>
+      <span class="k">csr_peer:</span> <span class="wh">___</span>      <span class="cm"># TODO: csr-pe02's IP on the same /30 link</span></pre>
+</div>
+</body>
+</html>

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1200" />
+<title>Key Concepts</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #0e1621;
+    display: block;
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .slide {
+    background: #0e1621;
+    width: 1200px;
+    padding: 22px 36px 48px 36px;
+    position: relative;
+  }
+
+  .breadcrumb { font-size: 11px; color: #00aaff; margin-bottom: 4px; letter-spacing: 0.04em; }
+  .breadcrumb span { color: #5a6a7a; }
+  .title { font-size: 42px; font-weight: 700; color: #fff; margin-bottom: 3px; }
+  .divider      { width: 100%; height: 3px; background: #00aaff; margin-bottom: 3px; border-radius: 1px; }
+  .divider-thin { width: 100%; height: 1px; background: #00d4ff; margin-bottom: 28px; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 14px;
+  }
+
+  .card {
+    background: #141e2b;
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .card-accent { height: 3px; }
+  .card-body { padding: 18px 18px 20px; flex: 1; display: flex; flex-direction: column; gap: 10px; }
+
+  .card-title {
+    font-size: 15px;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 4px;
+  }
+
+  .card-desc {
+    font-size: 12px;
+    color: #c8d0d8;
+    line-height: 1.65;
+    text-align: center;
+  }
+
+  .code-block {
+    background: #0e1621;
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: #c8d0d8;
+    line-height: 1.7;
+    margin-top: auto;
+  }
+
+  .label-row {
+    font-size: 11px;
+    color: #5a6a7a;
+    margin-bottom: 4px;
+  }
+</style>
+</head>
+<body>
+<div class="slide">
+
+  <div class="breadcrumb">LTRATO-1001 <span>|</span> Service Insertion as Code: From Concept to Commit</div>
+  <div class="title">Key Concepts</div>
+  <div class="divider"></div>
+  <div class="divider-thin"></div>
+
+  <div class="grid">
+
+    <!-- Provider -->
+    <div class="card">
+      <div class="card-accent" style="background:#00aaff;"></div>
+      <div class="card-body">
+        <div class="card-title" style="color:#00aaff;">Provider</div>
+        <div class="card-desc">A plugin that knows how to<br>talk to a specific platform.</div>
+        <div class="code-block">
+          <div class="label-row">This lab uses:</div>
+          <div>kreuzwerker/docker</div>
+          <div>CiscoDevNet/iosxe</div>
+        </div>
+        <div class="code-block" style="color:#7b68ee;">
+          <div>terraform {</div>
+          <div>&nbsp; required_providers {</div>
+          <div>&nbsp;&nbsp; iosxe = {</div>
+          <div>&nbsp;&nbsp;&nbsp; source = "CiscoDevNet/iosxe"</div>
+          <div>&nbsp;&nbsp; }</div>
+          <div>&nbsp; }</div>
+          <div>}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Resource -->
+    <div class="card">
+      <div class="card-accent" style="background:#00cc66;"></div>
+      <div class="card-body">
+        <div class="card-title" style="color:#00cc66;">Resource</div>
+        <div class="card-desc">A single piece of infra<br>managed by Terraform.</div>
+        <div class="code-block">
+          <div class="label-row">Examples:</div>
+          <div>docker_container</div>
+          <div>iosxe_interface_loopback</div>
+        </div>
+        <div class="code-block" style="color:#00cc66;">
+          <div>resource "iosxe_interface_loopback"</div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;"lo0" {</div>
+          <div>&nbsp; name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = 0</div>
+          <div>&nbsp; description = "Managed by TF"</div>
+          <div>}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- State File -->
+    <div class="card">
+      <div class="card-accent" style="background:#ff8800;"></div>
+      <div class="card-body">
+        <div class="card-title" style="color:#ff8800;">State File</div>
+        <div class="card-desc">Terraform's memory —<br>records what it deployed.</div>
+        <div class="code-block">
+          <div class="label-row">Stored in:</div>
+          <div>terraform.tfstate</div>
+          <div>Never edit by hand</div>
+        </div>
+        <div class="code-block" style="color:#ff8800;">
+          <div># After apply:</div>
+          <div>$ cat terraform.tfstate</div>
+          <div>"hostname": "csr-terraform"</div>
+          <div>"address":  "10.99.99.1"</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Module -->
+    <div class="card">
+      <div class="card-accent" style="background:#00d4ff;"></div>
+      <div class="card-body">
+        <div class="card-title" style="color:#00d4ff;">Module</div>
+        <div class="card-desc">A reusable group of<br>resources packaged together.</div>
+        <div class="code-block">
+          <div class="label-row">This lab uses:</div>
+          <div>docker-infra</div>
+          <div>iosxe-config</div>
+        </div>
+        <div class="code-block" style="color:#00d4ff;">
+          <div>module "iosxe_config" {</div>
+          <div>&nbsp; source&nbsp;&nbsp; = "./modules/iosxe-config"</div>
+          <div>&nbsp; hostname = var.hostname</div>
+          <div>}</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div style="position:absolute; bottom:16px; right:36px; font-size:11px; color:#3a4a5a;">3/6</div>
+</div>
+</body>
+</html>

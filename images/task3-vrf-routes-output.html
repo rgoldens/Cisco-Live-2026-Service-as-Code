@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1200" />
+<title>task3-vrf-routes-output</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { overflow: hidden; }
+
+  body {
+    background: #000000;
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+  }
+
+  .terminal {
+    background: #000000;
+    width: 860px;
+    padding: 22px 28px 22px 28px;
+    font-size: 13.5px;
+    line-height: 1.7;
+  }
+
+  .ok  { color: #00e676; }
+  .wh  { color: #ffffff; }
+</style>
+</head>
+<body>
+<div class="terminal">
+<pre><span class="wh">TASK [Display VRF routes] ******************************************************</span>
+<span class="ok">ok: [xrd01] => {
+    "bgp_routes.stdout_lines": [
+        [
+            "...",
+            "   Network            Next Hop        Metric LocPrf Weight Path",
+            "*>  10.1.0.4/30       0.0.0.0               0         32768 ?",
+            "*>i 10.1.0.8/30       192.168.0.2           0    100      0 ?",
+            "*>  23.23.23.0/24     10.1.0.6             50               0 65001 ?",
+            "*>i 34.34.34.0/24     192.168.0.2          50    100      0 65001 ?",
+            "*>  192.168.20.21/32  10.1.0.6             11               0 65001 ?",
+            "*>i 192.168.20.22/32  192.168.0.2          11    100      0 65001 ?",
+            ""
+        ]
+    ]
+}</span></pre>
+</div>
+</body>
+</html>

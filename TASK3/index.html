@@ -1,0 +1,1731 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Cisco Live 2026 Lab Guide — hands-on service insertion automation with Ansible, Terraform, and ContainerLab">
+      
+      
+        <meta name="author" content="Cisco Live 2026">
+      
+      
+        <link rel="canonical" href="https://rgoldens.github.io/Cisco-Live-2026-Service-as-Code/TASK3/">
+      
+      
+        <link rel="prev" href="../TASK2/">
+      
+      
+        <link rel="next" href="../TASK4/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Task 3: Deploy BGP VPN - LTRATO-1001: Service Insertion as Code: From Concept to Commit</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/cisco.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#task-3-inter-as-option-a-full-east-west-connectivity" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="LTRATO-1001: Service Insertion as Code: From Concept to Commit" class="md-header__button md-logo" aria-label="LTRATO-1001: Service Insertion as Code: From Concept to Commit" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            LTRATO-1001: Service Insertion as Code: From Concept to Commit
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Task 3: Deploy BGP VPN
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../GETTING-STARTED/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Getting Started
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../LAB-ACCESS/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Lab Access
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../TASK1/" class="md-tabs__link">
+          
+  
+  
+  Lab Tasks
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../REFERENCE/" class="md-tabs__link">
+          
+  
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../Ansible-Primer/" class="md-tabs__link">
+          
+  
+  
+  Primers
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="LTRATO-1001: Service Insertion as Code: From Concept to Commit" class="md-nav__button md-logo" aria-label="LTRATO-1001: Service Insertion as Code: From Concept to Commit" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    LTRATO-1001: Service Insertion as Code: From Concept to Commit
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../GETTING-STARTED/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LAB-ACCESS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lab Access
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lab Tasks
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Lab Tasks
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TASK1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Task 1: Explore the Environment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TASK2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Task 2: Build the Underlay
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Task 3: Deploy BGP VPN
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Task 3: Deploy BGP VPN
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#task-3-inter-as-option-a-full-east-west-connectivity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 3: Inter-AS Option A (Full East-West Connectivity)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Task 3: Inter-AS Option A (Full East-West Connectivity)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#objective" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Objective
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-inter-as-option-a" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why Inter-AS Option A?
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Why Inter-AS Option A?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-vrfs-virtual-routing-and-forwarding" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. VRFs (Virtual Routing and Forwarding)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-mp-bgp-vpnv4-ibgp-between-xrd-routers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. MP-BGP VPNv4 (iBGP between XRd routers)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-ebgp-at-the-pe-edge" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. eBGP at the PE Edge
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-big-picture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Big Picture
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exercise-complete-the-playbook" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exercise: Complete the Playbook
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Exercise: Complete the Playbook">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#play-1-xrd-core-routers-vrf-bgp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Play 1 — XRd Core Routers (VRF + BGP)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#play-2-csr-pe-routers-ebgp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Play 2 — CSR PE Routers (eBGP)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#play-3-linux-client-cross-site-routes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Play 3 — Linux Client Cross-Site Routes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ansible-concepts-in-this-playbook" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ansible Concepts in This Playbook
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Run It
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#understanding-the-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Understanding the Output
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#checkpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Checkpoint
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#idempotency-check" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Idempotency Check
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Idempotency Check">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-idempotency-matters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why Idempotency Matters
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#see-it-in-action" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        See It in Action
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-this-means-for-production" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What This Means for Production
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TASK4/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Task 4: Service Insertion with Ansible
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TASK5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Task 5: Drift Detection with Terraform
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TASK6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Task 6: Validation & Cleanup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../REFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TROUBLESHOOTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Primers
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Primers
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Ansible-Primer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ansible Primer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Terraform-Primer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Terraform Primer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ContainerLab-Primer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ContainerLab Primer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Git-Primer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git Primer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+  <h1>Task 3: Deploy BGP VPN</h1>
+
+<hr />
+<h2 id="task-3-inter-as-option-a-full-east-west-connectivity">Task 3: Inter-AS Option A (Full East-West Connectivity)<a class="headerlink" href="#task-3-inter-as-option-a-full-east-west-connectivity" title="Permanent link">&para;</a></h2>
+<p><img alt="Task 3: BGP VPN" src="../images/task3-bgp-vpn.png" /></p>
+<h3 id="objective">Objective<a class="headerlink" href="#objective" title="Permanent link">&para;</a></h3>
+<p>Configure Inter-AS Option A so that west-side clients (1, 2) can reach
+east-side clients (3, 4) across the full SP core. This is the most complex
+task — it touches all 4 platforms and introduces BGP, VRFs, and route
+redistribution.</p>
+<p><strong>Before Task 3:</strong>
+- Client1 can reach Client2 and csr-pe01, but NOT Client3/4
+- Client3 can reach Client4 and csr-pe02, but NOT Client1/2</p>
+<p><strong>After Task 3:</strong>
+- Full east-west: Client1 pings Client3, Client2 pings Client4
+- Traffic path: Client1 → N9K-CE01 → CSR-PE01 → XRd01 → XRd02 → CSR-PE02 → N9K-CE02 → Client3</p>
+<h3 id="why-inter-as-option-a">Why Inter-AS Option A?<a class="headerlink" href="#why-inter-as-option-a" title="Permanent link">&para;</a></h3>
+<p>Right now, each side of the network is isolated. The CSR PEs know about their
+local clients via IS-IS, but there's no mechanism to carry those routes across
+the SP core (xrd01 ↔ xrd02). Client1 can ping csr-pe01, but not client3.</p>
+<p><strong>Inter-AS Option A</strong> solves this with three components working together:</p>
+<h4 id="1-vrfs-virtual-routing-and-forwarding">1. VRFs (Virtual Routing and Forwarding)<a class="headerlink" href="#1-vrfs-virtual-routing-and-forwarding" title="Permanent link">&para;</a></h4>
+<p>A VRF is like a separate routing table inside a router. The XRd core routers
+run both SP infrastructure traffic (IS-IS, MPLS, management) and customer
+traffic — these must be isolated. The VRF named <code>Customer-CLIVE</code> creates a
+dedicated routing table for customer traffic.</p>
+<p>When we assign Gi0/0/0/1 (the link to the CSR PE) to the VRF, that interface
+moves out of the global routing table and into the VRF's table. The CSR PE
+routes are only visible inside the VRF — they don't leak into the SP core's
+IS-IS topology. This is how real SPs keep thousands of customers isolated on
+shared infrastructure.</p>
+<h4 id="2-mp-bgp-vpnv4-ibgp-between-xrd-routers">2. MP-BGP VPNv4 (iBGP between XRd routers)<a class="headerlink" href="#2-mp-bgp-vpnv4-ibgp-between-xrd-routers" title="Permanent link">&para;</a></h4>
+<p>The iBGP VPNv4 session carries VRF routes across the SP core between xrd01
+and xrd02. "VPNv4" means each IPv4 prefix is prepended with a <strong>Route
+Distinguisher (RD)</strong>, making it globally unique in the BGP table — even if two
+customers use the same IP address space. Which VRFs actually import those
+routes is controlled by <strong>Route Targets (RT)</strong>, configured below.</p>
+<p>This session uses Loopback0 addresses (<code>192.168.0.1</code> ↔ <code>192.168.0.2</code>),
+which are reachable via the pre-configured IS-IS/MPLS core. Using loopbacks
+instead of link IPs makes the BGP session resilient — if one physical link
+goes down, MPLS can reroute traffic to reach the same loopback.</p>
+<p><strong>Route Targets (RT)</strong> control which VRFs import which routes. In our lab,
+both XRd routers use <code>65000:1</code> for import and export, so VRF routes from
+xrd01 are imported into xrd02's VRF and vice versa.</p>
+<h4 id="3-ebgp-at-the-pe-edge">3. eBGP at the PE Edge<a class="headerlink" href="#3-ebgp-at-the-pe-edge" title="Permanent link">&para;</a></h4>
+<p>Each XRd router peers with its local CSR PE via eBGP inside the VRF:
+- xrd01 (AS 65000) ↔ csr-pe01 (AS 65001)
+- xrd02 (AS 65000) ↔ csr-pe02 (AS 65001)</p>
+<p>The CSR PEs redistribute IS-IS routes into BGP (so client subnets get
+advertised), and BGP routes back into IS-IS (so remote subnets become
+reachable locally). This two-way redistribution is the glue that connects
+the eBGP edge to the VPNv4 core.</p>
+<p><strong>Key concept — <code>as-override</code>:</strong> Both CSR PEs are in AS 65001. When xrd01
+receives a route from csr-pe01 (AS path: <code>65001</code>), it carries it via iBGP to
+xrd02, which tries to advertise it to csr-pe02. But csr-pe02 sees AS 65001
+already in the path — BGP loop prevention says "I'm in AS 65001, this route
+has already been through AS 65001, drop it." The <code>as-override</code> command on the
+XRd routers' eBGP sessions toward the CSR PEs replaces any occurrence of
+AS 65001 in the AS-path with the XRd's own AS (65000) before advertising,
+bypassing this check. This is a standard SP technique when multiple PE sites
+share the same AS number.</p>
+<h4 id="the-big-picture">The Big Picture<a class="headerlink" href="#the-big-picture" title="Permanent link">&para;</a></h4>
+<p>Here's the complete data flow when client1 pings client3:</p>
+<pre>
+client1 (23.23.23.1)
+  → n9k-ce01 SVI (23.23.23.254)     ← static route via SVI gateway
+  → csr-pe01 (IS-IS route)          ← IS-IS learned this route from the CE
+  → xrd01 VRF (eBGP from CSR)       ← eBGP brings it into the VRF
+  → xrd02 VRF (iBGP VPNv4)          ← VPNv4 carries it across the core
+  → csr-pe02 (eBGP from XRd)        ← eBGP pushes it to the remote CSR
+  → n9k-ce02 SVI (IS-IS route)      ← IS-IS redistributes it locally
+  → client3 (34.34.34.1)            ← arrives at destination
+</pre>
+
+<p>Every layer you configured (VLANs, IS-IS, BGP, VRF, static routes) plays
+a role in this path. Remove any one, and the packet can't get through.</p>
+<h3 id="exercise-complete-the-playbook">Exercise: Complete the Playbook<a class="headerlink" href="#exercise-complete-the-playbook" title="Permanent link">&para;</a></h3>
+<p>This playbook has <strong>three</strong> plays with variables — the most complex one yet.
+Open it:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>nano<span class="w"> </span>~/inter-as-option-a.yml
+</code></pre></div>
+<p>Take a moment to scroll through the entire playbook before editing. You'll
+notice it has 6 plays total: 3 config plays, a convergence pause, and 2
+verification/test plays. The TODO placeholders are only in the first 3 plays.</p>
+<h4 id="play-1-xrd-core-routers-vrf-bgp">Play 1 — XRd Core Routers (VRF + BGP)<a class="headerlink" href="#play-1-xrd-core-routers-vrf-bgp" title="Permanent link">&para;</a></h4>
+<p>Scroll to the first <code>vars:</code> section:</p>
+<p><img alt="Play 1 — XRd VRF and BGP variables" src="../images/task3-play1.png" /></p>
+<p>Using <strong>Table 2</strong> and <strong>Table 3</strong>, fill in:</p>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Hint</th>
+<th>Where to Find It</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>remote_lo</code> for xrd01</td>
+<td>xrd02's Loopback0 IP</td>
+<td>Table 2, xrd02 Loopback0 row</td>
+</tr>
+<tr>
+<td><code>remote_lo</code> for xrd02</td>
+<td>xrd01's Loopback0 IP</td>
+<td>Table 2, xrd01 Loopback0 row</td>
+</tr>
+<tr>
+<td><code>gi1_ip</code> for xrd01</td>
+<td>xrd01's IP on Gi0/0/0/1</td>
+<td>Table 2, xrd01 Gi0/0/0/1 row</td>
+</tr>
+<tr>
+<td><code>gi1_ip</code> for xrd02</td>
+<td>xrd02's IP on Gi0/0/0/1</td>
+<td>Table 2, xrd02 Gi0/0/0/1 row</td>
+</tr>
+<tr>
+<td><code>gi1_mask</code> (both)</td>
+<td>Subnet mask for /30</td>
+<td>Always <code>255.255.255.252</code> for /30</td>
+</tr>
+<tr>
+<td><code>csr_peer</code> for xrd01</td>
+<td>csr-pe01's IP toward xrd01</td>
+<td>Table 2, csr-pe01 Gi2 row</td>
+</tr>
+<tr>
+<td><code>csr_peer</code> for xrd02</td>
+<td>csr-pe02's IP toward xrd02</td>
+<td>Table 2, csr-pe02 Gi2 row</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Understanding the relationships:</strong> Each XRd router needs to know two things:
+(1) its iBGP VPNv4 peer (<code>remote_lo</code> — the <em>other</em> XRd's loopback, reachable
+via the pre-configured IS-IS/MPLS core), and (2) its eBGP peer (<code>csr_peer</code> —
+the CSR PE on the same /30 link). These are two completely different BGP
+sessions serving different purposes.</p>
+<p><strong>Why IPs and not hostnames?</strong> BGP peering requires exact IP addresses. The
+iBGP session uses loopback IPs (stable, doesn't go down if a single link
+flaps). The eBGP session uses directly-connected link IPs (so the TCP session
+follows the physical path).</p>
+</blockquote>
+<h4 id="play-2-csr-pe-routers-ebgp">Play 2 — CSR PE Routers (eBGP)<a class="headerlink" href="#play-2-csr-pe-routers-ebgp" title="Permanent link">&para;</a></h4>
+<p>Scroll to the second <code>vars:</code> section:</p>
+<p><img alt="Play 2 — CSR PE BGP variables" src="../images/task3-play2.png" /></p>
+<p>Using <strong>Table 3</strong>, fill in:</p>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Hint</th>
+<th>Where to Find It</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>xrd_peer</code> for csr-pe01</td>
+<td>xrd01's Gi0/0/0/1 IP</td>
+<td>Table 2, xrd01 Gi0/0/0/1 row</td>
+</tr>
+<tr>
+<td><code>xrd_peer</code> for csr-pe02</td>
+<td>xrd02's Gi0/0/0/1 IP</td>
+<td>Table 2, xrd02 Gi0/0/0/1 row</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Cross-check your work:</strong> The <code>csr_peer</code> you entered in Play 1 for xrd01 and
+the <code>xrd_peer</code> here for csr-pe01 are <strong>two ends of the same link</strong>. They should
+be different IPs on the same /30 subnet. For example, if xrd01's <code>csr_peer</code> is
+<code>10.1.0.6</code>, then csr-pe01's <code>xrd_peer</code> should be <code>10.1.0.5</code> (the other end).
+If these don't match, the eBGP session won't establish.</p>
+</blockquote>
+<h4 id="play-3-linux-client-cross-site-routes">Play 3 — Linux Client Cross-Site Routes<a class="headerlink" href="#play-3-linux-client-cross-site-routes" title="Permanent link">&para;</a></h4>
+<p>Scroll to the third <code>vars:</code> section:</p>
+<p><img alt="Play 3 — Linux cross-site route variables" src="../images/task3-play3.png" /></p>
+<p>Using <strong>Table 2</strong>, fill in:</p>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Hint</th>
+<th>Where to Find It</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>dest</code> for client1/2</td>
+<td>The <em>remote</em> client subnet (east side)</td>
+<td>Client3/4 are on 34.34.34.0/24</td>
+</tr>
+<tr>
+<td><code>dest</code> for client3/4</td>
+<td>The <em>remote</em> client subnet (west side)</td>
+<td>Client1/2 are on 23.23.23.0/24</td>
+</tr>
+<tr>
+<td><code>gw</code> for client1/2</td>
+<td>West-side SVI gateway (no mask)</td>
+<td>Same as Task 2 gateway</td>
+</tr>
+<tr>
+<td><code>gw</code> for client3/4</td>
+<td>East-side SVI gateway (no mask)</td>
+<td>Same as Task 2 gateway</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Why do we need these routes?</strong> In Task 2, we gave clients routes to reach
+their local PE. But now traffic needs to cross the entire SP core. West clients
+need a route to the east client subnet (and vice versa). The SVI gateway
+handles the forwarding — it sends the traffic up to the CSR PE, which uses
+BGP to reach the other side.</p>
+<p><strong>Think about the full path:</strong> When client1 (23.23.23.1) pings client3
+(34.34.34.1), the packet follows this path:
+<code>client1 → n9k-ce01 SVI → csr-pe01 → xrd01 → xrd02 → csr-pe02 → n9k-ce02 SVI → client3</code>
+That's <strong>6 hops</strong> across <strong>4 different platforms</strong> — and you're configuring it
+all from a single Ansible playbook.</p>
+</blockquote>
+<p>Save the file when done.</p>
+<h3 id="ansible-concepts-in-this-playbook">Ansible Concepts in This Playbook<a class="headerlink" href="#ansible-concepts-in-this-playbook" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p><strong><code>cisco.iosxr.iosxr_command</code></strong> — Designed for exec-mode (show) commands,
+  but used here as a workaround to push raw config CLI to XRd. The proper
+  <code>iosxr_config</code> module relies on internal IOS-XR mechanisms that XRd doesn't
+  fully support. By sending <code>configure terminal</code>, config statements, <code>commit</code>,
+  and <code>end</code> as raw commands, we work around this limitation — at the cost of
+  idempotency detection (the module can't tell if the config already existed).</p>
+</li>
+<li>
+<p><strong>IOS-XR commit model</strong> — Unlike IOS (where config takes effect immediately),
+  IOS-XR requires an explicit <code>commit</code> to apply changes. This is a safety
+  feature — you can review changes before committing.</p>
+</li>
+<li>
+<p><strong>Multiple plays in one playbook</strong> — This playbook has 6 plays targeting
+  different device groups. Ansible runs them in order: XRd config → CSR config
+  → Linux routes → convergence pause → verification → testing.</p>
+</li>
+<li>
+<p><strong><code>ansible.builtin.pause</code></strong> — Waits 90 seconds for BGP sessions to establish
+  and routes to propagate. BGP convergence takes time, especially the iBGP
+  VPNv4 session between XRd routers.</p>
+</li>
+</ul>
+<h3 id="run-it">Run It<a class="headerlink" href="#run-it" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>ansible-playbook<span class="w"> </span>~/inter-as-option-a.yml
+</code></pre></div>
+<p>This playbook takes about 4-5 minutes to complete, including a 90-second pause
+for BGP convergence. Be patient — the pause is there for a reason.</p>
+<h3 id="understanding-the-output">Understanding the Output<a class="headerlink" href="#understanding-the-output" title="Permanent link">&para;</a></h3>
+<p><strong>Play 1 — XRd configuration</strong> sets up VRF, MPLS VPN, and BGP:</p>
+<p><img alt="Play 1 — XRd VRF and BGP configuration" src="../images/task3-xrd-output.png" /></p>
+<blockquote>
+<p><strong>Why do the XRd tasks show <code>ok</code> instead of <code>changed</code>?</strong> These tasks use
+<code>iosxr_command</code> (raw CLI mode) instead of <code>iosxr_config</code> (declarative mode).
+The raw module sends commands and checks for errors, but it can't detect
+whether the config already existed. It reports <code>ok</code> because no error occurred.
+This is a trade-off — the module works reliably with XRd, even though it
+loses the ability to show <code>changed</code> status.</p>
+<p><strong>What are all these steps doing?</strong>
+- <strong>Step 1</strong> creates a route-policy named <code>PASS-ALL</code> — it accepts all routes (needed for eBGP)
+- <strong>Step 2</strong> creates a VRF named <code>Customer-CLIVE</code> with route-target import/export
+- <strong>Step 3</strong> moves the PE-facing interface (Gi0/0/0/1) into the VRF and reapplies its IP
+- <strong>Step 4a</strong> creates the iBGP VPNv4 session between xrd01 and xrd02 (uses your <code>remote_lo</code> value)
+- <strong>Step 5a</strong> sets the VRF route-distinguisher and enables route redistribution
+- <strong>Step 5b</strong> creates the eBGP session to the CSR PE inside the VRF (uses your <code>csr_peer</code> value)</p>
+</blockquote>
+<p>The verification task shows the complete BGP config on each XRd:</p>
+<p><img alt="XRd BGP configuration display" src="../images/task3-bgp-config-output.png" /></p>
+<blockquote>
+<p><strong>Reading the BGP config:</strong> This is the complete <code>router bgp</code> hierarchy on
+xrd01. Look for: (1) <code>neighbor 192.168.0.2</code> — that's your <code>remote_lo</code> value
+(the iBGP VPNv4 peer), (2) <code>neighbor 10.1.0.6</code> — that's your <code>csr_peer</code>
+value (the eBGP neighbor inside the VRF), and (3) <code>as-override</code> — without
+this, BGP would drop routes from AS 65001 when it sees the same AS on the
+other side (both CSR PEs share AS 65001).</p>
+</blockquote>
+<p><strong>Play 2 — CSR PE configuration</strong> sets up eBGP and IS-IS redistribution:</p>
+<p><img alt="Play 2 — CSR PE BGP configuration" src="../images/task3-csr-output.png" /></p>
+<blockquote>
+<p><strong>What is route redistribution?</strong> The CSR PEs sit between two routing
+protocols: IS-IS (toward the N9K CE) and BGP (toward the XRd core). Step 2
+redistributes IS-IS routes <em>into</em> BGP (so local client subnets get advertised
+to the remote side), and Step 3 redistributes BGP routes <em>into</em> IS-IS (so
+remote client subnets become reachable from the local CE switch). This
+two-way redistribution is what makes end-to-end connectivity possible.</p>
+</blockquote>
+<p><strong>Play 3 — Linux cross-site routes</strong> adds the final piece:</p>
+<p><img alt="Play 3 — Linux cross-site route additions" src="../images/task3-linux-routes-output.png" /></p>
+<p><strong>Convergence pause</strong> — the playbook then waits for BGP:</p>
+<p><img alt="BGP convergence pause" src="../images/task3-pause-output.png" /></p>
+<blockquote>
+<p><strong>Why 90 seconds?</strong> BGP convergence is not instant. The iBGP VPNv4 session
+between xrd01 and xrd02 needs to: (1) establish the TCP connection, (2)
+exchange OPEN messages, (3) negotiate capabilities (VPNv4 address-family),
+(4) exchange UPDATE messages with VPN prefixes, and (5) install routes in
+the VRF. This process can take 60-90 seconds on virtual routers, especially
+on a fresh boot. The pause ensures routes are fully propagated before the
+ping test runs.</p>
+</blockquote>
+<p><strong>Verification plays</strong> show BGP session status and learned routes:</p>
+<blockquote>
+<p><strong>Note:</strong> On a first run, the iBGP VPNv4 session may still be exchanging
+prefixes when the verification plays execute. You might see <code>St/PfxRcd: 0</code>
+instead of <code>3</code>, and the VRF route table may show only 3 local prefixes
+instead of 6. This is normal — BGP convergence on virtual routers can take
+slightly longer than the 90-second pause. If you see this, wait another
+30-60 seconds and check manually with <code>ssh xrd01 'show bgp vpnv4 unicast
+summary'</code>. The pings at the end of the playbook are the real validation —
+if they pass, the routes have propagated.</p>
+</blockquote>
+<p><img alt="XRd BGP VPNv4 summary" src="../images/task3-bgp-summary-output.png" /></p>
+<blockquote>
+<p><strong>Reading the BGP summary:</strong> The key columns are:
+- <strong>Neighbor</strong>: <code>192.168.0.2</code> — the iBGP VPNv4 peer (xrd02's loopback)
+- <strong>Up/Down</strong>: <code>00:11:43</code> — the session has been up for 11 minutes (good!)
+- <strong>St/PfxRcd</strong>: <code>3</code> — three prefixes received from the peer</p>
+<p>If <code>St/PfxRcd</code> shows a state like <code>Idle</code> or <code>Active</code> instead of a number,
+the BGP session hasn't established. Check your <code>remote_lo</code> values.</p>
+</blockquote>
+<p>The VRF route table shows all learned prefixes:</p>
+<p><img alt="XRd VRF route table" src="../images/task3-vrf-routes-output.png" /></p>
+<blockquote>
+<p><strong>Reading the VRF route table:</strong> Each line is a route in the VRF:
+- <code>*&gt;</code> = valid, best path selected by BGP
+- <code>*&gt;i</code> = best path, learned via iBGP (the <code>i</code> means "internal" — from the other XRd)
+- Look for both client subnets: <code>23.23.23.0/24</code> (west) and <code>34.34.34.0/24</code> (east)
+- <strong>6 prefixes</strong> is the expected total — if you see fewer, a route isn't propagating</p>
+<p>On xrd01, the west subnet (<code>23.23.23.0/24</code>) comes from eBGP (via csr-pe01),
+and the east subnet (<code>34.34.34.0/24</code>) comes from iBGP (via xrd02, which
+learned it from csr-pe02). This is Inter-AS Option A in action — each side
+advertises its local routes, and the VPNv4 core carries them across.</p>
+</blockquote>
+<p>The CSR BGP verification confirms eBGP sessions are up:</p>
+<p><img alt="CSR PE BGP summary" src="../images/task3-csr-bgp-summary-output.png" /></p>
+<blockquote>
+<p><strong>CSR BGP summary:</strong> csr-pe01 peers with xrd01 (<code>10.1.0.5</code>) and has received
+4 prefixes. The <code>State/PfxRcd</code> column showing a number (not <code>Idle</code>/<code>Active</code>)
+confirms the session is <code>Established</code>.</p>
+</blockquote>
+<p><strong>The final ping tests</strong> — the moment of truth:</p>
+<p><img alt="Cross-site ping results and PLAY RECAP" src="../images/task3-ping-output.png" /></p>
+<h3 id="checkpoint">Checkpoint<a class="headerlink" href="#checkpoint" title="Permanent link">&para;</a></h3>
+<p>Confirm these results from the playbook output:</p>
+<ul>
+<li>[ ] XRd <code>show run router bgp</code> displays VRF, VPNv4, and eBGP neighbor config</li>
+<li>[ ] XRd BGP VPNv4 summary shows <strong>3 prefixes received</strong> from the iBGP peer</li>
+<li>[ ] XRd VRF routes show <strong>6 prefixes</strong> (both client subnets, both PE-CE links, both loopbacks)</li>
+<li>[ ] CSR BGP summary shows an <strong>established</strong> session (number in State/PfxRcd, not <code>Idle</code>/<code>Active</code>)</li>
+<li>[ ] client1 → client3 ping: <strong>packets received</strong> (2/3 or 3/3)</li>
+<li>[ ] client2 → client4 ping: <strong>packets received</strong> (2/3 or 3/3)</li>
+<li>[ ] client3 → client1 ping: <strong>packets received</strong> (2/3 or 3/3)</li>
+<li>[ ] client4 → client2 ping: <strong>packets received</strong> (2/3 or 3/3)</li>
+<li>[ ] PLAY RECAP shows <strong>failed=0</strong> for all devices</li>
+</ul>
+<p><strong>Congratulations!</strong> If all four cross-site pings succeed, you've built full
+east-west connectivity across a multi-vendor SP network entirely through Ansible
+automation. Traffic from client1 (23.23.23.1) is now reaching client3
+(34.34.34.1) across VLANs, IS-IS, MPLS VPN, and BGP — all configured by code.</p>
+<blockquote>
+<p><strong>Troubleshooting:</strong>
+- If BGP sessions show <code>Idle</code> or <code>Active</code>: check your <code>remote_lo</code>, <code>gi1_ip</code>,
+  and <code>csr_peer</code> / <code>xrd_peer</code> values. The IPs must match Table 2 exactly.
+- If BGP is up but shows 0 prefixes: wait another 30-60 seconds. VPNv4
+  convergence can be slow on virtual routers.
+- If pings fail but BGP shows prefixes: check that your Linux client <code>dest</code>
+  and <code>gw</code> values are correct, and verify the routes from Task 2 are still
+  in place.
+- Try running the playbook again — it's fully idempotent. Sometimes a second
+  run with a fresh 90-second pause is all it takes.</p>
+<p><strong>💡 Automation Insight:</strong> Look at your 3 playbooks — they total ~300 lines of YAML. You just built full east-west L3VPN connectivity across 10 devices and 4 platforms. Now imagine onboarding a new customer site: duplicate the variables, change the IPs, run the playbook. That's the real power — the logic never changes, only the data.</p>
+</blockquote>
+<hr />
+<h2 id="idempotency-check">Idempotency Check<a class="headerlink" href="#idempotency-check" title="Permanent link">&para;</a></h2>
+<p>A key property of well-written automation is <strong>idempotency</strong> — running the
+same playbook twice produces the same result, with no unintended side effects.
+This is one of the most important concepts in Infrastructure as Code.</p>
+<h3 id="why-idempotency-matters">Why Idempotency Matters<a class="headerlink" href="#why-idempotency-matters" title="Permanent link">&para;</a></h3>
+<p>Imagine you have a playbook that configures 100 routers. It runs at 2 AM as
+part of a CI/CD pipeline. Halfway through, a network blip causes 10 routers
+to fail. You fix the blip and re-run the playbook. What happens?</p>
+<ul>
+<li>
+<p><strong>Without idempotency:</strong> The 90 routers that already have the config get
+  <em>duplicate</em> entries. VLANs get recreated, routes get doubled, interfaces
+  flap unnecessarily. You've made the problem worse.</p>
+</li>
+<li>
+<p><strong>With idempotency:</strong> The 90 routers report <code>ok</code> (no changes needed). The
+  10 failed routers get configured. Everything converges to the desired state.
+  This is safe, repeatable automation.</p>
+</li>
+</ul>
+<h3 id="see-it-in-action">See It in Action<a class="headerlink" href="#see-it-in-action" title="Permanent link">&para;</a></h3>
+<p>Re-run the Task 1 playbook:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>ansible-playbook<span class="w"> </span>~/ce-access-vlan.yml
+</code></pre></div>
+<p>Compare the output to your first run. Notice the differences:</p>
+<p><strong>First run:</strong></p>
+<p><img alt="Task 3: First run — changed" src="../images/task3-first-run-output.png" /></p>
+<p><strong>Second run:</strong></p>
+<p><img alt="Task 3: Second run — ok" src="../images/task3-second-run-output.png" /></p>
+<p>The <code>changed</code> → <code>ok</code> shift means Ansible checked the device, found the VLAN
+already exists with the correct config, and made no changes. The PLAY RECAP
+will show <code>changed=0</code> for most devices on the second run.</p>
+<blockquote>
+<p><strong>Exception:</strong> Some tasks always show <code>changed</code> because their modules can't
+detect existing state. The <code>nxos_config</code> switchport tasks (Step 2) and Linux
+<code>raw</code> commands always report <code>changed</code>. The XRd tasks using <code>iosxr_command</code>
+always report <code>ok</code> (but for the opposite reason — they can't detect whether
+they made a change). These are module limitations, not playbook bugs.</p>
+<p><strong>💡 Automation Insight:</strong> You just ran the same playbook twice and nothing broke. That <code>changed=0</code> output is the most underrated feature in automation. It means you can schedule this playbook to run every hour, and it will silently fix any config drift without touching what's already correct. That's how production teams keep 10,000 devices in compliance.</p>
+</blockquote>
+<h3 id="what-this-means-for-production">What This Means for Production<a class="headerlink" href="#what-this-means-for-production" title="Permanent link">&para;</a></h3>
+<p>In a real environment, idempotent playbooks enable:
+- <strong>Scheduled enforcement</strong> — Run the playbook hourly to catch and fix config drift
+- <strong>Safe re-runs</strong> — If something fails, just re-run. No need to figure out
+  which parts succeeded and skip them
+- <strong>CI/CD integration</strong> — Trigger playbooks on git push, knowing they'll
+  only change what's different
+- <strong>Disaster recovery</strong> — After a device replacement, run the full playbook
+  to bring it to the desired state</p>
+<hr />
+<hr />
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.expand", "navigation.top", "toc.integrate", "search.highlight", "search.suggest", "content.code.copy", "content.code.annotate"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

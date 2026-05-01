@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1200" />
+<title>task1-recap-output</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { overflow: hidden; }
+
+  body {
+    background: #000000;
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+  }
+
+  .terminal {
+    background: #000000;
+    width: 1020px;
+    padding: 22px 60px 22px 28px;
+    font-size: 13.5px;
+    line-height: 1.7;
+  }
+
+  .wh  { color: #ffffff; }
+  .ok  { color: #00e676; }
+  .chg { color: #e5c07b; }
+</style>
+</head>
+<body>
+<div class="terminal">
+<pre><span class="wh">PLAY RECAP ****************************************************************************************</span>
+<span class="ok">linux-client1</span>              <span class="wh">: ok=2    changed=1    unreachable=0    failed=0    skipped=2    rescued=0    ignored=0</span>
+<span class="wh">linux-client2</span>              <span class="wh">: ok=0    changed=0    unreachable=0    failed=0    skipped=4    rescued=0    ignored=0</span>
+<span class="ok">linux-client3</span>              <span class="wh">: ok=2    changed=1    unreachable=0    failed=0    skipped=2    rescued=0    ignored=0</span>
+<span class="wh">linux-client4</span>              <span class="wh">: ok=0    changed=0    unreachable=0    failed=0    skipped=4    rescued=0    ignored=0</span>
+<span class="chg">n9k-ce01</span>                   <span class="wh">: ok=9    changed=3    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0</span>
+<span class="chg">n9k-ce02</span>                   <span class="wh">: ok=8    changed=3    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0</span></pre>
+</div>
+</body>
+</html>

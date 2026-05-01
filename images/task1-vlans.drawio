@@ -1,0 +1,173 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.5.2 Chrome/142.0.7444.265 Electron/39.6.1 Safari/537.36" version="29.5.2">
+  <diagram id="task1-vlans" name="Task 1: L2 Access VLANs">
+    <mxGraphModel dx="1234" dy="916" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="700" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Slide background -->
+        <mxCell id="bg" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#0e1621;strokeColor=none;" value="" vertex="1">
+          <mxGeometry x="0" y="0" width="1200" height="700" as="geometry" />
+        </mxCell>
+
+        <!-- Breadcrumb: LTRATO-1001 | Service Insertion as Code: From Concept to Commit -->
+        <mxCell id="breadcrumb" parent="1" style="text;html=1;fontSize=11;align=left;verticalAlign=middle;fontColor=#00aaff;" value="&lt;font color=&quot;#00aaff&quot;&gt;LTRATO-1001&lt;/font&gt;&lt;font color=&quot;#5a6a7a&quot;&gt; | &lt;/font&gt;&lt;font color=&quot;#00aaff&quot;&gt;Service Insertion as Code: From Concept to Commit&lt;/font&gt;" vertex="1">
+          <mxGeometry x="25" y="12" width="280" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- Title -->
+        <mxCell id="title" parent="1" style="text;html=1;fontSize=20;fontStyle=1;align=left;verticalAlign=middle;fontColor=#ffffff;" value="Task 1: L2 Access VLANs" vertex="1">
+          <mxGeometry x="25" y="30" width="500" height="35" as="geometry" />
+        </mxCell>
+
+        <!-- Dual-line divider: thick cyan + thin teal -->
+        <mxCell id="div1" parent="1" style="endArrow=none;html=1;strokeColor=#00aaff;strokeWidth=3;" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="25" y="66" as="sourcePoint" />
+            <mxPoint x="1175" y="66" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="div2" parent="1" style="endArrow=none;html=1;strokeColor=#00d4ff;strokeWidth=1;" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="25" y="72" as="sourcePoint" />
+            <mxPoint x="1175" y="72" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- WEST ZONE -->
+        <mxCell id="zone-west" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#141e2b;strokeColor=#00aaff;strokeWidth=2;dashed=1;dashPattern=8 4;" value="" vertex="1">
+          <mxGeometry x="25" y="85" width="555" height="555" as="geometry" />
+        </mxCell>
+        <mxCell id="zone-west-label" parent="1" style="text;html=1;fontSize=13;align=center;verticalAlign=top;fontColor=#00aaff;fontStyle=1;" value="WEST SITE" vertex="1">
+          <mxGeometry x="90" y="95" width="420" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="zone-west-vlan" parent="1" style="text;html=1;fontSize=11;align=center;verticalAlign=top;fontColor=#00d4ff;" value="VLAN 23 / CLIENT-VLAN-23" vertex="1">
+          <mxGeometry x="90" y="118" width="420" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- EAST ZONE -->
+        <mxCell id="zone-east" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#141e2b;strokeColor=#ff8800;strokeWidth=2;dashed=1;dashPattern=8 4;" value="" vertex="1">
+          <mxGeometry x="620" y="85" width="555" height="555" as="geometry" />
+        </mxCell>
+        <mxCell id="zone-east-label" parent="1" style="text;html=1;fontSize=13;align=center;verticalAlign=top;fontColor=#ff8800;fontStyle=1;" value="EAST SITE" vertex="1">
+          <mxGeometry x="685" y="95" width="420" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="zone-east-vlan" parent="1" style="text;html=1;fontSize=11;align=center;verticalAlign=top;fontColor=#00d4ff;" value="VLAN 34 / CLIENT-VLAN-34" vertex="1">
+          <mxGeometry x="685" y="118" width="420" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- n9k-ce01 switch -->
+        <mxCell id="n9k-ce01" parent="1" style="shape=mxgraph.cisco19.workgroup_switch;html=1;whiteSpace=wrap;fillColor=#00aaff;fontColor=#ffffff;strokeColor=#00d4ff;fontSize=12;labelPosition=right;verticalLabelPosition=middle;align=left;labelBackgroundColor=none;imageWidth=80;imageHeight=50;" value="&lt;font color=&quot;#ffffff&quot;&gt;&lt;b&gt;n9k-ce01&lt;/b&gt;&lt;br&gt;NX-OS&lt;/font&gt;" vertex="1">
+          <mxGeometry x="243" y="175" width="80" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- n9k-ce02 switch -->
+        <mxCell id="n9k-ce02" parent="1" style="shape=mxgraph.cisco19.workgroup_switch;html=1;whiteSpace=wrap;fillColor=#ff8800;fontColor=#ffffff;strokeColor=#00d4ff;fontSize=12;labelPosition=right;verticalLabelPosition=middle;align=left;labelBackgroundColor=none;imageWidth=80;imageHeight=50;" value="&lt;font color=&quot;#ffffff&quot;&gt;&lt;b&gt;n9k-ce02&lt;/b&gt;&lt;br&gt;NX-OS&lt;/font&gt;" vertex="1">
+          <mxGeometry x="843" y="175" width="80" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- client1 -->
+        <mxCell id="client1" parent="1" style="shape=mxgraph.ios7.icons.monitor;html=1;whiteSpace=wrap;fillColor=#141e2b;fontColor=#ffffff;strokeColor=#00aaff;fontSize=11;labelPosition=right;verticalLabelPosition=middle;align=left;labelBackgroundColor=none;imageWidth=50;imageHeight=35;" value="&lt;font color=&quot;#c8d0d8&quot;&gt;&lt;b&gt;client1&lt;/b&gt;&lt;br&gt;23.23.23.1&lt;/font&gt;" vertex="1">
+          <mxGeometry x="100" y="420" width="50" height="35" as="geometry" />
+        </mxCell>
+
+        <!-- client2 -->
+        <mxCell id="client2" parent="1" style="shape=mxgraph.ios7.icons.monitor;html=1;whiteSpace=wrap;fillColor=#141e2b;fontColor=#ffffff;strokeColor=#00aaff;fontSize=11;labelPosition=right;verticalLabelPosition=middle;align=left;labelBackgroundColor=none;imageWidth=50;imageHeight=35;" value="&lt;font color=&quot;#c8d0d8&quot;&gt;&lt;b&gt;client2&lt;/b&gt;&lt;br&gt;23.23.23.2&lt;/font&gt;" vertex="1">
+          <mxGeometry x="390" y="420" width="50" height="35" as="geometry" />
+        </mxCell>
+
+        <!-- client3 -->
+        <mxCell id="client3" parent="1" style="shape=mxgraph.ios7.icons.monitor;html=1;whiteSpace=wrap;fillColor=#141e2b;fontColor=#ffffff;strokeColor=#ff8800;fontSize=11;labelPosition=right;verticalLabelPosition=middle;align=left;labelBackgroundColor=none;imageWidth=50;imageHeight=35;" value="&lt;font color=&quot;#c8d0d8&quot;&gt;&lt;b&gt;client3&lt;/b&gt;&lt;br&gt;34.34.34.1&lt;/font&gt;" vertex="1">
+          <mxGeometry x="700" y="420" width="50" height="35" as="geometry" />
+        </mxCell>
+
+        <!-- client4 -->
+        <mxCell id="client4" parent="1" style="shape=mxgraph.ios7.icons.monitor;html=1;whiteSpace=wrap;fillColor=#141e2b;fontColor=#ffffff;strokeColor=#ff8800;fontSize=11;labelPosition=right;verticalLabelPosition=middle;align=left;labelBackgroundColor=none;imageWidth=50;imageHeight=35;" value="&lt;font color=&quot;#c8d0d8&quot;&gt;&lt;b&gt;client4&lt;/b&gt;&lt;br&gt;34.34.34.2&lt;/font&gt;" vertex="1">
+          <mxGeometry x="990" y="420" width="50" height="35" as="geometry" />
+        </mxCell>
+
+        <!-- n9k-ce01 → client1 (Eth1/3) -->
+        <mxCell id="n9k01-c1" edge="1" parent="1" source="n9k-ce01" target="client1" style="endArrow=none;html=1;strokeWidth=2;strokeColor=#00aaff;exitX=0.3;exitY=1;exitDx=0;exitDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="n9k01-c1-label" connectable="0" parent="n9k01-c1" style="edgeLabel;html=1;fontSize=10;fontColor=#00d4ff;labelBackgroundColor=none;" value="&lt;b&gt;Eth1/3&lt;/b&gt;" vertex="1">
+          <mxGeometry relative="1" x="-0.2" as="geometry">
+            <mxPoint x="-15" as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- n9k-ce01 → client2 (Eth1/4) -->
+        <mxCell id="n9k01-c2" edge="1" parent="1" source="n9k-ce01" target="client2" style="endArrow=none;html=1;strokeWidth=2;strokeColor=#00aaff;exitX=0.7;exitY=1;exitDx=0;exitDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="n9k01-c2-label" connectable="0" parent="n9k01-c2" style="edgeLabel;html=1;fontSize=10;fontColor=#00d4ff;labelBackgroundColor=none;" value="&lt;b&gt;Eth1/4&lt;/b&gt;" vertex="1">
+          <mxGeometry relative="1" x="-0.2" as="geometry">
+            <mxPoint x="15" as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- n9k-ce02 → client3 (Eth1/3) -->
+        <mxCell id="n9k02-c3" edge="1" parent="1" source="n9k-ce02" target="client3" style="endArrow=none;html=1;strokeWidth=2;strokeColor=#ff8800;exitX=0.3;exitY=1;exitDx=0;exitDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="n9k02-c3-label" connectable="0" parent="n9k02-c3" style="edgeLabel;html=1;fontSize=10;fontColor=#ff8800;labelBackgroundColor=none;" value="&lt;b&gt;Eth1/3&lt;/b&gt;" vertex="1">
+          <mxGeometry relative="1" x="-0.2" as="geometry">
+            <mxPoint x="-15" as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- n9k-ce02 → client4 (Eth1/4) -->
+        <mxCell id="n9k02-c4" edge="1" parent="1" source="n9k-ce02" target="client4" style="endArrow=none;html=1;strokeWidth=2;strokeColor=#ff8800;exitX=0.7;exitY=1;exitDx=0;exitDy=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="n9k02-c4-label" connectable="0" parent="n9k02-c4" style="edgeLabel;html=1;fontSize=10;fontColor=#ff8800;labelBackgroundColor=none;" value="&lt;b&gt;Eth1/4&lt;/b&gt;" vertex="1">
+          <mxGeometry relative="1" x="-0.2" as="geometry">
+            <mxPoint x="15" as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Ping west (client1 ↔ client2) -->
+        <mxCell id="ping-west" edge="1" parent="1" source="client1" target="client2" style="endArrow=classic;startArrow=classic;html=1;strokeWidth=2;strokeColor=#00cc66;dashed=1;dashPattern=8 4;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ping-west-label" connectable="0" parent="ping-west" style="edgeLabel;html=1;fontSize=11;fontColor=#00cc66;labelBackgroundColor=none;" value="&lt;b&gt;Ping test ✓&lt;/b&gt;" vertex="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint y="15" as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Ping east (client3 ↔ client4) -->
+        <mxCell id="ping-east" edge="1" parent="1" source="client3" target="client4" style="endArrow=classic;startArrow=classic;html=1;strokeWidth=2;strokeColor=#00cc66;dashed=1;dashPattern=8 4;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ping-east-label" connectable="0" parent="ping-east" style="edgeLabel;html=1;fontSize=11;fontColor=#00cc66;labelBackgroundColor=none;" value="&lt;b&gt;Ping test ✓&lt;/b&gt;" vertex="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint y="15" as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- No cross-site line -->
+        <mxCell id="no-cross" edge="1" parent="1" style="endArrow=none;html=1;strokeWidth=2;strokeColor=#ff4444;dashed=1;dashPattern=4 4;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="590" y="445" as="sourcePoint" />
+            <mxPoint x="610" y="445" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="no-cross-label" parent="1" style="text;html=1;fontSize=11;align=center;verticalAlign=middle;fontColor=#ff4444;" value="&lt;b&gt;✗ No cross-site yet&lt;/b&gt;" vertex="1">
+          <mxGeometry x="520" y="460" width="160" height="25" as="geometry" />
+        </mxCell>
+
+        <!-- You configure card - WEST -->
+        <mxCell id="vlan-west" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1e2d3d;strokeColor=#00aaff;strokeWidth=2;fontSize=11;align=left;spacingLeft=10;verticalAlign=middle;" value="&lt;font color=&quot;#00d4ff&quot;&gt;&lt;b&gt;You configure:&lt;/b&gt;&lt;/font&gt;&lt;br&gt;&lt;font color=&quot;#c8d0d8&quot;&gt;- VLAN ID: 23&lt;br&gt;- VLAN Name: CLIENT-VLAN-23&lt;br&gt;- Assign Eth1/3, Eth1/4&lt;/font&gt;" vertex="1">
+          <mxGeometry x="130" y="515" width="240" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- You configure card - EAST -->
+        <mxCell id="vlan-east" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1e2d3d;strokeColor=#ff8800;strokeWidth=2;fontSize=11;align=left;spacingLeft=10;verticalAlign=middle;" value="&lt;font color=&quot;#ff8800&quot;&gt;&lt;b&gt;You configure:&lt;/b&gt;&lt;/font&gt;&lt;br&gt;&lt;font color=&quot;#c8d0d8&quot;&gt;- VLAN ID: 34&lt;br&gt;- VLAN Name: CLIENT-VLAN-34&lt;br&gt;- Assign Eth1/3, Eth1/4&lt;/font&gt;" vertex="1">
+          <mxGeometry x="830" y="515" width="240" height="80" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

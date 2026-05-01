@@ -1,0 +1,80 @@
+/* Cisco brand colors on Material slate theme */
+:root {
+  --md-primary-fg-color:        #00bceb;
+  --md-primary-fg-color--light: #049fd9;
+  --md-primary-fg-color--dark:  #00bceb;
+  --md-accent-fg-color:         #049fd9;
+}
+
+/* Header background — Cisco dark blue */
+.md-header {
+  background-color: #1b2a3b;
+}
+
+/* Nav tabs */
+.md-tabs {
+  background-color: #1b2a3b;
+}
+
+/* Active nav tab + hover accent */
+.md-tabs__link--active,
+.md-tabs__link:hover {
+  color: #00bceb !important;
+}
+
+/* Sidebar active link */
+.md-nav__link--active {
+  color: #00bceb !important;
+}
+
+/* Code block header */
+.md-typeset .highlight .filename {
+  background-color: #1b2a3b;
+  color: #00bceb;
+}
+
+/* Admonition note color override */
+.md-typeset .admonition.note,
+.md-typeset details.note {
+  border-color: #00bceb;
+}
+.md-typeset .note > .admonition-title,
+.md-typeset .note > summary {
+  background-color: rgba(0, 188, 235, 0.1);
+}
+.md-typeset .note > .admonition-title::before,
+.md-typeset .note > summary::before {
+  color: #00bceb;
+}
+
+/* ── Landing page hero ─────────────────────────────────────────── */
+.cl-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 2rem 0;
+}
+
+.cl-title-slide {
+  width: 100%;
+  max-width: 900px;
+  border-radius: 6px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+}
+
+.cl-button {
+  display: inline-block;
+  background-color: #00bceb;
+  color: #0d1b2a !important;
+  font-weight: 700;
+  font-size: 1rem;
+  padding: 0.75rem 2rem;
+  border-radius: 4px;
+  text-decoration: none !important;
+  transition: background-color 0.2s;
+}
+
+.cl-button:hover {
+  background-color: #049fd9;
+}

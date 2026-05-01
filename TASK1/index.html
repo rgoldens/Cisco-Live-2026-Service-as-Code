@@ -1,0 +1,1618 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Cisco Live 2026 Lab Guide — hands-on service insertion automation with Ansible, Terraform, and ContainerLab">
+      
+      
+        <meta name="author" content="Cisco Live 2026">
+      
+      
+        <link rel="canonical" href="https://rgoldens.github.io/Cisco-Live-2026-Service-as-Code/TASK1/">
+      
+      
+        <link rel="prev" href="../LAB-ACCESS/">
+      
+      
+        <link rel="next" href="../TASK2/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Task 1: Explore the Environment - LTRATO-1001: Service Insertion as Code: From Concept to Commit</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/cisco.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#task-1-configure-l2-access-vlans" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="LTRATO-1001: Service Insertion as Code: From Concept to Commit" class="md-header__button md-logo" aria-label="LTRATO-1001: Service Insertion as Code: From Concept to Commit" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            LTRATO-1001: Service Insertion as Code: From Concept to Commit
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Task 1: Explore the Environment
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../GETTING-STARTED/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Getting Started
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../LAB-ACCESS/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Lab Access
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
+          
+  
+  
+  Lab Tasks
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../REFERENCE/" class="md-tabs__link">
+          
+  
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../Ansible-Primer/" class="md-tabs__link">
+          
+  
+  
+  Primers
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="LTRATO-1001: Service Insertion as Code: From Concept to Commit" class="md-nav__button md-logo" aria-label="LTRATO-1001: Service Insertion as Code: From Concept to Commit" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    LTRATO-1001: Service Insertion as Code: From Concept to Commit
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../GETTING-STARTED/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LAB-ACCESS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lab Access
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lab Tasks
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Lab Tasks
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Task 1: Explore the Environment
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Task 1: Explore the Environment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#task-1-configure-l2-access-vlans" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 1: Configure L2 Access VLANs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Task 1: Configure L2 Access VLANs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#objective" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Objective
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-vlans" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why VLANs?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-1-verify-the-baseline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Verify the Baseline
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-read-the-playbook" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Read the Playbook
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-fill-in-the-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Fill in the Variables
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-run-the-playbook" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Run the Playbook
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-5-verify-the-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5: Verify the Results
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#task-1b-configuration-drift-remediation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 1b: Configuration Drift &amp; Remediation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Task 1b: Configuration Drift &amp; Remediation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#objective_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Objective
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-this-matters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why This Matters
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-1-introduce-the-drift" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Introduce the Drift
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-confirm-the-impact" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Confirm the Impact
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-check-before-you-fix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Check Before You Fix
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-let-ansible-remediate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Let Ansible Remediate
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-5-verify-the-fix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5: Verify the Fix
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#checkpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Checkpoint
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TASK2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Task 2: Build the Underlay
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TASK3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Task 3: Deploy BGP VPN
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TASK4/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Task 4: Service Insertion with Ansible
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TASK5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Task 5: Drift Detection with Terraform
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TASK6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Task 6: Validation & Cleanup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../REFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TROUBLESHOOTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Primers
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Primers
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Ansible-Primer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ansible Primer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Terraform-Primer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Terraform Primer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ContainerLab-Primer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ContainerLab Primer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Git-Primer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git Primer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+  <h1>Task 1: Explore the Environment</h1>
+
+<hr />
+<h2 id="task-1-configure-l2-access-vlans">Task 1: Configure L2 Access VLANs<a class="headerlink" href="#task-1-configure-l2-access-vlans" title="Permanent link">&para;</a></h2>
+<blockquote>
+<p><strong>New to Ansible?</strong> The <a href="../Ansible-Primer/">Ansible Primer</a> covers playbooks, plays, tasks, variables, and modules — everything you need before diving in here.</p>
+</blockquote>
+<p><img alt="Task 1: VLANs" src="../images/task1-vlans.png" /></p>
+<h3 id="objective">Objective<a class="headerlink" href="#objective" title="Permanent link">&para;</a></h3>
+<p>Configure VLANs on the N9K CE switches so Linux clients on the same
+switch can communicate on the same vlan. </p>
+<p><strong>Before Task 1:</strong>
+- Client1 (23.23.23.1) CANNOT reach Client2 (23.23.23.2)
+- Client3 (34.34.34.1) CANNOT reach Client4 (34.34.34.2)</p>
+<p><strong>After Task 1:</strong>
+- Client1 CAN ping Client2 (same switch, same VLAN)
+- Client3 CAN ping Client4 (same switch, same VLAN)</p>
+<h3 id="why-vlans">Why VLANs?<a class="headerlink" href="#why-vlans" title="Permanent link">&para;</a></h3>
+<p>The client-facing ports (Eth1/3, Eth1/4) on each N9K switch are currently in
+their default state — they operate as independent interfaces with no bridging
+between them. Even though client1 and client2 are plugged into the same
+physical switch, they can't talk to each other because there's no shared
+broadcast domain.</p>
+<p><strong>VLANs</strong> (Virtual Local Area Networks) solve this by creating a logical
+broadcast domain:</p>
+<ol>
+<li><strong>Create a VLAN</strong> — This is a virtual switch fabric inside the physical switch.
+   All ports assigned to the same VLAN can communicate at Layer 2.</li>
+<li><strong>Convert ports to switchport mode</strong> — NX-OS ports can be either Layer 3
+   (routed, each port has its own IP) or Layer 2 (switched, ports share a VLAN).
+   We need Layer 2 for client connectivity.</li>
+<li><strong>Assign both client ports to the same VLAN</strong> — Now Eth1/3 and Eth1/4 are
+   in the same broadcast domain, and frames are bridged between them.</li>
+</ol>
+<p><strong>VLAN IDs matter because they link to client subnets.</strong> West-side clients are
+on 23.23.23.0/24 — VLAN 23. East-side clients are on 34.34.34.0/24 — VLAN 34.
+This naming convention makes the network topology self-documenting.</p>
+<p>This is the foundation — Task 2 adds Layer 3 gateways on these VLANs (SVIs),
+and Task 3 carries VLAN routes across the SP core.</p>
+<h3 id="step-1-verify-the-baseline">Step 1: Verify the Baseline<a class="headerlink" href="#step-1-verify-the-baseline" title="Permanent link">&para;</a></h3>
+<p>Before configuring anything, verify the initial state of the network. Clients
+on the same switch cannot reach each other yet — not because something is
+broken, but because the VLANs haven't been configured. This is your baseline.</p>
+<p>From the server terminal, SSH into linux-client1 and try to ping its neighbor
+on the same switch. You could SSH into the client first and then run the ping
+from there — but here we use the shorthand form that passes the command directly
+over SSH in one line:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>ssh<span class="w"> </span>linux-client1<span class="w"> </span>ping<span class="w"> </span>-c<span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="m">23</span>.23.23.2
+</code></pre></div>
+<p>You should see <strong>100% packet loss</strong>:</p>
+<p><img alt="Baseline ping — 100% packet loss" src="../images/task1-baseline-ping-output.png" /></p>
+<p>Try the east side the same way:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>ssh<span class="w"> </span>linux-client3<span class="w"> </span>ping<span class="w"> </span>-c<span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="m">34</span>.34.34.2
+</code></pre></div>
+<p>Same result — <strong>100% packet loss</strong>. Both pairs of clients are physically
+connected to the same switch, but with no VLAN bridging the ports, the frames
+have nowhere to go. This is expected — no VLANs have been configured yet.</p>
+<blockquote>
+<p><strong>Why start with verification?</strong> In automation, your first step should always
+be to verify the current state. This gives you a baseline to compare against
+after the playbook runs. If you don't know where you started, you can't prove
+you improved anything.</p>
+</blockquote>
+<h3 id="step-2-read-the-playbook">Step 2: Read the Playbook<a class="headerlink" href="#step-2-read-the-playbook" title="Permanent link">&para;</a></h3>
+<p>Before making any changes, open the playbook and read through it:</p>
+<blockquote>
+<p><strong>Note:</strong> You can use any Linux text editor you prefer — <code>vi</code>, <code>vim</code>, <code>nano</code>, etc. All examples in this lab use <code>nano</code>.</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>nano<span class="w"> </span>~/ce-access-vlan.yml
+</code></pre></div>
+<blockquote>
+<p><strong>Note:</strong> The image below has comments removed for brevity — it shows only the YAML structure you need to understand.</p>
+</blockquote>
+<p><img alt="Step 2: Clean playbook view" src="../images/task1-step2-playbook-clean.png" /></p>
+<p>Read through the playbook carefully. Here's what each section does:</p>
+<ul>
+<li>
+<p><strong><code>vars: vlan_config</code></strong> — The per-device variable block at the top of the playbook. You'll fill in the VLAN ID and name for each switch in Step 3. These values are what <code>{{ vlan_config[inventory_hostname].id }}</code> pulls from at runtime — one entry per device, looked up automatically.</p>
+</li>
+<li>
+<p><strong><code>cisco.nxos.nxos_vlans</code></strong> (Task 1) — A <em>declarative</em> module. You describe the desired state — "VLAN 23 should exist and be named CLIENT-VLAN-23" — and Ansible determines what CLI commands to send. If the VLAN already exists with the correct config, nothing changes.</p>
+</li>
+<li>
+<p><strong><code>cisco.nxos.nxos_interfaces</code></strong> (Task 2) — Sets Eth1/3 and Eth1/4 to Layer 2 (switchport) mode. On N9Kv, ports boot in Layer 3 (routed) mode by default. This module checks the current mode and only makes a change if it's wrong — truly idempotent.</p>
+</li>
+<li>
+<p><strong><code>cisco.nxos.nxos_l2_interfaces</code></strong> (Task 3) — Assigns the access VLAN to each port. Uses <code>{{ vlan_config[inventory_hostname].id }}</code> to pull the correct VLAN ID from your vars — the same task runs on both switches and produces different results automatically.</p>
+</li>
+<li>
+<p><strong><code>cisco.nxos.nxos_config</code></strong> (Task 4) — Saves the running config to startup-config, but only if something actually changed (<code>save_when: modified</code>). Safe to re-run — won't cause unnecessary writes.</p>
+</li>
+</ul>
+<blockquote>
+<p><strong>💡 Automation Insight:</strong> Three tasks. Three modules. Three concerns separated cleanly — <em>create</em> the VLAN, <em>set port mode</em> to Layer 2, <em>assign</em> the VLAN to the ports. All three modules are <em>declarative</em>: describe the desired state, Ansible figures out what to change. The <code>{{ variable }}</code> syntax removed duplication across switches. This is how automation scales: data changes, logic doesn't.</p>
+<p><strong>For reference:</strong> The image below shows the same playbook as it appears in nano, including all inline comments.</p>
+</blockquote>
+<p><img alt="Step 2: Read the Playbook" src="../images/task1-step2-read-playbook.png" /></p>
+<hr />
+<blockquote>
+<p><strong>New to Ansible resource modules?</strong> Before filling in the variables, the <a href="../Ansible-Primer/#cisco-nxos-resource-modules">Ansible Primer</a> covers module naming, <code>state:</code> behavior, and how to look up documentation for any module in this lab.</p>
+</blockquote>
+<h3 id="step-3-fill-in-the-variables">Step 3: Fill in the Variables<a class="headerlink" href="#step-3-fill-in-the-variables" title="Permanent link">&para;</a></h3>
+<p>Now scroll to the <code>vars:</code> section in the playbook. You'll see TODO placeholders:</p>
+<p><img alt="vars block" src="../images/task1-vars-block.png" /></p>
+<p>Using <strong>Table 1: VLAN Assignments</strong>, fill in the 4 values:</p>
+<ol>
+<li><strong>n9k-ce01 VLAN ID:</strong> The VLAN for west-side clients (client1, client2)</li>
+<li><strong>n9k-ce01 VLAN name:</strong> Use the naming convention <code>CLIENT-VLAN-&lt;id&gt;</code></li>
+<li><strong>n9k-ce02 VLAN ID:</strong> The VLAN for east-side clients (client3, client4)</li>
+<li><strong>n9k-ce02 VLAN name:</strong> Use the naming convention <code>CLIENT-VLAN-&lt;id&gt;</code></li>
+</ol>
+<p>Save the file when done. If using <code>nano</code>: <code>Ctrl+O</code> → <code>Enter</code> to save, then <code>Ctrl+X</code> to exit.</p>
+<h3 id="step-4-run-the-playbook">Step 4: Run the Playbook<a class="headerlink" href="#step-4-run-the-playbook" title="Permanent link">&para;</a></h3>
+<p>Here's exactly what Ansible does with the variables you just filled in:</p>
+<p><img alt="Running the Playbook — What Happens Under the Hood" src="../images/task1-variables-explainer.png" /></p>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>A</strong></td>
+<td><code>hosts: nxos</code> → Ansible finds <code>n9k-ce01</code> and <code>n9k-ce02</code> in inventory</td>
+</tr>
+<tr>
+<td><strong>B</strong></td>
+<td>Ansible starts executing tasks on <code>n9k-ce01</code></td>
+</tr>
+<tr>
+<td><strong>C</strong></td>
+<td>Ansible sets <code>inventory_hostname = "n9k-ce01"</code> automatically</td>
+</tr>
+<tr>
+<td><strong>D</strong></td>
+<td><code>vlan_config["n9k-ce01"]</code> → looks up the <code>n9k-ce01</code> entry in your vars</td>
+</tr>
+<tr>
+<td><strong>E</strong></td>
+<td><code>.id</code> → reads the <code>id</code> field → <strong>23</strong></td>
+</tr>
+</tbody>
+</table>
+<p>The expression <code>{{ vlan_config[inventory_hostname].id }}</code> resolves to <code>23</code> on <code>n9k-ce01</code> and <code>34</code> on <code>n9k-ce02</code> — using the exact same playbook, with no <code>if/else</code> logic anywhere.</p>
+<p>Now run the playbook:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>ansible-playbook<span class="w"> </span>~/ce-access-vlan.yml
+</code></pre></div>
+<p>Watch the output as it runs. Ansible uses color-coded status for each task:</p>
+<ul>
+<li><strong><code>changed</code></strong> (yellow) = Ansible made a configuration change on the device</li>
+<li><strong><code>ok</code></strong> (green) = The task ran but no changes were needed (config already correct)</li>
+<li><strong><code>skipping</code></strong> (cyan) = The task's <code>when</code> condition was false for this host</li>
+<li><strong><code>failed</code></strong> (red) = Something went wrong — read the error message</li>
+</ul>
+<p>On the first run, most tasks should show <code>changed</code>. Here's what the configuration
+tasks look like when they run successfully:</p>
+<p><img alt="Playbook run output" src="../images/task1-step4-output.png" /></p>
+<blockquote>
+<p><strong>Why the 30-second pause?</strong> The N9Kv virtual switch needs a moment for its
+dataplane to start forwarding L2 traffic after VLAN changes. This is a
+vrnetlab quirk — physical Nexus hardware may also need a brief delay
+for STP convergence, but vrnetlab virtual switches typically need a longer pause.</p>
+</blockquote>
+<p>After the config tasks, the playbook runs <strong>verification</strong> and <strong>test</strong> plays
+automatically. Here's what successful verification looks like:</p>
+<blockquote>
+<p><strong>💡 Automation Insight:</strong> Notice that every playbook includes <code>show</code> commands and ping tests <em>as code</em>. This is a game-changer: verification isn't something you do after the change — it's part of the change. In production, if a verification task fails, you can automatically trigger a rollback. The playbook becomes a self-validating change window.</p>
+</blockquote>
+<p><img alt="Verify play output" src="../images/task1-verify-output.png" /></p>
+<blockquote>
+<p><strong>What to look for:</strong> Each switch should have its VLAN (23 or 34) in <code>active</code>
+status with both <code>Eth1/3</code> and <code>Eth1/4</code> listed in the Ports column. If you see
+the VLAN but no ports, the switchport assignment didn't work correctly.</p>
+</blockquote>
+<p>Finally, the ping tests confirm end-to-end reachability across the VLAN:</p>
+<p><img alt="Ping test output" src="../images/task1-ping-output.png" /></p>
+<p>The <strong>PLAY RECAP</strong> at the very end gives you a summary of everything that happened:</p>
+<p><img alt="PLAY RECAP output" src="../images/task1-recap-output.png" /></p>
+<blockquote>
+<p><strong>Reading the recap:</strong> Each line is a device. <code>changed=3</code> means 3 tasks made
+changes on that switch. <code>failed=0</code> means nothing went wrong. <code>skipped=2</code> on
+the Linux clients means those tasks were skipped because the <code>when</code> condition
+was false for that host. If you see <code>failed=1</code> or higher, scroll up to find
+the red error message — it will tell you exactly which task failed and why.</p>
+</blockquote>
+<h3 id="step-5-verify-the-results">Step 5: Verify the Results<a class="headerlink" href="#step-5-verify-the-results" title="Permanent link">&para;</a></h3>
+<p>Confirm these results from the playbook output:</p>
+<ul>
+<li>[ ] <code>show vlan brief</code> shows your VLANs with Eth1/3 and Eth1/4 assigned</li>
+<li>[ ] client1 → client2 ping: <strong>3 packets transmitted, 3 received, 0% packet loss</strong></li>
+<li>[ ] client3 → client4 ping: <strong>3 packets transmitted, 3 received, 0% packet loss</strong></li>
+<li>[ ] PLAY RECAP shows <strong>failed=0</strong> for all devices</li>
+</ul>
+<blockquote>
+<p><strong>Troubleshooting:</strong> If pings fail, verify you entered the correct VLAN IDs.
+The VLAN IDs must match Table 1, because the client IP addresses are already
+assigned to specific subnets. If you see a YAML syntax error, check that your
+values line up with the surrounding indentation — YAML is very picky about
+whitespace.</p>
+<p><strong>💡 Automation Insight:</strong> You just configured 2 switches, created 2 VLANs, assigned 4 ports, and verified connectivity — without logging into a single device. Manually, that's 2 SSH sessions, ~12 CLI commands each, and copy-pasting between windows hoping you don't typo a VLAN ID. The playbook took seconds.</p>
+</blockquote>
+<hr />
+<h2 id="task-1b-configuration-drift-remediation">Task 1b: Configuration Drift &amp; Remediation<a class="headerlink" href="#task-1b-configuration-drift-remediation" title="Permanent link">&para;</a></h2>
+<h3 id="objective_1">Objective<a class="headerlink" href="#objective_1" title="Permanent link">&para;</a></h3>
+<p>Demonstrate how Ansible detects and repairs configuration drift — when
+someone (or something) changes a device's config outside of automation,
+causing it to deviate from the desired state.</p>
+<p><strong>Before Task 1b:</strong>
+- Everything is working — client1 can ping client2, client3 can ping client4</p>
+<p><strong>After Task 1b:</strong>
+- You'll manually break the network, then watch Ansible find and fix the
+  exact change — without touching anything else</p>
+<h3 id="why-this-matters">Why This Matters<a class="headerlink" href="#why-this-matters" title="Permanent link">&para;</a></h3>
+<p>In production networks, configuration drift is one of the most common causes
+of outages. It happens every day:</p>
+<ul>
+<li>An engineer SSHs in at 2 AM to make a "quick fix" and forgets to update
+  the automation</li>
+<li>A firmware upgrade resets an interface to its default state</li>
+<li>A colleague changes a port config on the wrong switch</li>
+</ul>
+<p>The traditional response is to troubleshoot manually — SSH in, compare the
+running config to what you <em>think</em> it should be, and hope you catch the
+difference. That doesn't scale.</p>
+<p>With automation, your playbook <strong>is</strong> the source of truth. When something
+drifts, you don't troubleshoot — you re-run the playbook. Ansible compares
+the device's current state against the desired state, fixes only what
+changed, and leaves everything else untouched. This is idempotency working
+for you in the real world.</p>
+<h3 id="step-1-introduce-the-drift">Step 1: Introduce the Drift<a class="headerlink" href="#step-1-introduce-the-drift" title="Permanent link">&para;</a></h3>
+<p>SSH into <strong>n9k-ce01</strong> and manually change the VLAN on the client1 port. This
+simulates an unauthorized change — maybe someone moved a port to the wrong
+VLAN while troubleshooting a different issue.</p>
+<p>From the n9k-ce01 CLI:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>configure terminal
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>interface Ethernet1/3
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>  switchport access vlan 27
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>end
+</code></pre></div>
+<h3 id="step-2-confirm-the-impact">Step 2: Confirm the Impact<a class="headerlink" href="#step-2-confirm-the-impact" title="Permanent link">&para;</a></h3>
+<p>Verify that client1 can no longer reach client2:</p>
+<blockquote>
+<p><strong>💡 Ansible Tip:</strong> Earlier in this task you SSH'd directly into the client to
+run a ping. Here we use <code>ansible -m raw</code> to do the same thing without logging
+in. The <code>-m raw</code> flag sends a shell command over SSH without requiring Python
+on the target — which means it works on any SSH-accessible Linux or Unix host
+in your inventory. Ansible isn't just
+for playbooks. You can use it as a remote executor for one-off commands across
+your entire inventory from a single prompt.</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>ansible<span class="w"> </span>linux-client1<span class="w"> </span>-m<span class="w"> </span>raw<span class="w"> </span>-a<span class="w"> </span><span class="s2">&quot;ping -c 3 -W 2 23.23.23.2&quot;</span>
+</code></pre></div>
+<p>You should see <strong>100% packet loss</strong>:</p>
+<p><img alt="Ad-hoc ping failed output" src="../images/task1-adhoc-failed-output.png" /></p>
+<blockquote>
+<p><strong>💡 Why does it say FAILED?</strong> Don't worry — this is exactly what we expected.
+The red <code>[ERROR]</code> and <code>FAILED | rc=1</code> are Ansible telling you that the ping
+command exited with an error code. Here's the key: <code>ping</code> always exits with
+an error code when packets are lost. Ansible sees that error code and flags it
+as a failure — but that's not a problem with Ansible or your setup. It's
+actually confirming that connectivity is broken, which is the whole point of
+this step. The <code>100% packet loss</code> line in the output is your proof. You will
+see this same pattern any time you use <code>ansible -m raw</code> to run a command that
+returns a non-zero exit code.</p>
+</blockquote>
+<p>One manual change on one interface, and connectivity is broken. Client1 is now
+on VLAN 27 while client2 is still on VLAN 23 — they're in different broadcast
+domains. In a network with hundreds of switches, finding a single misassigned
+VLAN would be a needle in a haystack.</p>
+<h3 id="step-3-check-before-you-fix">Step 3: Check Before You Fix<a class="headerlink" href="#step-3-check-before-you-fix" title="Permanent link">&para;</a></h3>
+<p>Before re-running the playbook to fix the drift, run it in <strong>dry-run mode</strong> first
+to see exactly what Ansible would change — without touching any device:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>ansible-playbook<span class="w"> </span>--check<span class="w"> </span>--diff<span class="w"> </span>~/ce-access-vlan.yml
+</code></pre></div>
+<blockquote>
+<p><strong>💡 Ansible Tip:</strong> Two flags that every network engineer should know:</p>
+<ul>
+<li>
+<p><strong><code>--check</code></strong> — Dry-run mode. Ansible connects to every device, evaluates
+  every task, and tells you what <em>would</em> change — but makes <strong>zero changes</strong>.
+  Nothing is written to any device. Think of it as "show me the plan before
+  you execute it."</p>
+</li>
+<li>
+<p><strong><code>--diff</code></strong> — Shows a before/after comparison for any task that would make
+  a change. Instead of just seeing <code>changed: [n9k-ce01]</code>, you see the exact
+  value that was wrong and what Ansible would set it to.</p>
+</li>
+</ul>
+<p><strong>Why check first?</strong> In production, re-running a playbook without knowing
+what it will change is risky — especially if other engineers have made
+intentional changes since your last run. <code>--check --diff</code> lets you verify
+that Ansible has correctly identified <em>only</em> the drifted config before you
+commit the fix. You're looking for <code>changed</code> on exactly one task on exactly
+one device — confirming the drift is isolated to what you expect.</p>
+</blockquote>
+<p>When you run this command, you should see output like this:</p>
+<p><img alt="Check and diff output" src="../images/task1-check-diff-output.png" /></p>
+<p>Here is what the dry run is telling you:</p>
+<ul>
+<li><strong>Step 1</strong> → <code>ok</code> on both switches — the VLANs already exist, nothing to do</li>
+<li><strong>Step 2</strong> → <code>ok</code> on both switches — ports are already in Layer 2 mode, no drift here</li>
+<li><strong>Step 3</strong> → <code>ok</code> on n9k-ce02, <strong><code>changed</code> on n9k-ce01</strong> — this is the drift.
+  Ansible detected that Ethernet1/3 on n9k-ce01 has the wrong VLAN assigned and
+  <em>would</em> correct it. n9k-ce02 was never touched, so it's still correct.</li>
+<li><strong>Step 4</strong> → the <code>[WARNING]</code> about skipping the config save is expected in
+  check mode — Ansible never writes to any device during a dry run, so it skips
+  the save and tells you so.</li>
+</ul>
+<p>No changes have been made to any device yet. The dry run confirmed exactly what
+you expected — one task, one device, one fix needed. Now you can run the
+playbook for real with confidence.</p>
+<h3 id="step-4-let-ansible-remediate">Step 4: Let Ansible Remediate<a class="headerlink" href="#step-4-let-ansible-remediate" title="Permanent link">&para;</a></h3>
+<p>Re-run the exact same playbook you ran in Task 1:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>ansible-playbook<span class="w"> </span>~/ce-access-vlan.yml
+</code></pre></div>
+<p>Here is the output you will see:</p>
+<p><img alt="Remediation run output" src="../images/task1-remediate-output.png" /></p>
+<p>This is the actual fix. Ansible ran every task against the real device state —
+and this time made the change for real. Step 3 shows <code>changed: [n9k-ce01]</code>,
+exactly what the dry run predicted. Everything else is <code>ok</code> because nothing
+else had drifted. Ansible didn't blindly reconfigure everything — it checked
+each task against the device's current state and only changed what was actually
+wrong. That's the power of idempotency — it's not just "safe to re-run," it's a
+<strong>drift detection and remediation engine</strong>.</p>
+<h3 id="step-5-verify-the-fix">Step 5: Verify the Fix<a class="headerlink" href="#step-5-verify-the-fix" title="Permanent link">&para;</a></h3>
+<p>The playbook doesn't just fix the config — it verifies connectivity automatically
+as part of the same run. The built-in ping test runs at the end and you can see
+the result in the output:</p>
+<p><img alt="Remediation ping verification output" src="../images/task1-remediate-ping-output.png" /></p>
+<p><strong>0% packet loss on both client pairs.</strong> Connectivity is fully restored. You
+didn't have to manually SSH into anything to verify — the playbook did it for
+you.</p>
+<h3 id="checkpoint">Checkpoint<a class="headerlink" href="#checkpoint" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] You manually changed Ethernet1/3 on n9k-ce01 to VLAN 27</li>
+<li>[ ] client1 → client2 ping showed <strong>100% packet loss</strong></li>
+<li>[ ] Re-running the playbook showed <code>changed</code> on Step 4 for n9k-ce01 only</li>
+<li>[ ] Re-running the playbook showed <code>ok</code> on Step 4 for n9k-ce02 (nothing touched)</li>
+<li>[ ] client1 → client2 ping is back to <strong>0% packet loss</strong></li>
+</ul>
+<blockquote>
+<p><strong>💡 Automation Insight:</strong> In production, teams schedule playbook runs every
+few hours as a compliance check. If nothing drifted, every task reports <code>ok</code>
+and <code>changed=0</code>. If something did drift, the playbook fixes it automatically
+and the <code>changed</code> count tells you exactly how many things were out of spec.
+You just turned a 45-minute troubleshooting session into a 30-second
+playbook run.</p>
+</blockquote>
+<hr />
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.expand", "navigation.top", "toc.integrate", "search.highlight", "search.suggest", "content.code.copy", "content.code.annotate"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

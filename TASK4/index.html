@@ -1,0 +1,2391 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Cisco Live 2026 Lab Guide — hands-on service insertion automation with Ansible, Terraform, and ContainerLab">
+      
+      
+        <meta name="author" content="Cisco Live 2026">
+      
+      
+        <link rel="canonical" href="https://rgoldens.github.io/Cisco-Live-2026-Service-as-Code/TASK4/">
+      
+      
+        <link rel="prev" href="../TASK3/">
+      
+      
+        <link rel="next" href="../TASK5/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Task 4: Service Insertion with Ansible - LTRATO-1001: Service Insertion as Code: From Concept to Commit</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/cisco.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#task-4-terraform-same-config-different-tool" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="LTRATO-1001: Service Insertion as Code: From Concept to Commit" class="md-header__button md-logo" aria-label="LTRATO-1001: Service Insertion as Code: From Concept to Commit" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            LTRATO-1001: Service Insertion as Code: From Concept to Commit
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Task 4: Service Insertion with Ansible
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../GETTING-STARTED/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Getting Started
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../LAB-ACCESS/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Lab Access
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../TASK1/" class="md-tabs__link">
+          
+  
+  
+  Lab Tasks
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../REFERENCE/" class="md-tabs__link">
+          
+  
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../Ansible-Primer/" class="md-tabs__link">
+          
+  
+  
+  Primers
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="LTRATO-1001: Service Insertion as Code: From Concept to Commit" class="md-nav__button md-logo" aria-label="LTRATO-1001: Service Insertion as Code: From Concept to Commit" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    LTRATO-1001: Service Insertion as Code: From Concept to Commit
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../GETTING-STARTED/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LAB-ACCESS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lab Access
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lab Tasks
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Lab Tasks
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TASK1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Task 1: Explore the Environment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TASK2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Task 2: Build the Underlay
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TASK3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Task 3: Deploy BGP VPN
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Task 4: Service Insertion with Ansible
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Task 4: Service Insertion with Ansible
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#task-4-terraform-same-config-different-tool" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 4: Terraform — Same Config, Different Tool
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Task 4: Terraform — Same Config, Different Tool">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#objective" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Objective
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ansible-vs-terraform-key-differences" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ansible vs Terraform — Key Differences
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-0-tear-down-the-ansible-config" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 0: Tear Down the Ansible Config
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#terraform-quick-primer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Terraform Quick Primer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exercise-complete-the-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exercise: Complete the Variables
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Exercise: Complete the Variables">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bgp-as-numbers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BGP AS Numbers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#per-router-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Per-Router Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#read-the-code-maintf-walkthrough" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Read the Code: main.tf Walkthrough
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Run It
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Run It">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-install-the-ios-xr-terraform-provider" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Install the IOS-XR Terraform Provider
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-initialize-terraform" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Initialize Terraform
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-preview-the-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Preview the Changes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-apply-the-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Apply the Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verify-check-for-drift" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verify: Check for Drift
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verify-east-west-connectivity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verify: East-West Connectivity
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bonus-clean-destroy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bonus: Clean Destroy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#checkpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Checkpoint
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#task-4b-terraform-drift-detection-remediation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 4b: Terraform Drift Detection &amp; Remediation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Task 4b: Terraform Drift Detection &amp; Remediation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#objective_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Objective
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-1-break-something" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Break Something
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-confirm-the-damage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Confirm the Damage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-detect-the-drift" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Detect the Drift
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-let-terraform-fix-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Let Terraform Fix It
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-5-verify-the-fix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5: Verify the Fix
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#drift-detection-ansible-vs-terraform" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Drift Detection: Ansible vs Terraform
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#checkpoint_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Checkpoint
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TASK5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Task 5: Drift Detection with Terraform
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TASK6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Task 6: Validation & Cleanup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../REFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TROUBLESHOOTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Primers
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Primers
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Ansible-Primer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ansible Primer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Terraform-Primer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Terraform Primer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ContainerLab-Primer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ContainerLab Primer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Git-Primer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git Primer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+  <h1>Task 4: Service Insertion with Ansible</h1>
+
+<hr />
+<h2 id="task-4-terraform-same-config-different-tool">Task 4: Terraform — Same Config, Different Tool<a class="headerlink" href="#task-4-terraform-same-config-different-tool" title="Permanent link">&para;</a></h2>
+<blockquote>
+<p><strong>New to Terraform?</strong> The <a href="../Terraform-Primer/">Terraform Primer</a> walks through state, providers, resources, and the plan/apply workflow before you start here.</p>
+</blockquote>
+<p>In Tasks 1-3, you used <strong>Ansible</strong> to push configuration via CLI over SSH.
+Now you'll use <strong>Terraform</strong> to configure the same XRd routers — same outcome,
+different approach. This gives you a direct comparison of two leading
+Infrastructure as Code tools on the same problem.</p>
+<h3 id="objective">Objective<a class="headerlink" href="#objective" title="Permanent link">&para;</a></h3>
+<p>Use Terraform to configure VRF, BGP, and route-policies on both XRd core
+routers. This is the <strong>same configuration</strong> that Ansible applied in Task 3's
+Play 1 (XRd portion only) — but expressed as Terraform resources instead of
+Ansible tasks.</p>
+<p><strong>Before Task 4:</strong>
+- XRd routers have no VRF, BGP VPNv4, or route-policies (Task 3 config has
+  been torn down)
+- East-west pings fail (no path across the SP core)</p>
+<p><strong>After Task 4:</strong>
+- Full east-west connectivity restored: Client1 pings Client3
+- Same configuration as Task 3, applied via Terraform + gNMI</p>
+<h3 id="ansible-vs-terraform-key-differences">Ansible vs Terraform — Key Differences<a class="headerlink" href="#ansible-vs-terraform-key-differences" title="Permanent link">&para;</a></h3>
+<p>Before you start, understand what makes these tools different:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Ansible</th>
+<th>Terraform</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Approach</strong></td>
+<td>Procedural — tasks run in order</td>
+<td>Declarative — describe desired state</td>
+</tr>
+<tr>
+<td><strong>Protocol</strong></td>
+<td>SSH (CLI commands)</td>
+<td>gNMI (YANG models)</td>
+</tr>
+<tr>
+<td><strong>State tracking</strong></td>
+<td>None — re-reads device each run</td>
+<td>State file tracks what it manages</td>
+</tr>
+<tr>
+<td><strong>Preview changes</strong></td>
+<td><code>--check</code> mode (limited)</td>
+<td><code>terraform plan</code> (exact diff)</td>
+</tr>
+<tr>
+<td><strong>Rollback</strong></td>
+<td>Write a separate "undo" playbook</td>
+<td><code>terraform destroy</code> removes everything</td>
+</tr>
+<tr>
+<td><strong>Drift detection</strong></td>
+<td>Re-run and check for <code>changed</code></td>
+<td><code>terraform plan</code> shows exact drift</td>
+</tr>
+<tr>
+<td><strong>Config format</strong></td>
+<td>YAML playbook with CLI strings</td>
+<td>HCL with typed resource attributes</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Key insight:</strong> Ansible pushes CLI commands through SSH — it speaks the same
+language a human operator would. Terraform speaks gNMI, which maps directly
+to YANG data models. Neither is "better" — they solve the same problem from
+different angles.</p>
+</blockquote>
+<h3 id="step-0-tear-down-the-ansible-config">Step 0: Tear Down the Ansible Config<a class="headerlink" href="#step-0-tear-down-the-ansible-config" title="Permanent link">&para;</a></h3>
+<p>Before Terraform can manage the XRd configuration, we need to remove what
+Ansible created in Task 3. Run the teardown playbook:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nb">cd</span><span class="w"> </span>~/task4-terraform
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>ansible-playbook<span class="w"> </span>-i<span class="w"> </span>~/inventory.yml<span class="w"> </span>teardown-xrd.yml
+</code></pre></div>
+<p>Expected output — 4 tasks, all <code>changed</code>:</p>
+<p><img alt="Teardown playbook output" src="../images/task4-teardown-output.png" /></p>
+<blockquote>
+<p><strong>Why tear down first?</strong> Terraform tracks what it manages in a state file.
+If Ansible already created the configuration, Terraform doesn't know about
+it — it would try to create duplicate resources. Starting clean lets
+Terraform own the full lifecycle.</p>
+</blockquote>
+<h3 id="terraform-quick-primer">Terraform Quick Primer<a class="headerlink" href="#terraform-quick-primer" title="Permanent link">&para;</a></h3>
+<p>If this is your first time with Terraform, here are the key concepts:</p>
+<p><strong>Files you'll work with:</strong></p>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>main.tf</code></td>
+<td>Resource definitions — what to create (already written)</td>
+</tr>
+<tr>
+<td><code>variables.tf</code></td>
+<td>Variable declarations with types and descriptions</td>
+</tr>
+<tr>
+<td><code>terraform.tfvars</code></td>
+<td>Variable values — <strong>this is what you fill in</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>The workflow:</strong></p>
+<p><img alt="Terraform Workflow" src="../images/terraform-workflow.png" /></p>
+<p><strong>How it connects to the routers:</strong></p>
+<p>Terraform uses the <strong>CiscoDevNet/iosxr</strong> provider, which communicates via
+<strong>gNMI</strong> (gRPC Network Management Interface) on port 9339. gNMI speaks
+YANG models natively — unlike Ansible's CLI-over-SSH approach, there's no
+screen-scraping or regex parsing. Each Terraform resource maps directly to
+a YANG model path.</p>
+<h3 id="exercise-complete-the-variables">Exercise: Complete the Variables<a class="headerlink" href="#exercise-complete-the-variables" title="Permanent link">&para;</a></h3>
+<p>The <code>main.tf</code> file is already written — read through it to understand the
+resources, but <strong>don't edit it</strong>. Your job is to fill in the variable values
+in <code>terraform.tfvars</code>.</p>
+<p>Open the variables file:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>nano<span class="w"> </span>terraform.tfvars
+</code></pre></div>
+<h4 id="bgp-as-numbers">BGP AS Numbers<a class="headerlink" href="#bgp-as-numbers" title="Permanent link">&para;</a></h4>
+<p>Find the two <code>___</code> placeholders for BGP:</p>
+<p><img alt="BGP ASN variables" src="../images/task4-tfvars-bgp.png" /></p>
+<p>Using <strong>Table 3: BGP Peering</strong>, fill in:</p>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Hint</th>
+<th>Where to Find It</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>bgp_asn</code></td>
+<td>The AS shared by both XRd routers</td>
+<td>Table 3, "Local AS" for xrd01/xrd02</td>
+</tr>
+<tr>
+<td><code>customer_asn</code></td>
+<td>The AS shared by both CSR PEs</td>
+<td>Table 3, "Remote AS" for csr-pe01/csr-pe02</td>
+</tr>
+</tbody>
+</table>
+<h4 id="per-router-configuration">Per-Router Configuration<a class="headerlink" href="#per-router-configuration" title="Permanent link">&para;</a></h4>
+<p>Scroll down to the <code>xrd_config</code> block — same variables you filled in for
+Task 3, same reference tables:</p>
+<p><img alt="XRd per-router variables" src="../images/task4-tfvars-xrd.png" /></p>
+<p>Using <strong>Table 2</strong> and <strong>Table 3</strong>, fill in:</p>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Hint</th>
+<th>Where to Find It</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>remote_lo</code> for xrd01</td>
+<td>xrd02's Loopback0 IP</td>
+<td>Table 2, xrd02 Loopback0 row</td>
+</tr>
+<tr>
+<td><code>remote_lo</code> for xrd02</td>
+<td>xrd01's Loopback0 IP</td>
+<td>Table 2, xrd01 Loopback0 row</td>
+</tr>
+<tr>
+<td><code>gi1_ip</code> for xrd01</td>
+<td>xrd01's IP on Gi0/0/0/1</td>
+<td>Table 2, xrd01 Gi0/0/0/1 row</td>
+</tr>
+<tr>
+<td><code>gi1_ip</code> for xrd02</td>
+<td>xrd02's IP on Gi0/0/0/1</td>
+<td>Table 2, xrd02 Gi0/0/0/1 row</td>
+</tr>
+<tr>
+<td><code>gi1_mask</code> (both)</td>
+<td>Subnet mask for /30</td>
+<td>Always <code>255.255.255.252</code> for /30</td>
+</tr>
+<tr>
+<td><code>csr_peer</code> for xrd01</td>
+<td>csr-pe01's IP toward xrd01</td>
+<td>Table 2, csr-pe01 Gi2 row</td>
+</tr>
+<tr>
+<td><code>csr_peer</code> for xrd02</td>
+<td>csr-pe02's IP toward xrd02</td>
+<td>Table 2, csr-pe02 Gi2 row</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Notice:</strong> These are the exact same values you used in Task 3. The data
+doesn't change — only the tool consuming it.</p>
+</blockquote>
+<h3 id="read-the-code-maintf-walkthrough">Read the Code: main.tf Walkthrough<a class="headerlink" href="#read-the-code-maintf-walkthrough" title="Permanent link">&para;</a></h3>
+<p>Before running Terraform, <strong>read through <code>main.tf</code></strong> and notice how it
+compares to the Ansible playbook:</p>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>What It Does</th>
+<th>Terraform Resource</th>
+<th>Ansible Equivalent</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Route-policy PASS-ALL</td>
+<td><code>iosxr_route_policy</code></td>
+<td><code>iosxr_config</code> with RPL text</td>
+</tr>
+<tr>
+<td>2</td>
+<td>VRF with route-targets</td>
+<td><code>iosxr_vrf</code></td>
+<td><code>iosxr_config</code> with CLI lines</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Interface VRF + IP</td>
+<td><code>iosxr_interface_ethernet</code></td>
+<td><code>iosxr_config</code> with interface parents</td>
+</tr>
+<tr>
+<td>4</td>
+<td>BGP process + iBGP neighbor</td>
+<td><code>iosxr_router_bgp</code></td>
+<td><code>iosxr_config</code> with <code>router bgp</code> parents</td>
+</tr>
+<tr>
+<td>4b</td>
+<td>VPNv4 address-family</td>
+<td><code>iosxr_router_bgp_address_family</code></td>
+<td>Nested in same <code>iosxr_config</code> task</td>
+</tr>
+<tr>
+<td>4c</td>
+<td>iBGP neighbor AF activation</td>
+<td><code>iosxr_router_bgp_neighbor_address_family</code></td>
+<td>Nested in same <code>iosxr_config</code> task</td>
+</tr>
+<tr>
+<td>5</td>
+<td>BGP VRF + eBGP neighbor</td>
+<td><code>iosxr_router_bgp_vrf</code></td>
+<td><code>iosxr_config</code> with <code>vrf</code> parents</td>
+</tr>
+<tr>
+<td>5b</td>
+<td>VRF address-family</td>
+<td><code>iosxr_router_bgp_vrf_address_family</code></td>
+<td>Nested in same task</td>
+</tr>
+<tr>
+<td>5c</td>
+<td>Neighbor route-policies</td>
+<td><code>iosxr_router_bgp_vrf_neighbor_address_family</code></td>
+<td>Nested in same task</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Key difference:</strong> In Ansible, one <code>iosxr_config</code> task pushes a block of
+CLI commands. In Terraform, each configuration element is a separate
+<strong>resource</strong> with typed attributes. More verbose, but each piece is
+independently trackable, plannable, and destroyable.</p>
+</blockquote>
+<h3 id="run-it">Run It<a class="headerlink" href="#run-it" title="Permanent link">&para;</a></h3>
+<h4 id="step-1-install-the-ios-xr-terraform-provider">Step 1: Install the IOS-XR Terraform Provider<a class="headerlink" href="#step-1-install-the-ios-xr-terraform-provider" title="Permanent link">&para;</a></h4>
+<p>Terraform needs the CiscoDevNet IOS-XR provider to manage XRd routers via
+gNMI. This provider isn't in the default Terraform Registry, so we download
+it manually and place it in the local filesystem mirror.</p>
+<p>Run these commands to download and install the provider:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>mkdir<span class="w"> </span>-p<span class="w"> </span>~/.terraform.d/plugins/registry.terraform.io/ciscodevnet/iosxr/0.7.1/linux_amd64
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>curl<span class="w"> </span>-sL<span class="w"> </span>https://github.com/CiscoDevNet/terraform-provider-iosxr/releases/download/v0.7.1/terraform-provider-iosxr_0.7.1_linux_amd64.zip<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">  </span>-o<span class="w"> </span>/tmp/terraform-provider-iosxr.zip
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>unzip<span class="w"> </span>-o<span class="w"> </span>/tmp/terraform-provider-iosxr.zip<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">  </span>-d<span class="w"> </span>~/.terraform.d/plugins/registry.terraform.io/ciscodevnet/iosxr/0.7.1/linux_amd64/
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>rm<span class="w"> </span>/tmp/terraform-provider-iosxr.zip
+</code></pre></div>
+<p>Verify the binary is in place:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>ls<span class="w"> </span>-la<span class="w"> </span>~/.terraform.d/plugins/registry.terraform.io/ciscodevnet/iosxr/0.7.1/linux_amd64/
+</code></pre></div>
+<p>You should see <code>terraform-provider-iosxr_v0.7.1</code> (about 30 MB).</p>
+<blockquote>
+<p><strong>Why a local mirror?</strong> The lab server uses a <code>.terraformrc</code> file that tells
+Terraform to load CiscoDevNet providers from the local filesystem instead of
+the public registry. This ensures consistent versions and works in
+environments with restricted internet access. You're placing the binary
+exactly where <code>.terraformrc</code> tells Terraform to look.</p>
+</blockquote>
+<h4 id="step-2-initialize-terraform">Step 2: Initialize Terraform<a class="headerlink" href="#step-2-initialize-terraform" title="Permanent link">&para;</a></h4>
+<p>Download the IOS-XR provider plugin:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>terraform<span class="w"> </span>init
+</code></pre></div>
+<p>Expected output:</p>
+<p><img alt="terraform init output" src="../images/task4-tf-init-output.png" /></p>
+<blockquote>
+<p><strong>Don't worry about the warnings.</strong> The "unauthenticated" and "incomplete lock
+file" messages are expected — we're using a local filesystem mirror for the
+provider plugin instead of downloading from the Terraform Registry. This is
+normal in lab and air-gapped environments.</p>
+</blockquote>
+<h4 id="step-3-preview-the-changes">Step 3: Preview the Changes<a class="headerlink" href="#step-3-preview-the-changes" title="Permanent link">&para;</a></h4>
+<p>This is where Terraform shines — you see exactly what will happen before
+anything touches the routers:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>terraform<span class="w"> </span>plan
+</code></pre></div>
+<p>Read the output carefully. Terraform shows every resource it will create,
+with every attribute value. You should see <strong>18 resources to add</strong> across
+both XRd routers (9 per router).</p>
+<details>
+<summary>Full terraform plan output (click to expand)</summary>
+
+<pre>
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+  # iosxr_interface_ethernet.gi1_xrd01 will be created
+  + resource "iosxr_interface_ethernet" "gi1_xrd01" {
+      + device       = "xrd01"
+      + id           = (known after apply)
+      + ipv4_address = "10.1.0.5"
+      + ipv4_netmask = "255.255.255.252"
+      + name         = "0/0/0/1"
+      + shutdown     = false
+      + type         = "GigabitEthernet"
+      + vrf          = "Customer-CLIVE"
+    }
+
+  # iosxr_interface_ethernet.gi1_xrd02 will be created
+  + resource "iosxr_interface_ethernet" "gi1_xrd02" {
+      + device       = "xrd02"
+      + id           = (known after apply)
+      + ipv4_address = "10.1.0.9"
+      + ipv4_netmask = "255.255.255.252"
+      + name         = "0/0/0/1"
+      + shutdown     = false
+      + type         = "GigabitEthernet"
+      + vrf          = "Customer-CLIVE"
+    }
+
+  # iosxr_route_policy.pass_all_xrd01 will be created
+  + resource "iosxr_route_policy" "pass_all_xrd01" {
+      + device            = "xrd01"
+      + id                = (known after apply)
+      + route_policy_name = "PASS-ALL"
+      + rpl               = <<-EOT
+            route-policy PASS-ALL
+              pass
+            end-policy
+        EOT
+    }
+
+  # iosxr_route_policy.pass_all_xrd02 will be created
+  + resource "iosxr_route_policy" "pass_all_xrd02" {
+      + device            = "xrd02"
+      + id                = (known after apply)
+      + route_policy_name = "PASS-ALL"
+      + rpl               = <<-EOT
+            route-policy PASS-ALL
+              pass
+            end-policy
+        EOT
+    }
+
+  # iosxr_router_bgp.bgp_xrd01 will be created
+  + resource "iosxr_router_bgp" "bgp_xrd01" {
+      + as_number = "65000"
+      + device    = "xrd01"
+      + id        = (known after apply)
+      + neighbors = [
+          + {
+              + address       = "192.168.0.2"
+              + remote_as     = "65000"
+              + update_source = "Loopback0"
+            },
+        ]
+    }
+
+  # iosxr_router_bgp.bgp_xrd02 will be created
+  + resource "iosxr_router_bgp" "bgp_xrd02" {
+      + as_number = "65000"
+      + device    = "xrd02"
+      + id        = (known after apply)
+      + neighbors = [
+          + {
+              + address       = "192.168.0.1"
+              + remote_as     = "65000"
+              + update_source = "Loopback0"
+            },
+        ]
+    }
+
+  # iosxr_router_bgp_address_family.vpnv4_xrd01 will be created
+  + resource "iosxr_router_bgp_address_family" "vpnv4_xrd01" {
+      + af_name   = "vpnv4-unicast"
+      + as_number = "65000"
+      + device    = "xrd01"
+      + id        = (known after apply)
+    }
+
+  # iosxr_router_bgp_address_family.vpnv4_xrd02 will be created
+  + resource "iosxr_router_bgp_address_family" "vpnv4_xrd02" {
+      + af_name   = "vpnv4-unicast"
+      + as_number = "65000"
+      + device    = "xrd02"
+      + id        = (known after apply)
+    }
+
+  # iosxr_router_bgp_neighbor_address_family.vpnv4_nbr_xrd01 will be created
+  + resource "iosxr_router_bgp_neighbor_address_family" "vpnv4_nbr_xrd01" {
+      + address   = "192.168.0.2"
+      + af_name   = "vpnv4-unicast"
+      + as_number = "65000"
+      + device    = "xrd01"
+      + id        = (known after apply)
+    }
+
+  # iosxr_router_bgp_neighbor_address_family.vpnv4_nbr_xrd02 will be created
+  + resource "iosxr_router_bgp_neighbor_address_family" "vpnv4_nbr_xrd02" {
+      + address   = "192.168.0.1"
+      + af_name   = "vpnv4-unicast"
+      + as_number = "65000"
+      + device    = "xrd02"
+      + id        = (known after apply)
+    }
+
+  # iosxr_router_bgp_vrf.vrf_bgp_xrd01 will be created
+  + resource "iosxr_router_bgp_vrf" "vrf_bgp_xrd01" {
+      + as_number             = "65000"
+      + device                = "xrd01"
+      + id                    = (known after apply)
+      + neighbors             = [
+          + {
+              + address     = "10.1.0.6"
+              + as_override = "enable"
+              + remote_as   = "65001"
+            },
+        ]
+      + rd_two_byte_as_index  = 1
+      + rd_two_byte_as_number = "65000"
+      + vrf_name              = "Customer-CLIVE"
+    }
+
+  # iosxr_router_bgp_vrf.vrf_bgp_xrd02 will be created
+  + resource "iosxr_router_bgp_vrf" "vrf_bgp_xrd02" {
+      + as_number             = "65000"
+      + device                = "xrd02"
+      + id                    = (known after apply)
+      + neighbors             = [
+          + {
+              + address     = "10.1.0.10"
+              + as_override = "enable"
+              + remote_as   = "65001"
+            },
+        ]
+      + rd_two_byte_as_index  = 1
+      + rd_two_byte_as_number = "65000"
+      + vrf_name              = "Customer-CLIVE"
+    }
+
+  # iosxr_router_bgp_vrf_address_family.vrf_af_xrd01 will be created
+  + resource "iosxr_router_bgp_vrf_address_family" "vrf_af_xrd01" {
+      + af_name                = "ipv4-unicast"
+      + as_number              = "65000"
+      + device                 = "xrd01"
+      + id                     = (known after apply)
+      + redistribute_connected = true
+      + vrf_name               = "Customer-CLIVE"
+    }
+
+  # iosxr_router_bgp_vrf_address_family.vrf_af_xrd02 will be created
+  + resource "iosxr_router_bgp_vrf_address_family" "vrf_af_xrd02" {
+      + af_name                = "ipv4-unicast"
+      + as_number              = "65000"
+      + device                 = "xrd02"
+      + id                     = (known after apply)
+      + redistribute_connected = true
+      + vrf_name               = "Customer-CLIVE"
+    }
+
+  # iosxr_router_bgp_vrf_neighbor_address_family.vrf_nbr_af_xrd01 will be created
+  + resource "iosxr_router_bgp_vrf_neighbor_address_family" "vrf_nbr_af_xrd01" {
+      + address          = "10.1.0.6"
+      + af_name          = "ipv4-unicast"
+      + as_number        = "65000"
+      + device           = "xrd01"
+      + id               = (known after apply)
+      + route_policy_in  = "PASS-ALL"
+      + route_policy_out = "PASS-ALL"
+      + vrf_name         = "Customer-CLIVE"
+    }
+
+  # iosxr_router_bgp_vrf_neighbor_address_family.vrf_nbr_af_xrd02 will be created
+  + resource "iosxr_router_bgp_vrf_neighbor_address_family" "vrf_nbr_af_xrd02" {
+      + address          = "10.1.0.10"
+      + af_name          = "ipv4-unicast"
+      + as_number        = "65000"
+      + device           = "xrd02"
+      + id               = (known after apply)
+      + route_policy_in  = "PASS-ALL"
+      + route_policy_out = "PASS-ALL"
+      + vrf_name         = "Customer-CLIVE"
+    }
+
+  # iosxr_vrf.customer_clive_xrd01 will be created
+  + resource "iosxr_vrf" "customer_clive_xrd01" {
+      + device                                              = "xrd01"
+      + id                                                  = (known after apply)
+      + ipv4_unicast                                        = true
+      + ipv4_unicast_export_route_target_two_byte_as_format = [
+          + {
+              + asn2_index         = 1
+              + stitching          = "disable"
+              + two_byte_as_number = 65000
+            },
+        ]
+      + ipv4_unicast_import_route_target_two_byte_as_format = [
+          + {
+              + asn2_index         = 1
+              + stitching          = "disable"
+              + two_byte_as_number = 65000
+            },
+        ]
+      + vrf_name                                            = "Customer-CLIVE"
+    }
+
+  # iosxr_vrf.customer_clive_xrd02 will be created
+  + resource "iosxr_vrf" "customer_clive_xrd02" {
+      + device                                              = "xrd02"
+      + id                                                  = (known after apply)
+      + ipv4_unicast                                        = true
+      + ipv4_unicast_export_route_target_two_byte_as_format = [
+          + {
+              + asn2_index         = 1
+              + stitching          = "disable"
+              + two_byte_as_number = 65000
+            },
+        ]
+      + ipv4_unicast_import_route_target_two_byte_as_format = [
+          + {
+              + asn2_index         = 1
+              + stitching          = "disable"
+              + two_byte_as_number = 65000
+            },
+        ]
+      + vrf_name                                            = "Customer-CLIVE"
+    }
+
+Plan: 18 to add, 0 to change, 0 to destroy.
+</pre>
+
+</details>
+
+<p>Take a moment to read through the plan. Notice how each resource maps to
+something you configured manually in Task 3:</p>
+<table>
+<thead>
+<tr>
+<th>Plan Resource</th>
+<th>What It Creates</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>iosxr_route_policy.pass_all_xrd01/02</code></td>
+<td>The <code>PASS-ALL</code> route-policy on each router</td>
+</tr>
+<tr>
+<td><code>iosxr_vrf.customer_clive_xrd01/02</code></td>
+<td>VRF <code>Customer-CLIVE</code> with RT import/export <code>65000:1</code></td>
+</tr>
+<tr>
+<td><code>iosxr_interface_ethernet.gi1_xrd01/02</code></td>
+<td>Gi0/0/0/1 with VRF, IP address, and <code>shutdown = false</code></td>
+</tr>
+<tr>
+<td><code>iosxr_router_bgp.bgp_xrd01/02</code></td>
+<td>BGP AS 65000 with iBGP neighbor (update-source Loopback0)</td>
+</tr>
+<tr>
+<td><code>iosxr_router_bgp_address_family.vpnv4_xrd01/02</code></td>
+<td>VPNv4 unicast address-family</td>
+</tr>
+<tr>
+<td><code>iosxr_router_bgp_neighbor_address_family.vpnv4_nbr_xrd01/02</code></td>
+<td>VPNv4 activation on the iBGP neighbor</td>
+</tr>
+<tr>
+<td><code>iosxr_router_bgp_vrf.vrf_bgp_xrd01/02</code></td>
+<td>BGP VRF with eBGP neighbor (AS 65001, as-override)</td>
+</tr>
+<tr>
+<td><code>iosxr_router_bgp_vrf_address_family.vrf_af_xrd01/02</code></td>
+<td>VRF IPv4 unicast with redistribute connected</td>
+</tr>
+<tr>
+<td><code>iosxr_router_bgp_vrf_neighbor_address_family.vrf_nbr_af_xrd01/02</code></td>
+<td>VRF neighbor route-policies (PASS-ALL in/out)</td>
+</tr>
+</tbody>
+</table>
+<p>Every attribute value in the <code>+</code> lines came from <strong>your</strong> <code>terraform.tfvars</code>
+entries. If any IP address or AS number looks wrong, <strong>fix it now</strong> in
+<code>terraform.tfvars</code> and re-run <code>terraform plan</code> — nothing has touched the
+routers yet.</p>
+<blockquote>
+<p><strong>Compare to Ansible:</strong> With Ansible, <code>--check</code> mode gives you a rough
+idea of what will change, but it can't show you the exact attribute values.
+Terraform's plan is precise — it tells you exactly which attributes will be
+set on which device, before a single byte is sent.</p>
+</blockquote>
+<h4 id="step-4-apply-the-configuration">Step 4: Apply the Configuration<a class="headerlink" href="#step-4-apply-the-configuration" title="Permanent link">&para;</a></h4>
+<p>Push the config to both XRd routers:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>terraform<span class="w"> </span>apply
+</code></pre></div>
+<p>Terraform will show the full plan again and ask for confirmation. Type <code>yes</code>:</p>
+<p><img alt="terraform apply confirmation prompt" src="../images/task4-tf-apply-prompt.png" /></p>
+<p>Watch the resources being created — Terraform automatically determines the
+correct order based on <code>depends_on</code> relationships (VRF before interface,
+BGP before VRF-BGP):</p>
+<p><img alt="terraform apply output" src="../images/task4-tf-apply-output.png" /></p>
+<blockquote>
+<p><strong>Timing race note:</strong> On the first apply, you may see an error on the last
+2 resources (<code>vrf_nbr_af_xrd01</code> / <code>vrf_nbr_af_xrd02</code>) with the message
+<code>"The address family has not been initialized"</code>. This is a gNMI timing
+issue — the VRF address-family hasn't fully committed on the device before
+Terraform tries to configure the neighbor under it. <strong>This is normal.</strong>
+Simply run <code>terraform apply</code> again and Terraform will create just the 2
+remaining resources:</p>
+<p><pre>
+Plan: 2 to add, 0 to change, 0 to destroy.
+...
+Apply complete! Resources: 2 added, 0 changed, 0 destroyed.
+</pre></p>
+<p>This is a great teaching moment: Terraform is <strong>idempotent and resumable</strong>.
+A partial failure doesn't corrupt anything — you just re-apply and it
+picks up where it left off.</p>
+<p><strong>Speed comparison:</strong> Terraform applies all 18 resources in about 3-5
+seconds via gNMI. The equivalent Ansible playbook takes longer because
+it runs tasks sequentially. Terraform can apply resources in parallel
+across both routers simultaneously, as you can see in the interleaved
+output above.</p>
+</blockquote>
+<h3 id="verify-check-for-drift">Verify: Check for Drift<a class="headerlink" href="#verify-check-for-drift" title="Permanent link">&para;</a></h3>
+<p>Run the plan again — it should show no changes:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>terraform<span class="w"> </span>plan
+</code></pre></div>
+<p>Terraform reads the live configuration from both routers via gNMI, compares
+it against the desired state in your <code>.tf</code> files, and reports:</p>
+<p><img alt="terraform plan no changes" src="../images/task4-tf-plan-nochanges.png" /></p>
+<p>Notice the "Refreshing state..." lines — Terraform is actively reading the
+live device config via gNMI and comparing every attribute against what it
+expects. All 18 resources match, so the output is "No changes."</p>
+<p>This is Terraform's version of idempotency. The state file records what
+was last known, <code>plan</code> refreshes it from the live device, then diffs against
+your <code>.tf</code> configuration. If someone manually changed something on the router,
+this command would show you exactly what drifted (you'll see this in Task 4b).</p>
+<h3 id="verify-east-west-connectivity">Verify: East-West Connectivity<a class="headerlink" href="#verify-east-west-connectivity" title="Permanent link">&para;</a></h3>
+<p>Test that the configuration works — same ping test as Task 3:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nb">cd</span><span class="w"> </span>~
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>ansible<span class="w"> </span>-i<span class="w"> </span>inventory.yml<span class="w"> </span>linux-client1<span class="w"> </span>-m<span class="w"> </span>raw<span class="w"> </span>-a<span class="w"> </span><span class="s2">&quot;ping -c 3 34.34.34.1&quot;</span>
+</code></pre></div>
+<blockquote>
+<p><strong>Note:</strong> After <code>terraform apply</code>, BGP needs about 30-60 seconds to
+converge — the iBGP VPNv4 session must establish and exchange VPN labels
+before end-to-end traffic flows. If you get 100% packet loss, wait a
+minute and try again.</p>
+</blockquote>
+<p>Expected output — 100% success:</p>
+<p><img alt="Task 4: ping success after apply" src="../images/task4-ping-success-output.png" /></p>
+<p>Full east-west connectivity — rebuilt entirely with Terraform. The traffic
+path is identical to Task 3: client1 (23.23.23.1) → n9k-ce01 → csr-pe01 →
+xrd01 → xrd02 → csr-pe02 → n9k-ce02 → client3 (34.34.34.1), crossing
+6 devices, 4 platforms, and 4 technologies (VLAN, IS-IS, MPLS, BGP VPNv4).</p>
+<h3 id="bonus-clean-destroy">Bonus: Clean Destroy<a class="headerlink" href="#bonus-clean-destroy" title="Permanent link">&para;</a></h3>
+<p>One of Terraform's strongest features is clean teardown. Try it:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="nb">cd</span><span class="w"> </span>~/task4-terraform
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>terraform<span class="w"> </span>destroy
+</code></pre></div>
+<p>Type <code>yes</code> when prompted. Terraform removes all 18 resources in reverse
+dependency order — leaf resources first, then their parents:</p>
+<details>
+<summary>Full terraform destroy output (click to expand)</summary>
+
+<pre>
+Terraform will perform the following actions:
+
+  # iosxr_interface_ethernet.gi1_xrd01 will be destroyed
+  - resource "iosxr_interface_ethernet" "gi1_xrd01" {
+      - device       = "xrd01" -> null
+      - ipv4_address = "10.1.0.5" -> null
+      - ipv4_netmask = "255.255.255.252" -> null
+      - name         = "0/0/0/1" -> null
+      - shutdown     = false -> null
+      - type         = "GigabitEthernet" -> null
+      - vrf          = "Customer-CLIVE" -> null
+    }
+
+  # iosxr_interface_ethernet.gi1_xrd02 will be destroyed
+  - resource "iosxr_interface_ethernet" "gi1_xrd02" {
+      - device       = "xrd02" -> null
+      - ipv4_address = "10.1.0.9" -> null
+      - ipv4_netmask = "255.255.255.252" -> null
+      - name         = "0/0/0/1" -> null
+      - shutdown     = false -> null
+      - type         = "GigabitEthernet" -> null
+      - vrf          = "Customer-CLIVE" -> null
+    }
+
+  ... (all 18 resources shown with - destroy markers)
+
+Plan: 0 to add, 0 to change, 18 to destroy.
+
+iosxr_router_bgp_neighbor_address_family.vpnv4_nbr_xrd01: Destroying...
+iosxr_router_bgp_neighbor_address_family.vpnv4_nbr_xrd02: Destroying...
+iosxr_router_bgp_vrf_address_family.vrf_af_xrd01: Destroying...
+iosxr_router_bgp_vrf_address_family.vrf_af_xrd02: Destroying...
+iosxr_router_bgp_vrf_neighbor_address_family.vrf_nbr_af_xrd02: Destroying...
+iosxr_router_bgp_vrf_neighbor_address_family.vrf_nbr_af_xrd01: Destroying...
+iosxr_interface_ethernet.gi1_xrd02: Destroying...
+iosxr_interface_ethernet.gi1_xrd01: Destroying...
+iosxr_router_bgp_neighbor_address_family.vpnv4_nbr_xrd02: Destruction complete after 0s
+iosxr_router_bgp_address_family.vpnv4_xrd02: Destroying...
+iosxr_router_bgp_vrf_neighbor_address_family.vrf_nbr_af_xrd01: Destruction complete after 1s
+iosxr_route_policy.pass_all_xrd01: Destroying...
+iosxr_router_bgp_vrf_neighbor_address_family.vrf_nbr_af_xrd02: Destruction complete after 1s
+iosxr_route_policy.pass_all_xrd02: Destroying...
+iosxr_router_bgp_vrf_address_family.vrf_af_xrd01: Destruction complete after 1s
+iosxr_router_bgp_vrf.vrf_bgp_xrd01: Destroying...
+iosxr_router_bgp_vrf_address_family.vrf_af_xrd02: Destruction complete after 1s
+iosxr_router_bgp_vrf.vrf_bgp_xrd02: Destroying...
+iosxr_router_bgp_neighbor_address_family.vpnv4_nbr_xrd01: Destruction complete after 1s
+iosxr_router_bgp_address_family.vpnv4_xrd01: Destroying...
+iosxr_interface_ethernet.gi1_xrd02: Destruction complete after 1s
+iosxr_interface_ethernet.gi1_xrd01: Destruction complete after 1s
+iosxr_route_policy.pass_all_xrd02: Destruction complete after 1s
+iosxr_route_policy.pass_all_xrd01: Destruction complete after 0s
+iosxr_router_bgp_vrf.vrf_bgp_xrd01: Destruction complete after 1s
+iosxr_vrf.customer_clive_xrd01: Destroying...
+iosxr_router_bgp_vrf.vrf_bgp_xrd02: Destruction complete after 1s
+iosxr_vrf.customer_clive_xrd02: Destroying...
+iosxr_router_bgp_address_family.vpnv4_xrd01: Destruction complete after 1s
+iosxr_router_bgp.bgp_xrd01: Destroying...
+iosxr_router_bgp_address_family.vpnv4_xrd02: Destruction complete after 0s
+iosxr_router_bgp.bgp_xrd02: Destroying...
+iosxr_vrf.customer_clive_xrd02: Destruction complete after 0s
+iosxr_vrf.customer_clive_xrd01: Destruction complete after 0s
+iosxr_router_bgp.bgp_xrd01: Destruction complete after 0s
+iosxr_router_bgp.bgp_xrd02: Destruction complete after 1s
+
+Destroy complete! Resources: 18 destroyed.
+</pre>
+
+</details>
+
+<blockquote>
+<p><strong>Timing race note:</strong> Similar to apply, you may see a gNMI error during
+destroy (e.g., <code>"The address family cannot be disabled; there are still
+neighbors/groups which have configuration for it"</code>). This is the same race
+condition — just run <code>terraform destroy</code> again and the remaining 1-2
+resources will be cleaned up.</p>
+</blockquote>
+<p>Verify the config is gone — pings should fail:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="nb">cd</span><span class="w"> </span>~
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>ansible<span class="w"> </span>-i<span class="w"> </span>inventory.yml<span class="w"> </span>linux-client1<span class="w"> </span>-m<span class="w"> </span>raw<span class="w"> </span>-a<span class="w"> </span><span class="s2">&quot;ping -c 3 -W 2 34.34.34.1&quot;</span>
+</code></pre></div>
+<p>Expected output — 100% loss:</p>
+<p><img alt="Task 4: ping failure after destroy" src="../images/task4-ping-fail-destroy-output.png" /></p>
+<p>The VRF, BGP, and route-policies have been cleanly removed from both XRd
+routers. The data plane is down because the SP core no longer carries the
+customer VPN routes.</p>
+<p><strong>Now re-apply the config</strong> before moving to Task 4b:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="nb">cd</span><span class="w"> </span>~/task4-terraform
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>terraform<span class="w"> </span>apply<span class="w"> </span>-auto-approve
+</code></pre></div>
+<p>(If you see the timing error, run <code>terraform apply -auto-approve</code> once more.)</p>
+<p>Wait about 90 seconds for BGP to converge, then confirm east-west pings
+are working again before proceeding.</p>
+<blockquote>
+<p><strong>Compare to Ansible:</strong> To undo Ansible's work, you'd need to write a
+separate teardown playbook (like we did in Step 0). Terraform tracks what
+it created and can remove exactly those resources — nothing more, nothing
+less. And re-creating everything is just <code>terraform apply</code> away.</p>
+</blockquote>
+<h3 id="checkpoint">Checkpoint<a class="headerlink" href="#checkpoint" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] IOS-XR provider binary installed in local mirror</li>
+<li>[ ] <code>terraform init</code> loaded the IOS-XR provider</li>
+<li>[ ] <code>terraform plan</code> showed 18 resources to add</li>
+<li>[ ] <code>terraform apply</code> created all 18 resources successfully</li>
+<li>[ ] <code>terraform plan</code> (second run) showed "No changes"</li>
+<li>[ ] East-west ping from client1 to client3 succeeded</li>
+<li>[ ] (Bonus) <code>terraform destroy</code> cleanly removed all config</li>
+</ul>
+<blockquote>
+<p><strong>Automation Insight:</strong> You just configured the same network with two
+different tools. In practice, teams often use both: Terraform for
+provisioning (spinning up infrastructure from scratch) and Ansible for
+day-2 operations (ongoing config changes, compliance checks, OS upgrades).
+Understanding both gives you the flexibility to choose the right tool for
+each job.</p>
+</blockquote>
+<hr />
+<h2 id="task-4b-terraform-drift-detection-remediation">Task 4b: Terraform Drift Detection &amp; Remediation<a class="headerlink" href="#task-4b-terraform-drift-detection-remediation" title="Permanent link">&para;</a></h2>
+<p>In Task 1b, you saw how Ansible handles configuration drift — you broke
+something, re-ran the playbook, and Ansible fixed it. The output showed
+<code>changed</code> on the affected tasks, but you had to infer <em>what</em> changed.</p>
+<p>Terraform takes drift detection further. When someone manually changes a
+router's configuration, <code>terraform plan</code> shows you the <strong>exact diff</strong> —
+which attribute changed, what the current value is, and what Terraform will
+set it back to. No guessing, no re-reading show commands.</p>
+<h3 id="objective_1">Objective<a class="headerlink" href="#objective_1" title="Permanent link">&para;</a></h3>
+<p>Manually break the XRd configuration, use <code>terraform plan</code> to detect the
+exact drift, and <code>terraform apply</code> to remediate it.</p>
+<p><strong>Before drift:</strong>
+- East-west pings working (client1 → client3)
+- <code>terraform plan</code> shows "No changes"</p>
+<p><strong>After remediation:</strong>
+- East-west pings restored
+- <code>terraform plan</code> shows "No changes" again</p>
+<h3 id="step-1-break-something">Step 1: Break Something<a class="headerlink" href="#step-1-break-something" title="Permanent link">&para;</a></h3>
+<blockquote>
+<p><strong>Important:</strong> If you ran <code>terraform destroy</code> in the bonus step above,
+first re-apply the config: <code>terraform apply -auto-approve</code></p>
+</blockquote>
+<p>Manually shut down the PE-facing interface on xrd01. Use the ContainerLab
+VS Code extension to open a terminal to <strong>xrd01</strong>, then run:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>configure
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>interface GigabitEthernet0/0/0/1
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a> shutdown
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>commit
+<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>end
+</code></pre></div>
+<blockquote>
+<p><strong>Alternative — SSH from the jump host terminal:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>ssh<span class="w"> </span>-i<span class="w"> </span>~/.ssh/id_rsa<span class="w"> </span>clab@172.20.20.10
+</code></pre></div>
+Then run the same IOS-XR commands above. Type <code>exit</code> when done.</p>
+</blockquote>
+<p>This simulates a common real-world scenario — someone logs into a router
+and makes an out-of-band change that breaks connectivity.</p>
+<h3 id="step-2-confirm-the-damage">Step 2: Confirm the Damage<a class="headerlink" href="#step-2-confirm-the-damage" title="Permanent link">&para;</a></h3>
+<p>Verify that east-west connectivity is broken:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="nb">cd</span><span class="w"> </span>~
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>ansible<span class="w"> </span>-i<span class="w"> </span>inventory.yml<span class="w"> </span>linux-client1<span class="w"> </span>-m<span class="w"> </span>raw<span class="w"> </span>-a<span class="w"> </span><span class="s2">&quot;ping -c 3 -W 2 34.34.34.1&quot;</span>
+</code></pre></div>
+<p>Expected output — 100% packet loss:</p>
+<p><img alt="Task 4b: ping failure after drift" src="../images/task4-ping-fail-drift-output.png" /></p>
+<p>The interface is down, so the eBGP VRF session to csr-pe01 drops, VPN
+routes are withdrawn, and client1 has no path to reach client3's network.</p>
+<h3 id="step-3-detect-the-drift">Step 3: Detect the Drift<a class="headerlink" href="#step-3-detect-the-drift" title="Permanent link">&para;</a></h3>
+<p>This is where Terraform shines. Run:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="nb">cd</span><span class="w"> </span>~/task4-terraform
+<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>terraform<span class="w"> </span>plan
+</code></pre></div>
+<p>Terraform reads the live device configuration via gNMI, compares it against
+the desired state in your <code>.tf</code> files, and shows you exactly what drifted:</p>
+<p><img alt="terraform plan drift detection" src="../images/task4-tf-plan-drift.png" /></p>
+<p>Read this output carefully — it's packed with information:</p>
+<ul>
+<li><strong>"Refreshing state..."</strong> — Terraform read all 18 resources from the live
+  devices via gNMI. It checked every VRF, every interface, every BGP config.</li>
+<li><strong>Only 1 resource drifted</strong> — <code>iosxr_interface_ethernet.gi1_xrd01</code> on
+  device <code>xrd01</code></li>
+<li><strong>The exact change</strong> — <code>shutdown = true -&gt; false</code> — the interface is
+  currently shut (<code>true</code>) and Terraform will set it to <code>false</code> (no shutdown)</li>
+<li><strong>Everything else matched</strong> — 17 other resources show no drift</li>
+<li><strong>"0 to add, 1 to change, 0 to destroy"</strong> — surgical precision</li>
+</ul>
+<blockquote>
+<p><strong>Compare to Ansible:</strong> When you re-ran the Task 1 playbook after breaking
+a port, Ansible showed <code>changed: [n9k-ce01]</code> — you knew <em>something</em> changed,
+but had to read the task name to figure out what. Terraform's plan tells you
+the exact attribute (<code>shutdown = true → false</code>), the exact resource
+(<code>gi1_xrd01</code>), and the exact device (<code>xrd01</code>). This precision matters when
+you're managing hundreds of resources across dozens of devices.</p>
+<p>And critically: <strong><code>terraform plan</code> didn't change anything.</strong> It's a
+read-only operation. You can run it as many times as you want — against
+production, against lab, against anything — without risk. Ansible's
+equivalent (<code>--check</code>) can sometimes trigger side effects on certain
+modules.</p>
+</blockquote>
+<h3 id="step-4-let-terraform-fix-it">Step 4: Let Terraform Fix It<a class="headerlink" href="#step-4-let-terraform-fix-it" title="Permanent link">&para;</a></h3>
+<p>Apply the remediation:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>terraform<span class="w"> </span>apply<span class="w"> </span>-auto-approve
+</code></pre></div>
+<p>Expected output — watch Terraform refresh all 18 resources, find the one
+that drifted, and fix only that:</p>
+<p><img alt="terraform apply remediation" src="../images/task4-tf-apply-remediate.png" /></p>
+<p>Notice: <strong>0 added, 1 changed, 0 destroyed.</strong> Terraform only touched the
+one resource that drifted — <code>gi1_xrd01</code> on <code>xrd01</code>. The other 17 resources
+across both routers were left completely alone. It didn't re-push the VRF,
+didn't re-create the BGP config, didn't touch xrd02 at all.</p>
+<h3 id="step-5-verify-the-fix">Step 5: Verify the Fix<a class="headerlink" href="#step-5-verify-the-fix" title="Permanent link">&para;</a></h3>
+<p>Confirm connectivity is restored:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="nb">cd</span><span class="w"> </span>~
+<a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>ansible<span class="w"> </span>-i<span class="w"> </span>inventory.yml<span class="w"> </span>linux-client1<span class="w"> </span>-m<span class="w"> </span>raw<span class="w"> </span>-a<span class="w"> </span><span class="s2">&quot;ping -c 3 34.34.34.1&quot;</span>
+</code></pre></div>
+<blockquote>
+<p><strong>Note:</strong> Wait about 30-60 seconds after the apply for BGP to reconverge.
+The eBGP VRF session needs to re-establish and exchange routes before
+end-to-end traffic flows.</p>
+</blockquote>
+<p>Expected output — 100% success:</p>
+<p><img alt="Task 4b: ping success after remediation" src="../images/task4-ping-remediated-output.png" /></p>
+<p>Now confirm Terraform sees no remaining drift:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="nb">cd</span><span class="w"> </span>~/task4-terraform
+<a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>terraform<span class="w"> </span>plan
+</code></pre></div>
+<p><img alt="terraform plan no changes after remediation" src="../images/task4-tf-plan-nochanges2.png" /></p>
+<p>All 18 resources refreshed, all 18 match. The drift has been fully
+remediated. The full cycle is complete:</p>
+<ol>
+<li><strong>Detect</strong> — <code>terraform plan</code> found the exact drift</li>
+<li><strong>Fix</strong> — <code>terraform apply</code> corrected only what changed</li>
+<li><strong>Verify</strong> — <code>terraform plan</code> confirms everything is back in sync</li>
+</ol>
+<h3 id="drift-detection-ansible-vs-terraform">Drift Detection: Ansible vs Terraform<a class="headerlink" href="#drift-detection-ansible-vs-terraform" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Ansible (Task 1b)</th>
+<th>Terraform (Task 4b)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Detect drift</strong></td>
+<td>Re-run playbook, look for <code>changed</code></td>
+<td><code>terraform plan</code> shows exact diff</td>
+</tr>
+<tr>
+<td><strong>What you learn</strong></td>
+<td>"Something changed on this device"</td>
+<td>"shutdown changed from false to true on gi1_xrd01"</td>
+</tr>
+<tr>
+<td><strong>Remediate</strong></td>
+<td>Re-run the same playbook</td>
+<td><code>terraform apply</code></td>
+</tr>
+<tr>
+<td><strong>Scope of fix</strong></td>
+<td>Re-pushes all config (idempotent but broad)</td>
+<td>Only changes what drifted</td>
+</tr>
+<tr>
+<td><strong>Without running?</strong></td>
+<td>Must execute to detect</td>
+<td><code>plan</code> is read-only — safe to run anytime</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Key insight:</strong> Terraform's state file is a double-edged sword. It enables
+precise drift detection, but it also means Terraform only knows about
+resources <strong>it created</strong>. If someone adds a new interface or route outside
+of Terraform, it won't detect that. Ansible, with no state file, re-evaluates
+the full config every time — different trade-off.</p>
+</blockquote>
+<h3 id="checkpoint_1">Checkpoint<a class="headerlink" href="#checkpoint_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] Manually shut down Gi0/0/0/1 on xrd01</li>
+<li>[ ] Confirmed east-west pings broke</li>
+<li>[ ] <code>terraform plan</code> showed the exact drift (<code>shutdown = true → false</code>)</li>
+<li>[ ] <code>terraform apply</code> fixed only the drifted resource</li>
+<li>[ ] East-west pings restored</li>
+<li>[ ] <code>terraform plan</code> confirmed "No changes"</li>
+</ul>
+<blockquote>
+<p><strong>Automation Insight:</strong> In production, teams run <code>terraform plan</code> on a
+schedule (via CI/CD) against live infrastructure. If the plan shows any
+changes, it triggers an alert — someone made an out-of-band change. The
+team can then decide whether to remediate (apply the plan) or update the
+code to match the new reality. Either way, drift is visible, not hidden.</p>
+</blockquote>
+<hr />
+<hr />
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.expand", "navigation.top", "toc.integrate", "search.highlight", "search.suggest", "content.code.copy", "content.code.annotate"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

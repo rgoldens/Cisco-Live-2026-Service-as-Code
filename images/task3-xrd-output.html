@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1200" />
+<title>task3-xrd-output</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { overflow: hidden; }
+
+  body {
+    background: #000000;
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+  }
+
+  .terminal {
+    background: #000000;
+    width: 860px;
+    padding: 22px 28px 22px 28px;
+    font-size: 13.5px;
+    line-height: 1.7;
+  }
+
+  .ok  { color: #00e676; }
+  .wh  { color: #ffffff; }
+</style>
+</head>
+<body>
+<div class="terminal">
+<pre><span class="wh">PLAY [Task 3 — Configure VRF and BGP on XRd core routers] **********************</span>
+
+<span class="wh">TASK [Step 1 — Create PASS-ALL route-policy] ***********************************</span>
+<span class="ok">ok: [xrd02]</span>
+<span class="ok">ok: [xrd01]</span>
+
+<span class="wh">TASK [Step 2 — Create VRF Customer-CLIVE with route-targets] *******************</span>
+<span class="ok">ok: [xrd01]</span>
+<span class="ok">ok: [xrd02]</span>
+
+<span class="wh">TASK [Step 3 — Assign Gi0/0/0/1 to VRF and re-apply IP] ***********************</span>
+<span class="ok">ok: [xrd01]</span>
+<span class="ok">ok: [xrd02]</span>
+
+<span class="wh">TASK [Step 4a — Configure BGP process and iBGP VPNv4 neighbor] ****************</span>
+<span class="ok">ok: [xrd01]</span>
+<span class="ok">ok: [xrd02]</span>
+
+<span class="wh">TASK [Step 5a — Configure VRF RD and redistribution in BGP] *******************</span>
+<span class="ok">ok: [xrd01]</span>
+<span class="ok">ok: [xrd02]</span></pre>
+</div>
+</body>
+</html>

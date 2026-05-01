@@ -1,0 +1,1526 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Cisco Live 2026 Lab Guide — hands-on service insertion automation with Ansible, Terraform, and ContainerLab">
+      
+      
+        <meta name="author" content="Cisco Live 2026">
+      
+      
+        <link rel="canonical" href="https://rgoldens.github.io/Cisco-Live-2026-Service-as-Code/TASK2/">
+      
+      
+        <link rel="prev" href="../TASK1/">
+      
+      
+        <link rel="next" href="../TASK3/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Task 2: Build the Underlay - LTRATO-1001: Service Insertion as Code: From Concept to Commit</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/cisco.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#task-2-is-is-pe-ce-routing" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="LTRATO-1001: Service Insertion as Code: From Concept to Commit" class="md-header__button md-logo" aria-label="LTRATO-1001: Service Insertion as Code: From Concept to Commit" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            LTRATO-1001: Service Insertion as Code: From Concept to Commit
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Task 2: Build the Underlay
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../GETTING-STARTED/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Getting Started
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../LAB-ACCESS/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Lab Access
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../TASK1/" class="md-tabs__link">
+          
+  
+  
+  Lab Tasks
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../REFERENCE/" class="md-tabs__link">
+          
+  
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../Ansible-Primer/" class="md-tabs__link">
+          
+  
+  
+  Primers
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="LTRATO-1001: Service Insertion as Code: From Concept to Commit" class="md-nav__button md-logo" aria-label="LTRATO-1001: Service Insertion as Code: From Concept to Commit" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    LTRATO-1001: Service Insertion as Code: From Concept to Commit
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../GETTING-STARTED/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LAB-ACCESS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lab Access
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lab Tasks
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Lab Tasks
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TASK1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Task 1: Explore the Environment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Task 2: Build the Underlay
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Task 2: Build the Underlay
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#task-2-is-is-pe-ce-routing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 2: IS-IS PE-CE Routing
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Task 2: IS-IS PE-CE Routing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#objective" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Objective
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-is-is" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why IS-IS?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deriving-is-is-net-addresses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deriving IS-IS NET Addresses
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exercise-complete-the-playbook" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exercise: Complete the Playbook
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Exercise: Complete the Playbook">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#play-1-nx-os-ce-switches" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Play 1 — NX-OS CE Switches
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#play-2-csr-pe-routers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Play 2 — CSR PE Routers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#play-3-linux-client-routes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Play 3 — Linux Client Routes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ansible-concepts-in-this-playbook" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ansible Concepts in This Playbook
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Run It
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#understanding-the-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Understanding the Output
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#checkpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Checkpoint
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TASK3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Task 3: Deploy BGP VPN
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TASK4/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Task 4: Service Insertion with Ansible
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TASK5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Task 5: Drift Detection with Terraform
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TASK6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Task 6: Validation & Cleanup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../REFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TROUBLESHOOTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Primers
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Primers
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Ansible-Primer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ansible Primer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Terraform-Primer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Terraform Primer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ContainerLab-Primer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ContainerLab Primer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Git-Primer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git Primer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+  <h1>Task 2: Build the Underlay</h1>
+
+<hr />
+<h2 id="task-2-is-is-pe-ce-routing">Task 2: IS-IS PE-CE Routing<a class="headerlink" href="#task-2-is-is-pe-ce-routing" title="Permanent link">&para;</a></h2>
+<p><img alt="Task 2: IS-IS Routing" src="../images/task2-isis.png" /></p>
+<h3 id="objective">Objective<a class="headerlink" href="#objective" title="Permanent link">&para;</a></h3>
+<p>Configure IS-IS routing between the N9K CE switches and CSR PE routers, and
+create gateway SVIs (Switch Virtual Interfaces) so Linux clients can reach
+beyond their local switch.</p>
+<p><strong>Before Task 2:</strong>
+- Clients can only reach other clients on the same switch
+- No routing exists between CE and PE</p>
+<p><strong>After Task 2:</strong>
+- Client1/2 can ping csr-pe01 Loopback0 (192.168.10.11)
+- Client3/4 can ping csr-pe02 Loopback0 (192.168.10.12)</p>
+<h3 id="why-is-is">Why IS-IS?<a class="headerlink" href="#why-is-is" title="Permanent link">&para;</a></h3>
+<p>Right now, the N9K switches and CSR PE routers have IP addresses on their
+shared links, but no routing protocol is exchanging routes between them.
+IS-IS (Intermediate System to Intermediate System) is the IGP commonly used
+in service provider networks. It will:</p>
+<ol>
+<li>Form <strong>adjacencies</strong> between directly-connected routers</li>
+<li><strong>Advertise</strong> connected subnets (including client VLANs) into the routing table</li>
+<li>Give each router a path to reach the other's networks</li>
+</ol>
+<p>We also need to create <strong>SVIs</strong> (Switched Virtual Interfaces) — these are
+Layer 3 gateways on the VLAN interfaces. Without an SVI, clients have L2
+connectivity but no default gateway to reach anything beyond their local switch.</p>
+<h3 id="deriving-is-is-net-addresses">Deriving IS-IS NET Addresses<a class="headerlink" href="#deriving-is-is-net-addresses" title="Permanent link">&para;</a></h3>
+<p><img alt="IS-IS NET Address Derivation" src="../images/isis-net-derivation.png" /></p>
+<p>IS-IS uses a <strong>NET</strong> (Network Entity Title) to uniquely identify each router.
+The format is:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>49.0002.&lt;system-id&gt;.00
+</code></pre></div>
+<p>The <strong>system-id</strong> is derived from the router's Loopback0 IP address. Here's
+how to convert an IP address to a system-id:</p>
+<p><strong>Example:</strong> n9k-ce01 has Loopback0 IP <code>192.168.20.21</code></p>
+<ol>
+<li>Pad each octet to 3 digits: <code>192.168.020.021</code></li>
+<li>Regroup into 3 pairs of 4 digits: <code>1921.6802.0021</code></li>
+<li>Build the full NET: <code>49.0002.1921.6802.0021.00</code></li>
+</ol>
+<p><strong>Try it yourself:</strong> What is the NET for csr-pe01 (Loopback0: <code>192.168.10.11</code>)?</p>
+<ol>
+<li>Pad: <code>192.168.010.011</code></li>
+<li>Regroup: <code>1921.6801.0011</code></li>
+<li>NET: <code>49.0002.1921.6801.0011.00</code></li>
+</ol>
+<p>Check your answers against <strong>Table 4: IS-IS Configuration</strong>.</p>
+<h3 id="exercise-complete-the-playbook">Exercise: Complete the Playbook<a class="headerlink" href="#exercise-complete-the-playbook" title="Permanent link">&para;</a></h3>
+<p>This playbook has <strong>three</strong> plays with variables to fill in. Open it:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>nano<span class="w"> </span>~/igp-pe-ce.yml
+</code></pre></div>
+<h4 id="play-1-nx-os-ce-switches">Play 1 — NX-OS CE Switches<a class="headerlink" href="#play-1-nx-os-ce-switches" title="Permanent link">&para;</a></h4>
+<p>Scroll to the first <code>vars:</code> section. You'll see these TODO placeholders:</p>
+<p><img alt="Play 1 — NX-OS IS-IS variables" src="../images/task2-play1.png" /></p>
+<p>Using <strong>Table 4</strong> and <strong>Table 2</strong>, fill in these values:</p>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Hint</th>
+<th>Where to Find It</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>net</code> for n9k-ce01</td>
+<td>IS-IS NET derived from 192.168.20.21</td>
+<td>Table 4 or derive it yourself</td>
+</tr>
+<tr>
+<td><code>net</code> for n9k-ce02</td>
+<td>IS-IS NET derived from 192.168.20.22</td>
+<td>Table 4 or derive it yourself</td>
+</tr>
+<tr>
+<td><code>vlan_id</code> for n9k-ce01</td>
+<td>Must match what you used in Task 1</td>
+<td>Your Task 1 values</td>
+</tr>
+<tr>
+<td><code>vlan_id</code> for n9k-ce02</td>
+<td>Must match what you used in Task 1</td>
+<td>Your Task 1 values</td>
+</tr>
+<tr>
+<td><code>svi_ip</code> for n9k-ce01</td>
+<td>Gateway IP/mask for 23.23.23.0/24</td>
+<td>Table 2, look for "SVI (Vlan23)"</td>
+</tr>
+<tr>
+<td><code>svi_ip</code> for n9k-ce02</td>
+<td>Gateway IP/mask for 34.34.34.0/24</td>
+<td>Table 2, look for "SVI (Vlan34)"</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Important:</strong> The <code>svi_ip</code> values must include the subnet mask (e.g., <code>23.23.23.254/24</code>).
+The <code>/24</code> tells the switch what subnet this gateway belongs to.</p>
+<p><strong>Why must <code>vlan_id</code> match Task 1?</strong> The SVI (Switch Virtual Interface) is
+created on a specific VLAN. If you use VLAN 23 for west clients in Task 1 but
+a different VLAN here, the SVI won't be in the same broadcast domain as the
+clients, and they won't be able to use it as their gateway.</p>
+</blockquote>
+<h4 id="play-2-csr-pe-routers">Play 2 — CSR PE Routers<a class="headerlink" href="#play-2-csr-pe-routers" title="Permanent link">&para;</a></h4>
+<p>Scroll down to the second <code>vars:</code> section:</p>
+<p><img alt="Play 2 — CSR PE IS-IS variables" src="../images/task2-play2.png" /></p>
+<p>Using <strong>Table 4</strong>, fill in:</p>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Hint</th>
+<th>Where to Find It</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>net</code> for csr-pe01</td>
+<td>IS-IS NET derived from 192.168.10.11</td>
+<td>Table 4 or derive it yourself</td>
+</tr>
+<tr>
+<td><code>net</code> for csr-pe02</td>
+<td>IS-IS NET derived from 192.168.10.12</td>
+<td>Table 4 or derive it yourself</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Practice the derivation:</strong> Try converting <code>192.168.10.11</code> to a NET without
+looking at Table 4. Pad each octet to 3 digits (<code>192.168.010.011</code>), regroup
+(<code>1921.6801.0011</code>), then build the NET (<code>49.0002.1921.6801.0011.00</code>). Check
+your answer against the table.</p>
+</blockquote>
+<h4 id="play-3-linux-client-routes">Play 3 — Linux Client Routes<a class="headerlink" href="#play-3-linux-client-routes" title="Permanent link">&para;</a></h4>
+<p>Scroll down to the third <code>vars:</code> section:</p>
+<p><img alt="Play 3 — Linux client route variables" src="../images/task2-play3.png" /></p>
+<p>Using <strong>Table 2</strong>, fill in:</p>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Hint</th>
+<th>Where to Find It</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>gateway</code> for client1/2</td>
+<td>SVI IP without the mask</td>
+<td>Table 2, "SVI (Vlan23)" row</td>
+</tr>
+<tr>
+<td><code>gateway</code> for client3/4</td>
+<td>SVI IP without the mask</td>
+<td>Table 2, "SVI (Vlan34)" row</td>
+</tr>
+<tr>
+<td>First route (all clients)</td>
+<td>Where CSR PE loopbacks live</td>
+<td>Both PEs are in 192.168.10.0/24</td>
+</tr>
+<tr>
+<td>Second route (client1/2)</td>
+<td>West PE-CE link</td>
+<td>Table 2, csr-pe01 Gi4 row</td>
+</tr>
+<tr>
+<td>Second route (client3/4)</td>
+<td>East PE-CE link</td>
+<td>Table 2, csr-pe02 Gi4 row</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Why do clients need static routes?</strong> The Linux clients are simple hosts —
+they don't run any routing protocols. Without explicit routes, they only know
+about their own /24 subnet. We need to tell them: "To reach the CSR PE
+loopback or PE-CE link, send traffic to your SVI gateway." In a real network,
+you might use DHCP to push a default gateway instead, but static routes let
+you see exactly what's happening.</p>
+<p><strong>Why two routes per client?</strong> Each client needs to reach: (1) the CSR PE
+loopback (for the Task 2 ping test), and (2) the PE-CE link subnet (because
+traffic from the PE may source from the PE-CE interface IP, and the client
+needs a return path).</p>
+</blockquote>
+<p>Save the file when done.</p>
+<h3 id="ansible-concepts-in-this-playbook">Ansible Concepts in This Playbook<a class="headerlink" href="#ansible-concepts-in-this-playbook" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p><strong>Multi-platform orchestration</strong> — One playbook with three plays, each
+  targeting a different device group (<code>nxos</code>, <code>csr</code>, <code>linux</code>). Ansible runs
+  them in sequence, handling the platform differences transparently.</p>
+</li>
+<li>
+<p><strong><code>parents</code></strong> — Enters a config context before pushing commands. <code>parents:
+  router isis CORE</code> is like typing <code>router isis CORE</code> on the CLI, then the
+  <code>lines</code> are the sub-commands.</p>
+</li>
+<li>
+<p><strong><code>ansible.builtin.raw</code></strong> — Runs a raw shell command on Linux hosts. We
+  use this because Alpine Linux containers don't have Python installed (which
+  normal Ansible modules require).</p>
+</li>
+<li>
+<p><strong><code>wait_for</code></strong> — Pauses until SSH is responsive. CSR1000v can be slow to
+  process config, and we need to wait for it to settle before the next play.</p>
+</li>
+<li>
+<p><strong>Platform differences</strong> — Notice that NX-OS puts <code>isis passive-interface</code>
+  under the <em>interface</em>, while IOS puts <code>passive-interface</code> under the <em>router
+  process</em>. Same feature, different syntax. This is a real-world challenge
+  when writing multi-vendor automation.</p>
+</li>
+</ul>
+<h3 id="run-it">Run It<a class="headerlink" href="#run-it" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>ansible-playbook<span class="w"> </span>~/igp-pe-ce.yml
+</code></pre></div>
+<p>This playbook takes about 3 minutes. It configures three different platforms
+in sequence: NX-OS switches first, then CSR PE routers, then Linux clients.</p>
+<h3 id="understanding-the-output">Understanding the Output<a class="headerlink" href="#understanding-the-output" title="Permanent link">&para;</a></h3>
+<p><strong>Play 1 — NX-OS configuration</strong> creates IS-IS and SVIs:</p>
+<p><img alt="Play 1 — NX-OS IS-IS configuration" src="../images/task2-nxos-output.png" /></p>
+<blockquote>
+<p><strong>What just happened?</strong> Step 1 enables the IS-IS feature (<code>feature isis</code> on
+NX-OS). Steps 2-5 create the IS-IS process, add the SVI, uplink, and
+loopback to IS-IS. The SVI acts as the default gateway for your client VLAN.
+The uplink (Eth1/1) is the path to the CSR PE. The loopback is advertised so
+other routers can reach this switch's router ID.</p>
+</blockquote>
+<p><strong>Play 2 — CSR PE configuration</strong> creates IS-IS on the PE routers:</p>
+<p><img alt="Play 2 — CSR PE IS-IS configuration" src="../images/task2-csr-output.png" /></p>
+<blockquote>
+<p><strong>Why is Loopback0 passive?</strong> A passive interface advertises its IP into IS-IS
+(so other routers learn the route) but doesn't try to form an adjacency on it.
+Loopbacks are virtual — there's no neighbor on the other end. Notice the
+platform difference: on NX-OS, passive is configured under the <em>interface</em>
+(<code>isis passive-interface level-2</code>), but on IOS-XE, it's configured under the
+<em>router process</em> (<code>passive-interface Loopback0</code>). Same feature, different CLI.</p>
+</blockquote>
+<p><strong>Play 3 — Linux routes</strong> adds static routes so clients can reach the PE:</p>
+<blockquote>
+<p><strong>Heads-up — Jinja2 warning:</strong> You may see a warning like
+<code>[WARNING]: conditional statements should not include jinja2 templating</code>
+and the task name may display as <code>Add route to &lt;&lt; error 1 &gt;&gt; via SVI gateway</code>.
+This is a <strong>cosmetic issue only</strong> — the task name references <code>{{ item }}</code>
+which Ansible can't resolve until the loop starts. The routes are applied
+correctly despite the warning.</p>
+</blockquote>
+<p><img alt="Play 3 — Linux client route additions" src="../images/task2-linux-routes-output.png" /></p>
+<blockquote>
+<p><strong>Notice the <code>loop</code> in action:</strong> Each client runs the task twice — once per
+route in its <code>routes</code> list. The <code>=&gt; (item=...)</code> shows which route is being
+added on each iteration. This is how Ansible avoids writing four nearly-identical
+tasks for four different clients.</p>
+</blockquote>
+<p><strong>Verification plays</strong> show IS-IS adjacencies and routes:</p>
+<p><img alt="NX-OS IS-IS neighbors and routes" src="../images/task2-verify-output.png" /></p>
+<blockquote>
+<p><strong>What to look for:</strong> The <code>State</code> column should say <code>UP</code> — this means the
+IS-IS adjacency has formed between the CE switch and its PE router. The
+<code>Interface</code> should be <code>Ethernet1/1</code> (the uplink). If you see <code>INIT</code> instead
+of <code>UP</code>, the neighbor's IS-IS process might not be configured yet, or the
+NET addresses might be malformed.</p>
+<p><strong>Reading the route table:</strong> <code>192.168.10.11/32</code> is csr-pe01's Loopback0 —
+learned via IS-IS (<code>isis-CORE, L2</code>) through the uplink (<code>Eth1/1</code>). The <code>[115/40]</code>
+means IS-IS preference 115, metric 40. If this route doesn't appear, check
+that the CSR PE's Loopback0 was added to IS-IS and that the adjacency is <code>UP</code>.</p>
+</blockquote>
+<p>The CSR PE verification shows the same from the other side:</p>
+<p><img alt="CSR PE IS-IS neighbor verification" src="../images/task2-csr-verify-output.png" /></p>
+<blockquote>
+<p><strong>Cross-check:</strong> csr-pe01 sees n9k-ce01 as a Level 2 neighbor on Gi4 (the
+PE-CE link). The IP <code>10.2.0.2</code> is n9k-ce01's Eth1/1 address. Both sides
+must show <code>UP</code> for routes to flow.</p>
+</blockquote>
+<p><strong>Ping tests</strong> confirm end-to-end reachability from clients to PE loopbacks:</p>
+<p><img alt="Ping test and PLAY RECAP" src="../images/task2-ping-output.png" /></p>
+<blockquote>
+<p><strong>Why 2 out of 3?</strong> The first ping packet is often lost because the ARP table
+is empty. When client1 sends the first ICMP packet, the network needs to
+resolve MAC addresses at each hop. By the time the second packet arrives,
+ARP entries are cached and traffic flows. <strong>2 out of 3 received is a pass.</strong>
+If you see 0 received, something is wrong.</p>
+<p><strong>TTL=254</strong> tells you the packet crossed 2 hops: client1 → n9k-ce01 SVI →
+csr-pe01 Loopback0. Each hop decrements the TTL by 1 (Cisco IOS routers
+originate replies with TTL 255).</p>
+<p><strong>Reading the recap:</strong> Each line is a device. <code>changed=4</code> means 4 tasks made
+changes. <code>failed=0</code> means nothing went wrong. If you see <code>failed=1</code> or higher,
+scroll up to find the red error message — it will tell you exactly which task
+failed and why.</p>
+</blockquote>
+<h3 id="checkpoint">Checkpoint<a class="headerlink" href="#checkpoint" title="Permanent link">&para;</a></h3>
+<p>Confirm these results from the playbook output:</p>
+<ul>
+<li>[ ] IS-IS neighbors show <strong><code>UP</code></strong> on both N9K switches and both CSR PEs</li>
+<li>[ ] IS-IS routes appear in the routing table (CSR PE loopback and client subnets)</li>
+<li>[ ] All 4 clients can ping their local CSR PE loopback: <strong>2/3 or 3/3 packets received</strong></li>
+<li>[ ] PLAY RECAP shows <strong>failed=0</strong> for all devices</li>
+</ul>
+<blockquote>
+<p><strong>Note:</strong> The first ping packet may be lost due to ARP resolution — this is
+normal. 2 out of 3 packets received is a pass.</p>
+<p><strong>Troubleshooting:</strong> If IS-IS neighbors don't come up, check that your NET
+addresses are correctly formatted (the system-id must be unique per device,
+and all must be in area <code>49.0002</code>). If pings fail but IS-IS is up, verify
+the SVI IPs match your client subnets and that the Linux client routes point
+to the correct gateway.</p>
+<p><strong>💡 Automation Insight:</strong> This playbook touched 8 devices across 3 different platforms (NX-OS, IOS-XE, Linux) in a single run. In a manual workflow, you'd need to context-switch between 3 different CLI syntaxes and remember which command goes where. Ansible handled that for you — same YAML, different collections under the hood.</p>
+</blockquote>
+<hr />
+<hr />
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.expand", "navigation.top", "toc.integrate", "search.highlight", "search.suggest", "content.code.copy", "content.code.annotate"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

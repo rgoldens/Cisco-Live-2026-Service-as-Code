@@ -1,0 +1,1687 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Cisco Live 2026 Lab Guide — hands-on service insertion automation with Ansible, Terraform, and ContainerLab">
+      
+      
+        <meta name="author" content="Cisco Live 2026">
+      
+      
+        <link rel="canonical" href="https://rgoldens.github.io/Cisco-Live-2026-Service-as-Code/LAB-ACCESS/">
+      
+      
+        <link rel="prev" href="../GETTING-STARTED/">
+      
+      
+        <link rel="next" href="../TASK1/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Lab Access - LTRATO-1001: Service Insertion as Code: From Concept to Commit</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/cisco.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#lab-access-guide" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="LTRATO-1001: Service Insertion as Code: From Concept to Commit" class="md-header__button md-logo" aria-label="LTRATO-1001: Service Insertion as Code: From Concept to Commit" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            LTRATO-1001: Service Insertion as Code: From Concept to Commit
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Lab Access
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../GETTING-STARTED/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Getting Started
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="./" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Lab Access
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../TASK1/" class="md-tabs__link">
+          
+  
+  
+  Lab Tasks
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../REFERENCE/" class="md-tabs__link">
+          
+  
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../Ansible-Primer/" class="md-tabs__link">
+          
+  
+  
+  Primers
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="LTRATO-1001: Service Insertion as Code: From Concept to Commit" class="md-nav__button md-logo" aria-label="LTRATO-1001: Service Insertion as Code: From Concept to Commit" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    LTRATO-1001: Service Insertion as Code: From Concept to Commit
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../GETTING-STARTED/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lab Access
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lab Access
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-you-need-before-starting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What You Need Before Starting
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-1-connect-to-the-vpn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 1 — Connect to the VPN
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 1 — Connect to the VPN">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-launch-cisco-secure-client" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1 — Launch Cisco Secure Client
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-enter-the-vpn-url-and-connect" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2 — Enter the VPN URL and Connect
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-enter-your-credentials" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3 — Enter Your Credentials
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-accept-the-connected-dialog" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4 — Accept the Connected Dialog
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-2-open-vs-code-and-connect-to-the-lab-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 2 — Open VS Code and Connect to the Lab Server
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 2 — Open VS Code and Connect to the Lab Server">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-5-launch-vs-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5 — Launch VS Code
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-6-vs-code-opens" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6 — VS Code Opens
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-7-open-the-remote-connection-menu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 7 — Open the Remote Connection Menu
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-8-enter-the-lab-server-address" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 8 — Enter the Lab Server Address
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-9-password-prompt-appears" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 9 — Password Prompt Appears
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-10-enter-the-password" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 10 — Enter the Password
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-3-verify-containerlab-is-running" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 3 — Verify ContainerLab is Running
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 3 — Verify ContainerLab is Running">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-11-confirm-you-are-connected" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 11 — Confirm You Are Connected
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-12-open-the-containerlab-explorer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 12 — Open the ContainerLab Explorer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-13-expand-the-lab-and-verify-all-nodes-are-healthy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 13 — Expand the Lab and Verify All Nodes Are Healthy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-14-view-the-topology-optional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 14 — View the Topology (Optional)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-4-open-your-terminal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 4 — Open Your Terminal
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 4 — Open Your Terminal">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-15-toggle-the-terminal-panel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 15 — Toggle the Terminal Panel
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-16-your-terminal-is-open" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 16 — Your Terminal is Open
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-5-connecting-to-devices-directly-optional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 5 — Connecting to Devices Directly (Optional)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 5 — Connecting to Devices Directly (Optional)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-17-click-the-ssh-icon-next-to-a-device" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 17 — Click the SSH Icon Next to a Device
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-18-ssh-session-opens-toggle-between-sessions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 18 — SSH Session Opens; Toggle Between Sessions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-19-reopen-the-bash-terminal-if-needed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 19 — Reopen the Bash Terminal if Needed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-20-restore-the-terminal-panel-if-it-has-disappeared" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 20 — Restore the Terminal Panel if It Has Disappeared
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#youre-ready" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        You're Ready
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quick-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick Reference
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lab Tasks
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Lab Tasks
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TASK1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Task 1: Explore the Environment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TASK2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Task 2: Build the Underlay
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TASK3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Task 3: Deploy BGP VPN
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TASK4/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Task 4: Service Insertion with Ansible
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TASK5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Task 5: Drift Detection with Terraform
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TASK6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Task 6: Validation & Cleanup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../REFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TROUBLESHOOTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Primers
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Primers
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Ansible-Primer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ansible Primer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Terraform-Primer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Terraform Primer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ContainerLab-Primer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ContainerLab Primer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Git-Primer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git Primer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<hr />
+<h1 id="lab-access-guide">Lab Access Guide<a class="headerlink" href="#lab-access-guide" title="Permanent link">&para;</a></h1>
+<p>Complete these steps <strong>before anything else</strong>. By the end of this guide you will be connected to the VPN, inside VS Code on your lab server, with a terminal open and your ContainerLab topology confirmed healthy.</p>
+<blockquote>
+<p><strong>Both Cisco Secure Client and VS Code are already installed on your PC.</strong> You do not need to download or install anything.</p>
+</blockquote>
+<hr />
+<h2 id="what-you-need-before-starting">What You Need Before Starting<a class="headerlink" href="#what-you-need-before-starting" title="Permanent link">&para;</a></h2>
+<p>You should have received a <strong>lab credential sheet</strong> with the following information. Confirm you have all values before proceeding:</p>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>VPN Address</strong></td>
+<td>e.g. <code>dcloud-sjc-anyconnect.cisco.com</code></td>
+</tr>
+<tr>
+<td><strong>VPN Username</strong></td>
+<td><em>(on your credential sheet)</em></td>
+</tr>
+<tr>
+<td><strong>VPN Password</strong></td>
+<td><em>(on your credential sheet)</em></td>
+</tr>
+<tr>
+<td><strong>Lab Server IP</strong></td>
+<td><code>198.18.134.90</code> (same for all students)</td>
+</tr>
+<tr>
+<td><strong>SSH Password</strong></td>
+<td><code>C1sco12345</code></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Do not have your credentials?</strong> Raise your hand and a proctor will bring them to you before you proceed.</p>
+</blockquote>
+<hr />
+<h2 id="part-1-connect-to-the-vpn">Part 1 — Connect to the VPN<a class="headerlink" href="#part-1-connect-to-the-vpn" title="Permanent link">&para;</a></h2>
+<h3 id="step-1-launch-cisco-secure-client">Step 1 — Launch Cisco Secure Client<a class="headerlink" href="#step-1-launch-cisco-secure-client" title="Permanent link">&para;</a></h3>
+<p>Find and open the <strong>Cisco Secure Client</strong> application on your laptop.</p>
+<p><img alt="Launch Cisco Secure Client" src="../images/access-vpn-app.png" /></p>
+<hr />
+<h3 id="step-2-enter-the-vpn-url-and-connect">Step 2 — Enter the VPN URL and Connect<a class="headerlink" href="#step-2-enter-the-vpn-url-and-connect" title="Permanent link">&para;</a></h3>
+<p>The Cisco Secure Client window opens. In the address bar, enter the VPN URL from your credential sheet and click <strong>Connect</strong>.</p>
+<p><img alt="Enter VPN URL" src="../images/access-vpn-url.png" /></p>
+<blockquote>
+<p><strong>Your VPN address is pod-specific</strong> — use the address on your credential sheet, not the one shown in the screenshot.</p>
+</blockquote>
+<hr />
+<h3 id="step-3-enter-your-credentials">Step 3 — Enter Your Credentials<a class="headerlink" href="#step-3-enter-your-credentials" title="Permanent link">&para;</a></h3>
+<p>A login dialog will appear. Enter your pod username and password from your credential sheet, then click <strong>OK</strong>.</p>
+<p><img alt="Enter VPN credentials" src="../images/access-vpn-credentials.png" /></p>
+<blockquote>
+<p><strong>Credentials are case-sensitive.</strong> Type them exactly as printed on your credential sheet.</p>
+</blockquote>
+<hr />
+<h3 id="step-4-accept-the-connected-dialog">Step 4 — Accept the Connected Dialog<a class="headerlink" href="#step-4-accept-the-connected-dialog" title="Permanent link">&para;</a></h3>
+<p>A confirmation dialog appears saying you are connected to the Cisco dCloud platform. Click <strong>Accept</strong>.</p>
+<p><img alt="VPN connected confirmation" src="../images/access-vpn-connected.png" /></p>
+<p>You are now on the dCloud network and can reach your lab server.</p>
+<hr />
+<h2 id="part-2-open-vs-code-and-connect-to-the-lab-server">Part 2 — Open VS Code and Connect to the Lab Server<a class="headerlink" href="#part-2-open-vs-code-and-connect-to-the-lab-server" title="Permanent link">&para;</a></h2>
+<h3 id="step-5-launch-vs-code">Step 5 — Launch VS Code<a class="headerlink" href="#step-5-launch-vs-code" title="Permanent link">&para;</a></h3>
+<p>Find and open <strong>Visual Studio Code</strong> on your laptop.</p>
+<p><img alt="Launch VS Code" src="../images/access-vscode-app.png" /></p>
+<hr />
+<h3 id="step-6-vs-code-opens">Step 6 — VS Code Opens<a class="headerlink" href="#step-6-vs-code-opens" title="Permanent link">&para;</a></h3>
+<p>The VS Code Welcome screen appears.</p>
+<p><img alt="VS Code Welcome screen" src="../images/access-vscode-welcome.png" /></p>
+<hr />
+<h3 id="step-7-open-the-remote-connection-menu">Step 7 — Open the Remote Connection Menu<a class="headerlink" href="#step-7-open-the-remote-connection-menu" title="Permanent link">&para;</a></h3>
+<p>Click the <strong>remote connection icon</strong> in the very bottom-left corner of VS Code (it looks like two angle brackets <code>&gt;&lt;</code>). A menu will appear at the top of the screen — click <strong>Connect to Host...</strong></p>
+<p><img alt="Click remote icon and select Connect to Host" src="../images/access-vscode-remote-menu.png" /></p>
+<blockquote>
+<p><strong>Alternative:</strong> Press <code>Ctrl+Shift+P</code> to open the Command Palette, type <code>Remote-SSH: Connect to Host</code>, and press Enter.</p>
+</blockquote>
+<hr />
+<h3 id="step-8-enter-the-lab-server-address">Step 8 — Enter the Lab Server Address<a class="headerlink" href="#step-8-enter-the-lab-server-address" title="Permanent link">&para;</a></h3>
+<p>In the bar that appears, type the following and press <strong>Enter</strong>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>cisco@198.18.134.90
+</code></pre></div>
+<p><img alt="Type the SSH host address" src="../images/access-vscode-host-entry.png" /></p>
+<hr />
+<h3 id="step-9-password-prompt-appears">Step 9 — Password Prompt Appears<a class="headerlink" href="#step-9-password-prompt-appears" title="Permanent link">&para;</a></h3>
+<p>VS Code will open a new window and prompt you for a password at the top of the screen.</p>
+<p><img alt="Password prompt" src="../images/access-vscode-password.png" /></p>
+<hr />
+<h3 id="step-10-enter-the-password">Step 10 — Enter the Password<a class="headerlink" href="#step-10-enter-the-password" title="Permanent link">&para;</a></h3>
+<p>Type the password and press <strong>Enter</strong>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>C1sco12345
+</code></pre></div>
+<p><img alt="Enter password" src="../images/access-vscode-password-entry.png" /></p>
+<blockquote>
+<p><strong>The password will not show characters as you type</strong> — this is normal. Just type it and press Enter.</p>
+</blockquote>
+<p>VS Code will connect and initialize the remote session. This may take 15–30 seconds the first time.</p>
+<hr />
+<h2 id="part-3-verify-containerlab-is-running">Part 3 — Verify ContainerLab is Running<a class="headerlink" href="#part-3-verify-containerlab-is-running" title="Permanent link">&para;</a></h2>
+<p>Once connected, VS Code will automatically open a <strong>"Welcome to Containerlab"</strong> tab. This confirms the ContainerLab extension is installed and active on your server.</p>
+<h3 id="step-11-confirm-you-are-connected">Step 11 — Confirm You Are Connected<a class="headerlink" href="#step-11-confirm-you-are-connected" title="Permanent link">&para;</a></h3>
+<p>Look for two things:
+- The <strong>"Welcome to Containerlab"</strong> tab is open in the editor
+- The <strong>bottom-left status bar</strong> shows <code>SSH: 198.18.134.90</code> in blue</p>
+<p><img alt="Welcome to Containerlab — SSH indicator highlighted" src="../images/access-clab-welcome.png" /></p>
+<hr />
+<h3 id="step-12-open-the-containerlab-explorer">Step 12 — Open the ContainerLab Explorer<a class="headerlink" href="#step-12-open-the-containerlab-explorer" title="Permanent link">&para;</a></h3>
+<p>Click the <strong>ContainerLab icon</strong> on the left sidebar (the hexagon/network logo). The ContainerLab Explorer panel will open.</p>
+<p><img alt="Click ContainerLab icon to open Explorer" src="../images/access-clab-explorer.png" /></p>
+<hr />
+<h3 id="step-13-expand-the-lab-and-verify-all-nodes-are-healthy">Step 13 — Expand the Lab and Verify All Nodes Are Healthy<a class="headerlink" href="#step-13-expand-the-lab-and-verify-all-nodes-are-healthy" title="Permanent link">&para;</a></h3>
+<p>Click the arrow next to <strong>LTRATO-1001 (root)</strong> to expand it. You should see all 10 devices listed with a <strong>green dot</strong> next to each one.</p>
+<p><img alt="All nodes healthy — green dots visible" src="../images/access-clab-nodes-healthy.png" /></p>
+<blockquote>
+<p><strong>Green dot = healthy.</strong> If any device shows a red dot or is missing, notify your instructor — a container may still be booting. Allow 2–3 minutes after the session starts before raising your hand.</p>
+</blockquote>
+<hr />
+<h3 id="step-14-view-the-topology-optional">Step 14 — View the Topology (Optional)<a class="headerlink" href="#step-14-view-the-topology-optional" title="Permanent link">&para;</a></h3>
+<p>Click on the <strong>LTRATO-1001</strong> lab name in the explorer to open the interactive topology diagram.</p>
+<p><img alt="Topology view with Palette open" src="../images/access-clab-topology-palette.png" /></p>
+<p>To get a cleaner view, click the <strong>arrow button</strong> on the right edge of the screen to collapse the Palette panel — you won't need it during the lab.</p>
+<p><img alt="Topology view with Palette hidden" src="../images/access-clab-topology-clean.png" /></p>
+<hr />
+<h2 id="part-4-open-your-terminal">Part 4 — Open Your Terminal<a class="headerlink" href="#part-4-open-your-terminal" title="Permanent link">&para;</a></h2>
+<p>The terminal at the bottom of VS Code is your <strong>main workspace for the entire lab</strong>. All Ansible and Terraform commands are run here.</p>
+<h3 id="step-15-toggle-the-terminal-panel">Step 15 — Toggle the Terminal Panel<a class="headerlink" href="#step-15-toggle-the-terminal-panel" title="Permanent link">&para;</a></h3>
+<p>Click the <strong>Toggle Panel</strong> button in the upper-right toolbar, or press <code>Ctrl+J</code>.</p>
+<p><img alt="Toggle Panel button highlighted" src="../images/access-terminal-toggle.png" /></p>
+<hr />
+<h3 id="step-16-your-terminal-is-open">Step 16 — Your Terminal is Open<a class="headerlink" href="#step-16-your-terminal-is-open" title="Permanent link">&para;</a></h3>
+<p>The terminal panel opens at the bottom of the screen. You should see a prompt:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>cisco@ubuntu:~$
+</code></pre></div>
+<p><img alt="Terminal open with cisco@ubuntu prompt" src="../images/access-terminal-open.png" /></p>
+<blockquote>
+<p><strong>This is your workspace.</strong> Every command in this lab is run here. You are logged in as the <code>cisco</code> user on your Ubuntu lab server — the same server running all 10 ContainerLab devices.</p>
+<p><strong>Tip:</strong> If you close the terminal panel by accident, press <code>Ctrl+J</code> to bring it back.</p>
+</blockquote>
+<hr />
+<h2 id="part-5-connecting-to-devices-directly-optional">Part 5 — Connecting to Devices Directly (Optional)<a class="headerlink" href="#part-5-connecting-to-devices-directly-optional" title="Permanent link">&para;</a></h2>
+<p>You do <strong>not</strong> need to SSH into individual devices to complete this lab — Ansible handles all device connections automatically. However, if you want to inspect a device's config or look around, you can connect directly from the ContainerLab Explorer.</p>
+<h3 id="step-17-click-the-ssh-icon-next-to-a-device">Step 17 — Click the SSH Icon Next to a Device<a class="headerlink" href="#step-17-click-the-ssh-icon-next-to-a-device" title="Permanent link">&para;</a></h3>
+<p>In the ContainerLab Explorer, hover over any device. Click the <strong>SSH icon</strong> (highlighted in red) that appears to the right of the device name to open a terminal session directly to that device.</p>
+<p><img alt="SSH icon highlighted next to n9k-ce01 in the ContainerLab Explorer" src="../images/access-device-sessions.png" /></p>
+<hr />
+<h3 id="step-18-ssh-session-opens-toggle-between-sessions">Step 18 — SSH Session Opens; Toggle Between Sessions<a class="headerlink" href="#step-18-ssh-session-opens-toggle-between-sessions" title="Permanent link">&para;</a></h3>
+<p>The SSH session opens in the terminal panel at the bottom. Multiple sessions appear on the right side of the panel — <strong>bash</strong> is your main workspace, and each SSH connection is listed below it. Click any session name to switch between them.</p>
+<p><img alt="Active SSH session open with sessions panel highlighted — bash, n9k-ce01, n9k-ce02" src="../images/access-device-ssh.png" /></p>
+<hr />
+<h3 id="step-19-reopen-the-bash-terminal-if-needed">Step 19 — Reopen the Bash Terminal if Needed<a class="headerlink" href="#step-19-reopen-the-bash-terminal-if-needed" title="Permanent link">&para;</a></h3>
+<p>If you accidentally close the main bash terminal, click the <strong><code>+</code></strong> button in the terminal panel header to open a new one.</p>
+<p><img alt="Use + to open a new bash terminal" src="../images/access-terminal-plus.png" /></p>
+<hr />
+<h3 id="step-20-restore-the-terminal-panel-if-it-has-disappeared">Step 20 — Restore the Terminal Panel if It Has Disappeared<a class="headerlink" href="#step-20-restore-the-terminal-panel-if-it-has-disappeared" title="Permanent link">&para;</a></h3>
+<p>If the entire terminal panel is gone (no panel visible at the bottom at all), press <strong><code>Ctrl+J</code></strong> or click the <strong>Toggle Panel</strong> button in the upper-right toolbar to bring it back.</p>
+<p><img alt="Toggle Panel button highlighted" src="../images/access-terminal-toggle.png" /></p>
+<blockquote>
+<p>The panel reappears with your previous terminal sessions intact. If no sessions remain, click <strong><code>+</code></strong> to open a new bash terminal (see Step 19).</p>
+</blockquote>
+<hr />
+<h2 id="youre-ready">You're Ready<a class="headerlink" href="#youre-ready" title="Permanent link">&para;</a></h2>
+<p>Confirm all of the following before moving on:</p>
+<ul>
+<li>[ ] VPN connected — Cisco Secure Client shows "Connected"</li>
+<li>[ ] VS Code connected — bottom-left shows <code>SSH: 198.18.134.90</code> in blue</li>
+<li>[ ] ContainerLab Explorer shows <strong>LTRATO-1001</strong> running with all nodes healthy (green dots)</li>
+<li>[ ] Terminal panel is open with a <code>cisco@ubuntu:~$</code> prompt</li>
+</ul>
+<p><strong>All set? Head to <a href="../GETTING-STARTED/">Getting Started</a> for your next steps.</strong></p>
+<hr />
+<h2 id="quick-reference">Quick Reference<a class="headerlink" href="#quick-reference" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>What</th>
+<th>How</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Reconnect VPN</strong></td>
+<td>Open Cisco Secure Client → enter VPN address → Connect → enter credentials</td>
+</tr>
+<tr>
+<td><strong>Reconnect VS Code SSH</strong></td>
+<td>Click <code>&gt;&lt;</code> icon bottom-left → Connect to Host → <code>cisco@198.18.134.90</code></td>
+</tr>
+<tr>
+<td><strong>SSH password</strong></td>
+<td><code>C1sco12345</code></td>
+</tr>
+<tr>
+<td><strong>Open a terminal</strong></td>
+<td><code>Ctrl+J</code> or click Toggle Panel in upper-right toolbar</td>
+</tr>
+<tr>
+<td><strong>New terminal tab</strong></td>
+<td>Click <code>+</code> in the terminal panel header</td>
+</tr>
+<tr>
+<td><strong>Connect to a lab device</strong></td>
+<td>Hover over device in ContainerLab Explorer → click SSH icon</td>
+</tr>
+<tr>
+<td><strong>Switch terminal sessions</strong></td>
+<td>Click the session name in the right side of the terminal panel</td>
+</tr>
+<tr>
+<td><strong>View topology graph</strong></td>
+<td>Click the LTRATO-1001 lab name in the ContainerLab Explorer</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Problem</th>
+<th>Solution</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Secure Client says "Connection attempt has failed"</td>
+<td>Verify the VPN address matches your credential sheet exactly — check for typos or extra spaces</td>
+</tr>
+<tr>
+<td>Secure Client says "Login failed"</td>
+<td>Re-type your VPN username and password — they are case-sensitive</td>
+</tr>
+<tr>
+<td>VS Code cannot reach the server</td>
+<td>Confirm Cisco Secure Client shows "Connected." If not, reconnect the VPN first</td>
+</tr>
+<tr>
+<td>VS Code asks for password repeatedly</td>
+<td>Make sure you are typing <code>C1sco12345</code> exactly — capital C, number 1, lowercase sco</td>
+</tr>
+<tr>
+<td>VS Code SSH connection times out</td>
+<td>The VPN may have disconnected — check and reconnect if needed</td>
+</tr>
+<tr>
+<td>Terminal shows your local PC, not the server</td>
+<td>Check the blue SSH indicator bottom-left of VS Code — if missing, redo Step 7</td>
+</tr>
+<tr>
+<td>ContainerLab sidebar is empty</td>
+<td>The topology may not be deployed yet — ask a proctor</td>
+</tr>
+<tr>
+<td>A node shows a red dot in ContainerLab</td>
+<td>Do not try to restart it yourself — raise your hand for a proctor</td>
+</tr>
+<tr>
+<td>Closed the bash terminal by accident</td>
+<td>Press <code>Ctrl+J</code> to reopen the panel, or click <code>+</code> for a new terminal</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>For any issue not listed here, raise your hand and a proctor will assist you.</strong></p>
+</blockquote>
+<hr />
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.expand", "navigation.top", "toc.integrate", "search.highlight", "search.suggest", "content.code.copy", "content.code.annotate"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

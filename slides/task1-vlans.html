@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=1200"/>
+<title>Task 1: L2 Access VLANs</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0e1621; font-family: 'Inter', sans-serif; }
+
+  .slide { background: #0e1621; width: 1200px; padding: 22px 36px 32px 36px; }
+
+  .breadcrumb { font-size: 11px; color: #00aaff; margin-bottom: 4px; letter-spacing: 0.04em; }
+  .breadcrumb span { color: #5a6a7a; }
+  .title { font-size: 26px; font-weight: 700; color: #fff; margin-bottom: 3px; }
+  .divider      { width: 100%; height: 3px; background: #00aaff; margin-bottom: 3px; border-radius: 1px; }
+  .divider-thin { width: 100%; height: 1px; background: #00d4ff; margin-bottom: 24px; }
+
+  .zones-row {
+    display: flex;
+    gap: 0;
+    align-items: flex-start;
+  }
+
+  .zone {
+    flex: 1;
+    border: 2px dashed;
+    border-radius: 16px;
+    padding: 16px 20px 20px;
+  }
+  .zone-west { border-color: #00aaff; background: #0d1824; }
+  .zone-east { border-color: #ff8800; background: #1a100a; }
+
+  .zone-title {
+    font-size: 13px; font-weight: 700; text-align: center;
+    letter-spacing: 0.06em; margin-bottom: 3px;
+  }
+  .zone-west .zone-title { color: #00aaff; }
+  .zone-east .zone-title { color: #ff8800; }
+
+  .zone-vlan {
+    font-size: 11px; text-align: center; color: #00d4ff;
+    margin-bottom: 12px; font-family: 'JetBrains Mono', monospace;
+  }
+
+  .topo-svg { display: block; width: 100%; }
+
+  .ping-row {
+    display: flex; align-items: center; justify-content: center;
+    gap: 10px; margin: 10px 0 14px;
+    font-size: 12px; font-weight: 700; color: #00cc66;
+  }
+
+  .config-card {
+    border: 2px solid; border-radius: 8px; background: #1e2d3d;
+    padding: 10px 14px; font-size: 11px; line-height: 1.9; color: #c8d0d8;
+  }
+  .zone-west .config-card { border-color: #00aaff; }
+  .zone-east .config-card { border-color: #ff8800; }
+  .config-card .config-title { font-weight: 700; margin-bottom: 2px; }
+  .zone-west .config-card .config-title { color: #00d4ff; }
+  .zone-east .config-card .config-title { color: #ff8800; }
+  .config-card code { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #e5c000; }
+
+  .center-col { width: 60px; flex-shrink: 0; }
+
+  .no-cross-row {
+    display: flex; justify-content: center; align-items: center;
+    gap: 8px; margin: 12px 0 0;
+  }
+  .no-cross-line {
+    width: 80px; height: 2px;
+    background: repeating-linear-gradient(to right, #ff4444 0, #ff4444 5px, transparent 5px, transparent 9px);
+  }
+  .no-cross-label { font-size: 11px; font-weight: 700; color: #ff4444; }
+</style>
+</head>
+<body>
+<div class="slide" id="slide">
+
+  <div class="breadcrumb">LTRATO-1001 <span>|</span> Service Insertion as Code: From Concept to Commit</div>
+  <div class="title">Task 1: L2 Access VLANs</div>
+  <div class="divider"></div>
+  <div class="divider-thin"></div>
+
+  <div class="zones-row">
+
+    <!-- ── WEST SITE ── -->
+    <div class="zone zone-west">
+      <div class="zone-title">WEST SITE</div>
+      <div class="zone-vlan">VLAN 23 / CLIENT-VLAN-23</div>
+
+      <!-- Self-contained topo SVG: 520×260 viewBox -->
+      <svg class="topo-svg" viewBox="0 0 520 260" xmlns="http://www.w3.org/2000/svg">
+        <!-- Switch icon: cisco workgroup_switch — rect + 2 rows × 2 chunky block arrows -->
+        <rect x="196" y="8" width="88" height="54" rx="5" fill="#141e2b" stroke="#00aaff" stroke-width="2.5"/>
+        <!-- Row 1 (cy=24): two right-pointing → → -->
+        <polygon points="205,20 228,20 228,17 237,24 228,31 228,28 205,28" fill="#00aaff"/>
+        <polygon points="243,20 266,20 266,17 275,24 266,31 266,28 243,28" fill="#00aaff"/>
+        <!-- Row 2 (cy=40): two left-pointing ← ← -->
+        <polygon points="237,36 214,36 214,33 205,40 214,47 214,44 237,44" fill="#00d4ff"/>
+        <polygon points="275,36 252,36 252,33 243,40 252,47 252,44 275,44" fill="#00d4ff"/>
+        <!-- switch label -->
+        <text x="240" y="76" text-anchor="middle" font-family="Inter,sans-serif" font-size="12" font-weight="700" fill="#ffffff">n9k-ce01</text>
+        <text x="240" y="88" text-anchor="middle" font-family="Inter,sans-serif" font-size="10" fill="#5a6a7a">NX-OS</text>
+
+        <!-- Lines from switch to clients -->
+        <line x1="228" y1="62" x2="70" y2="196" stroke="#00aaff" stroke-width="2"/>
+        <line x1="252" y1="62" x2="430" y2="196" stroke="#00aaff" stroke-width="2"/>
+
+        <!-- Eth labels -->
+        <text x="128" y="148" text-anchor="middle" font-family="Inter,sans-serif" font-size="10" font-weight="700" fill="#00d4ff">Eth1/3</text>
+        <text x="368" y="148" text-anchor="middle" font-family="Inter,sans-serif" font-size="10" font-weight="700" fill="#00d4ff">Eth1/4</text>
+
+        <!-- client1 icon (left) -->
+        <rect x="40" y="196" width="50" height="36" rx="3" fill="#141e2b" stroke="#00aaff" stroke-width="1.5"/>
+        <line x1="65" y1="232" x2="65" y2="238" stroke="#00aaff" stroke-width="1.5"/>
+        <line x1="55" y1="238" x2="75" y2="238" stroke="#00aaff" stroke-width="1.5"/>
+        <text x="65" y="248" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" font-weight="700" fill="#c8d0d8">client1</text>
+        <text x="65" y="259" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9.5" fill="#5a6a7a">23.23.23.1</text>
+
+        <!-- client2 icon (right) -->
+        <rect x="400" y="196" width="50" height="36" rx="3" fill="#141e2b" stroke="#00aaff" stroke-width="1.5"/>
+        <line x1="425" y1="232" x2="425" y2="238" stroke="#00aaff" stroke-width="1.5"/>
+        <line x1="415" y1="238" x2="435" y2="238" stroke="#00aaff" stroke-width="1.5"/>
+        <text x="425" y="248" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" font-weight="700" fill="#c8d0d8">client2</text>
+        <text x="425" y="259" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9.5" fill="#5a6a7a">23.23.23.2</text>
+      </svg>
+
+      <!-- Ping arrow -->
+      <div class="ping-row">
+        <svg width="220" height="18" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <marker id="pg-r" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L6,3 z" fill="#00cc66"/></marker>
+            <marker id="pg-l" markerWidth="6" markerHeight="6" refX="1" refY="3" orient="auto"><path d="M6,0 L6,6 L0,3 z" fill="#00cc66"/></marker>
+          </defs>
+          <line x1="10" y1="9" x2="210" y2="9" stroke="#00cc66" stroke-width="2" stroke-dasharray="6 3" marker-end="url(#pg-r)" marker-start="url(#pg-l)"/>
+        </svg>
+        <span>Ping test ✓</span>
+      </div>
+
+      <div class="config-card">
+        <div class="config-title">You configure:</div>
+        - VLAN ID: <code>23</code><br>
+        - VLAN Name: <code>CLIENT-VLAN-23</code><br>
+        - Assign Eth1/3, Eth1/4
+      </div>
+    </div><!-- /zone-west -->
+
+    <!-- ── CENTER SPACER ── -->
+    <div class="center-col"></div>
+
+    <!-- ── EAST SITE ── -->
+    <div class="zone zone-east">
+      <div class="zone-title">EAST SITE</div>
+      <div class="zone-vlan">VLAN 34 / CLIENT-VLAN-34</div>
+
+      <svg class="topo-svg" viewBox="0 0 520 260" xmlns="http://www.w3.org/2000/svg">
+        <!-- Switch icon: cisco workgroup_switch — rect + 2 rows × 2 chunky block arrows -->
+        <rect x="196" y="8" width="88" height="54" rx="5" fill="#141e2b" stroke="#ff8800" stroke-width="2.5"/>
+        <!-- Row 1 (cy=24): two right-pointing → → -->
+        <polygon points="205,20 228,20 228,17 237,24 228,31 228,28 205,28" fill="#ff8800"/>
+        <polygon points="243,20 266,20 266,17 275,24 266,31 266,28 243,28" fill="#ff8800"/>
+        <!-- Row 2 (cy=40): two left-pointing ← ← -->
+        <polygon points="237,36 214,36 214,33 205,40 214,47 214,44 237,44" fill="#ff6600"/>
+        <polygon points="275,36 252,36 252,33 243,40 252,47 252,44 275,44" fill="#ff6600"/>
+        <text x="240" y="76" text-anchor="middle" font-family="Inter,sans-serif" font-size="12" font-weight="700" fill="#ffffff">n9k-ce02</text>
+        <text x="240" y="88" text-anchor="middle" font-family="Inter,sans-serif" font-size="10" fill="#5a6a7a">NX-OS</text>
+
+        <line x1="228" y1="62" x2="70" y2="196" stroke="#ff8800" stroke-width="2"/>
+        <line x1="252" y1="62" x2="430" y2="196" stroke="#ff8800" stroke-width="2"/>
+
+        <text x="128" y="148" text-anchor="middle" font-family="Inter,sans-serif" font-size="10" font-weight="700" fill="#ff8800">Eth1/3</text>
+        <text x="368" y="148" text-anchor="middle" font-family="Inter,sans-serif" font-size="10" font-weight="700" fill="#ff8800">Eth1/4</text>
+
+        <!-- client3 icon (left) -->
+        <rect x="40" y="196" width="50" height="36" rx="3" fill="#141e2b" stroke="#ff8800" stroke-width="1.5"/>
+        <line x1="65" y1="232" x2="65" y2="238" stroke="#ff8800" stroke-width="1.5"/>
+        <line x1="55" y1="238" x2="75" y2="238" stroke="#ff8800" stroke-width="1.5"/>
+        <text x="65" y="248" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" font-weight="700" fill="#c8d0d8">client3</text>
+        <text x="65" y="259" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9.5" fill="#5a6a7a">34.34.34.1</text>
+
+        <!-- client4 icon (right) -->
+        <rect x="400" y="196" width="50" height="36" rx="3" fill="#141e2b" stroke="#ff8800" stroke-width="1.5"/>
+        <line x1="425" y1="232" x2="425" y2="238" stroke="#ff8800" stroke-width="1.5"/>
+        <line x1="415" y1="238" x2="435" y2="238" stroke="#ff8800" stroke-width="1.5"/>
+        <text x="425" y="248" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" font-weight="700" fill="#c8d0d8">client4</text>
+        <text x="425" y="259" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9.5" fill="#5a6a7a">34.34.34.2</text>
+      </svg>
+
+      <!-- Ping arrow -->
+      <div class="ping-row">
+        <svg width="220" height="18" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <marker id="pg-r2" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L6,3 z" fill="#00cc66"/></marker>
+            <marker id="pg-l2" markerWidth="6" markerHeight="6" refX="1" refY="3" orient="auto"><path d="M6,0 L6,6 L0,3 z" fill="#00cc66"/></marker>
+          </defs>
+          <line x1="10" y1="9" x2="210" y2="9" stroke="#00cc66" stroke-width="2" stroke-dasharray="6 3" marker-end="url(#pg-r2)" marker-start="url(#pg-l2)"/>
+        </svg>
+        <span>Ping test ✓</span>
+      </div>
+
+      <div class="config-card">
+        <div class="config-title">You configure:</div>
+        - VLAN ID: <code>34</code><br>
+        - VLAN Name: <code>CLIENT-VLAN-34</code><br>
+        - Assign Eth1/3, Eth1/4
+      </div>
+    </div><!-- /zone-east -->
+
+  </div><!-- /zones-row -->
+
+  <!-- No cross-site label -->
+  <div class="no-cross-row">
+    <div class="no-cross-line"></div>
+    <div class="no-cross-label">✗ No cross-site yet</div>
+    <div class="no-cross-line"></div>
+  </div>
+
+</div><!-- /slide -->
+</body>
+</html>

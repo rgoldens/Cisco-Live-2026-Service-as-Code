@@ -1,0 +1,2365 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Cisco Live 2026 Lab Guide — hands-on service insertion automation with Ansible, Terraform, and ContainerLab">
+      
+      
+        <meta name="author" content="Cisco Live 2026">
+      
+      
+        <link rel="canonical" href="https://rgoldens.github.io/Cisco-Live-2026-Service-as-Code/TASK5/">
+      
+      
+        <link rel="prev" href="../TASK4/">
+      
+      
+        <link rel="next" href="../TASK6/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Task 5: Drift Detection with Terraform - LTRATO-1001: Service Insertion as Code: From Concept to Commit</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/cisco.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#task-5-infrastructure-as-code-with-terraform" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="LTRATO-1001: Service Insertion as Code: From Concept to Commit" class="md-header__button md-logo" aria-label="LTRATO-1001: Service Insertion as Code: From Concept to Commit" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            LTRATO-1001: Service Insertion as Code: From Concept to Commit
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Task 5: Drift Detection with Terraform
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../GETTING-STARTED/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Getting Started
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../LAB-ACCESS/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Lab Access
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../TASK1/" class="md-tabs__link">
+          
+  
+  
+  Lab Tasks
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../REFERENCE/" class="md-tabs__link">
+          
+  
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../Ansible-Primer/" class="md-tabs__link">
+          
+  
+  
+  Primers
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="LTRATO-1001: Service Insertion as Code: From Concept to Commit" class="md-nav__button md-logo" aria-label="LTRATO-1001: Service Insertion as Code: From Concept to Commit" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    LTRATO-1001: Service Insertion as Code: From Concept to Commit
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../GETTING-STARTED/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LAB-ACCESS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lab Access
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lab Tasks
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Lab Tasks
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TASK1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Task 1: Explore the Environment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TASK2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Task 2: Build the Underlay
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TASK3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Task 3: Deploy BGP VPN
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TASK4/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Task 4: Service Insertion with Ansible
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Task 5: Drift Detection with Terraform
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Task 5: Drift Detection with Terraform
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#task-5-infrastructure-as-code-with-terraform" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 5 — Infrastructure as Code with Terraform
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Task 5 — Infrastructure as Code with Terraform">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#objective" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Objective
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-terraform" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why Terraform?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lab-topology" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lab Topology
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerequisites
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-1-explore-the-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 1 — Explore the Configuration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 1 — Explore the Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-navigate-to-the-working-directory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1 — Navigate to the Working Directory
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-explore-the-file-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2 — Explore the File Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-read-the-root-module" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3 — Read the Root Module
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-read-the-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4 — Read the Variables
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-5-read-the-docker-infrastructure-module" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5 — Read the Docker Infrastructure Module
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-6-read-the-ios-xe-configuration-module" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6 — Read the IOS XE Configuration Module
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-7-read-the-outputs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 7 — Read the Outputs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-8-initialize-terraform" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 8 — Initialize Terraform
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-2-plan-and-deploy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 2 — Plan and Deploy
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 2 — Plan and Deploy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-9-confirm-nothing-is-running-yet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 9 — Confirm Nothing is Running Yet
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-10-preview-the-deployment-with-terraform-plan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 10 — Preview the Deployment with terraform plan
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-11-deploy-with-terraform-apply" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 11 — Deploy with terraform apply
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#checkpoint-part-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Checkpoint — Part 2
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-3-verify-the-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 3 — Verify the Deployment
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 3 — Verify the Deployment">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-12-check-running-containers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 12 — Check Running Containers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-13-check-container-ip-addresses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 13 — Check Container IP Addresses
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-14-check-terraform-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 14 — Check Terraform Output
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-15-verify-restconf-is-responding-on-the-csr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 15 — Verify RESTCONF is Responding on the CSR
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-16-verify-loopback0-exists-on-the-csr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 16 — Verify Loopback0 Exists on the CSR
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-17-ssh-into-the-csr-and-verify" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 17 — SSH into the CSR and Verify
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-18-ssh-into-a-linux-container-and-verify" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 18 — SSH into a Linux Container and Verify
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-19-inspect-the-state-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 19 — Inspect the State File
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 19 — Inspect the State File">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#view-the-human-readable-state-with-terraform-show" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        View the human-readable state with terraform show
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#checkpoint-part-3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Checkpoint — Part 3
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-4-infrastructure-drift" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 4 — Infrastructure Drift
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 4 — Infrastructure Drift">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-20-simulate-drift-manually-delete-a-container" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 20 — Simulate Drift: Manually Delete a Container
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-21-confirm-it-is-gone" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 21 — Confirm It Is Gone
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-22-detect-drift-with-terraform-plan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 22 — Detect Drift with terraform plan
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-23-remediate-drift-with-terraform-apply" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 23 — Remediate Drift with terraform apply
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-24-confirm-all-three-containers-are-running-again" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 24 — Confirm All Three Containers Are Running Again
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-25-verify-terraform-plan-now-shows-no-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 25 — Verify terraform plan Now Shows No Changes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#checkpoint-part-4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Checkpoint — Part 4
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-5-tear-down" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 5 — Tear Down
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 5 — Tear Down">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-26-destroy-all-resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 26 — Destroy All Resources
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-27-verify-everything-is-cleaned-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 27 — Verify Everything Is Cleaned Up
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-28-confirm-terraform-state-is-empty" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 28 — Confirm Terraform State Is Empty
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quick-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick Reference
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TASK6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Task 6: Validation & Cleanup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../REFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TROUBLESHOOTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Primers
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Primers
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Ansible-Primer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ansible Primer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Terraform-Primer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Terraform Primer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ContainerLab-Primer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ContainerLab Primer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Git-Primer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git Primer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+  <h1>Task 5: Drift Detection with Terraform</h1>
+
+<hr />
+<h2 id="task-5-infrastructure-as-code-with-terraform">Task 5 — Infrastructure as Code with Terraform<a class="headerlink" href="#task-5-infrastructure-as-code-with-terraform" title="Permanent link">&para;</a></h2>
+<p><img alt="What This Lab Builds" src="../slides/slide-04-what-we-build.png" /></p>
+<h3 id="objective">Objective<a class="headerlink" href="#objective" title="Permanent link">&para;</a></h3>
+<p>Use Terraform to provision a three-container Docker network and configure a Cisco IOS XE
+router entirely via RESTCONF — all from a single <code>terraform apply</code>.</p>
+<p><strong>Before Task 5:</strong>
+- No containers running; the <code>terraform-net</code> Docker network does not exist
+- The CSR has no hostname or Loopback0 configured</p>
+<p><strong>After Task 5:</strong>
+- Three containers deployed on a dedicated Docker bridge network (<code>172.20.21.0/24</code>)
+- CSR hostname set to <code>csr-terraform</code> and Loopback0 configured at <code>10.99.99.1/32</code> via RESTCONF
+- Drift simulated, detected with <code>terraform plan</code>, and remediated with <code>terraform apply</code>
+- Everything torn down cleanly with <code>terraform destroy</code></p>
+<h3 id="why-terraform">Why Terraform?<a class="headerlink" href="#why-terraform" title="Permanent link">&para;</a></h3>
+<p>In Tasks 1–3 you used Ansible to push configuration to network devices over SSH.
+Terraform takes a different approach — instead of describing <em>tasks to run</em>, you describe
+the <em>desired end state</em> and Terraform figures out what to create, change, or destroy to
+get there.</p>
+<p>This lab runs <strong>independently</strong> of the main ContainerLab topology. It uses a separate
+Docker bridge network and does not interfere with the LTRATO-1001 nodes.</p>
+<blockquote>
+<p><strong>Need a ContainerLab refresher?</strong> The <a href="../ContainerLab-Primer/">ContainerLab Primer</a> covers how the main lab topology is defined and managed.</p>
+</blockquote>
+<p>Terraform also configures the CSR via RESTCONF (not SSH), so you will see a completely
+different protocol in action:</p>
+<ul>
+<li>Hostname → <code>csr-terraform</code></li>
+<li>Loopback0 → <code>10.99.99.1/32</code> (description: "Managed by Terraform")</li>
+</ul>
+<h3 id="lab-topology">Lab Topology<a class="headerlink" href="#lab-topology" title="Permanent link">&para;</a></h3>
+<p><img alt="Lab Topology" src="../slides/slide-05-topology.png" /></p>
+<table>
+<thead>
+<tr>
+<th>Container</th>
+<th>Image</th>
+<th>IP</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>csr-terraform</code></td>
+<td><code>vrnetlab/vr-csr:16.12.05</code></td>
+<td><code>172.20.21.10</code></td>
+<td>Cisco IOS XE router — Terraform target</td>
+</tr>
+<tr>
+<td><code>linux-terraform1</code></td>
+<td><code>ghcr.io/hellt/network-multitool</code></td>
+<td><code>172.20.21.20</code></td>
+<td>Linux client</td>
+</tr>
+<tr>
+<td><code>linux-terraform2</code></td>
+<td><code>ghcr.io/hellt/network-multitool</code></td>
+<td><code>172.20.21.21</code></td>
+<td>Linux client</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h2>
+<p>The lab server already has everything pre-installed and initialized:</p>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Version</th>
+<th>Location</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Terraform</td>
+<td>v1.14.7</td>
+<td><code>/usr/bin/terraform</code></td>
+</tr>
+<tr>
+<td>Docker</td>
+<td>27.5.1</td>
+<td><code>/usr/bin/docker</code></td>
+</tr>
+<tr>
+<td><code>sshpass</code></td>
+<td>—</td>
+<td><code>/usr/bin/sshpass</code></td>
+</tr>
+<tr>
+<td><code>kreuzwerker/docker</code> provider</td>
+<td>3.9.0</td>
+<td><code>~/.terraform.d/plugins/</code></td>
+</tr>
+<tr>
+<td><code>CiscoDevNet/iosxe</code> provider</td>
+<td>0.16.0</td>
+<td><code>~/.terraform.d/plugins/</code></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Note:</strong> The server has no internet access to the Terraform registry. Providers are
+pre-installed in a local filesystem mirror. <code>terraform init</code> reads from there — no
+download needed.</p>
+</blockquote>
+<p>All Terraform files are in: <strong><code>~/terraform-lab/terraform/</code></strong></p>
+<hr />
+<h2 id="part-1-explore-the-configuration">Part 1 — Explore the Configuration<a class="headerlink" href="#part-1-explore-the-configuration" title="Permanent link">&para;</a></h2>
+<p>Before deploying anything, take a few minutes to understand what Terraform will build.</p>
+<h3 id="step-1-navigate-to-the-working-directory">Step 1 — Navigate to the Working Directory<a class="headerlink" href="#step-1-navigate-to-the-working-directory" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nb">cd</span><span class="w"> </span>~/terraform-lab/terraform
+</code></pre></div>
+<h3 id="step-2-explore-the-file-structure">Step 2 — Explore the File Structure<a class="headerlink" href="#step-2-explore-the-file-structure" title="Permanent link">&para;</a></h3>
+<p>Run <code>ls -la</code> to see the full directory listing with permissions and sizes:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>ls<span class="w"> </span>-la
+</code></pre></div>
+<blockquote>
+<p>Expected output (timestamps and sizes may differ slightly — that is normal):</p>
+</blockquote>
+<p><img alt="ls -la output" src="../images/task5-ls-output.png" /></p>
+<blockquote>
+<p><strong>Why are there state files already?</strong>
+On a brand-new Terraform project, <code>terraform.tfstate</code> would not exist until after the
+first <code>terraform apply</code>. The state files you see here exist because this lab environment
+was pre-tested and then cleaned up with <code>terraform destroy</code> before you received it.</p>
+<ul>
+<li><code>terraform.tfstate</code> (183 bytes) — after <code>terraform destroy</code> completes, Terraform writes
+  a near-empty state file rather than deleting it. The 183-byte size tells you it contains
+  only the format header — no resources are tracked. You can confirm this with
+  <code>terraform show</code>, which will print <code>The state file is empty</code>.</li>
+<li><code>terraform.tfstate.backup</code> — a copy of the full state from the last <code>apply</code>, saved
+  automatically by Terraform when <code>destroy</code> ran.</li>
+<li><code>terraform.tfstate.1774032510.backup</code> — an older backup from a prior run.</li>
+</ul>
+<p>You will see this same pattern yourself at the end of Part 5 after you run
+<code>terraform destroy</code>.</p>
+</blockquote>
+<p>Here is what each file does:</p>
+<table>
+<thead>
+<tr>
+<th>File / Directory</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>main.tf</code></td>
+<td>Root module — ties the two sub-modules together</td>
+</tr>
+<tr>
+<td><code>variables.tf</code></td>
+<td>All input variables with their default values</td>
+</tr>
+<tr>
+<td><code>outputs.tf</code></td>
+<td>Values printed to the screen after <code>terraform apply</code></td>
+</tr>
+<tr>
+<td><code>modules/</code></td>
+<td>Folder containing the two sub-modules</td>
+</tr>
+<tr>
+<td><code>.terraform/</code></td>
+<td>Terraform's internal directory — provider plugins live here</td>
+</tr>
+<tr>
+<td><code>.terraform.lock.hcl</code></td>
+<td>Records the exact provider versions in use (like a lock file)</td>
+</tr>
+<tr>
+<td><code>terraform.tfstate</code></td>
+<td>Terraform's memory — currently empty (post-destroy residue). Will be populated after <code>terraform apply</code></td>
+</tr>
+<tr>
+<td><code>terraform.tfstate.backup</code></td>
+<td>Automatic backup of the previous state, saved when <code>destroy</code> ran</td>
+</tr>
+</tbody>
+</table>
+<p>Now run <code>ls -l modules/</code> to see what modules are available:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>ls<span class="w"> </span>-l<span class="w"> </span>modules/
+</code></pre></div>
+<blockquote>
+<p>Expected output:</p>
+</blockquote>
+<p><img alt="ls -l modules/ output" src="../images/task5-ls-modules-output.png" /></p>
+<h3 id="step-3-read-the-root-module">Step 3 — Read the Root Module<a class="headerlink" href="#step-3-read-the-root-module" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>cat<span class="w"> </span>main.tf
+</code></pre></div>
+<blockquote>
+<p>Expected output:</p>
+</blockquote>
+<p><img alt="cat main.tf output" src="../images/task5-cat-main-output.png" /></p>
+<p>This is the entry point for the entire lab. Read through it and notice:</p>
+<ul>
+<li>The <code>terraform { required_providers { ... } }</code> block declares which providers this
+  configuration needs — <code>kreuzwerker/docker</code> and <code>CiscoDevNet/iosxe</code>.</li>
+<li>The <code>provider "iosxe"</code> block tells the IOS XE provider where to connect: it points at
+  <code>172.20.21.10</code> (the CSR container) and uses <code>protocol = "restconf"</code>.</li>
+<li>The two <code>module</code> blocks pull in the sub-modules from the <code>modules/</code> folder.</li>
+<li><code>module "iosxe_config"</code> has <code>depends_on = [module.docker_infra]</code> — this tells Terraform
+  to finish <strong>all</strong> docker-infra work (including waiting for the CSR to boot) before
+  attempting any RESTCONF configuration. Without this, Terraform might try to configure
+  the router before it has even started up.</li>
+</ul>
+<h3 id="step-4-read-the-variables">Step 4 — Read the Variables<a class="headerlink" href="#step-4-read-the-variables" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>cat<span class="w"> </span>variables.tf
+</code></pre></div>
+<blockquote>
+<p>Expected output:</p>
+</blockquote>
+<p><img alt="cat variables.tf output" src="../images/task5-cat-variables-output.png" /></p>
+<p>Each <code>variable</code> block defines an input to the configuration. All of them have <code>default</code>
+values, so no manual input is required — Terraform uses the defaults automatically.</p>
+<p>Key defaults:</p>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Default</th>
+<th>What it controls</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>csr_ip</code></td>
+<td><code>172.20.21.10</code></td>
+<td>IP address assigned to the CSR container</td>
+</tr>
+<tr>
+<td><code>csr_username</code> / <code>csr_password</code></td>
+<td><code>admin</code> / <code>admin</code></td>
+<td>Login credentials for the CSR</td>
+</tr>
+<tr>
+<td><code>csr_hostname</code></td>
+<td><code>csr-terraform</code></td>
+<td>Hostname Terraform will configure on the CSR</td>
+</tr>
+<tr>
+<td><code>loopback_ip</code></td>
+<td><code>10.99.99.1</code></td>
+<td>IP address for Loopback0</td>
+</tr>
+<tr>
+<td><code>linux1_ip</code> / <code>linux2_ip</code></td>
+<td><code>172.20.21.20</code> / <code>172.20.21.21</code></td>
+<td>IPs for the Linux containers</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>You will also see an <code>authorized_keys</code> variable with two long SSH public keys. These
+are pre-loaded keys that allow the lab server to SSH into the Linux containers without
+a password. You do not need to modify them.</p>
+</blockquote>
+<h3 id="step-5-read-the-docker-infrastructure-module">Step 5 — Read the Docker Infrastructure Module<a class="headerlink" href="#step-5-read-the-docker-infrastructure-module" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>cat<span class="w"> </span>modules/docker-infra/main.tf
+</code></pre></div>
+<blockquote>
+<p>Expected output (excerpt):</p>
+</blockquote>
+<p><img alt="cat modules/docker-infra/main.tf output" src="../images/task5-cat-docker-infra-output.png" /></p>
+<p>This module creates the Docker network, the storage volume, and the three containers.
+Scroll down to find the <code>null_resource.csr_ready</code> block near the bottom. This is where
+Terraform waits for the CSR to boot:</p>
+<ul>
+<li>It runs a shell script (<code>local-exec</code> provisioner) that polls the CSR's RESTCONF API
+  every 10 seconds.</li>
+<li>If RESTCONF is not responding yet, it also tries to enable it over SSH.</li>
+<li>Once RESTCONF responds with HTTP 200, the script exits and Terraform proceeds.</li>
+<li>The CSR takes approximately <strong>7-8 minutes</strong> to complete its cold boot from a fresh volume.</li>
+</ul>
+<h3 id="step-6-read-the-ios-xe-configuration-module">Step 6 — Read the IOS XE Configuration Module<a class="headerlink" href="#step-6-read-the-ios-xe-configuration-module" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>cat<span class="w"> </span>modules/iosxe-config/main.tf
+</code></pre></div>
+<blockquote>
+<p>Expected output:</p>
+</blockquote>
+<p><img alt="cat modules/iosxe-config/main.tf output" src="../images/task5-cat-iosxe-config-output.png" /></p>
+<p>This module is simple — just two resources:
+- <code>iosxe_system.this</code> — sends a RESTCONF call to set the hostname to <code>csr-terraform</code>
+- <code>iosxe_interface_loopback.lo0</code> — sends a RESTCONF call to create Loopback0 with IP
+  <code>10.99.99.1/32</code></p>
+<p>These two resources only run after <code>module.docker_infra</code> is fully complete (due to the
+<code>depends_on</code> in <code>main.tf</code>).</p>
+<h3 id="step-7-read-the-outputs">Step 7 — Read the Outputs<a class="headerlink" href="#step-7-read-the-outputs" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>cat<span class="w"> </span>outputs.tf
+</code></pre></div>
+<blockquote>
+<p>Expected output:</p>
+</blockquote>
+<p><img alt="cat outputs.tf output" src="../images/task5-cat-outputs-output.png" /></p>
+<p>After <code>terraform apply</code> finishes, these five values will be printed to the terminal so
+you can see a summary of what was deployed.</p>
+<h3 id="step-8-initialize-terraform">Step 8 — Initialize Terraform<a class="headerlink" href="#step-8-initialize-terraform" title="Permanent link">&para;</a></h3>
+<p><code>terraform init</code> prepares the working directory — it reads the provider requirements and
+links them from the local filesystem mirror. Since providers are pre-installed, this is
+instantaneous (no download).</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>terraform<span class="w"> </span>init
+</code></pre></div>
+<blockquote>
+<p>Expected output:</p>
+</blockquote>
+<p><img alt="terraform init output" src="../images/task5-terraform-init-output.png" /></p>
+<blockquote>
+<p>If you see <code>Terraform has been successfully initialized!</code> you are ready to proceed.</p>
+</blockquote>
+<hr />
+<h2 id="part-2-plan-and-deploy">Part 2 — Plan and Deploy<a class="headerlink" href="#part-2-plan-and-deploy" title="Permanent link">&para;</a></h2>
+<h3 id="step-9-confirm-nothing-is-running-yet">Step 9 — Confirm Nothing is Running Yet<a class="headerlink" href="#step-9-confirm-nothing-is-running-yet" title="Permanent link">&para;</a></h3>
+<p>Before deploying, verify the Docker environment is clean:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>docker<span class="w"> </span>ps<span class="w"> </span>--filter<span class="w"> </span><span class="nv">name</span><span class="o">=</span>terraform
+</code></pre></div>
+<blockquote>
+<p>Expected output:</p>
+</blockquote>
+<p><img alt="docker ps empty output" src="../images/task5-docker-ps-empty-output.png" /></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>docker<span class="w"> </span>network<span class="w"> </span>ls<span class="w"> </span>--filter<span class="w"> </span><span class="nv">name</span><span class="o">=</span>terraform
+</code></pre></div>
+<blockquote>
+<p>Expected output:</p>
+</blockquote>
+<p><img alt="docker network ls empty output" src="../images/task5-docker-network-empty-output.png" /></p>
+<h3 id="step-10-preview-the-deployment-with-terraform-plan">Step 10 — Preview the Deployment with terraform plan<a class="headerlink" href="#step-10-preview-the-deployment-with-terraform-plan" title="Permanent link">&para;</a></h3>
+<p><code>terraform plan</code> is a dry run. It compares your configuration against the current state
+and shows you exactly what will be created, changed, or destroyed — <strong>without touching
+anything</strong>.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>terraform<span class="w"> </span>plan
+</code></pre></div>
+<blockquote>
+<p><strong>Heads up:</strong> The full output is verbose — Terraform lists every single attribute of
+every resource it plans to create, most of which say <code>(known after apply)</code> because the
+values won't exist until the resource is actually created. <strong>Scroll past the details and
+focus on the summary lines at the very bottom.</strong></p>
+<p><code>(known after apply)</code> simply means "Terraform will fill this in once the resource
+exists." For example, a container's ID is not known until Docker creates it.</p>
+</blockquote>
+<p>The summary at the bottom of your output should look like this:</p>
+<blockquote>
+<p>Expected output (bottom of the plan):</p>
+</blockquote>
+<p><img alt="terraform plan output" src="../images/task5-terraform-plan-output.png" /></p>
+<p>The <code>Plan: 8 to add</code> means Terraform is planning to create 8 resources:</p>
+<ol>
+<li><code>module.docker_infra.docker_network.terraform_net</code> — the bridge network</li>
+<li><code>module.docker_infra.docker_volume.csr_storage</code> — CSR persistent storage volume</li>
+<li><code>module.docker_infra.docker_container.csr</code> — the CSR container</li>
+<li><code>module.docker_infra.docker_container.linux1</code> — linux-terraform1</li>
+<li><code>module.docker_infra.docker_container.linux2</code> — linux-terraform2</li>
+<li><code>module.docker_infra.null_resource.csr_ready</code> — the readiness + RESTCONF provisioner</li>
+<li><code>module.iosxe_config.iosxe_system.this</code> — CSR hostname via RESTCONF</li>
+<li><code>module.iosxe_config.iosxe_interface_loopback.lo0</code> — Loopback0 via RESTCONF</li>
+</ol>
+<blockquote>
+<p><strong>Nothing has been deployed yet.</strong> <code>plan</code> is always safe to run.</p>
+</blockquote>
+<h3 id="step-11-deploy-with-terraform-apply">Step 11 — Deploy with terraform apply<a class="headerlink" href="#step-11-deploy-with-terraform-apply" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>terraform<span class="w"> </span>apply<span class="w"> </span>-auto-approve
+</code></pre></div>
+<blockquote>
+<p>The <code>-auto-approve</code> flag skips the interactive confirmation prompt. In the lab we use
+it to save time. In a production environment, always omit this flag — Terraform will
+print the plan and ask you to type <code>yes</code> before making any changes.</p>
+</blockquote>
+<p><strong>What happens next (in order):</strong></p>
+<ol>
+<li>Docker network <code>terraform-net</code> is created (~2s)</li>
+<li>CSR storage volume is created (~0s)</li>
+<li>All three containers start simultaneously (~1s each)</li>
+<li>The <code>null_resource.csr_ready</code> provisioner begins — it polls RESTCONF every 10 seconds
+   while waiting for the CSR to boot. <strong>This takes approximately 7-8 minutes.</strong>
+   You will see <code>Still creating...</code> messages ticking by — this is normal. Do not interrupt it.</li>
+<li>Once the CSR is ready, Terraform applies the hostname and Loopback0 via RESTCONF
+   (~1 second each).</li>
+</ol>
+<p>While waiting, open a second terminal and watch the CSR boot progress:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>docker<span class="w"> </span>logs<span class="w"> </span>-f<span class="w"> </span>csr-terraform
+</code></pre></div>
+<p>Look for this line to confirm the CSR has finished booting:</p>
+<pre>
+Startup complete in: 0:07:XX
+</pre>
+
+<p>Press <code>Ctrl+C</code> to stop following the logs.</p>
+<blockquote>
+<p><strong>Why is the provisioner output suppressed?</strong> The <code>csr_password</code> variable is marked
+<code>sensitive = true</code> in <code>variables.tf</code>. Terraform automatically suppresses the output of
+any provisioner that uses a sensitive variable to avoid accidentally printing passwords
+to the screen. That is why you see <code>(output suppressed due to sensitive value in config)</code>
+instead of the polling loop messages.</p>
+<p>Expected output:</p>
+</blockquote>
+<p><img alt="terraform apply output" src="../images/task5-terraform-apply-output.png" /></p>
+<blockquote>
+<p>The hex IDs (like <code>[id=Cisco-IOS-XE-native:native]</code>) will be different on your run.</p>
+<p><strong>💡 Automation Insight:</strong> Notice the dependency ordering Terraform enforced automatically —
+the network had to exist before containers could attach to it, the CSR had to be running
+before RESTCONF config could be applied. You did not write any of that logic. You
+declared <em>what</em> you wanted; Terraform figured out <em>in what order</em> to build it.</p>
+</blockquote>
+<h3 id="checkpoint-part-2">Checkpoint — Part 2<a class="headerlink" href="#checkpoint-part-2" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] <code>docker ps --filter name=terraform</code> showed empty before deploy</li>
+<li>[ ] <code>terraform plan</code> showed <strong>Plan: 8 to add, 0 to change, 0 to destroy</strong></li>
+<li>[ ] <code>terraform apply</code> completed with <strong>Apply complete! Resources: 8 added</strong></li>
+<li>[ ] Outputs printed: <code>csr_hostname</code>, <code>csr_ip</code>, <code>linux1_ip</code>, <code>linux2_ip</code>, <code>loopback0</code></li>
+</ul>
+<hr />
+<h2 id="part-3-verify-the-deployment">Part 3 — Verify the Deployment<a class="headerlink" href="#part-3-verify-the-deployment" title="Permanent link">&para;</a></h2>
+<h3 id="step-12-check-running-containers">Step 12 — Check Running Containers<a class="headerlink" href="#step-12-check-running-containers" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>docker<span class="w"> </span>ps<span class="w"> </span>--filter<span class="w"> </span><span class="nv">name</span><span class="o">=</span>terraform<span class="w"> </span>--format<span class="w"> </span><span class="s2">&quot;table {{.ID}}\t{{.Image}}\t{{.Status}}\t{{.Names}}&quot;</span>
+</code></pre></div>
+<blockquote>
+<p>Expected output:</p>
+</blockquote>
+<p><img alt="docker ps running output" src="../images/task5-docker-ps-running-output.png" /></p>
+<p>The CSR shows <code>(healthy)</code> — the vrnetlab healthcheck confirms the IOS XE VM is fully
+booted and responding.</p>
+<h3 id="step-13-check-container-ip-addresses">Step 13 — Check Container IP Addresses<a class="headerlink" href="#step-13-check-container-ip-addresses" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>docker<span class="w"> </span>inspect<span class="w"> </span>csr-terraform<span class="w"> </span>--format<span class="w"> </span><span class="s1">&#39;{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}&#39;</span>
+</code></pre></div>
+<blockquote>
+<p>Expected output:</p>
+</blockquote>
+<p><img alt="docker inspect csr-terraform output" src="../images/task5-docker-inspect-csr-output.png" /></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>docker<span class="w"> </span>inspect<span class="w"> </span>linux-terraform1<span class="w"> </span>--format<span class="w"> </span><span class="s1">&#39;{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}&#39;</span>
+</code></pre></div>
+<blockquote>
+<p>Expected output:</p>
+</blockquote>
+<p><img alt="docker inspect linux-terraform1 output" src="../images/task5-docker-inspect-linux1-output.png" /></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>docker<span class="w"> </span>inspect<span class="w"> </span>linux-terraform2<span class="w"> </span>--format<span class="w"> </span><span class="s1">&#39;{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}&#39;</span>
+</code></pre></div>
+<blockquote>
+<p>Expected output:</p>
+</blockquote>
+<p><img alt="docker inspect linux-terraform2 output" src="../images/task5-docker-inspect-linux2-output.png" /></p>
+<h3 id="step-14-check-terraform-output">Step 14 — Check Terraform Output<a class="headerlink" href="#step-14-check-terraform-output" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>terraform<span class="w"> </span>output
+</code></pre></div>
+<blockquote>
+<p>Expected output:</p>
+</blockquote>
+<p><img alt="terraform output" src="../images/task5-terraform-output-output.png" /></p>
+<h3 id="step-15-verify-restconf-is-responding-on-the-csr">Step 15 — Verify RESTCONF is Responding on the CSR<a class="headerlink" href="#step-15-verify-restconf-is-responding-on-the-csr" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>curl<span class="w"> </span>-sk<span class="w"> </span>-u<span class="w"> </span>admin:admin<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Accept: application/yang-data+json&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a><span class="w">  </span>https://172.20.21.10/restconf/data/Cisco-IOS-XE-native:native/hostname
+</code></pre></div>
+<blockquote>
+<p>Expected output:</p>
+</blockquote>
+<p><img alt="curl hostname output" src="../images/task5-curl-hostname-output.png" /></p>
+<h3 id="step-16-verify-loopback0-exists-on-the-csr">Step 16 — Verify Loopback0 Exists on the CSR<a class="headerlink" href="#step-16-verify-loopback0-exists-on-the-csr" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>curl<span class="w"> </span>-sk<span class="w"> </span>-u<span class="w"> </span>admin:admin<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Accept: application/yang-data+json&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a><span class="w">  </span><span class="s2">&quot;https://172.20.21.10/restconf/data/Cisco-IOS-XE-native:native/interface/Loopback=0&quot;</span>
+</code></pre></div>
+<blockquote>
+<p>Expected output:</p>
+</blockquote>
+<p><img alt="curl loopback output" src="../images/task5-curl-loopback-output.png" /></p>
+<h3 id="step-17-ssh-into-the-csr-and-verify">Step 17 — SSH into the CSR and Verify<a class="headerlink" href="#step-17-ssh-into-the-csr-and-verify" title="Permanent link">&para;</a></h3>
+<p>The CSR is an older IOS XE image that uses legacy SSH algorithms. The extra flags below
+tell your SSH client to allow those older algorithms — without them the connection will
+be refused.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>ssh<span class="w"> </span>-o<span class="w"> </span><span class="nv">KexAlgorithms</span><span class="o">=</span>+diffie-hellman-group14-sha1<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a><span class="w">    </span>-o<span class="w"> </span><span class="nv">HostKeyAlgorithms</span><span class="o">=</span>+ssh-rsa<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a><span class="w">    </span>admin@172.20.21.10
+</code></pre></div>
+<p>Password: <code>admin</code></p>
+<blockquote>
+<p>If prompted with <code>Are you sure you want to continue connecting (yes/no)?</code>, type <code>yes</code>
+and press Enter.</p>
+</blockquote>
+<p>Once logged in, you will see the IOS XE prompt (<code>csr-terraform#</code>). Run the following
+commands:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>show running-config | include hostname
+</code></pre></div>
+<blockquote>
+<p>Expected output:</p>
+</blockquote>
+<p><img alt="show hostname output" src="../images/task5-show-hostname-output.png" /></p>
+<p>Now verify that Loopback0 was created with the correct IP and description:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>show interfaces Loopback0
+</code></pre></div>
+<blockquote>
+<p>Expected output:</p>
+</blockquote>
+<p><img alt="show interfaces Loopback0 output" src="../images/task5-show-loopback-output.png" /></p>
+<p>Type <code>exit</code> to leave the CSR.</p>
+<h3 id="step-18-ssh-into-a-linux-container-and-verify">Step 18 — SSH into a Linux Container and Verify<a class="headerlink" href="#step-18-ssh-into-a-linux-container-and-verify" title="Permanent link">&para;</a></h3>
+<blockquote>
+<p><strong>Before connecting:</strong> If you have connected to <code>172.20.21.20</code> before (from a previous
+lab run), clear the old host key first to avoid an SSH error:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>ssh-keygen<span class="w"> </span>-f<span class="w"> </span>~/.ssh/known_hosts<span class="w"> </span>-R<span class="w"> </span><span class="m">172</span>.20.21.20
+</code></pre></div>
+</blockquote>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>ssh<span class="w"> </span>root@172.20.21.20
+</code></pre></div>
+<p>Password: <code>root</code></p>
+<blockquote>
+<p>If prompted with <code>Are you sure you want to continue connecting (yes/no)?</code>, type <code>yes</code>
+and press Enter.</p>
+</blockquote>
+<p>Once logged in:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a>hostname
+</code></pre></div>
+<blockquote>
+<p><strong>Note:</strong> The hostname is the short container ID, not <code>linux-terraform1</code>. This is
+normal — the Terraform config does not explicitly set a hostname inside the container,
+so Docker uses the container ID by default. Your container ID will be different.</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a>ip addr show eth0
+</code></pre></div>
+<blockquote>
+<p>Expected output (interface number and MAC address will differ on your system):</p>
+</blockquote>
+<p><img alt="ip addr show eth0 output" src="../images/task5-ip-addr-eth0-output.png" /></p>
+<p>The important line is <code>inet 172.20.21.20/24</code> — that confirms the container has the
+correct IP address on the <code>terraform-net</code> network.</p>
+<p>Type <code>exit</code> to leave the Linux container and return to the lab server.</p>
+<h3 id="step-19-inspect-the-state-file">Step 19 — Inspect the State File<a class="headerlink" href="#step-19-inspect-the-state-file" title="Permanent link">&para;</a></h3>
+<p>Everything is deployed and verified. Before moving on, take a few minutes to look at
+what Terraform actually recorded — the state file is what makes every subsequent
+<code>plan</code>, <code>apply</code>, and <code>destroy</code> possible.</p>
+<h4 id="view-the-human-readable-state-with-terraform-show">View the human-readable state with terraform show<a class="headerlink" href="#view-the-human-readable-state-with-terraform-show" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a>terraform<span class="w"> </span>show
+</code></pre></div>
+<p>Terraform reads <code>terraform.tfstate</code> and formats it for humans. The output lists every
+resource it manages, with all the attribute values recorded at creation time. The output
+is verbose — scroll through your terminal to see all 8 resources.</p>
+<p>Here is a focused excerpt showing the IOS-XE resources and outputs:</p>
+<blockquote>
+<p>Expected output (truncated — the IOS-XE resources and outputs section):</p>
+</blockquote>
+<p><img alt="terraform show output" src="../images/task5-terraform-show-output.png" /></p>
+<blockquote>
+<p>Notice the <code>id</code> fields — for the IOS-XE resources these are the RESTCONF paths Terraform
+used to push config to the router. Terraform recorded them at creation time and will use
+them for every future <code>plan</code>, <code>apply</code>, and <code>destroy</code>.</p>
+<p><strong>What the state file is doing for you:</strong></p>
+<ul>
+<li>
+<p><strong>Every <code>plan</code> reads it first.</strong> Terraform compares this file against your <code>.tf</code>
+  configuration to calculate exactly what needs to change. If they match — <code>No changes</code>.
+  If something is missing or different — Terraform shows you what it will fix.</p>
+</li>
+<li>
+<p><strong>It is how drift gets detected.</strong> If a resource exists in this file but has been
+  deleted outside of Terraform, the next <code>plan</code> will flag it for recreation. You will
+  see this in action in Part 4.</p>
+</li>
+<li>
+<p><strong>It is how <code>destroy</code> knows what to remove.</strong> Terraform reads this file to get the
+  complete list of everything it created — container IDs, network IDs, volume names —
+  and removes exactly those resources, nothing more.</p>
+</li>
+<li>
+<p><strong>Never edit it by hand.</strong> If you manually change a value in this file, Terraform's
+  view of the world will be wrong and subsequent operations will behave unpredictably.
+  If you ever need to manipulate state directly, use the <code>terraform state</code> subcommands
+  (<code>terraform state list</code>, <code>terraform state show</code>, <code>terraform state rm</code>).</p>
+</li>
+</ul>
+</blockquote>
+<h3 id="checkpoint-part-3">Checkpoint — Part 3<a class="headerlink" href="#checkpoint-part-3" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] All three containers show <code>Up</code> in <code>docker ps</code></li>
+<li>[ ] CSR shows <code>(healthy)</code> status</li>
+<li>[ ] <code>curl</code> to RESTCONF hostname endpoint returned <code>"csr-terraform"</code></li>
+<li>[ ] <code>curl</code> to RESTCONF Loopback endpoint returned <code>10.99.99.1</code> with description <code>"Managed by Terraform"</code></li>
+<li>[ ] SSH to CSR confirmed <code>hostname csr-terraform</code> and <code>Loopback0 is up</code></li>
+<li>[ ] SSH to linux-terraform1 confirmed IP <code>172.20.21.20/24</code> on <code>eth0</code></li>
+</ul>
+<hr />
+<h2 id="part-4-infrastructure-drift">Part 4 — Infrastructure Drift<a class="headerlink" href="#part-4-infrastructure-drift" title="Permanent link">&para;</a></h2>
+<p><img alt="Infrastructure Drift" src="../slides/slide-06-drift.png" /></p>
+<p><strong>Infrastructure drift</strong> is what happens when the real state of your infrastructure no
+longer matches what Terraform expects based on its state file. This is one of the most
+common real-world problems in infrastructure management.</p>
+<p>Drift can happen when:</p>
+<ul>
+<li>Someone manually deletes or modifies a resource outside of Terraform ("I'll just fix it
+  quickly in the CLI...")</li>
+<li>A container crashes and is removed automatically by Docker</li>
+<li>An engineer makes a "quick fix" directly on a device instead of going through the IaC
+  pipeline</li>
+</ul>
+<p>In a traditional environment, drift often goes unnoticed until something breaks.
+Terraform can <strong>detect</strong> it and <strong>fix</strong> it automatically.</p>
+<h3 id="step-20-simulate-drift-manually-delete-a-container">Step 20 — Simulate Drift: Manually Delete a Container<a class="headerlink" href="#step-20-simulate-drift-manually-delete-a-container" title="Permanent link">&para;</a></h3>
+<p>We are going to pretend to be a colleague who deleted a container by hand, bypassing
+Terraform entirely. Without touching any Terraform files, directly remove
+<code>linux-terraform2</code> using Docker:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a>docker<span class="w"> </span>rm<span class="w"> </span>-f<span class="w"> </span>linux-terraform2
+</code></pre></div>
+<blockquote>
+<p>Expected output:</p>
+</blockquote>
+<p><img alt="docker rm output" src="../images/task5-docker-rm-output.png" /></p>
+<h3 id="step-21-confirm-it-is-gone">Step 21 — Confirm It Is Gone<a class="headerlink" href="#step-21-confirm-it-is-gone" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a>docker<span class="w"> </span>ps<span class="w"> </span>--filter<span class="w"> </span><span class="nv">name</span><span class="o">=</span>terraform<span class="w"> </span>--format<span class="w"> </span><span class="s2">&quot;table {{.ID}}\t{{.Image}}\t{{.Status}}\t{{.Names}}&quot;</span>
+</code></pre></div>
+<blockquote>
+<p>Expected output:</p>
+</blockquote>
+<p><img alt="docker ps drift output" src="../images/task5-docker-ps-drift-output.png" /></p>
+<p><code>linux-terraform2</code> is missing. The infrastructure has <strong>drifted</strong> from the Terraform
+configuration.</p>
+<h3 id="step-22-detect-drift-with-terraform-plan">Step 22 — Detect Drift with terraform plan<a class="headerlink" href="#step-22-detect-drift-with-terraform-plan" title="Permanent link">&para;</a></h3>
+<p>Run <code>terraform plan</code>. Terraform will first <strong>refresh</strong> its state by checking the actual
+state of every resource against what is recorded in <code>terraform.tfstate</code>. When it finds
+that <code>linux-terraform2</code> no longer exists, it will add it to the plan as something that
+needs to be re-created:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a>terraform<span class="w"> </span>plan
+</code></pre></div>
+<p>Look for this in the output summary at the bottom:</p>
+<blockquote>
+<p>Expected output:</p>
+</blockquote>
+<p><img alt="terraform plan drift output" src="../images/task5-terraform-plan-drift-output.png" /></p>
+<blockquote>
+<p><strong>Notice</strong> the plan identifies exactly one resource to add — <code>module.docker_infra.docker_container.linux2</code> —
+and confirms it with <code>Plan: 1 to add, 0 to change, 0 to destroy.</code> Terraform found the
+missing container and knows precisely what to fix, without touching anything else.</p>
+</blockquote>
+<h3 id="step-23-remediate-drift-with-terraform-apply">Step 23 — Remediate Drift with terraform apply<a class="headerlink" href="#step-23-remediate-drift-with-terraform-apply" title="Permanent link">&para;</a></h3>
+<p>Run <code>terraform apply -auto-approve</code>. Because the CSR is already running and RESTCONF is
+already active, Terraform only needs to re-create the one missing container. This
+completes in under 2 seconds:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a>terraform<span class="w"> </span>apply<span class="w"> </span>-auto-approve
+</code></pre></div>
+<blockquote>
+<p>Expected output:</p>
+</blockquote>
+<p><img alt="terraform apply drift output" src="../images/task5-terraform-apply-drift-output.png" /></p>
+<blockquote>
+<p>Notice that Terraform only created <strong>1</strong> resource — it did not touch the CSR,
+linux-terraform1, the network, or the volume. It only fixed exactly what was missing.</p>
+</blockquote>
+<h3 id="step-24-confirm-all-three-containers-are-running-again">Step 24 — Confirm All Three Containers Are Running Again<a class="headerlink" href="#step-24-confirm-all-three-containers-are-running-again" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a>docker<span class="w"> </span>ps<span class="w"> </span>--filter<span class="w"> </span><span class="nv">name</span><span class="o">=</span>terraform<span class="w"> </span>--format<span class="w"> </span><span class="s2">&quot;table {{.ID}}\t{{.Image}}\t{{.Status}}\t{{.Names}}&quot;</span>
+</code></pre></div>
+<blockquote>
+<p>Expected output:</p>
+</blockquote>
+<p><img alt="docker ps remediated output" src="../images/task5-docker-ps-remediated-output.png" /></p>
+<p>Note that <code>linux-terraform2</code> shows a fresh uptime (8 seconds) while the others are still
+at their original age — it was just recreated.</p>
+<h3 id="step-25-verify-terraform-plan-now-shows-no-changes">Step 25 — Verify terraform plan Now Shows No Changes<a class="headerlink" href="#step-25-verify-terraform-plan-now-shows-no-changes" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a>terraform<span class="w"> </span>plan
+</code></pre></div>
+<blockquote>
+<p>Expected output:</p>
+</blockquote>
+<p><img alt="terraform plan no changes output" src="../images/task5-terraform-plan-no-changes-output.png" /></p>
+<p>This is the Terraform "all clear." The real world matches the desired state exactly.
+In a production IaC pipeline, seeing <code>No changes</code> when you run <code>plan</code> is the goal —
+it means your infrastructure is exactly where you left it.</p>
+<blockquote>
+<p><strong>💡 Automation Insight:</strong> In production, teams run <code>terraform plan</code> on a schedule
+(via CI/CD) against live infrastructure. If the plan shows any changes, it triggers an
+alert — someone made an out-of-band change. The team can then decide whether to
+remediate (apply the plan) or update the code to match the new reality. Either way,
+drift is <strong>visible</strong>, not hidden.</p>
+</blockquote>
+<h3 id="checkpoint-part-4">Checkpoint — Part 4<a class="headerlink" href="#checkpoint-part-4" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] <code>docker rm -f linux-terraform2</code> removed the container</li>
+<li>[ ] <code>docker ps</code> confirmed only 2 containers remained</li>
+<li>[ ] <code>terraform plan</code> showed <strong>Plan: 1 to add</strong></li>
+<li>[ ] <code>terraform apply</code> showed <strong>Resources: 1 added, 0 changed, 0 destroyed</strong></li>
+<li>[ ] <code>docker ps</code> confirmed all 3 containers running again (<code>linux-terraform2</code> with fresh uptime)</li>
+<li>[ ] <code>terraform plan</code> confirmed <strong>No changes</strong></li>
+</ul>
+<hr />
+<h2 id="part-5-tear-down">Part 5 — Tear Down<a class="headerlink" href="#part-5-tear-down" title="Permanent link">&para;</a></h2>
+<p>At the end of this section, <strong>tear down the Terraform environment completely</strong> before
+moving on to the ContainerLab section. The CSR uses significant RAM (~3.5 GiB) that the
+ContainerLab topology needs.</p>
+<h3 id="step-26-destroy-all-resources">Step 26 — Destroy All Resources<a class="headerlink" href="#step-26-destroy-all-resources" title="Permanent link">&para;</a></h3>
+<blockquote>
+<p>In the lab, use <code>-auto-approve</code> to skip the confirmation prompt. In production,
+always omit this flag and review the destruction plan carefully before confirming.</p>
+</blockquote>
+<p>Terraform destroys resources in the correct dependency order — IOS XE config first, then
+containers, then the network and volume.</p>
+<blockquote>
+<p><strong>Heads up:</strong> Just like <code>plan</code> and <code>apply</code>, the <code>destroy</code> output is verbose — it lists
+every attribute being removed. Scroll to the bottom to see the final summary.</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-35-1" name="__codelineno-35-1" href="#__codelineno-35-1"></a>terraform<span class="w"> </span>destroy<span class="w"> </span>-auto-approve
+</code></pre></div>
+<blockquote>
+<p>Expected output:</p>
+</blockquote>
+<p><img alt="terraform destroy output" src="../images/task5-terraform-destroy-output.png" /></p>
+<h3 id="step-27-verify-everything-is-cleaned-up">Step 27 — Verify Everything Is Cleaned Up<a class="headerlink" href="#step-27-verify-everything-is-cleaned-up" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-36-1" name="__codelineno-36-1" href="#__codelineno-36-1"></a>docker<span class="w"> </span>ps<span class="w"> </span>--filter<span class="w"> </span><span class="nv">name</span><span class="o">=</span>terraform<span class="w"> </span>--format<span class="w"> </span><span class="s2">&quot;table {{.ID}}\t{{.Image}}\t{{.Status}}\t{{.Names}}&quot;</span>
+</code></pre></div>
+<blockquote>
+<p>Expected output:</p>
+</blockquote>
+<p><img alt="docker ps empty output" src="../images/task5-docker-ps-empty2-output.png" /></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-37-1" name="__codelineno-37-1" href="#__codelineno-37-1"></a>docker<span class="w"> </span>network<span class="w"> </span>ls<span class="w"> </span>--filter<span class="w"> </span><span class="nv">name</span><span class="o">=</span>terraform
+</code></pre></div>
+<blockquote>
+<p>Expected output:</p>
+</blockquote>
+<p><img alt="docker network empty output" src="../images/task5-docker-network-empty2-output.png" /></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-38-1" name="__codelineno-38-1" href="#__codelineno-38-1"></a>docker<span class="w"> </span>volume<span class="w"> </span>ls<span class="w"> </span>--filter<span class="w"> </span><span class="nv">name</span><span class="o">=</span>terraform
+</code></pre></div>
+<blockquote>
+<p>Expected output:</p>
+</blockquote>
+<p><img alt="docker volume empty output" src="../images/task5-docker-volume-empty-output.png" /></p>
+<h3 id="step-28-confirm-terraform-state-is-empty">Step 28 — Confirm Terraform State Is Empty<a class="headerlink" href="#step-28-confirm-terraform-state-is-empty" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-39-1" name="__codelineno-39-1" href="#__codelineno-39-1"></a>terraform<span class="w"> </span>show
+</code></pre></div>
+<blockquote>
+<p>Expected output:</p>
+</blockquote>
+<p><img alt="terraform show empty output" src="../images/task5-terraform-show-empty-output.png" /></p>
+<p>Everything is clean. You are ready to move on to the ContainerLab section.</p>
+<hr />
+<h2 id="quick-reference">Quick Reference<a class="headerlink" href="#quick-reference" title="Permanent link">&para;</a></h2>
+<table>
+<colgroup>
+  <col style="width: 50%">
+  <col style="width: 50%">
+</colgroup>
+<thead>
+<tr><th>Command</th><th>What it does</th></tr>
+</thead>
+<tbody>
+<tr><td><code>terraform init</code></td><td>Initialize working directory, download providers</td></tr>
+<tr><td><code>terraform plan</code></td><td>Preview changes — safe, makes no modifications</td></tr>
+<tr><td><code>terraform apply -auto-approve</code></td><td>Deploy or update infrastructure to match config</td></tr>
+<tr><td><code>terraform destroy -auto-approve</code></td><td>Remove all Terraform-managed resources</td></tr>
+<tr><td><code>terraform show</code></td><td>Display current state in human-readable form</td></tr>
+<tr><td><code>terraform output</code></td><td>Print output values</td></tr>
+<tr><td><code>docker ps --filter name=terraform</code></td><td>Check which Terraform containers are running</td></tr>
+<tr><td><code>docker logs -f csr-terraform</code></td><td>Follow CSR boot log</td></tr>
+<tr><td><code>curl -sk -u admin:admin -H "Accept: application/yang-data+json" https://&lt;ip&gt;/restconf/...</code></td><td>Query CSR via RESTCONF</td></tr>
+</tbody>
+</table>
+
+<hr />
+<h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
+<p>In this lab you:</p>
+<ol>
+<li>Explored a modular Terraform configuration managing both Docker infrastructure and
+   Cisco IOS XE device configuration from a single <code>terraform apply</code></li>
+<li>Used <code>terraform plan</code> to safely preview changes before applying them</li>
+<li>Deployed a three-container network lab including a Cisco CSR1000v router configured
+   entirely via Terraform and RESTCONF</li>
+<li>Verified the deployment through Docker, RESTCONF API queries, and direct SSH</li>
+<li>Simulated infrastructure drift by manually deleting a container outside of Terraform</li>
+<li>Used <code>terraform plan</code> to detect the drift and <code>terraform apply</code> to remediate it in
+   under 1 second</li>
+<li>Performed a clean teardown with <code>terraform destroy</code> and verified all resources were removed</li>
+</ol>
+<p>The key takeaway: with IaC, your infrastructure is <strong>defined, versioned, and repeatable</strong>.
+Drift is detectable and correctable. The same configuration file that built this lab today
+will build the exact same lab tomorrow, next week, or on a completely different server.</p>
+<hr />
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.expand", "navigation.top", "toc.integrate", "search.highlight", "search.suggest", "content.code.copy", "content.code.annotate"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

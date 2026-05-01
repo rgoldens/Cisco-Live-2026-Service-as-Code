@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1200" />
+<title>task2-verify-output</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { overflow: hidden; }
+
+  body {
+    background: #000000;
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+  }
+
+  .terminal {
+    background: #000000;
+    width: 860px;
+    padding: 22px 28px 22px 28px;
+    font-size: 13.5px;
+    line-height: 1.7;
+  }
+
+  .wh  { color: #ffffff; }
+  .ok  { color: #00e676; }
+  .chg { color: #e5c07b; }
+</style>
+</head>
+<body>
+<div class="terminal">
+<pre><span class="wh">PLAY [Verify - IS-IS neighbors and routes] ********************************************************</span>
+
+<span class="wh">TASK [Display IS-IS neighbors] ********************************************************************</span>
+<span class="ok">ok: [n9k-ce01] =&gt; {
+    "isis_neighbors.stdout_lines": [
+        [
+            "IS-IS process: CORE VRF: default",
+            "IS-IS adjacency database:",
+            "System ID       SNPA              Level  State  Hold Time  Interface",
+            "csr-pe01        N/A               2      UP     00:00:27   Ethernet1/1"
+        ]
+    ]
+}</span>
+<span class="ok">ok: [n9k-ce02] =&gt; {
+    "isis_neighbors.stdout_lines": [
+        [
+            "IS-IS process: CORE VRF: default",
+            "IS-IS adjacency database:",
+            "System ID       SNPA              Level  State  Hold Time  Interface",
+            "csr-pe02        N/A               2      UP     00:00:27   Ethernet1/1"
+        ]
+    ]
+}</span>
+
+<span class="wh">TASK [Display IS-IS routes] ***********************************************************************</span>
+<span class="ok">ok: [n9k-ce01] =&gt; {
+    "isis_routes.stdout_lines": [
+        [
+            "IP Route Table for VRF \"default\"",
+            "192.168.10.11/32, ubest/mbest: 1/0",
+            "    *via 10.2.0.1, Eth1/1, [115/40], isis-CORE, L2"
+        ]
+    ]
+}</span></pre>
+</div>
+</body>
+</html>

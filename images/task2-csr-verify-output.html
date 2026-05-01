@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1200" />
+<title>task2-csr-verify-output</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { overflow: hidden; }
+
+  body {
+    background: #000000;
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+  }
+
+  .terminal {
+    background: #000000;
+    width: 860px;
+    padding: 22px 28px 22px 28px;
+    font-size: 13.5px;
+    line-height: 1.7;
+  }
+
+  .wh  { color: #ffffff; }
+  .ok  { color: #00e676; }
+  .chg { color: #e5c07b; }
+</style>
+</head>
+<body>
+<div class="terminal">
+<pre><span class="wh">PLAY [Verify - CSR IS-IS neighbors and routes] ****************************************************</span>
+
+<span class="wh">TASK [Display IS-IS neighbors] ********************************************************************</span>
+<span class="ok">ok: [csr-pe01] =&gt; {
+    "isis_neighbors.stdout_lines": [
+        [
+            "Tag CORE:",
+            "System Id       Type Interface    IP Address      State Holdtime Circuit Id",
+            "n9k-ce01        L2   Gi4          10.2.0.2        UP    23       01"
+        ]
+    ]
+}</span></pre>
+</div>
+</body>
+</html>

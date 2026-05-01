@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1200" />
+<title>task4-tfvars-xrd</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { overflow: hidden; }
+  body { background: #000000; font-family: Monaco, Menlo, 'Courier New', monospace; }
+  .terminal { background: #000000; width: 860px; padding: 22px 28px 22px 28px; font-size: 13.5px; line-height: 1.7; }
+  .wh  { color: #ffffff; }
+  .str { color: #00e676; }
+  .cmt { color: #00b8c8; }
+</style>
+</head>
+<body>
+<div class="terminal">
+<pre><span class="wh">xrd_config = {
+  xrd01 = {
+    remote_lo = "___"       # TODO: xrd02's Loopback0 IP
+    gi1_ip    = "___"       # TODO: xrd01's Gi0/0/0/1 IP toward csr-pe01
+    gi1_mask  = "___"       # TODO: Subnet mask for the /30 link
+    csr_peer  = "___"       # TODO: csr-pe01's IP on the same /30 link
+  }
+  xrd02 = {
+    remote_lo = "___"       # TODO: xrd01's Loopback0 IP
+    gi1_ip    = "___"       # TODO: xrd02's Gi0/0/0/1 IP toward csr-pe02
+    gi1_mask  = "___"       # TODO: Subnet mask for the /30 link
+    csr_peer  = "___"       # TODO: csr-pe02's IP on the same /30 link
+  }
+}</span></pre>
+</div>
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1200" />
+<title>ls -la output</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { overflow: hidden; }
+
+  body {
+    background: #000000;
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+  }
+
+  .terminal {
+    background: #000000;
+    width: 860px;
+    padding: 22px 28px 22px 28px;
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: #ffffff;
+  }
+
+  .row { display: flex; white-space: pre; }
+  .perms  { color: #ffffff; width: 11ch; flex-shrink: 0; }
+  .links  { color: #ffffff; width: 2ch; flex-shrink: 0; text-align: right; margin-right: 1ch; }
+  .owner  { color: #ffffff; width: 6ch; flex-shrink: 0; }
+  .group  { color: #ffffff; width: 6ch; flex-shrink: 0; }
+  .size   { color: #ffffff; width: 6ch; flex-shrink: 0; text-align: right; margin-right: 1ch; }
+  .date   { color: #ffffff; width: 13ch; flex-shrink: 0; }
+  .name-dir    { color: #00aaff; font-weight: 600; }
+  .name-file   { color: #ffffff; }
+  .name-hidden { color: #00aaff; font-weight: 600; }
+  .total { color: #ffffff; margin-bottom: 2px; }
+</style>
+</head>
+<body>
+<div class="terminal">
+  <div class="total">total 68</div>
+
+  <div class="row">
+    <span class="perms">drwxrwxr-x </span>
+    <span class="links">4 </span>
+    <span class="owner">cisco </span>
+    <span class="group">cisco </span>
+    <span class="size">4096 </span>
+    <span class="date">Mar 20 14:29 </span>
+    <span class="name-dir">.</span>
+  </div>
+
+  <div class="row">
+    <span class="perms">drwxrwxr-x </span>
+    <span class="links">3 </span>
+    <span class="owner">cisco </span>
+    <span class="group">cisco </span>
+    <span class="size">4096 </span>
+    <span class="date">Mar 19 22:32 </span>
+    <span class="name-dir">..</span>
+  </div>
+
+  <div class="row">
+    <span class="perms">drwxrwxr-x </span>
+    <span class="links">4 </span>
+    <span class="owner">cisco </span>
+    <span class="group">cisco </span>
+    <span class="size">4096 </span>
+    <span class="date">Mar 19 22:32 </span>
+    <span class="name-hidden">.terraform</span>
+  </div>
+
+  <div class="row">
+    <span class="perms">-rw-r--r-- </span>
+    <span class="links">1 </span>
+    <span class="owner">cisco </span>
+    <span class="group">cisco </span>
+    <span class="size">1513 </span>
+    <span class="date">Mar 19 22:33 </span>
+    <span class="name-file">.terraform.lock.hcl</span>
+  </div>
+
+  <div class="row">
+    <span class="perms">-rw-r--r-- </span>
+    <span class="links">1 </span>
+    <span class="owner">cisco </span>
+    <span class="group">cisco </span>
+    <span class="size">2331 </span>
+    <span class="date">Mar 19 22:32 </span>
+    <span class="name-file">main.tf</span>
+  </div>
+
+  <div class="row">
+    <span class="perms">drwxrwxr-x </span>
+    <span class="links">4 </span>
+    <span class="owner">cisco </span>
+    <span class="group">cisco </span>
+    <span class="size">4096 </span>
+    <span class="date">Mar 19 22:32 </span>
+    <span class="name-dir">modules</span>
+  </div>
+
+  <div class="row">
+    <span class="perms">-rw-r--r-- </span>
+    <span class="links">1 </span>
+    <span class="owner">cisco </span>
+    <span class="group">cisco </span>
+    <span class="size">807 </span>
+    <span class="date">Mar 19 22:32 </span>
+    <span class="name-file">outputs.tf</span>
+  </div>
+
+  <div class="row">
+    <span class="perms">-rw-rw-r-- </span>
+    <span class="links">1 </span>
+    <span class="owner">cisco </span>
+    <span class="group">cisco </span>
+    <span class="size">28878 </span>
+    <span class="date">Mar 20 12:39 </span>
+    <span class="name-file">terraform.tfstate</span>
+  </div>
+
+  <div class="row">
+    <span class="perms">-rw-rw-r-- </span>
+    <span class="links">1 </span>
+    <span class="owner">cisco </span>
+    <span class="group">cisco </span>
+    <span class="size">182 </span>
+    <span class="date">Mar 20 12:31 </span>
+    <span class="name-file">terraform.tfstate.backup</span>
+  </div>
+
+  <div class="row">
+    <span class="perms">-rw-r--r-- </span>
+    <span class="links">1 </span>
+    <span class="owner">cisco </span>
+    <span class="group">cisco </span>
+    <span class="size">3357 </span>
+    <span class="date">Mar 19 22:32 </span>
+    <span class="name-file">variables.tf</span>
+  </div>
+</div>
+</body>
+</html>
