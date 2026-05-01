@@ -1,0 +1,68 @@
+site_name: "LTRATO-1001: Service Insertion as Code: From Concept to Commit"
+site_description: "Cisco Live 2026 Lab Guide — hands-on service insertion automation with Ansible, Terraform, and ContainerLab"
+site_author: "Cisco Live 2026"
+# site_url: "https://rgoldens.github.io/Cisco-Live-2026-Service-as-Code/"
+docs_dir: docs
+
+theme:
+  name: material
+  palette:
+    scheme: slate
+    primary: custom
+    accent: custom
+  font:
+    text: Roboto
+    code: Roboto Mono
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - toc.integrate
+    - search.highlight
+    - search.suggest
+    - content.code.copy
+    - content.code.annotate
+
+extra_css:
+  - stylesheets/cisco.css
+
+nav:
+  - Home: index.md
+  - Getting Started: GETTING-STARTED.md
+  - Lab Access: LAB-ACCESS.md
+  - Lab Tasks:
+      - "Task 1: Explore the Environment": TASK1.md
+      - "Task 2: Build the Underlay": TASK2.md
+      - "Task 3: Deploy BGP VPN": TASK3.md
+      - "Task 4: Service Insertion with Ansible": TASK4.md
+      - "Task 5: Drift Detection with Terraform": TASK5.md
+      - "Task 6: Validation & Cleanup": TASK6.md
+  - Reference:
+      - Quick Reference: REFERENCE.md
+      - Troubleshooting: TROUBLESHOOTING.md
+  - Primers:
+      - Ansible Primer: Ansible-Primer.md
+      - Terraform Primer: Terraform-Primer.md
+      - ContainerLab Primer: ContainerLab-Primer.md
+      - Git Primer: Git-Primer.md
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+
+plugins:
+  - search
