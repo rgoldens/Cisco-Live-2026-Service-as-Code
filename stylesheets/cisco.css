@@ -78,3 +78,8 @@
 .cl-button:hover {
   background-color: #049fd9;
 }
+
+/* Tighten margin below images */
+.md-typeset img {
+  margin-bottom: 0;
+}
