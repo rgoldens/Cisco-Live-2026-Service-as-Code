@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1200" />
+<title>getting-started-ansible-ping-output</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { overflow: hidden; }
+
+  body {
+    background: #000000;
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+  }
+
+  .terminal {
+    background: #000000;
+    width: 860px;
+    padding: 22px 28px 22px 28px;
+    font-size: 13.5px;
+    line-height: 1.7;
+  }
+
+  .wh  { color: #ffffff; }
+  .ok  { color: #00e676; }
+  .err { color: #ff5555; }
+  .cm  { color: #6a7a8a; font-style: italic; }
+</style>
+</head>
+<body>
+<div class="terminal">
+<pre><span class="ok">n9k-ce01 | SUCCESS =&gt;</span><span class="wh"> {</span>
+<span class="wh">    "changed": false,</span>
+<span class="wh">    "ping": "pong"</span>
+<span class="wh">}</span>
+<span class="ok">n9k-ce02 | SUCCESS =&gt;</span><span class="wh"> {</span>
+<span class="wh">    "changed": false,</span>
+<span class="wh">    "ping": "pong"</span>
+<span class="wh">}</span>
+<span class="ok">csr-pe01 | SUCCESS =&gt;</span><span class="wh"> {</span>
+<span class="wh">    "changed": false,</span>
+<span class="wh">    "ping": "pong"</span>
+<span class="wh">}</span>
+<span class="ok">csr-pe02 | SUCCESS =&gt;</span><span class="wh"> {</span>
+<span class="wh">    "changed": false,</span>
+<span class="wh">    "ping": "pong"</span>
+<span class="wh">}</span>
+<span class="ok">xrd01 | SUCCESS =&gt;</span><span class="wh"> {</span>
+<span class="wh">    "changed": false,</span>
+<span class="wh">    "ping": "pong"</span>
+<span class="wh">}</span>
+<span class="ok">xrd02 | SUCCESS =&gt;</span><span class="wh"> {</span>
+<span class="wh">    "changed": false,</span>
+<span class="wh">    "ping": "pong"</span>
+<span class="wh">}</span>
+<span class="err">linux-client1 | FAILED! =&gt;</span><span class="wh"> {</span>
+<span class="wh">    "ansible_facts": {</span>
+<span class="wh">        "discovered_interpreter_python": "/usr/bin/python3"</span>
+<span class="wh">    },</span>
+<span class="wh">    "changed": false,</span>
+<span class="wh">    "module_stderr": "Shared connection to 172.20.20.40 closed.\r\n",</span>
+<span class="wh">    "module_stdout": "/bin/sh: /usr/bin/python3: not found\r\n",</span>
+<span class="wh">    "msg": "The module interpreter '/usr/bin/python3' was not found.",</span>
+<span class="wh">    "rc": 127</span>
+<span class="wh">}</span>
+<span class="err">linux-client2 | FAILED! =&gt;</span><span class="wh"> { ... }</span>
+<span class="err">linux-client3 | FAILED! =&gt;</span><span class="wh"> { ... }</span>
+<span class="err">linux-client4 | FAILED! =&gt;</span><span class="wh"> { ... }</span>
+<span class="cm"># Linux client failures are expected — see note below</span></pre>
+</div>
+</body>
+</html>

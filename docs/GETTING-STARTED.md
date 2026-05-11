@@ -170,14 +170,9 @@ You should see all three files listed without errors:
 ansible --version
 ```
 
-You should see Ansible core 2.x with Python 3.x. Example:
+You should see Ansible core 2.x with Python 3.x:
 
-```
-ansible [core 2.20.3]
-  config file = /home/cisco/ansible.cfg
-  ...
-  python version = 3.12.3
-```
+![ansible --version output](images/getting-started-ansible-version-output.png)
 
 > **Key check:** Make sure `config file` points to `/home/cisco/ansible.cfg`.
 > If it says `None`, the file didn't land in the right place — re-check Step 2.
@@ -190,12 +185,9 @@ ansible [core 2.20.3]
 terraform --version
 ```
 
-You should see Terraform v1.x.x. Example:
+You should see Terraform v1.x.x:
 
-```
-Terraform v1.14.7
-on linux_amd64
-```
+![terraform --version output](images/getting-started-terraform-version-output.png)
 
 > You won't use Terraform until Task 4, but verifying it now catches any
 > issues early.
@@ -239,45 +231,7 @@ ansible all -m ping
 The **6 network devices** should return `SUCCESS`. The **4 Linux clients will
 FAIL** — this is expected and explained below.
 
-```
-n9k-ce01 | SUCCESS => {
-    "changed": false,
-    "ping": "pong"
-}
-csr-pe01 | SUCCESS => {
-    "changed": false,
-    "ping": "pong"
-}
-xrd01 | SUCCESS => {
-    "changed": false,
-    "ping": "pong"
-}
-xrd02 | SUCCESS => {
-    "changed": false,
-    "ping": "pong"
-}
-csr-pe02 | SUCCESS => {
-    "changed": false,
-    "ping": "pong"
-}
-n9k-ce02 | SUCCESS => {
-    "changed": false,
-    "ping": "pong"
-}
-linux-client1 | FAILED! => {
-    "ansible_facts": {
-        "discovered_interpreter_python": "/usr/bin/python3"
-    },
-    "changed": false,
-    "module_stderr": "Shared connection to 172.20.20.40 closed.\r\n",
-    "module_stdout": "/bin/sh: /usr/bin/python3: not found\r\n",
-    "msg": "The module interpreter '/usr/bin/python3' was not found.",
-    "rc": 127
-}
-linux-client2 | FAILED! => { ... }
-linux-client3 | FAILED! => { ... }
-linux-client4 | FAILED! => { ... }
-```
+![ansible all -m ping output](images/getting-started-ansible-ping-output.png)
 
 > **Why do the Linux clients fail?** Don't worry — this is expected. The
 > `ping` module requires Python on the remote host, but our Linux containers
