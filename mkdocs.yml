@@ -32,6 +32,7 @@ nav:
   - Home: index.md
   - Getting Started: GETTING-STARTED.md
   - Lab Access: LAB-ACCESS.md
+  - Lab Readiness: LAB-READINESS.md
   - Lab Tasks:
       - "Task 1: Explore the Environment": TASK1.md
       - "Task 2: Build the Underlay": TASK2.md

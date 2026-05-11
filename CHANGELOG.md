@@ -18,6 +18,19 @@ primer documents into dedicated files. Added student lab access guide.
 
 ---
 
+### 1.1.18 — Add Lab Readiness Page, Restructure Nav Flow
+
+Split environment setup steps out of Getting Started into a new dedicated Lab Readiness page. Updated nav and cross-page links to reflect the new flow: Getting Started → Lab Access → Lab Readiness → Task 1.
+
+| File | Description |
+|------|-------------|
+| `docs/LAB-READINESS.md` | New page — Steps 1–7, pre-flight checklist, all moved from Getting Started |
+| `docs/GETTING-STARTED.md` | Now contains intro, topology, and How the Lab Works only; callout links to Lab Access |
+| `docs/LAB-ACCESS.md` | Bottom link updated to point to Lab Readiness instead of Getting Started |
+| `mkdocs.yml` | Added Lab Readiness to nav between Lab Access and Lab Tasks |
+
+---
+
 ### 1.1.17 — Getting Started Terminal Images + CSS Image Margin Fix
 
 Replaced three raw code block outputs in `GETTING-STARTED.md` with styled

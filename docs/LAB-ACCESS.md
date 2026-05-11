@@ -248,7 +248,7 @@ Confirm all of the following before moving on:
 - [ ] ContainerLab Explorer shows **LTRATO-1001** running with all nodes healthy (green dots)
 - [ ] Terminal panel is open with a `cisco@ubuntu:~$` prompt
 
-**All set? Head to [Getting Started](GETTING-STARTED.md) for your next steps.**
+**All set? Head to [Lab Readiness](LAB-READINESS.md) to clone the repo and verify your environment.**
 
 ---
 
