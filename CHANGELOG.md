@@ -18,6 +18,21 @@ primer documents into dedicated files. Added student lab access guide.
 
 ---
 
+### 1.1.17 — Getting Started Terminal Images + CSS Image Margin Fix
+
+Replaced three raw code block outputs in `GETTING-STARTED.md` with styled
+terminal PNG images. Fixed extra bottom margin on images in MkDocs Material theme.
+
+| File | Description |
+|------|-------------|
+| `images/getting-started-ansible-version-output.html/png` | `ansible --version` output |
+| `images/getting-started-terraform-version-output.html/png` | `terraform --version` output |
+| `images/getting-started-ansible-ping-output.html/png` | `ansible all -m ping` output (6 SUCCESS, 4 expected FAILED) |
+| `docs/GETTING-STARTED.md` | Replaced 3 code blocks with image references |
+| `docs/stylesheets/cisco.css` | Added `margin-bottom: 0` on `.md-typeset img` to remove excess space below images |
+
+---
+
 ### 1.1.16 — Convert Terraform Output Pre-Blocks to Styled Images in Task 4
 
 Replaced all standalone `<pre>` terminal output blocks in `TASK4.md` with
