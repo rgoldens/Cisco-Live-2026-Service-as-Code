@@ -59,14 +59,12 @@ git checkout -b student-XX
 **2e.** Verify the files are in place:
 
 ```bash
-ls ~/inventory.yml ~/ansible.cfg ~/ce-access-vlan.yml
+ls -l ~/inventory.yml ~/ansible.cfg ~/ce-access-vlan.yml
 ```
 
 You should see all three files listed without errors:
 
-<pre>
-/home/cisco/ansible.cfg  /home/cisco/ce-access-vlan.yml  /home/cisco/inventory.yml
-</pre>
+![ls -l output](images/lab-readiness-ls-output.png)
 
 > **What did you just clone?** The repository contains:
 > - `ansible.cfg` — Ansible configuration (tells Ansible where the inventory is)
