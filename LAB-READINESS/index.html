@@ -1177,13 +1177,10 @@ safely ignore any that appear.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>git<span class="w"> </span>checkout<span class="w"> </span>-b<span class="w"> </span>student-XX
 </code></pre></div>
 <p><strong>2e.</strong> Verify the files are in place:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>ls<span class="w"> </span>~/inventory.yml<span class="w"> </span>~/ansible.cfg<span class="w"> </span>~/ce-access-vlan.yml
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>ls<span class="w"> </span>-l<span class="w"> </span>~/inventory.yml<span class="w"> </span>~/ansible.cfg<span class="w"> </span>~/ce-access-vlan.yml
 </code></pre></div>
 <p>You should see all three files listed without errors:</p>
-<pre>
-/home/cisco/ansible.cfg  /home/cisco/ce-access-vlan.yml  /home/cisco/inventory.yml
-</pre>
-
+<p><img alt="ls -l output" src="../images/lab-readiness-ls-output.png" /></p>
 <blockquote>
 <p><strong>What did you just clone?</strong> The repository contains:
 - <code>ansible.cfg</code> — Ansible configuration (tells Ansible where the inventory is)
