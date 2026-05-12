@@ -26,7 +26,7 @@ environment and verifies everything is working.
 | Task 2 | Ansible — IS-IS routing (NX-OS + IOS-XE) | Clients can reach their local PE router |
 | Task 3 | Ansible — BGP VPN / Inter-AS Option A (IOS-XR + IOS-XE) | Full east-west connectivity across the SP core |
 | Task 4 | Terraform — IOS-XR via gNMI | Same XRd config as Task 3, expressed as Terraform resources |
-| Task 5 | Terraform — Docker + IOS-XE (CiscoDevNet provider) | Provision containers, configure a CSR, simulate and remediate drift |
+| Task 5 | Terraform — Docker + IOS-XE (CiscoDevNet provider) | Deploy Infrastructure as Code (IaC) and remediate drift |
 | Task 6 | Git | Commit and push all completed work to your student branch |
 
 Tasks 1–3 build on each other — by Task 3, traffic crosses 6 network devices across 4 platforms. Tasks 4–5 are standalone and show a different IaC approach. Task 6 closes the loop by version-controlling everything you built.
