@@ -195,6 +195,6 @@ Before starting Task 1, confirm all of the following:
 - [ ] `ansible.cfg` config file path is `/home/cisco/ansible.cfg`
 - [ ] `ansible all -m ping` — 6 network devices return SUCCESS
 - [ ] Reference tables are open and accessible
-- [ ] You know how to edit files (VS Code or `nano`)
+- [ ] You know how to edit files (`vi` or `nano`)
 
 **All green? You're ready for [Task 1](TASK1.md)!**
