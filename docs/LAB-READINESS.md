@@ -78,7 +78,7 @@ These are the two core files Ansible needs to run. The repo also includes playbo
     | `igp-pe-ce.yml`           | Task 2 playbook (IS-IS)                                    |
     | `inter-as-option-a.yml`   | Task 3 playbook (BGP VPN)                                  |
     | `task4-terraform/`        | Terraform files for Task 4 (IOS-XR via gNMI)              |
-    | `task5-terraform/`        | Terraform files for Task 5 (Docker + IOS-XE via RESTCONF) |
+    | `task5-terraform/`        | Terraform files for Task 5 (IaC with IOS-XE)              |
     | `solutions/`              | Completed playbooks and configs — use if you get stuck     |
 
 ---
