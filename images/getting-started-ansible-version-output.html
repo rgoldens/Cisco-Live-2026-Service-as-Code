@@ -5,38 +5,40 @@
 <meta name="viewport" content="width=1200" />
 <title>getting-started-ansible-version-output</title>
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap');
+
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { overflow: hidden; }
 
   body {
     background: #000000;
-    font-family: 'Courier New', monospace;
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
   }
 
   .terminal {
     background: #000000;
-    width: 860px;
+    width: 1040px;
     padding: 22px 28px 22px 28px;
     font-size: 13.5px;
-    line-height: 1.5;
+    line-height: 1.7;
+    color: #ffffff;
   }
 
-  .wh  { color: #ffffff; }
-  .ok  { color: #00e676; }
-  .cm  { color: #6a7a8a; font-style: italic; }
+  .wh { color: #ffffff; }
+  pre { white-space: pre-wrap; word-break: break-word; }
 </style>
 </head>
 <body>
 <div class="terminal">
-<pre><span class="wh">ansible [core 2.17.9]</span>
-  <span class="wh">config file = /home/cisco/ansible.cfg</span>
-  <span class="wh">configured module search path = ['/home/cisco/.ansible/plugins/modules', '/usr/share/ansible/plugins/modules']</span>
-  <span class="wh">ansible python module location = /usr/lib/python3/dist-packages/ansible</span>
-  <span class="wh">ansible collection location = /home/cisco/.ansible/collections:/usr/share/ansible/collections</span>
-  <span class="wh">executable location = /usr/bin/ansible</span>
-  <span class="wh">python version = 3.12.3 (main, Feb  4 2025, 14:48:35) [GCC 13.3.0] (/usr/bin/python3)</span>
-  <span class="wh">jinja version = 3.1.2</span>
-  <span class="wh">libyaml = True</span></pre>
+<pre><span class="wh">ansible [core 2.20.3]
+  config file = /home/cisco/ansible.cfg
+  configured module search path = ['/home/cisco/.ansible/plugins/modules', '/usr/share/ansible/plugins/modules']
+  ansible python module location = /usr/lib/python3/dist-packages/ansible
+  ansible collection location = /home/cisco/.ansible/collections:/usr/share/ansible/collections
+  executable location = /usr/bin/ansible
+  python version = 3.12.3 (main, Mar 23 2026, 19:04:32) [GCC 13.3.0] (/usr/bin/python3)
+  jinja version = 3.1.2
+  pyyaml version = 6.0.1 (with libyaml v0.2.5)</span></pre>
 </div>
 </body>
 </html>
