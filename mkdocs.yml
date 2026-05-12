@@ -37,8 +37,8 @@ nav:
       - "Task 1: Explore the Environment": TASK1.md
       - "Task 2: Build the Underlay": TASK2.md
       - "Task 3: Deploy BGP VPN": TASK3.md
-      - "Task 4: Service Insertion with Ansible": TASK4.md
-      - "Task 5: Drift Detection with Terraform": TASK5.md
+      - "Task 4: Drift Detection with Terraform": TASK4.md
+      - "Task 5: Infrastructure as Code with Terraform": TASK5.md
       - "Task 6: Validation & Cleanup": TASK6.md
   - Reference:
       - Quick Reference: REFERENCE.md

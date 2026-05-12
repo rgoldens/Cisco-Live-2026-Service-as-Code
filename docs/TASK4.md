@@ -1,7 +1,7 @@
 
 ---
 
-## Task 4: Terraform — Same Config, Different Tool
+## Task 4: Drift Detection with Terraform
 
 > **New to Terraform?** The [Terraform Primer](Terraform-Primer.md) walks through state, providers, resources, and the plan/apply workflow before you start here.
 

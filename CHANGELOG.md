@@ -18,6 +18,17 @@ primer documents into dedicated files. Added student lab access guide.
 
 ---
 
+### 1.1.19 — Fix Task 4 and Task 5 Titles
+
+Corrected swapped titles on Task 4 and Task 5 — both the page headings and nav labels.
+
+| File | Description |
+|------|-------------|
+| `docs/TASK4.md` | Title updated to "Task 4: Drift Detection with Terraform" |
+| `mkdocs.yml` | Nav labels corrected: Task 4 → Drift Detection, Task 5 → Infrastructure as Code |
+
+---
+
 ### 1.1.18 — Add Lab Readiness Page, Restructure Nav Flow
 
 Split environment setup steps out of Getting Started into a new dedicated Lab Readiness page. Updated nav and cross-page links to reflect the new flow: Getting Started → Lab Access → Lab Readiness → Task 1.
