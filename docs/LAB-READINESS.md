@@ -70,16 +70,16 @@ These are the two core files Ansible needs to run. The repo also includes playbo
 
 !!! info "What did you just clone?"
 
-    | File / Folder | Purpose |
-    |---|---|
-    | `ansible.cfg` | Ansible config — tells Ansible where the inventory is |
-    | `inventory.yml` | All 10 devices: IPs, credentials, and connection settings |
-    | `ce-access-vlan.yml` | Task 1 playbook (VLANs) |
-    | `igp-pe-ce.yml` | Task 2 playbook (IS-IS) |
-    | `inter-as-option-a.yml` | Task 3 playbook (BGP VPN) |
-    | `task4-terraform/` | Terraform files for Task 4 (IOS-XR via gNMI) |
-    | `task5-terraform/` | Terraform files for Task 5 (Docker + IOS-XE via RESTCONF) |
-    | `solutions/` | Completed playbooks and configs — use if you get stuck |
+    | File / Folder             | Purpose                                                    |
+    |---------------------------|-------------------------------------------------------------|
+    | `ansible.cfg`             | Ansible config — tells Ansible where the inventory is      |
+    | `inventory.yml`           | All 10 devices: IPs, credentials, and connection settings  |
+    | `ce-access-vlan.yml`      | Task 1 playbook (VLANs)                                    |
+    | `igp-pe-ce.yml`           | Task 2 playbook (IS-IS)                                    |
+    | `inter-as-option-a.yml`   | Task 3 playbook (BGP VPN)                                  |
+    | `task4-terraform/`        | Terraform files for Task 4 (IOS-XR via gNMI)              |
+    | `task5-terraform/`        | Terraform files for Task 5 (Docker + IOS-XE via RESTCONF) |
+    | `solutions/`              | Completed playbooks and configs — use if you get stuck     |
 
 ---
 
