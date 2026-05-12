@@ -1165,8 +1165,8 @@ access token that allows everyone to clone and push to the repository.</p>
 </blockquote>
 <p><strong>2c.</strong> Move all files (including hidden <code>.git</code> folder) from the temporary folder
 into your home directory, then remove the empty temporary folder:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>mv<span class="w"> </span>.lab-tmp/*<span class="w"> </span>.lab-tmp/.*<span class="w"> </span>.<span class="w"> </span><span class="m">2</span>&gt;/dev/null
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>rm<span class="w"> </span>-rf<span class="w"> </span>.lab-tmp
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>mv .lab-tmp/* .lab-tmp/.* . 2&gt;/dev/null
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>rm -rf .lab-tmp
 </code></pre></div>
 <blockquote>
 <p>The <code>2&gt;/dev/null</code> suppresses harmless warnings about <code>.</code> and <code>..</code> — you can
