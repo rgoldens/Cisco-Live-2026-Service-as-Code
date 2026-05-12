@@ -41,7 +41,7 @@ git clone https://<TOKEN>@github.com/rgoldens/Cisco-Live-2026-Service-as-Code.gi
 **2c.** Move all files (including hidden `.git` folder) from the temporary folder
 into your home directory, then remove the empty temporary folder:
 
-```bash
+```text
 mv .lab-tmp/* .lab-tmp/.* . 2>/dev/null
 rm -rf .lab-tmp
 ```
