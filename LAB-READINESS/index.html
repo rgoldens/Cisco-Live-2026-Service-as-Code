@@ -1177,21 +1177,56 @@ safely ignore any that appear.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>git<span class="w"> </span>checkout<span class="w"> </span>-b<span class="w"> </span>student-XX
 </code></pre></div>
 <p><strong>2e.</strong> Verify the files are in place:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>ls<span class="w"> </span>-l<span class="w"> </span>~/inventory.yml<span class="w"> </span>~/ansible.cfg<span class="w"> </span>~/ce-access-vlan.yml
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>ls<span class="w"> </span>-l<span class="w"> </span>~/inventory.yml<span class="w"> </span>~/ansible.cfg
 </code></pre></div>
-<p>You should see all three files listed without errors:</p>
+<p>You should see both files listed without errors:</p>
 <p><img alt="ls -l output" src="../images/lab-readiness-ls-output.png" /></p>
-<blockquote>
-<p><strong>What did you just clone?</strong> The repository contains:
-- <code>ansible.cfg</code> — Ansible configuration (tells Ansible where the inventory is)
-- <code>inventory.yml</code> — All 10 devices with IPs, credentials, and connection settings
-- <code>ce-access-vlan.yml</code> — Task 1 playbook (VLANs)
-- <code>igp-pe-ce.yml</code> — Task 2 playbook (IS-IS)
-- <code>inter-as-option-a.yml</code> — Task 3 playbook (BGP VPN)
-- <code>task4-terraform/</code> — Terraform files for Task 4 (IOS-XR via gNMI)
-- <code>task5-terraform/</code> — Terraform files for Task 5 (Docker + IOS-XE via RESTCONF)
-- <code>solutions/</code> — Completed playbooks and Terraform configs (if you get stuck)</p>
-</blockquote>
+<p>These are the two core files Ansible needs to run. The repo also includes playbooks for Tasks 1–5, Terraform directories, and a <code>solutions/</code> folder — you'll use those as you progress through the lab.</p>
+<div class="admonition info">
+<p class="admonition-title">What did you just clone?</p>
+<table>
+<thead>
+<tr>
+<th>File / Folder</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ansible.cfg</code></td>
+<td>Ansible config — tells Ansible where the inventory is</td>
+</tr>
+<tr>
+<td><code>inventory.yml</code></td>
+<td>All 10 devices: IPs, credentials, and connection settings</td>
+</tr>
+<tr>
+<td><code>ce-access-vlan.yml</code></td>
+<td>Task 1 playbook (VLANs)</td>
+</tr>
+<tr>
+<td><code>igp-pe-ce.yml</code></td>
+<td>Task 2 playbook (IS-IS)</td>
+</tr>
+<tr>
+<td><code>inter-as-option-a.yml</code></td>
+<td>Task 3 playbook (BGP VPN)</td>
+</tr>
+<tr>
+<td><code>task4-terraform/</code></td>
+<td>Terraform files for Task 4 (IOS-XR via gNMI)</td>
+</tr>
+<tr>
+<td><code>task5-terraform/</code></td>
+<td>Terraform files for Task 5 (Docker + IOS-XE via RESTCONF)</td>
+</tr>
+<tr>
+<td><code>solutions/</code></td>
+<td>Completed playbooks and configs — use if you get stuck</td>
+</tr>
+</tbody>
+</table>
+</div>
 <hr />
 <h2 id="step-3-verify-ansible-is-working">Step 3: Verify Ansible Is Working<a class="headerlink" href="#step-3-verify-ansible-is-working" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>ansible<span class="w"> </span>--version
