@@ -59,14 +59,14 @@ git checkout -b student-XX
 **2e.** Verify the files are in place:
 
 ```bash
-ls -l ~/inventory.yml ~/ansible.cfg ~/ce-access-vlan.yml
+ls -l ~/inventory.yml ~/ansible.cfg
 ```
 
-You should see all three files listed without errors:
+You should see both files listed without errors:
 
 ![ls -l output](images/lab-readiness-ls-output.png)
 
-These are the three Ansible-critical files needed for the next steps. The repo also includes playbooks for Tasks 2–5, Terraform directories, and a `solutions/` folder — you'll use those as you progress through the lab.
+These are the two core files Ansible needs to run. The repo also includes playbooks for Tasks 1–5, Terraform directories, and a `solutions/` folder — you'll use those as you progress through the lab.
 
 !!! info "What did you just clone?"
 
