@@ -25,7 +25,7 @@ move everything into place.
 
 **2a.** Make sure you are in your home directory:
 
-```bash
+```text
 cd ~
 ```
 
