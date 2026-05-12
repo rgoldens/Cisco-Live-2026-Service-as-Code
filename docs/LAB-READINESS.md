@@ -66,15 +66,20 @@ You should see all three files listed without errors:
 
 ![ls -l output](images/lab-readiness-ls-output.png)
 
-> **What did you just clone?** The repository contains:
-> - `ansible.cfg` — Ansible configuration (tells Ansible where the inventory is)
-> - `inventory.yml` — All 10 devices with IPs, credentials, and connection settings
-> - `ce-access-vlan.yml` — Task 1 playbook (VLANs)
-> - `igp-pe-ce.yml` — Task 2 playbook (IS-IS)
-> - `inter-as-option-a.yml` — Task 3 playbook (BGP VPN)
-> - `task4-terraform/` — Terraform files for Task 4 (IOS-XR via gNMI)
-> - `task5-terraform/` — Terraform files for Task 5 (Docker + IOS-XE via RESTCONF)
-> - `solutions/` — Completed playbooks and Terraform configs (if you get stuck)
+These are the three Ansible-critical files needed for the next steps. The repo also includes playbooks for Tasks 2–5, Terraform directories, and a `solutions/` folder — you'll use those as you progress through the lab.
+
+!!! info "What did you just clone?"
+
+    | File / Folder | Purpose |
+    |---|---|
+    | `ansible.cfg` | Ansible config — tells Ansible where the inventory is |
+    | `inventory.yml` | All 10 devices: IPs, credentials, and connection settings |
+    | `ce-access-vlan.yml` | Task 1 playbook (VLANs) |
+    | `igp-pe-ce.yml` | Task 2 playbook (IS-IS) |
+    | `inter-as-option-a.yml` | Task 3 playbook (BGP VPN) |
+    | `task4-terraform/` | Terraform files for Task 4 (IOS-XR via gNMI) |
+    | `task5-terraform/` | Terraform files for Task 5 (Docker + IOS-XE via RESTCONF) |
+    | `solutions/` | Completed playbooks and configs — use if you get stuck |
 
 ---
 
