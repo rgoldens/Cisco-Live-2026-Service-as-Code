@@ -189,7 +189,7 @@ The **PLAY RECAP** at the very end gives you a summary of everything that happen
 
 ![PLAY RECAP output](images/task1-recap-output.png)
 
-> **Reading the recap:** Each line is a device. `changed=3` means 3 tasks made
+> **Reading the recap:** Each line is a device. `changed=4` means 4 tasks made
 > changes on that switch. `failed=0` means nothing went wrong. `skipped=2` on
 > the Linux clients means those tasks were skipped because the `when` condition
 > was false for that host. If you see `failed=1` or higher, scroll up to find
