@@ -15,6 +15,7 @@ network in a single YAML file, and ContainerLab spins it up in seconds — compl
 links, management access, and startup configurations.
 
 **Key properties:**
+
 - **Topology as code** — Your entire lab is defined in one YAML file
   (`LTRATO-1001.clab.yml`). Anyone with that file can recreate the exact same topology.
 - **Docker-based** — Every network device runs as a Docker container. Standard Docker
