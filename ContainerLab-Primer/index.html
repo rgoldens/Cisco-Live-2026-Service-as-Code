@@ -1149,18 +1149,20 @@ tasks — even though the lab is already deployed and running for you.</p>
 containers. Instead of racking physical switches and routers, you define your entire
 network in a single YAML file, and ContainerLab spins it up in seconds — complete with
 links, management access, and startup configurations.</p>
-<p><strong>Key properties:</strong>
-- <strong>Topology as code</strong> — Your entire lab is defined in one YAML file
-  (<code>LTRATO-1001.clab.yml</code>). Anyone with that file can recreate the exact same topology.
-- <strong>Docker-based</strong> — Every network device runs as a Docker container. Standard Docker
-  commands (<code>docker ps</code>, <code>docker logs</code>, <code>docker exec</code>) work on lab nodes.
-- <strong>Multi-vendor</strong> — ContainerLab supports dozens of network operating systems through
+<p><strong>Key properties:</strong></p>
+<ul>
+<li><strong>Topology as code</strong> — Your entire lab is defined in one YAML file
+  (<code>LTRATO-1001.clab.yml</code>). Anyone with that file can recreate the exact same topology.</li>
+<li><strong>Docker-based</strong> — Every network device runs as a Docker container. Standard Docker
+  commands (<code>docker ps</code>, <code>docker logs</code>, <code>docker exec</code>) work on lab nodes.</li>
+<li><strong>Multi-vendor</strong> — ContainerLab supports dozens of network operating systems through
   container images: Cisco IOS-XR (XRd), IOS-XE (CSR via vrnetlab), NX-OS (via vrnetlab),
-  Arista cEOS, Nokia SR Linux, Linux hosts, and more.
-- <strong>vrnetlab integration</strong> — Commercial NOS images that ship as VM disk images (like CSR
+  Arista cEOS, Nokia SR Linux, Linux hosts, and more.</li>
+<li><strong>vrnetlab integration</strong> — Commercial NOS images that ship as VM disk images (like CSR
   and NX-OS) are wrapped in Docker containers using
   <a href="https://github.com/hellt/vrnetlab">vrnetlab</a>. The VM runs inside the container,
-  and ContainerLab manages it like any other Docker workload.</p>
+  and ContainerLab manages it like any other Docker workload.</li>
+</ul>
 <h3 id="how-it-works">How It Works<a class="headerlink" href="#how-it-works" title="Permanent link">&para;</a></h3>
 <p>A ContainerLab topology file defines three things:</p>
 <ol>
