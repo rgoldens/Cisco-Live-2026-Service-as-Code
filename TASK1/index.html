@@ -1294,12 +1294,12 @@ broken, but because the VLANs haven't been configured. This is your baseline.</p
 on the same switch. You could SSH into the client first and then run the ping
 from there — but here we use the shorthand form that passes the command directly
 over SSH in one line:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>ssh<span class="w"> </span>linux-client1<span class="w"> </span>ping<span class="w"> </span>-c<span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="m">23</span>.23.23.2
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>ssh linux-client1 ping -c 3 23.23.23.2
 </code></pre></div>
 <p>You should see <strong>100% packet loss</strong>:</p>
 <p><img alt="Baseline ping — 100% packet loss" src="../images/task1-baseline-ping-output.png" /></p>
 <p>Try the east side the same way:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>ssh<span class="w"> </span>linux-client3<span class="w"> </span>ping<span class="w"> </span>-c<span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="m">34</span>.34.34.2
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>ssh linux-client3 ping -c 3 34.34.34.2
 </code></pre></div>
 <p>Same result — <strong>100% packet loss</strong>. Both pairs of clients are physically
 connected to the same switch, but with no VLAN bridging the ports, the frames
