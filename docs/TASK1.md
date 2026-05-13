@@ -57,7 +57,7 @@ on the same switch. You could SSH into the client first and then run the ping
 from there — but here we use the shorthand form that passes the command directly
 over SSH in one line:
 
-```bash
+```text
 ssh linux-client1 ping -c 3 23.23.23.2
 ```
 
@@ -67,7 +67,7 @@ You should see **100% packet loss**:
 
 Try the east side the same way:
 
-```bash
+```text
 ssh linux-client3 ping -c 3 34.34.34.2
 ```
 
