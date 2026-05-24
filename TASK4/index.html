@@ -1455,6 +1455,7 @@ Ansible created in Task 3. Run the teardown playbook:</p>
 <p>Expected output — 4 tasks, all <code>changed</code>:</p>
 <p><img alt="Teardown playbook output" src="../images/task4-teardown-output.png" /></p>
 <blockquote>
+<p><strong>Deprecation warnings:</strong> You may see several <code>[DEPRECATION WARNING]</code> lines in the output — these come from the Cisco IOS-XR Ansible collection and can be safely ignored. All 4 tasks should show <code>changed</code>.</p>
 <p><strong>Why tear down first?</strong> Terraform tracks what it manages in a state file.
 If Ansible already created the configuration, Terraform doesn't know about
 it — it would try to create duplicate resources. Starting clean lets
@@ -2015,21 +2016,6 @@ correct order based on <code>depends_on</code> relationships (VRF before interfa
 BGP before VRF-BGP):</p>
 <p><img alt="terraform apply output" src="../images/task4-tf-apply-output.png" /></p>
 <blockquote>
-<p><strong>Timing race note:</strong> On the first apply, you may see an error on the last
-2 resources (<code>vrf_nbr_af_xrd01</code> / <code>vrf_nbr_af_xrd02</code>) with the message
-<code>"The address family has not been initialized"</code>. This is a gNMI timing
-issue — the VRF address-family hasn't fully committed on the device before
-Terraform tries to configure the neighbor under it. <strong>This is normal.</strong>
-Simply run <code>terraform apply</code> again and Terraform will create just the 2
-remaining resources:</p>
-<p><pre>
-Plan: 2 to add, 0 to change, 0 to destroy.
-...
-Apply complete! Resources: 2 added, 0 changed, 0 destroyed.
-</pre></p>
-<p>This is a great teaching moment: Terraform is <strong>idempotent and resumable</strong>.
-A partial failure doesn't corrupt anything — you just re-apply and it
-picks up where it left off.</p>
 <p><strong>Speed comparison:</strong> Terraform applies all 18 resources in about 3-5
 seconds via gNMI. The equivalent Ansible playbook takes longer because
 it runs tasks sequentially. Terraform can apply resources in parallel
@@ -2148,13 +2134,6 @@ Destroy complete! Resources: 18 destroyed.
 
 </details>
 
-<blockquote>
-<p><strong>Timing race note:</strong> Similar to apply, you may see a gNMI error during
-destroy (e.g., <code>"The address family cannot be disabled; there are still
-neighbors/groups which have configuration for it"</code>). This is the same race
-condition — just run <code>terraform destroy</code> again and the remaining 1-2
-resources will be cleaned up.</p>
-</blockquote>
 <p>Verify the config is gone — pings should fail:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="nb">cd</span><span class="w"> </span>~
 <a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>ansible<span class="w"> </span>-i<span class="w"> </span>inventory.yml<span class="w"> </span>linux-client1<span class="w"> </span>-m<span class="w"> </span>raw<span class="w"> </span>-a<span class="w"> </span><span class="s2">&quot;ping -c 3 -W 2 34.34.34.1&quot;</span>

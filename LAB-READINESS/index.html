@@ -1156,28 +1156,30 @@ move everything into place.</p>
 <p><strong>2a.</strong> Make sure you are in your home directory:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>cd ~
 </code></pre></div>
-<p><strong>2b.</strong> Clone the repository into a temporary folder:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>git<span class="w"> </span>clone<span class="w"> </span>https://&lt;TOKEN&gt;@github.com/rgoldens/Cisco-Live-2026-Service-as-Code.git<span class="w"> </span>.lab-tmp
+<p><strong>2b.</strong> Add GitHub's SSH host key so the clone doesn't prompt for verification:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>ssh-keyscan<span class="w"> </span>github.com<span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.ssh/known_hosts
+</code></pre></div>
+<p><strong>2c.</strong> Clone the repository into a temporary folder:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>git<span class="w"> </span>clone<span class="w"> </span>git@github.com:rgoldens/Cisco-Live-2026-Service-as-Code.git<span class="w"> </span>.lab-tmp
 </code></pre></div>
 <blockquote>
-<p><strong>Note:</strong> Your instructor will provide the <code>&lt;TOKEN&gt;</code> value. This is a shared
-access token that allows everyone to clone and push to the repository.</p>
+<p><strong>Note:</strong> The lab server has a pre-installed SSH key that is authorized to clone and push to this repository. No password or token is required.</p>
 </blockquote>
-<p><strong>2c.</strong> Move all files (including hidden <code>.git</code> folder) from the temporary folder
+<p><strong>2d.</strong> Move all files (including hidden <code>.git</code> folder) from the temporary folder
 into your home directory, then remove the empty temporary folder:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>mv .lab-tmp/* .lab-tmp/.* . 2&gt;/dev/null
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>rm -rf .lab-tmp
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>mv .lab-tmp/* .lab-tmp/.* . 2&gt;/dev/null
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>rm -rf .lab-tmp
 </code></pre></div>
 <blockquote>
 <p>The <code>2&gt;/dev/null</code> suppresses harmless warnings about <code>.</code> and <code>..</code> — you can
 safely ignore any that appear.</p>
 </blockquote>
-<p><strong>2d.</strong> Create your own branch. Replace <code>XX</code> with your student number
+<p><strong>2e.</strong> Create your own branch. Replace <code>XX</code> with your student number
 (e.g., <code>student-01</code>, <code>student-12</code>):</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>git<span class="w"> </span>checkout<span class="w"> </span>-b<span class="w"> </span>student-XX
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>git<span class="w"> </span>checkout<span class="w"> </span>-b<span class="w"> </span>student-XX
 </code></pre></div>
-<p><strong>2e.</strong> Verify the files are in place:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>ls<span class="w"> </span>-l<span class="w"> </span>~/inventory.yml<span class="w"> </span>~/ansible.cfg
+<p><strong>2f.</strong> Verify the files are in place:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>ls<span class="w"> </span>-l<span class="w"> </span>~/inventory.yml<span class="w"> </span>~/ansible.cfg
 </code></pre></div>
 <p>You should see both files listed without errors:</p>
 <p><img alt="ls -l output" src="../images/lab-readiness-ls-output.png" /></p>
@@ -1229,7 +1231,7 @@ safely ignore any that appear.</p>
 </div>
 <hr />
 <h2 id="step-3-verify-ansible-is-working">Step 3: Verify Ansible Is Working<a class="headerlink" href="#step-3-verify-ansible-is-working" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>ansible<span class="w"> </span>--version
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>ansible<span class="w"> </span>--version
 </code></pre></div>
 <p>You should see Ansible core 2.x with Python 3.x:</p>
 <p><img alt="ansible --version output" src="../images/getting-started-ansible-version-output.png" /></p>
@@ -1239,7 +1241,7 @@ If it says <code>None</code>, the file didn't land in the right place — re-che
 </blockquote>
 <hr />
 <h2 id="step-4-verify-terraform-is-working">Step 4: Verify Terraform Is Working<a class="headerlink" href="#step-4-verify-terraform-is-working" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>terraform<span class="w"> </span>--version
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>terraform<span class="w"> </span>--version
 </code></pre></div>
 <p>You should see Terraform v1.x.x:</p>
 <p><img alt="terraform --version output" src="../images/getting-started-terraform-version-output.png" /></p>
@@ -1250,7 +1252,7 @@ issues early.</p>
 <hr />
 <h2 id="step-5-understand-the-inventory">Step 5: Understand the Inventory<a class="headerlink" href="#step-5-understand-the-inventory" title="Permanent link">&para;</a></h2>
 <p>The inventory file defines all the devices Ansible will manage. Open it:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>cat<span class="w"> </span>~/inventory.yml
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>cat<span class="w"> </span>~/inventory.yml
 </code></pre></div>
 <p>Notice how devices are organized into <strong>groups</strong> (<code>xrd</code>, <code>csr</code>, <code>nxos</code>,
 <code>linux</code>). Each group has platform-specific connection settings. This is how
@@ -1270,7 +1272,7 @@ automatically picks up the change.</p>
 <hr />
 <h2 id="step-6-test-connectivity">Step 6: Test Connectivity<a class="headerlink" href="#step-6-test-connectivity" title="Permanent link">&para;</a></h2>
 <p>This is the most important pre-check. Run:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>ansible<span class="w"> </span>all<span class="w"> </span>-m<span class="w"> </span>ping
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>ansible<span class="w"> </span>all<span class="w"> </span>-m<span class="w"> </span>ping
 </code></pre></div>
 <p>The <strong>6 network devices</strong> should return <code>SUCCESS</code>. The <strong>4 Linux clients will
 FAIL</strong> — this is expected and explained below.</p>

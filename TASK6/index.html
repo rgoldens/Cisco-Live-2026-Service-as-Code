@@ -1232,6 +1232,11 @@ below will show you exactly what changed — Git tracks everything.</p>
   that Git hasn't seen before</li>
 </ul>
 <blockquote>
+<p><strong>Note:</strong> You'll also see a long list of <code>deleted: images/...</code> files. These are
+lab guide screenshots that live in the repo but aren't on this server — they're
+served from GitHub Pages instead. You don't own these deletions and should not
+stage or commit them. The <code>git add</code> command in Step 2 stages only the files you
+explicitly name, so they won't end up in your commit.</p>
 <p><strong>Tip:</strong> Red filenames mean the file has changes that haven't been staged yet.
 After you run <code>git add</code>, they turn green.</p>
 </blockquote>
@@ -1253,9 +1258,13 @@ don't belong in version control. Listing files explicitly is a good habit.</p>
 <p>You should see your files listed under <strong>"Changes to be committed"</strong> in green.</p>
 <hr />
 <h2 id="step-3-commit-your-changes">Step 3: Commit Your Changes<a class="headerlink" href="#step-3-commit-your-changes" title="Permanent link">&para;</a></h2>
+<p>First, set a git identity so the commit has an author:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>git<span class="w"> </span>config<span class="w"> </span>--global<span class="w"> </span>user.name<span class="w"> </span><span class="s2">&quot;student&quot;</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>git<span class="w"> </span>config<span class="w"> </span>--global<span class="w"> </span>user.email<span class="w"> </span><span class="s2">&quot;student@ciscolive.lab&quot;</span>
+</code></pre></div>
 <p>Create a commit — a snapshot of your staged changes with a message describing
 what you did:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;Completed Tasks 1-5: VLAN, IS-IS, BGP VPN, Terraform IOS-XR and IOS-XE&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;Completed Tasks 1-5: VLAN, IS-IS, BGP VPN, Terraform IOS-XR and IOS-XE&quot;</span>
 </code></pre></div>
 <blockquote>
 <p><strong>What makes a good commit message?</strong> Describe <em>what</em> changed and <em>why</em> in
@@ -1265,13 +1274,12 @@ and understand the change without opening the files.</p>
 <hr />
 <h2 id="step-4-push-to-github">Step 4: Push to GitHub<a class="headerlink" href="#step-4-push-to-github" title="Permanent link">&para;</a></h2>
 <p>Upload your branch to the remote repository on GitHub:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>student-XX
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>student-XX
 </code></pre></div>
 <p>Replace <code>XX</code> with your pod/seat number — the same branch name you created in
 the <a href="../LAB-ACCESS/">Lab Access</a> setup.</p>
 <blockquote>
-<p><strong>First push?</strong> Git may prompt you for credentials. Use the shared GitHub
-username and token provided by your proctor.</p>
+<p><strong>No password needed.</strong> The lab server uses SSH key authentication — the push goes straight through without prompting for credentials.</p>
 </blockquote>
 <p>Expected output:</p>
 <p><img alt="Task 6: git push output" src="../images/task6-git-push-output.png" /></p>
