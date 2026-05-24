@@ -118,9 +118,7 @@ git push origin student-XX
 Replace `XX` with your pod/seat number — the same branch name you created in
 the [Lab Access](LAB-ACCESS.md) setup.
 
-> **First push?** If Git prompts for credentials, the remote URL on this server
-> already includes the token — just run `git push origin student-XX` and it should
-> go through without prompting.
+> **No password needed.** The lab server uses SSH key authentication — the push goes straight through without prompting for credentials.
 
 Expected output:
 

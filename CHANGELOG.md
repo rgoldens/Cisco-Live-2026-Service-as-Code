@@ -6,7 +6,27 @@
 
 ---
 
-## Version 1.1.20 — Full End-to-End Run-Through Fixes
+## Version 1.1.21 — Switch to SSH-based Git Auth
+
+**Date:** 2026-05-24
+
+### Summary
+
+Replaced the HTTPS token-based git clone/push workflow with SSH key authentication.
+The lab server image has a pre-installed keypair (`~/.ssh/id_ed25519`); the corresponding
+public key is registered as a GitHub deploy key on the repo. This eliminates token
+expiry/revocation issues and removes any secrets from lab guide files.
+
+### 1.1.21 — SSH Auth Changes
+
+| File | Description |
+|------|-------------|
+| `docs/LAB-READINESS.md` | Clone command changed from HTTPS+token to `git@github.com` SSH URL; added `ssh-keyscan github.com` step before clone to pre-trust GitHub host key; re-lettered substeps 2b–2f |
+| `docs/TASK6.md` | Updated push note — removed token reference, now says SSH key auth requires no password |
+
+---
+
+
 
 **Date:** 2026-05-24
 

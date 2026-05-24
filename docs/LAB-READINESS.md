@@ -29,15 +29,21 @@ move everything into place.
 cd ~
 ```
 
-**2b.** Clone the repository into a temporary folder:
+**2b.** Add GitHub's SSH host key so the clone doesn't prompt for verification:
 
 ```bash
-git clone https://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@github.com/rgoldens/Cisco-Live-2026-Service-as-Code.git .lab-tmp
+ssh-keyscan github.com >> ~/.ssh/known_hosts
 ```
 
-> **Note:** This token gives read and push access to the lab repository.
+**2c.** Clone the repository into a temporary folder:
 
-**2c.** Move all files (including hidden `.git` folder) from the temporary folder
+```bash
+git clone git@github.com:rgoldens/Cisco-Live-2026-Service-as-Code.git .lab-tmp
+```
+
+> **Note:** The lab server has a pre-installed SSH key that is authorized to clone and push to this repository. No password or token is required.
+
+**2d.** Move all files (including hidden `.git` folder) from the temporary folder
 into your home directory, then remove the empty temporary folder:
 
 ```text
@@ -48,14 +54,14 @@ rm -rf .lab-tmp
 > The `2>/dev/null` suppresses harmless warnings about `.` and `..` — you can
 > safely ignore any that appear.
 
-**2d.** Create your own branch. Replace `XX` with your student number
+**2e.** Create your own branch. Replace `XX` with your student number
 (e.g., `student-01`, `student-12`):
 
 ```bash
 git checkout -b student-XX
 ```
 
-**2e.** Verify the files are in place:
+**2f.** Verify the files are in place:
 
 ```bash
 ls -l ~/inventory.yml ~/ansible.cfg
