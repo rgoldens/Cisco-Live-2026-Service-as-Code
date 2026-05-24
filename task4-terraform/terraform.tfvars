@@ -27,8 +27,8 @@ xrd_ssh_key  = "~/.ssh/id_rsa"
 #   - The XRd core routers share an AS number (the SP core AS)
 #   - The CSR PE routers share a different AS number (the customer AS)
 # ---------------------------------------------------------------------------
-bgp_asn      = "___"       # TODO: SP core AS number (XRd routers)
-customer_asn = "___"       # TODO: Customer PE AS number (CSR routers)
+bgp_asn      = "65000"
+customer_asn = "65001"
 
 # ---------------------------------------------------------------------------
 # VRF configuration
@@ -53,15 +53,15 @@ route_distinguisher = "65000:1"
 # ---------------------------------------------------------------------------
 xrd_config = {
   xrd01 = {
-    remote_lo = "___"       # TODO: xrd02's Loopback0 IP
-    gi1_ip    = "___"       # TODO: xrd01's Gi0/0/0/1 IP toward csr-pe01
-    gi1_mask  = "___"       # TODO: Subnet mask for the /30 link
-    csr_peer  = "___"       # TODO: csr-pe01's IP on the same /30 link
+    remote_lo = "192.168.0.2"
+    gi1_ip    = "10.1.0.5"
+    gi1_mask  = "255.255.255.252"
+    csr_peer  = "10.1.0.6"
   }
   xrd02 = {
-    remote_lo = "___"       # TODO: xrd01's Loopback0 IP
-    gi1_ip    = "___"       # TODO: xrd02's Gi0/0/0/1 IP toward csr-pe02
-    gi1_mask  = "___"       # TODO: Subnet mask for the /30 link
-    csr_peer  = "___"       # TODO: csr-pe02's IP on the same /30 link
+    remote_lo = "192.168.0.1"
+    gi1_ip    = "10.1.0.9"
+    gi1_mask  = "255.255.255.252"
+    csr_peer  = "10.1.0.10"
   }
 }
