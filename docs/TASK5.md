@@ -231,7 +231,35 @@ cat outputs.tf
 After `terraform apply` finishes, these five values will be printed to the terminal so
 you can see a summary of what was deployed.
 
-### Step 8 — Initialize Terraform
+### Step 8 — Clear Any Stale State
+
+This lab environment was pre-configured and tested before you received it. The last step
+of that process was `terraform destroy`, which cleaned up all resources — but occasionally
+that cleanup didn't finish completely, leaving the state file referencing resources that
+no longer exist.
+
+Run this command to ensure you're starting clean:
+
+```bash
+terraform state rm -lock=false \
+  module.docker_infra.docker_container.csr \
+  module.docker_infra.docker_container.linux1 \
+  module.docker_infra.docker_container.linux2 \
+  module.docker_infra.docker_network.terraform_net \
+  module.docker_infra.docker_volume.csr_storage \
+  module.docker_infra.null_resource.csr_ready \
+  module.iosxe_config.iosxe_interface_loopback.lo0 \
+  module.iosxe_config.iosxe_system.this 2>/dev/null
+echo "State cleared"
+```
+
+If the state was already clean, this command will simply print nothing and exit — no harm
+done. Either way, you're now starting from a known-good state, which is exactly the kind
+of hygiene that matters in a real IaC pipeline. In production, you'd never `apply` against
+a state file you haven't verified — stale state is one of the most common sources of
+unexpected behavior in Terraform.
+
+### Step 9 — Initialize Terraform
 
 `terraform init` prepares the working directory — it reads the provider requirements and
 links them from the local filesystem mirror. Since providers are pre-installed, this is
@@ -251,7 +279,7 @@ terraform init
 
 ## Part 2 — Plan and Deploy
 
-### Step 9 — Confirm Nothing is Running Yet
+### Step 10 — Confirm Nothing is Running Yet
 
 Before deploying, verify the Docker environment is clean:
 
@@ -271,7 +299,7 @@ docker network ls --filter name=terraform
 
 ![docker network ls empty output](images/task5-docker-network-empty-output.png)
 
-### Step 10 — Preview the Deployment with terraform plan
+### Step 11 — Preview the Deployment with terraform plan
 
 `terraform plan` is a dry run. It compares your configuration against the current state
 and shows you exactly what will be created, changed, or destroyed — **without touching
@@ -308,7 +336,7 @@ The `Plan: 8 to add` means Terraform is planning to create 8 resources:
 
 > **Nothing has been deployed yet.** `plan` is always safe to run.
 
-### Step 11 — Deploy with terraform apply
+### Step 12 — Deploy with terraform apply
 
 ```bash
 terraform apply -auto-approve
@@ -371,7 +399,7 @@ Press `Ctrl+C` to stop following the logs.
 
 ## Part 3 — Verify the Deployment
 
-### Step 12 — Check Running Containers
+### Step 13 — Check Running Containers
 
 ```bash
 docker ps --filter name=terraform --format "table {{.ID}}\t{{.Image}}\t{{.Status}}\t{{.Names}}"
@@ -384,7 +412,7 @@ docker ps --filter name=terraform --format "table {{.ID}}\t{{.Image}}\t{{.Status
 The CSR shows `(healthy)` — the vrnetlab healthcheck confirms the IOS XE VM is fully
 booted and responding.
 
-### Step 13 — Check Container IP Addresses
+### Step 14 — Check Container IP Addresses
 
 ```bash
 docker inspect csr-terraform --format '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}'
@@ -410,7 +438,7 @@ docker inspect linux-terraform2 --format '{{range .NetworkSettings.Networks}}{{.
 
 ![docker inspect linux-terraform2 output](images/task5-docker-inspect-linux2-output.png)
 
-### Step 14 — Check Terraform Output
+### Step 15 — Check Terraform Output
 
 ```bash
 terraform output
@@ -420,7 +448,7 @@ terraform output
 
 ![terraform output](images/task5-terraform-output-output.png)
 
-### Step 15 — Verify RESTCONF is Responding on the CSR
+### Step 16 — Verify RESTCONF is Responding on the CSR
 
 ```bash
 curl -sk -u admin:admin \
@@ -432,7 +460,7 @@ curl -sk -u admin:admin \
 
 ![curl hostname output](images/task5-curl-hostname-output.png)
 
-### Step 16 — Verify Loopback0 Exists on the CSR
+### Step 17 — Verify Loopback0 Exists on the CSR
 
 ```bash
 curl -sk -u admin:admin \
@@ -444,7 +472,7 @@ curl -sk -u admin:admin \
 
 ![curl loopback output](images/task5-curl-loopback-output.png)
 
-### Step 17 — SSH into the CSR and Verify
+### Step 18 — SSH into the CSR and Verify
 
 The CSR is an older IOS XE image that uses legacy SSH algorithms. The extra flags below
 tell your SSH client to allow those older algorithms — without them the connection will
@@ -484,7 +512,7 @@ show interfaces Loopback0
 
 Type `exit` to leave the CSR.
 
-### Step 18 — SSH into a Linux Container and Verify
+### Step 19 — SSH into a Linux Container and Verify
 
 > **Before connecting:** If you have connected to `172.20.21.20` before (from a previous
 > lab run), clear the old host key first to avoid an SSH error:
@@ -525,7 +553,7 @@ correct IP address on the `terraform-net` network.
 
 Type `exit` to leave the Linux container and return to the lab server.
 
-### Step 19 — Inspect the State File
+### Step 20 — Inspect the State File
 
 Everything is deployed and verified. Before moving on, take a few minutes to look at
 what Terraform actually recorded — the state file is what makes every subsequent
@@ -600,7 +628,7 @@ Drift can happen when:
 In a traditional environment, drift often goes unnoticed until something breaks.
 Terraform can **detect** it and **fix** it automatically.
 
-### Step 20 — Simulate Drift: Manually Delete a Container
+### Step 21 — Simulate Drift: Manually Delete a Container
 
 We are going to pretend to be a colleague who deleted a container by hand, bypassing
 Terraform entirely. Without touching any Terraform files, directly remove
@@ -614,7 +642,7 @@ docker rm -f linux-terraform2
 
 ![docker rm output](images/task5-docker-rm-output.png)
 
-### Step 21 — Confirm It Is Gone
+### Step 22 — Confirm It Is Gone
 
 ```bash
 docker ps --filter name=terraform --format "table {{.ID}}\t{{.Image}}\t{{.Status}}\t{{.Names}}"
@@ -627,7 +655,7 @@ docker ps --filter name=terraform --format "table {{.ID}}\t{{.Image}}\t{{.Status
 `linux-terraform2` is missing. The infrastructure has **drifted** from the Terraform
 configuration.
 
-### Step 22 — Detect Drift with terraform plan
+### Step 23 — Detect Drift with terraform plan
 
 Run `terraform plan`. Terraform will first **refresh** its state by checking the actual
 state of every resource against what is recorded in `terraform.tfstate`. When it finds
@@ -648,7 +676,7 @@ Look for this in the output summary at the bottom:
 > and confirms it with `Plan: 1 to add, 0 to change, 0 to destroy.` Terraform found the
 > missing container and knows precisely what to fix, without touching anything else.
 
-### Step 23 — Remediate Drift with terraform apply
+### Step 24 — Remediate Drift with terraform apply
 
 Run `terraform apply -auto-approve`. Because the CSR is already running and RESTCONF is
 already active, Terraform only needs to re-create the one missing container. This
@@ -665,7 +693,7 @@ terraform apply -auto-approve
 > Notice that Terraform only created **1** resource — it did not touch the CSR,
 > linux-terraform1, the network, or the volume. It only fixed exactly what was missing.
 
-### Step 24 — Confirm All Three Containers Are Running Again
+### Step 25 — Confirm All Three Containers Are Running Again
 
 ```bash
 docker ps --filter name=terraform --format "table {{.ID}}\t{{.Image}}\t{{.Status}}\t{{.Names}}"
@@ -678,7 +706,7 @@ docker ps --filter name=terraform --format "table {{.ID}}\t{{.Image}}\t{{.Status
 Note that `linux-terraform2` shows a fresh uptime (8 seconds) while the others are still
 at their original age — it was just recreated.
 
-### Step 25 — Verify terraform plan Now Shows No Changes
+### Step 26 — Verify terraform plan Now Shows No Changes
 
 ```bash
 terraform plan
@@ -715,7 +743,7 @@ At the end of this section, **tear down the Terraform environment completely** b
 moving on to the ContainerLab section. The CSR uses significant RAM (~3.5 GiB) that the
 ContainerLab topology needs.
 
-### Step 26 — Destroy All Resources
+### Step 27 — Destroy All Resources
 
 > In the lab, use `-auto-approve` to skip the confirmation prompt. In production,
 > always omit this flag and review the destruction plan carefully before confirming.
@@ -734,7 +762,7 @@ terraform destroy -auto-approve
 
 ![terraform destroy output](images/task5-terraform-destroy-output.png)
 
-### Step 27 — Verify Everything Is Cleaned Up
+### Step 28 — Verify Everything Is Cleaned Up
 
 ```bash
 docker ps --filter name=terraform --format "table {{.ID}}\t{{.Image}}\t{{.Status}}\t{{.Names}}"
@@ -760,7 +788,7 @@ docker volume ls --filter name=terraform
 
 ![docker volume empty output](images/task5-docker-volume-empty-output.png)
 
-### Step 28 — Confirm Terraform State Is Empty
+### Step 29 — Confirm Terraform State Is Empty
 
 ```bash
 terraform show

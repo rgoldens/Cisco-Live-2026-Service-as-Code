@@ -6,7 +6,25 @@
 
 ---
 
-## Version 1.1.22 — Minor Run-Through Polish
+## Version 1.1.23 — Task 5 stale state cleanup step
+
+**Date:** 2026-05-24
+
+### Summary
+
+Added Step 8 to TASK5.md to clear stale Terraform state before `terraform init`.
+The server image has leftover state from pre-lab testing that wasn't fully destroyed.
+Framed as a learning moment about IaC state hygiene. Steps renumbered 9–29.
+
+### 1.1.23 — Changes
+
+| File | Description |
+|------|-------------|
+| `docs/TASK5.md` | Added Step 8 — clear stale state with `terraform state rm` before init; explains why stale state happens and why hygiene matters in production; renumbered subsequent steps 9–29 |
+
+---
+
+
 
 **Date:** 2026-05-24
 
