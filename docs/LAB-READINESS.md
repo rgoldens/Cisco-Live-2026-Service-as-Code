@@ -32,11 +32,10 @@ cd ~
 **2b.** Clone the repository into a temporary folder:
 
 ```bash
-git clone https://<TOKEN>@github.com/rgoldens/Cisco-Live-2026-Service-as-Code.git .lab-tmp
+git clone https://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@github.com/rgoldens/Cisco-Live-2026-Service-as-Code.git .lab-tmp
 ```
 
-> **Note:** Your instructor will provide the `<TOKEN>` value. This is a shared
-> access token that allows everyone to clone and push to the repository.
+> **Note:** This token gives read and push access to the lab repository.
 
 **2c.** Move all files (including hidden `.git` folder) from the temporary folder
 into your home directory, then remove the empty temporary folder:

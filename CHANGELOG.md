@@ -6,6 +6,36 @@
 
 ---
 
+## Version 1.1.20 — Full End-to-End Run-Through Fixes
+
+**Date:** 2026-05-24
+
+### Summary
+
+Fixes identified during a complete student run-through of Tasks 1–6. Covers a
+Terraform dependency ordering bug in Task 4, Task 6 UX friction (deleted images
+noise, missing git identity, token hardcoded), a Task 1 output filter, a Task 2
+Jinja2 warning, and the XRd password auth correction in the Ansible inventory.
+
+---
+
+### 1.1.20 — Run-Through Fixes
+
+| File | Description |
+|------|-------------|
+| `task4-terraform/main.tf` | Added `depends_on` on `vrf_nbr_af` resources to wait for `vrf_af` — prevents gNMI race on first `terraform apply` |
+| `docs/TASK4.md` | Removed two "Timing race note" callouts (apply and destroy) — no longer needed with the dependency fix |
+| `docs/TASK6.md` | Added note explaining deleted `images/` files in `git status` are expected and should not be committed |
+| `docs/TASK6.md` | Added `git config --global user.name/email` step before commit so students don't hit "who are you" error |
+| `docs/TASK6.md` | Updated push credentials note — token already in remote URL, no proctor handout needed |
+| `docs/LAB-READINESS.md` | Replaced `<TOKEN>` placeholder in clone command with actual token — students can copy-paste directly |
+| `ce-access-vlan.yml` | Changed `show interface status` to `show interface Ethernet1/3-4 status` — filters output to just the two student-configured ports |
+| `solutions/ce-access-vlan.yml` | Same interface filter fix applied to solution file |
+| `igp-pe-ce.yml` | Renamed task `"Add route to {{ item }} via SVI gateway"` → `"Add static routes via SVI gateway"` — eliminates Jinja2 `'item' is undefined` warning |
+| `inventory.yml` | XRd auth: switched from RSA key to `ansible_password: "clab@123"` — ContainerLab creates the clab user with password auth, no key injection needed |
+
+
+
 ## Version 1.1 — Dark Theme Diagrams, Task 5 (Terraform), File Reorganization
 
 **Date:** 2026-04-27

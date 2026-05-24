@@ -382,6 +382,7 @@ resource "iosxr_router_bgp_vrf_neighbor_address_family" "vrf_nbr_af_xrd01" {
 
   depends_on = [
     iosxr_router_bgp_vrf.vrf_bgp_xrd01,
+    iosxr_router_bgp_vrf_address_family.vrf_af_xrd01,
     iosxr_route_policy.pass_all_xrd01
   ]
 }
@@ -397,6 +398,7 @@ resource "iosxr_router_bgp_vrf_neighbor_address_family" "vrf_nbr_af_xrd02" {
 
   depends_on = [
     iosxr_router_bgp_vrf.vrf_bgp_xrd02,
+    iosxr_router_bgp_vrf_address_family.vrf_af_xrd02,
     iosxr_route_policy.pass_all_xrd02
   ]
 }

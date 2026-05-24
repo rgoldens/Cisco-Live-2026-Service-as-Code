@@ -272,7 +272,7 @@
     # "changed_when: true" tells Ansible this task always makes a change.
     # The "raw" module can't detect changes on its own, so we set this
     # explicitly. Without it, Ansible would report "ok" instead of "changed".
-    - name: "Add route to {{ item }} via SVI gateway"
+    - name: "Add static routes via SVI gateway"
       ansible.builtin.raw: "ip route replace {{ item }} via {{ route_config[inventory_hostname].gateway }} dev eth1"
       loop: "{{ route_config[inventory_hostname].routes }}"
       changed_when: true

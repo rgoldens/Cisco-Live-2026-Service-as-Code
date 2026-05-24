@@ -510,24 +510,6 @@ BGP before VRF-BGP):
 
 ![terraform apply output](images/task4-tf-apply-output.png)
 
-> **Timing race note:** On the first apply, you may see an error on the last
-> 2 resources (`vrf_nbr_af_xrd01` / `vrf_nbr_af_xrd02`) with the message
-> `"The address family has not been initialized"`. This is a gNMI timing
-> issue — the VRF address-family hasn't fully committed on the device before
-> Terraform tries to configure the neighbor under it. **This is normal.**
-> Simply run `terraform apply` again and Terraform will create just the 2
-> remaining resources:
->
-> <pre>
-> Plan: 2 to add, 0 to change, 0 to destroy.
-> ...
-> Apply complete! Resources: 2 added, 0 changed, 0 destroyed.
-> </pre>
->
-> This is a great teaching moment: Terraform is **idempotent and resumable**.
-> A partial failure doesn't corrupt anything — you just re-apply and it
-> picks up where it left off.
-
 > **Speed comparison:** Terraform applies all 18 resources in about 3-5
 > seconds via gNMI. The equivalent Ansible playbook takes longer because
 > it runs tasks sequentially. Terraform can apply resources in parallel
@@ -664,12 +646,6 @@ Destroy complete! Resources: 18 destroyed.
 </pre>
 
 </details>
-
-> **Timing race note:** Similar to apply, you may see a gNMI error during
-> destroy (e.g., `"The address family cannot be disabled; there are still
-> neighbors/groups which have configuration for it"`). This is the same race
-> condition — just run `terraform destroy` again and the remaining 1-2
-> resources will be cleaned up.
 
 Verify the config is gone — pings should fail:
 

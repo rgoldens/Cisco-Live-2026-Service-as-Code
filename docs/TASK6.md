@@ -50,6 +50,12 @@ This shows two categories:
 - **Untracked files** — new files created during the lab (like `terraform.tfstate`)
   that Git hasn't seen before
 
+> **Note:** You'll also see a long list of `deleted: images/...` files. These are
+> lab guide screenshots that live in the repo but aren't on this server — they're
+> served from GitHub Pages instead. You don't own these deletions and should not
+> stage or commit them. The `git add` command in Step 2 stages only the files you
+> explicitly name, so they won't end up in your commit.
+
 > **Tip:** Red filenames mean the file has changes that haven't been staged yet.
 > After you run `git add`, they turn green.
 
@@ -81,6 +87,13 @@ You should see your files listed under **"Changes to be committed"** in green.
 
 ## Step 3: Commit Your Changes
 
+First, set a git identity so the commit has an author:
+
+```bash
+git config --global user.name "student"
+git config --global user.email "student@ciscolive.lab"
+```
+
 Create a commit — a snapshot of your staged changes with a message describing
 what you did:
 
@@ -105,8 +118,9 @@ git push origin student-XX
 Replace `XX` with your pod/seat number — the same branch name you created in
 the [Lab Access](LAB-ACCESS.md) setup.
 
-> **First push?** Git may prompt you for credentials. Use the shared GitHub
-> username and token provided by your proctor.
+> **First push?** If Git prompts for credentials, the remote URL on this server
+> already includes the token — just run `git push origin student-XX` and it should
+> go through without prompting.
 
 Expected output:
 

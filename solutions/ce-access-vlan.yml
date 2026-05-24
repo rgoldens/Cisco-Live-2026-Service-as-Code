@@ -169,7 +169,7 @@
     - name: "Verify — Show interface status"
       cisco.nxos.nxos_command:
         commands:
-          - show interface status
+          - show interface Ethernet1/3-4 status
       register: intf_output
 
     - name: "Display interface status"

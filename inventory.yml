@@ -1,9 +1,9 @@
 ---
 # Ansible Inventory for LTRATO-1001 lab
-# Management network: 172.20.20.0/24 (reachable from 198.18.134.90 only)
+# Management network: 172.20.20.0/24
 #
-# Key usage:
-#   XRd  : ~/.ssh/id_rsa  (ed25519 not supported)
+# Auth:
+#   XRd  : password clab@123 (ContainerLab default — no key needed)
 #   NX-OS, Linux : ~/.ssh/id_ed25519
 #   CSR  : password-only (paramiko with legacy KEX; pubkey causes hard disconnect)
 
@@ -15,9 +15,11 @@ all:
       vars:
         ansible_network_os: cisco.iosxr.iosxr
         ansible_connection: network_cli
-        # XRd does NOT support ed25519; must use RSA key.
-        # Explicitly set private_key_file so paramiko uses it (look_for_keys=False globally).
-        ansible_ssh_private_key_file: ~/.ssh/id_rsa
+        # ContainerLab creates clab user with password clab@123 by default.
+        # XRd startup config uses this — no SSH key required.
+        ansible_user: clab
+        ansible_password: "clab@123"
+        ansible_become: false
       hosts:
         xrd01:
           ansible_host: 172.20.20.10
