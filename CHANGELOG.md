@@ -6,6 +6,20 @@
 
 ---
 
+## Version 1.1.24 — Fix broken anchor link in TASK1.md
+
+**Date:** 2026-05-24
+
+### Summary
+
+Fixed a broken deep-link anchor in TASK1.md pointing to the Ansible Primer.
+
+### Changed
+
+- `docs/TASK1.md` — corrected anchor `#cisco-nxos-resource-modules` → `#cisco-resource-modules` to match the actual heading in Ansible-Primer.md
+
+---
+
 ## Version 1.1.23 — Task 5 stale state cleanup step
 
 **Date:** 2026-05-24
