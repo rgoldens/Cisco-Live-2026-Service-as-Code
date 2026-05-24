@@ -6,7 +6,25 @@
 
 ---
 
-## Version 1.1.21 — Switch to SSH-based Git Auth
+## Version 1.1.22 — Minor Run-Through Polish
+
+**Date:** 2026-05-24
+
+### Summary
+
+Two small fixes from the second run-through: deprecation warning callout in Task 4
+teardown, and solution file task name fix.
+
+### 1.1.22 — Changes
+
+| File | Description |
+|------|-------------|
+| `docs/TASK4.md` | Added note after teardown output explaining `[DEPRECATION WARNING]` lines from the IOS-XR collection are safe to ignore |
+| `solutions/igp-pe-ce.yml` | Fixed task name `"Add route to {{ item }} via SVI gateway"` → `"Add static routes via SVI gateway"` to match student file fix from 1.1.20 |
+
+---
+
+
 
 **Date:** 2026-05-24
 

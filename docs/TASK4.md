@@ -59,6 +59,8 @@ Expected output — 4 tasks, all `changed`:
 
 ![Teardown playbook output](images/task4-teardown-output.png)
 
+> **Deprecation warnings:** You may see several `[DEPRECATION WARNING]` lines in the output — these come from the Cisco IOS-XR Ansible collection and can be safely ignored. All 4 tasks should show `changed`.
+
 > **Why tear down first?** Terraform tracks what it manages in a state file.
 > If Ansible already created the configuration, Terraform doesn't know about
 > it — it would try to create duplicate resources. Starting clean lets
