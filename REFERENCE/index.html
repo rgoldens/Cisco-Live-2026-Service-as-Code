@@ -827,10 +827,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#table-1-vlan-assignments" class="md-nav__link">
+  <a href="#table-1-vlan-assignments-task-1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Table 1: VLAN Assignments
+        Table 1: VLAN Assignments — Task 1
       
     </span>
   </a>
@@ -838,10 +838,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#table-2-ip-addressing" class="md-nav__link">
+  <a href="#table-2-is-is-configuration-task-2" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Table 2: IP Addressing
+        Table 2: IS-IS Configuration — Task 2
       
     </span>
   </a>
@@ -849,10 +849,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#table-3-bgp-peering" class="md-nav__link">
+  <a href="#table-3-bgp-peering-task-3" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Table 3: BGP Peering
+        Table 3: BGP Peering — Task 3
       
     </span>
   </a>
@@ -860,10 +860,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#table-4-is-is-configuration" class="md-nav__link">
+  <a href="#table-4-full-ip-address-reference" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Table 4: IS-IS Configuration
+        Table 4: Full IP Address Reference
       
     </span>
   </a>
@@ -1115,13 +1115,13 @@
 <h2 id="reference-tables">Reference Tables<a class="headerlink" href="#reference-tables" title="Permanent link">&para;</a></h2>
 <p>These tables are your primary reference when filling in playbook variables.
 Keep this section open while you work.</p>
-<h3 id="table-1-vlan-assignments">Table 1: VLAN Assignments<a class="headerlink" href="#table-1-vlan-assignments" title="Permanent link">&para;</a></h3>
+<h3 id="table-1-vlan-assignments-task-1">Table 1: VLAN Assignments — Task 1<a class="headerlink" href="#table-1-vlan-assignments-task-1" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
 <th>Switch</th>
-<th>VLAN ID</th>
-<th>VLAN Name</th>
+<th><code>vlan_id</code></th>
+<th><code>vlan_name</code></th>
 <th>Ports</th>
 <th>Connected Clients</th>
 </tr>
@@ -1129,28 +1129,179 @@ Keep this section open while you work.</p>
 <tbody>
 <tr>
 <td>n9k-ce01</td>
-<td>23</td>
-<td>CLIENT-VLAN-23</td>
+<td><code>23</code></td>
+<td><code>CLIENT-VLAN-23</code></td>
 <td>Eth1/3, Eth1/4</td>
-<td>client1 (23.23.23.1), client2 (23.23.23.2)</td>
+<td>client1, client2</td>
 </tr>
 <tr>
 <td>n9k-ce02</td>
-<td>34</td>
-<td>CLIENT-VLAN-34</td>
+<td><code>34</code></td>
+<td><code>CLIENT-VLAN-34</code></td>
 <td>Eth1/3, Eth1/4</td>
-<td>client3 (34.34.34.1), client4 (34.34.34.2)</td>
+<td>client3, client4</td>
 </tr>
 </tbody>
 </table>
-<h3 id="table-2-ip-addressing">Table 2: IP Addressing<a class="headerlink" href="#table-2-ip-addressing" title="Permanent link">&para;</a></h3>
+<h3 id="table-2-is-is-configuration-task-2">Table 2: IS-IS Configuration — Task 2<a class="headerlink" href="#table-2-is-is-configuration-task-2" title="Permanent link">&para;</a></h3>
+<p>Use these values to fill in the <code>isis_config</code> variables in <code>igp-pe-ce.yml</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Device</th>
+<th><code>net</code></th>
+<th><code>vlan_id</code></th>
+<th><code>svi_ip</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>n9k-ce01</td>
+<td><code>49.0002.1921.6802.0021.00</code></td>
+<td><code>23</code></td>
+<td><code>23.23.23.254/24</code></td>
+</tr>
+<tr>
+<td>n9k-ce02</td>
+<td><code>49.0002.1921.6802.0022.00</code></td>
+<td><code>34</code></td>
+<td><code>34.34.34.254/24</code></td>
+</tr>
+<tr>
+<td>csr-pe01</td>
+<td><code>49.0002.1921.6801.0011.00</code></td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>csr-pe02</td>
+<td><code>49.0002.1921.6801.0012.00</code></td>
+<td>—</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p>Use these values to fill in the <code>route_config</code> variables for Linux clients:</p>
+<table>
+<thead>
+<tr>
+<th>Client</th>
+<th><code>gateway</code></th>
+<th>Routes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>linux-client1</td>
+<td><code>23.23.23.254</code></td>
+<td><code>192.168.10.0/24</code>, <code>10.2.0.0/30</code></td>
+</tr>
+<tr>
+<td>linux-client2</td>
+<td><code>23.23.23.254</code></td>
+<td><code>192.168.10.0/24</code>, <code>10.2.0.0/30</code></td>
+</tr>
+<tr>
+<td>linux-client3</td>
+<td><code>34.34.34.254</code></td>
+<td><code>192.168.10.0/24</code>, <code>10.2.0.4/30</code></td>
+</tr>
+<tr>
+<td>linux-client4</td>
+<td><code>34.34.34.254</code></td>
+<td><code>192.168.10.0/24</code>, <code>10.2.0.4/30</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="table-3-bgp-peering-task-3">Table 3: BGP Peering — Task 3<a class="headerlink" href="#table-3-bgp-peering-task-3" title="Permanent link">&para;</a></h3>
+<p>Use these values to fill in the <code>bgp_config</code> variables in <code>inter-as-option-a.yml</code>.</p>
+<p><strong>XRd routers (<code>xrd_bgp_config</code>):</strong></p>
+<table>
+<thead>
+<tr>
+<th>Device</th>
+<th><code>remote_lo</code> (iBGP peer Lo0)</th>
+<th><code>gi1_ip</code></th>
+<th><code>gi1_mask</code></th>
+<th><code>csr_peer</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>xrd01</td>
+<td><code>192.168.0.2</code></td>
+<td><code>10.1.0.5</code></td>
+<td><code>255.255.255.252</code></td>
+<td><code>10.1.0.6</code></td>
+</tr>
+<tr>
+<td>xrd02</td>
+<td><code>192.168.0.1</code></td>
+<td><code>10.1.0.9</code></td>
+<td><code>255.255.255.252</code></td>
+<td><code>10.1.0.10</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>CSR PE routers (<code>csr_bgp_config</code>):</strong></p>
+<table>
+<thead>
+<tr>
+<th>Device</th>
+<th><code>xrd_peer</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>csr-pe01</td>
+<td><code>10.1.0.5</code></td>
+</tr>
+<tr>
+<td>csr-pe02</td>
+<td><code>10.1.0.9</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Linux client routes (<code>route_config</code>):</strong></p>
+<table>
+<thead>
+<tr>
+<th>Client</th>
+<th><code>dest</code></th>
+<th><code>gw</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>linux-client1</td>
+<td><code>34.34.34.0/24</code></td>
+<td><code>23.23.23.254</code></td>
+</tr>
+<tr>
+<td>linux-client2</td>
+<td><code>34.34.34.0/24</code></td>
+<td><code>23.23.23.254</code></td>
+</tr>
+<tr>
+<td>linux-client3</td>
+<td><code>23.23.23.0/24</code></td>
+<td><code>34.34.34.254</code></td>
+</tr>
+<tr>
+<td>linux-client4</td>
+<td><code>23.23.23.0/24</code></td>
+<td><code>34.34.34.254</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="table-4-full-ip-address-reference">Table 4: Full IP Address Reference<a class="headerlink" href="#table-4-full-ip-address-reference" title="Permanent link">&para;</a></h3>
+<p>Complete address reference for all devices — useful for verification and troubleshooting.</p>
 <table>
 <thead>
 <tr>
 <th>Device</th>
 <th>Interface</th>
-<th>IP Address</th>
-<th>Subnet</th>
+<th>Address</th>
 <th>Purpose</th>
 </tr>
 </thead>
@@ -1158,257 +1309,137 @@ Keep this section open while you work.</p>
 <tr>
 <td><strong>xrd01</strong></td>
 <td>Loopback0</td>
-<td>192.168.0.1</td>
-<td>/32</td>
+<td>192.168.0.1/32</td>
 <td>Router ID / iBGP source</td>
 </tr>
 <tr>
 <td><strong>xrd01</strong></td>
 <td>Gi0/0/0/0</td>
-<td>10.0.0.1</td>
-<td>/30</td>
+<td>10.0.0.1/30</td>
 <td>Core link to xrd02</td>
 </tr>
 <tr>
 <td><strong>xrd01</strong></td>
 <td>Gi0/0/0/1</td>
-<td>10.1.0.5</td>
-<td>/30</td>
+<td>10.1.0.5/30</td>
 <td>Link to csr-pe01</td>
 </tr>
 <tr>
 <td><strong>xrd02</strong></td>
 <td>Loopback0</td>
-<td>192.168.0.2</td>
-<td>/32</td>
+<td>192.168.0.2/32</td>
 <td>Router ID / iBGP source</td>
 </tr>
 <tr>
 <td><strong>xrd02</strong></td>
 <td>Gi0/0/0/0</td>
-<td>10.0.0.2</td>
-<td>/30</td>
+<td>10.0.0.2/30</td>
 <td>Core link to xrd01</td>
 </tr>
 <tr>
 <td><strong>xrd02</strong></td>
 <td>Gi0/0/0/1</td>
-<td>10.1.0.9</td>
-<td>/30</td>
+<td>10.1.0.9/30</td>
 <td>Link to csr-pe02</td>
 </tr>
 <tr>
 <td><strong>csr-pe01</strong></td>
 <td>Loopback0</td>
-<td>192.168.10.11</td>
-<td>/32</td>
+<td>192.168.10.11/32</td>
 <td>Router ID</td>
 </tr>
 <tr>
 <td><strong>csr-pe01</strong></td>
 <td>Gi2</td>
-<td>10.1.0.6</td>
-<td>/30</td>
+<td>10.1.0.6/30</td>
 <td>Link to xrd01</td>
 </tr>
 <tr>
 <td><strong>csr-pe01</strong></td>
 <td>Gi4</td>
-<td>10.2.0.1</td>
-<td>/30</td>
+<td>10.2.0.1/30</td>
 <td>Link to n9k-ce01</td>
 </tr>
 <tr>
 <td><strong>csr-pe02</strong></td>
 <td>Loopback0</td>
-<td>192.168.10.12</td>
-<td>/32</td>
+<td>192.168.10.12/32</td>
 <td>Router ID</td>
 </tr>
 <tr>
 <td><strong>csr-pe02</strong></td>
 <td>Gi2</td>
-<td>10.1.0.10</td>
-<td>/30</td>
+<td>10.1.0.10/30</td>
 <td>Link to xrd02</td>
 </tr>
 <tr>
 <td><strong>csr-pe02</strong></td>
 <td>Gi4</td>
-<td>10.2.0.5</td>
-<td>/30</td>
+<td>10.2.0.5/30</td>
 <td>Link to n9k-ce02</td>
 </tr>
 <tr>
 <td><strong>n9k-ce01</strong></td>
 <td>Loopback0</td>
-<td>192.168.20.21</td>
-<td>/32</td>
+<td>192.168.20.21/32</td>
 <td>Router ID</td>
 </tr>
 <tr>
 <td><strong>n9k-ce01</strong></td>
 <td>Eth1/1</td>
-<td>10.2.0.2</td>
-<td>/30</td>
+<td>10.2.0.2/30</td>
 <td>Uplink to csr-pe01</td>
 </tr>
 <tr>
 <td><strong>n9k-ce01</strong></td>
-<td>SVI (Vlan23)</td>
-<td>23.23.23.254</td>
-<td>/24</td>
+<td>SVI Vlan23</td>
+<td>23.23.23.254/24</td>
 <td>Client gateway (west)</td>
 </tr>
 <tr>
 <td><strong>n9k-ce02</strong></td>
 <td>Loopback0</td>
-<td>192.168.20.22</td>
-<td>/32</td>
+<td>192.168.20.22/32</td>
 <td>Router ID</td>
 </tr>
 <tr>
 <td><strong>n9k-ce02</strong></td>
 <td>Eth1/1</td>
-<td>10.2.0.6</td>
-<td>/30</td>
+<td>10.2.0.6/30</td>
 <td>Uplink to csr-pe02</td>
 </tr>
 <tr>
 <td><strong>n9k-ce02</strong></td>
-<td>SVI (Vlan34)</td>
-<td>34.34.34.254</td>
-<td>/24</td>
+<td>SVI Vlan34</td>
+<td>34.34.34.254/24</td>
 <td>Client gateway (east)</td>
 </tr>
 <tr>
 <td><strong>linux-client1</strong></td>
 <td>eth1</td>
-<td>23.23.23.1</td>
-<td>/24</td>
+<td>23.23.23.1/24</td>
 <td>West client</td>
 </tr>
 <tr>
 <td><strong>linux-client2</strong></td>
 <td>eth1</td>
-<td>23.23.23.2</td>
-<td>/24</td>
+<td>23.23.23.2/24</td>
 <td>West client</td>
 </tr>
 <tr>
 <td><strong>linux-client3</strong></td>
 <td>eth1</td>
-<td>34.34.34.1</td>
-<td>/24</td>
+<td>34.34.34.1/24</td>
 <td>East client</td>
 </tr>
 <tr>
 <td><strong>linux-client4</strong></td>
 <td>eth1</td>
-<td>34.34.34.2</td>
-<td>/24</td>
+<td>34.34.34.2/24</td>
 <td>East client</td>
 </tr>
 </tbody>
 </table>
-<h3 id="table-3-bgp-peering">Table 3: BGP Peering<a class="headerlink" href="#table-3-bgp-peering" title="Permanent link">&para;</a></h3>
-<table>
-<thead>
-<tr>
-<th>Session</th>
-<th>Type</th>
-<th>Local Device</th>
-<th>Local AS</th>
-<th>Local IP</th>
-<th>Remote Device</th>
-<th>Remote AS</th>
-<th>Remote IP</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>XRd iBGP</td>
-<td>VPNv4</td>
-<td>xrd01</td>
-<td>65000</td>
-<td>192.168.0.1 (Lo0)</td>
-<td>xrd02</td>
-<td>65000</td>
-<td>192.168.0.2 (Lo0)</td>
-</tr>
-<tr>
-<td>XRd iBGP</td>
-<td>VPNv4</td>
-<td>xrd02</td>
-<td>65000</td>
-<td>192.168.0.2 (Lo0)</td>
-<td>xrd01</td>
-<td>65000</td>
-<td>192.168.0.1 (Lo0)</td>
-</tr>
-<tr>
-<td>West eBGP</td>
-<td>IPv4 VRF</td>
-<td>xrd01</td>
-<td>65000</td>
-<td>10.1.0.5 (Gi0/0/0/1)</td>
-<td>csr-pe01</td>
-<td>65001</td>
-<td>10.1.0.6 (Gi2)</td>
-</tr>
-<tr>
-<td>East eBGP</td>
-<td>IPv4 VRF</td>
-<td>xrd02</td>
-<td>65000</td>
-<td>10.1.0.9 (Gi0/0/0/1)</td>
-<td>csr-pe02</td>
-<td>65001</td>
-<td>10.1.0.10 (Gi2)</td>
-</tr>
-</tbody>
-</table>
-<h3 id="table-4-is-is-configuration">Table 4: IS-IS Configuration<a class="headerlink" href="#table-4-is-is-configuration" title="Permanent link">&para;</a></h3>
-<table>
-<thead>
-<tr>
-<th>Device</th>
-<th>Loopback0 IP</th>
-<th>IS-IS NET Address</th>
-<th>Role</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>n9k-ce01</td>
-<td>192.168.20.21</td>
-<td>49.0002.1921.6802.0021.00</td>
-<td>CE</td>
-</tr>
-<tr>
-<td>n9k-ce02</td>
-<td>192.168.20.22</td>
-<td>49.0002.1921.6802.0022.00</td>
-<td>CE</td>
-</tr>
-<tr>
-<td>csr-pe01</td>
-<td>192.168.10.11</td>
-<td>49.0002.1921.6801.0011.00</td>
-<td>PE</td>
-</tr>
-<tr>
-<td>csr-pe02</td>
-<td>192.168.10.12</td>
-<td>49.0002.1921.6801.0012.00</td>
-<td>PE</td>
-</tr>
-</tbody>
-</table>
-<blockquote>
-<p><strong>How IS-IS NET addresses are derived:</strong> See the "Deriving IS-IS NET
-Addresses" section under <a href="../TASK2/">Task 2</a> for a step-by-step walkthrough.</p>
-</blockquote>
 <hr />
 
 
