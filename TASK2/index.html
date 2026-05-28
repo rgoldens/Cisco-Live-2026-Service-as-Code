@@ -1240,7 +1240,7 @@ how to convert an IP address to a system-id:</p>
 <li>Regroup: <code>1921.6801.0011</code></li>
 <li>NET: <code>49.0002.1921.6801.0011.00</code></li>
 </ol>
-<p>Check your answers against <strong>Table 4: IS-IS Configuration</strong>.</p>
+<p>Check your answers against <strong>Table 2: IS-IS Configuration</strong>.</p>
 <h3 id="exercise-complete-the-playbook">Exercise: Complete the Playbook<a class="headerlink" href="#exercise-complete-the-playbook" title="Permanent link">&para;</a></h3>
 <p>This playbook has <strong>three</strong> plays with variables to fill in. Open it:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>nano<span class="w"> </span>~/igp-pe-ce.yml
@@ -1248,51 +1248,42 @@ how to convert an IP address to a system-id:</p>
 <h4 id="play-1-nx-os-ce-switches">Play 1 — NX-OS CE Switches<a class="headerlink" href="#play-1-nx-os-ce-switches" title="Permanent link">&para;</a></h4>
 <p>Scroll to the first <code>vars:</code> section. You'll see these TODO placeholders:</p>
 <p><img alt="Play 1 — NX-OS IS-IS variables" src="../images/task2-play1.png" /></p>
-<p>Using <strong>Table 4</strong> and <strong>Table 2</strong>, fill in these values:</p>
+<p>Using <strong>Table 2: IS-IS Configuration</strong>, fill in these values:</p>
 <table>
 <thead>
 <tr>
 <th>Variable</th>
-<th>Hint</th>
 <th>Where to Find It</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>net</code> for n9k-ce01</td>
-<td>IS-IS NET derived from 192.168.20.21</td>
-<td>Table 4 or derive it yourself</td>
+<td>Table 2, n9k-ce01 row, <code>net</code> column</td>
 </tr>
 <tr>
 <td><code>net</code> for n9k-ce02</td>
-<td>IS-IS NET derived from 192.168.20.22</td>
-<td>Table 4 or derive it yourself</td>
+<td>Table 2, n9k-ce02 row, <code>net</code> column</td>
 </tr>
 <tr>
 <td><code>vlan_id</code> for n9k-ce01</td>
-<td>Must match what you used in Task 1</td>
-<td>Your Task 1 values</td>
+<td>Table 2, n9k-ce01 row, <code>vlan_id</code> column</td>
 </tr>
 <tr>
 <td><code>vlan_id</code> for n9k-ce02</td>
-<td>Must match what you used in Task 1</td>
-<td>Your Task 1 values</td>
+<td>Table 2, n9k-ce02 row, <code>vlan_id</code> column</td>
 </tr>
 <tr>
 <td><code>svi_ip</code> for n9k-ce01</td>
-<td>Gateway IP/mask for 23.23.23.0/24</td>
-<td>Table 2, look for "SVI (Vlan23)"</td>
+<td>Table 2, n9k-ce01 row, <code>svi_ip</code> column</td>
 </tr>
 <tr>
 <td><code>svi_ip</code> for n9k-ce02</td>
-<td>Gateway IP/mask for 34.34.34.0/24</td>
-<td>Table 2, look for "SVI (Vlan34)"</td>
+<td>Table 2, n9k-ce02 row, <code>svi_ip</code> column</td>
 </tr>
 </tbody>
 </table>
 <blockquote>
-<p><strong>Important:</strong> The <code>svi_ip</code> values must include the subnet mask (e.g., <code>23.23.23.254/24</code>).
-The <code>/24</code> tells the switch what subnet this gateway belongs to.</p>
 <p><strong>Why must <code>vlan_id</code> match Task 1?</strong> The SVI (Switch Virtual Interface) is
 created on a specific VLAN. If you use VLAN 23 for west clients in Task 1 but
 a different VLAN here, the SVI won't be in the same broadcast domain as the
@@ -1301,71 +1292,56 @@ clients, and they won't be able to use it as their gateway.</p>
 <h4 id="play-2-csr-pe-routers">Play 2 — CSR PE Routers<a class="headerlink" href="#play-2-csr-pe-routers" title="Permanent link">&para;</a></h4>
 <p>Scroll down to the second <code>vars:</code> section:</p>
 <p><img alt="Play 2 — CSR PE IS-IS variables" src="../images/task2-play2.png" /></p>
-<p>Using <strong>Table 4</strong>, fill in:</p>
+<p>Using <strong>Table 2: IS-IS Configuration</strong>, fill in:</p>
 <table>
 <thead>
 <tr>
 <th>Variable</th>
-<th>Hint</th>
 <th>Where to Find It</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>net</code> for csr-pe01</td>
-<td>IS-IS NET derived from 192.168.10.11</td>
-<td>Table 4 or derive it yourself</td>
+<td>Table 2, csr-pe01 row, <code>net</code> column</td>
 </tr>
 <tr>
 <td><code>net</code> for csr-pe02</td>
-<td>IS-IS NET derived from 192.168.10.12</td>
-<td>Table 4 or derive it yourself</td>
+<td>Table 2, csr-pe02 row, <code>net</code> column</td>
 </tr>
 </tbody>
 </table>
-<blockquote>
-<p><strong>Practice the derivation:</strong> Try converting <code>192.168.10.11</code> to a NET without
-looking at Table 4. Pad each octet to 3 digits (<code>192.168.010.011</code>), regroup
-(<code>1921.6801.0011</code>), then build the NET (<code>49.0002.1921.6801.0011.00</code>). Check
-your answer against the table.</p>
-</blockquote>
 <h4 id="play-3-linux-client-routes">Play 3 — Linux Client Routes<a class="headerlink" href="#play-3-linux-client-routes" title="Permanent link">&para;</a></h4>
 <p>Scroll down to the third <code>vars:</code> section:</p>
 <p><img alt="Play 3 — Linux client route variables" src="../images/task2-play3.png" /></p>
-<p>Using <strong>Table 2</strong>, fill in:</p>
+<p>Using <strong>Table 2: IS-IS Configuration</strong> (Linux client section), fill in:</p>
 <table>
 <thead>
 <tr>
 <th>Variable</th>
-<th>Hint</th>
 <th>Where to Find It</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>gateway</code> for client1/2</td>
-<td>SVI IP without the mask</td>
-<td>Table 2, "SVI (Vlan23)" row</td>
+<td>Table 2, linux-client1 row, <code>gateway</code> column</td>
 </tr>
 <tr>
 <td><code>gateway</code> for client3/4</td>
-<td>SVI IP without the mask</td>
-<td>Table 2, "SVI (Vlan34)" row</td>
+<td>Table 2, linux-client3 row, <code>gateway</code> column</td>
 </tr>
 <tr>
 <td>First route (all clients)</td>
-<td>Where CSR PE loopbacks live</td>
-<td>Both PEs are in 192.168.10.0/24</td>
+<td>Table 2, routes column — <code>192.168.10.0/24</code></td>
 </tr>
 <tr>
 <td>Second route (client1/2)</td>
-<td>West PE-CE link</td>
-<td>Table 2, csr-pe01 Gi4 row</td>
+<td>Table 2, linux-client1 row, routes column</td>
 </tr>
 <tr>
 <td>Second route (client3/4)</td>
-<td>East PE-CE link</td>
-<td>Table 2, csr-pe02 Gi4 row</td>
+<td>Table 2, linux-client3 row, routes column</td>
 </tr>
 </tbody>
 </table>

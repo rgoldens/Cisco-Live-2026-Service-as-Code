@@ -1368,50 +1368,42 @@ verification/test plays. The TODO placeholders are only in the first 3 plays.</p
 <h4 id="play-1-xrd-core-routers-vrf-bgp">Play 1 — XRd Core Routers (VRF + BGP)<a class="headerlink" href="#play-1-xrd-core-routers-vrf-bgp" title="Permanent link">&para;</a></h4>
 <p>Scroll to the first <code>vars:</code> section:</p>
 <p><img alt="Play 1 — XRd VRF and BGP variables" src="../images/task3-play1.png" /></p>
-<p>Using <strong>Table 2</strong> and <strong>Table 3</strong>, fill in:</p>
+<p>Using <strong>Table 3: BGP Peering</strong> (XRd section), fill in:</p>
 <table>
 <thead>
 <tr>
 <th>Variable</th>
-<th>Hint</th>
 <th>Where to Find It</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>remote_lo</code> for xrd01</td>
-<td>xrd02's Loopback0 IP</td>
-<td>Table 2, xrd02 Loopback0 row</td>
+<td>Table 3, xrd01 row, <code>remote_lo</code> column</td>
 </tr>
 <tr>
 <td><code>remote_lo</code> for xrd02</td>
-<td>xrd01's Loopback0 IP</td>
-<td>Table 2, xrd01 Loopback0 row</td>
+<td>Table 3, xrd02 row, <code>remote_lo</code> column</td>
 </tr>
 <tr>
 <td><code>gi1_ip</code> for xrd01</td>
-<td>xrd01's IP on Gi0/0/0/1</td>
-<td>Table 2, xrd01 Gi0/0/0/1 row</td>
+<td>Table 3, xrd01 row, <code>gi1_ip</code> column</td>
 </tr>
 <tr>
 <td><code>gi1_ip</code> for xrd02</td>
-<td>xrd02's IP on Gi0/0/0/1</td>
-<td>Table 2, xrd02 Gi0/0/0/1 row</td>
+<td>Table 3, xrd02 row, <code>gi1_ip</code> column</td>
 </tr>
 <tr>
 <td><code>gi1_mask</code> (both)</td>
-<td>Subnet mask for /30</td>
-<td>Always <code>255.255.255.252</code> for /30</td>
+<td>Table 3, <code>gi1_mask</code> column</td>
 </tr>
 <tr>
 <td><code>csr_peer</code> for xrd01</td>
-<td>csr-pe01's IP toward xrd01</td>
-<td>Table 2, csr-pe01 Gi2 row</td>
+<td>Table 3, xrd01 row, <code>csr_peer</code> column</td>
 </tr>
 <tr>
 <td><code>csr_peer</code> for xrd02</td>
-<td>csr-pe02's IP toward xrd02</td>
-<td>Table 2, csr-pe02 Gi2 row</td>
+<td>Table 3, xrd02 row, <code>csr_peer</code> column</td>
 </tr>
 </tbody>
 </table>
@@ -1429,25 +1421,22 @@ follows the physical path).</p>
 <h4 id="play-2-csr-pe-routers-ebgp">Play 2 — CSR PE Routers (eBGP)<a class="headerlink" href="#play-2-csr-pe-routers-ebgp" title="Permanent link">&para;</a></h4>
 <p>Scroll to the second <code>vars:</code> section:</p>
 <p><img alt="Play 2 — CSR PE BGP variables" src="../images/task3-play2.png" /></p>
-<p>Using <strong>Table 3</strong>, fill in:</p>
+<p>Using <strong>Table 3: BGP Peering</strong> (CSR PE section), fill in:</p>
 <table>
 <thead>
 <tr>
 <th>Variable</th>
-<th>Hint</th>
 <th>Where to Find It</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>xrd_peer</code> for csr-pe01</td>
-<td>xrd01's Gi0/0/0/1 IP</td>
-<td>Table 2, xrd01 Gi0/0/0/1 row</td>
+<td>Table 3, csr-pe01 row, <code>xrd_peer</code> column</td>
 </tr>
 <tr>
 <td><code>xrd_peer</code> for csr-pe02</td>
-<td>xrd02's Gi0/0/0/1 IP</td>
-<td>Table 2, xrd02 Gi0/0/0/1 row</td>
+<td>Table 3, csr-pe02 row, <code>xrd_peer</code> column</td>
 </tr>
 </tbody>
 </table>
@@ -1461,35 +1450,30 @@ If these don't match, the eBGP session won't establish.</p>
 <h4 id="play-3-linux-client-cross-site-routes">Play 3 — Linux Client Cross-Site Routes<a class="headerlink" href="#play-3-linux-client-cross-site-routes" title="Permanent link">&para;</a></h4>
 <p>Scroll to the third <code>vars:</code> section:</p>
 <p><img alt="Play 3 — Linux cross-site route variables" src="../images/task3-play3.png" /></p>
-<p>Using <strong>Table 2</strong>, fill in:</p>
+<p>Using <strong>Table 3: BGP Peering</strong> (Linux client section), fill in:</p>
 <table>
 <thead>
 <tr>
 <th>Variable</th>
-<th>Hint</th>
 <th>Where to Find It</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>dest</code> for client1/2</td>
-<td>The <em>remote</em> client subnet (east side)</td>
-<td>Client3/4 are on 34.34.34.0/24</td>
+<td>Table 3, linux-client1 row, <code>dest</code> column</td>
 </tr>
 <tr>
 <td><code>dest</code> for client3/4</td>
-<td>The <em>remote</em> client subnet (west side)</td>
-<td>Client1/2 are on 23.23.23.0/24</td>
+<td>Table 3, linux-client3 row, <code>dest</code> column</td>
 </tr>
 <tr>
 <td><code>gw</code> for client1/2</td>
-<td>West-side SVI gateway (no mask)</td>
-<td>Same as Task 2 gateway</td>
+<td>Table 3, linux-client1 row, <code>gw</code> column</td>
 </tr>
 <tr>
 <td><code>gw</code> for client3/4</td>
-<td>East-side SVI gateway (no mask)</td>
-<td>Same as Task 2 gateway</td>
+<td>Table 3, linux-client3 row, <code>gw</code> column</td>
 </tr>
 </tbody>
 </table>
