@@ -6,6 +6,24 @@
 
 ---
 
+## Version 1.1.25 — Restructure reference tables to match playbook variables
+
+**Date:** 2026-05-28
+
+### Summary
+
+Rewrote REFERENCE.md based on student feedback that it was hard to map table values to playbook variables. Tables are now organized per-task with column headers matching the exact playbook variable names, CIDR notation used throughout (no split IP/subnet columns), and NET addresses provided directly so students don't need to derive them.
+
+### Changed
+
+- `docs/REFERENCE.md` — full restructure:
+  - Table 1 (VLANs): column headers now match `vlan_id` and `vlan_name` playbook variables
+  - Table 2 (IS-IS): new task-focused table with `net`, `vlan_id`, `svi_ip` columns matching `igp-pe-ce.yml` vars; separate Linux client table with `gateway` and routes
+  - Table 3 (BGP): new task-focused table with `remote_lo`, `gi1_ip`, `gi1_mask`, `csr_peer`, `xrd_peer` columns matching `inter-as-option-a.yml` vars; Linux client route table included
+  - Table 4: renamed to "Full IP Address Reference" — complete device addressing in CIDR notation for troubleshooting; no longer the primary reference for playbook filling
+
+---
+
 ## Version 1.1.24 — Fix broken anchor link in TASK1.md
 
 **Date:** 2026-05-24
