@@ -60,7 +60,7 @@ how to convert an IP address to a system-id:
 2. Regroup: `1921.6801.0011`
 3. NET: `49.0002.1921.6801.0011.00`
 
-Check your answers against **Table 4: IS-IS Configuration**.
+Check your answers against **Table 2: IS-IS Configuration**.
 
 ### Exercise: Complete the Playbook
 
@@ -76,19 +76,16 @@ Scroll to the first `vars:` section. You'll see these TODO placeholders:
 
 ![Play 1 — NX-OS IS-IS variables](images/task2-play1.png)
 
-Using **Table 4** and **Table 2**, fill in these values:
+Using **Table 2: IS-IS Configuration**, fill in these values:
 
-| Variable | Hint | Where to Find It |
-|----------|------|-------------------|
-| `net` for n9k-ce01 | IS-IS NET derived from 192.168.20.21 | Table 4 or derive it yourself |
-| `net` for n9k-ce02 | IS-IS NET derived from 192.168.20.22 | Table 4 or derive it yourself |
-| `vlan_id` for n9k-ce01 | Must match what you used in Task 1 | Your Task 1 values |
-| `vlan_id` for n9k-ce02 | Must match what you used in Task 1 | Your Task 1 values |
-| `svi_ip` for n9k-ce01 | Gateway IP/mask for 23.23.23.0/24 | Table 2, look for "SVI (Vlan23)" |
-| `svi_ip` for n9k-ce02 | Gateway IP/mask for 34.34.34.0/24 | Table 2, look for "SVI (Vlan34)" |
-
-> **Important:** The `svi_ip` values must include the subnet mask (e.g., `23.23.23.254/24`).
-> The `/24` tells the switch what subnet this gateway belongs to.
+| Variable | Where to Find It |
+|----------|-----------------|
+| `net` for n9k-ce01 | Table 2, n9k-ce01 row, `net` column |
+| `net` for n9k-ce02 | Table 2, n9k-ce02 row, `net` column |
+| `vlan_id` for n9k-ce01 | Table 2, n9k-ce01 row, `vlan_id` column |
+| `vlan_id` for n9k-ce02 | Table 2, n9k-ce02 row, `vlan_id` column |
+| `svi_ip` for n9k-ce01 | Table 2, n9k-ce01 row, `svi_ip` column |
+| `svi_ip` for n9k-ce02 | Table 2, n9k-ce02 row, `svi_ip` column |
 
 > **Why must `vlan_id` match Task 1?** The SVI (Switch Virtual Interface) is
 > created on a specific VLAN. If you use VLAN 23 for west clients in Task 1 but
@@ -101,17 +98,12 @@ Scroll down to the second `vars:` section:
 
 ![Play 2 — CSR PE IS-IS variables](images/task2-play2.png)
 
-Using **Table 4**, fill in:
+Using **Table 2: IS-IS Configuration**, fill in:
 
-| Variable | Hint | Where to Find It |
-|----------|------|-------------------|
-| `net` for csr-pe01 | IS-IS NET derived from 192.168.10.11 | Table 4 or derive it yourself |
-| `net` for csr-pe02 | IS-IS NET derived from 192.168.10.12 | Table 4 or derive it yourself |
-
-> **Practice the derivation:** Try converting `192.168.10.11` to a NET without
-> looking at Table 4. Pad each octet to 3 digits (`192.168.010.011`), regroup
-> (`1921.6801.0011`), then build the NET (`49.0002.1921.6801.0011.00`). Check
-> your answer against the table.
+| Variable | Where to Find It |
+|----------|-----------------|
+| `net` for csr-pe01 | Table 2, csr-pe01 row, `net` column |
+| `net` for csr-pe02 | Table 2, csr-pe02 row, `net` column |
 
 #### Play 3 — Linux Client Routes
 
@@ -119,15 +111,15 @@ Scroll down to the third `vars:` section:
 
 ![Play 3 — Linux client route variables](images/task2-play3.png)
 
-Using **Table 2**, fill in:
+Using **Table 2: IS-IS Configuration** (Linux client section), fill in:
 
-| Variable | Hint | Where to Find It |
-|----------|------|-------------------|
-| `gateway` for client1/2 | SVI IP without the mask | Table 2, "SVI (Vlan23)" row |
-| `gateway` for client3/4 | SVI IP without the mask | Table 2, "SVI (Vlan34)" row |
-| First route (all clients) | Where CSR PE loopbacks live | Both PEs are in 192.168.10.0/24 |
-| Second route (client1/2) | West PE-CE link | Table 2, csr-pe01 Gi4 row |
-| Second route (client3/4) | East PE-CE link | Table 2, csr-pe02 Gi4 row |
+| Variable | Where to Find It |
+|----------|-----------------|
+| `gateway` for client1/2 | Table 2, linux-client1 row, `gateway` column |
+| `gateway` for client3/4 | Table 2, linux-client3 row, `gateway` column |
+| First route (all clients) | Table 2, routes column — `192.168.10.0/24` |
+| Second route (client1/2) | Table 2, linux-client1 row, routes column |
+| Second route (client3/4) | Table 2, linux-client3 row, routes column |
 
 > **Why do clients need static routes?** The Linux clients are simple hosts —
 > they don't run any routing protocols. Without explicit routes, they only know

@@ -6,6 +6,21 @@
 
 ---
 
+## Version 1.1.26 — Update task guides to reference new table structure
+
+**Date:** 2026-05-28
+
+### Summary
+
+Updated TASK2.md and TASK3.md to point to the new task-focused reference tables with exact column names, replacing old table numbers and row-hunting instructions.
+
+### Changed
+
+- `docs/TASK2.md` — updated all table references: "Table 4" and "Table 2" → "Table 2: IS-IS Configuration"; removed row-hunting and derivation instructions; hint tables now show exact column names
+- `docs/TASK3.md` — updated all table references: "Table 2" and "Table 3" → "Table 3: BGP Peering"; hint tables now show exact column names
+
+---
+
 ## Version 1.1.25 — Restructure reference tables to match playbook variables
 
 **Date:** 2026-05-28

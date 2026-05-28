@@ -116,17 +116,17 @@ Scroll to the first `vars:` section:
 
 ![Play 1 — XRd VRF and BGP variables](images/task3-play1.png)
 
-Using **Table 2** and **Table 3**, fill in:
+Using **Table 3: BGP Peering** (XRd section), fill in:
 
-| Variable | Hint | Where to Find It |
-|----------|------|-------------------|
-| `remote_lo` for xrd01 | xrd02's Loopback0 IP | Table 2, xrd02 Loopback0 row |
-| `remote_lo` for xrd02 | xrd01's Loopback0 IP | Table 2, xrd01 Loopback0 row |
-| `gi1_ip` for xrd01 | xrd01's IP on Gi0/0/0/1 | Table 2, xrd01 Gi0/0/0/1 row |
-| `gi1_ip` for xrd02 | xrd02's IP on Gi0/0/0/1 | Table 2, xrd02 Gi0/0/0/1 row |
-| `gi1_mask` (both) | Subnet mask for /30 | Always `255.255.255.252` for /30 |
-| `csr_peer` for xrd01 | csr-pe01's IP toward xrd01 | Table 2, csr-pe01 Gi2 row |
-| `csr_peer` for xrd02 | csr-pe02's IP toward xrd02 | Table 2, csr-pe02 Gi2 row |
+| Variable | Where to Find It |
+|----------|-----------------|
+| `remote_lo` for xrd01 | Table 3, xrd01 row, `remote_lo` column |
+| `remote_lo` for xrd02 | Table 3, xrd02 row, `remote_lo` column |
+| `gi1_ip` for xrd01 | Table 3, xrd01 row, `gi1_ip` column |
+| `gi1_ip` for xrd02 | Table 3, xrd02 row, `gi1_ip` column |
+| `gi1_mask` (both) | Table 3, `gi1_mask` column |
+| `csr_peer` for xrd01 | Table 3, xrd01 row, `csr_peer` column |
+| `csr_peer` for xrd02 | Table 3, xrd02 row, `csr_peer` column |
 
 > **Understanding the relationships:** Each XRd router needs to know two things:
 > (1) its iBGP VPNv4 peer (`remote_lo` — the *other* XRd's loopback, reachable
@@ -145,12 +145,12 @@ Scroll to the second `vars:` section:
 
 ![Play 2 — CSR PE BGP variables](images/task3-play2.png)
 
-Using **Table 3**, fill in:
+Using **Table 3: BGP Peering** (CSR PE section), fill in:
 
-| Variable | Hint | Where to Find It |
-|----------|------|-------------------|
-| `xrd_peer` for csr-pe01 | xrd01's Gi0/0/0/1 IP | Table 2, xrd01 Gi0/0/0/1 row |
-| `xrd_peer` for csr-pe02 | xrd02's Gi0/0/0/1 IP | Table 2, xrd02 Gi0/0/0/1 row |
+| Variable | Where to Find It |
+|----------|-----------------|
+| `xrd_peer` for csr-pe01 | Table 3, csr-pe01 row, `xrd_peer` column |
+| `xrd_peer` for csr-pe02 | Table 3, csr-pe02 row, `xrd_peer` column |
 
 > **Cross-check your work:** The `csr_peer` you entered in Play 1 for xrd01 and
 > the `xrd_peer` here for csr-pe01 are **two ends of the same link**. They should
@@ -164,14 +164,14 @@ Scroll to the third `vars:` section:
 
 ![Play 3 — Linux cross-site route variables](images/task3-play3.png)
 
-Using **Table 2**, fill in:
+Using **Table 3: BGP Peering** (Linux client section), fill in:
 
-| Variable | Hint | Where to Find It |
-|----------|------|-------------------|
-| `dest` for client1/2 | The *remote* client subnet (east side) | Client3/4 are on 34.34.34.0/24 |
-| `dest` for client3/4 | The *remote* client subnet (west side) | Client1/2 are on 23.23.23.0/24 |
-| `gw` for client1/2 | West-side SVI gateway (no mask) | Same as Task 2 gateway |
-| `gw` for client3/4 | East-side SVI gateway (no mask) | Same as Task 2 gateway |
+| Variable | Where to Find It |
+|----------|-----------------|
+| `dest` for client1/2 | Table 3, linux-client1 row, `dest` column |
+| `dest` for client3/4 | Table 3, linux-client3 row, `dest` column |
+| `gw` for client1/2 | Table 3, linux-client1 row, `gw` column |
+| `gw` for client3/4 | Table 3, linux-client3 row, `gw` column |
 
 > **Why do we need these routes?** In Task 2, we gave clients routes to reach
 > their local PE. But now traffic needs to cross the entire SP core. West clients
