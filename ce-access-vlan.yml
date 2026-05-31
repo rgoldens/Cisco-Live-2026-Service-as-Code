@@ -49,11 +49,11 @@
   vars:
     vlan_config:
       n9k-ce01:
-        id: ___          # TODO: VLAN ID for west-side clients (see Table 1)
-        name: "___"      # TODO: Name this VLAN (convention: CLIENT-VLAN-<id>)
+        id: 23          # TODO: VLAN ID for west-side clients (see Table 1)
+        name: "CLIENT-VLAN-23"      # TODO: Name this VLAN (convention: CLIENT-VLAN-<id>)
       n9k-ce02:
-        id: ___         # TODO: VLAN ID for east-side clients (see Table 1)
-        name: "__"      # TODO: Name this VLAN (convention: CLIENT-VLAN-<id>)
+        id: 34         # TODO: VLAN ID for east-side clients (see Table 1)
+        name: "CLIENT-VLAN-34"      # TODO: Name this VLAN (convention: CLIENT-VLAN-<id>)
 
   tasks:
 
