@@ -45,13 +45,13 @@
   vars:
     isis_config:
       n9k-ce01:
-        net: "___"         # TODO: IS-IS NET for n9k-ce01 (see "Deriving IS-IS NET Addresses")
-        vlan_id: ___       # TODO: Must match the VLAN ID you used in Task 1
-        svi_ip: "___"      # TODO: Gateway IP/mask for west clients (see Table 2)
+        net: "49.0002.1921.6802.0021.00"         # TODO: IS-IS NET for n9k-ce01 (see "Deriving IS-IS NET Addresses")
+        vlan_id: 23       # TODO: Must match the VLAN ID you used in Task 1
+        svi_ip: "23.23.23.254/24"      # TODO: Gateway IP/mask for west clients (see Table 2)
       n9k-ce02:
-        net: "___"         # TODO: IS-IS NET for n9k-ce02
-        vlan_id: ___       # TODO: Must match the VLAN ID you used in Task 1
-        svi_ip: "___"      # TODO: Gateway IP/mask for east clients (see Table 2)
+        net: "49.0002.1921.6802.0022.00"         # TODO: IS-IS NET for n9k-ce02
+        vlan_id: 34       # TODO: Must match the VLAN ID you used in Task 1
+        svi_ip: "34.34.34.254/24"      # TODO: Gateway IP/mask for east clients (see Table 2)
 
   tasks:
 
@@ -145,9 +145,9 @@
   vars:
     isis_config:
       csr-pe01:
-        net: "___"         # TODO: IS-IS NET for csr-pe01
+        net: "49.0002.1921.6801.0011.00"         # TODO: IS-IS NET for csr-pe01
       csr-pe02:
-        net: "___"         # TODO: IS-IS NET for csr-pe02
+        net: "49.0002.1921.6801.0012.00"         # TODO: IS-IS NET for csr-pe02
 
   tasks:
 
@@ -237,25 +237,25 @@
   vars:
     route_config:
       linux-client1:
-        gateway: ___         # TODO: SVI gateway IP for west clients
+        gateway: 23.23.23.254         # TODO: SVI gateway IP for west clients
         routes:
-          - ___              # TODO: CSR PE loopback subnet (e.g., x.x.x.0/24)
-          - ___              # TODO: West PE-CE link subnet (see Table 2)
+          - 192.168.10.0/24              # TODO: CSR PE loopback subnet (e.g., x.x.x.0/24)
+          - 10.2.0.0/30              # TODO: West PE-CE link subnet (see Table 2)
       linux-client2:
-        gateway: ___         # TODO: Same gateway as client1 (same switch)
+        gateway: 23.23.23.254        # TODO: Same gateway as client1 (same switch)
         routes:
-          - ___              # TODO: Same routes as client1
-          - ___
+          - 192.168.10.0/24              # TODO: Same routes as client1
+          - 10.2.0.0/30
       linux-client3:
-        gateway: ___         # TODO: SVI gateway IP for east clients
+        gateway: 34.34.34.254         # TODO: SVI gateway IP for east clients
         routes:
-          - ___              # TODO: CSR PE loopback subnet
-          - ___              # TODO: East PE-CE link subnet (see Table 2)
+          - 192.168.10.0/24              # TODO: CSR PE loopback subnet
+          - 10.2.0.4/30              # TODO: East PE-CE link subnet (see Table 2)
       linux-client4:
-        gateway: ___         # TODO: Same gateway as client3 (same switch)
+        gateway: 34.34.34.254         # TODO: Same gateway as client3 (same switch)
         routes:
-          - ___              # TODO: Same routes as client3
-          - ___
+          - 192.168.10.0/24              # TODO: Same routes as client3
+          - 10.2.0.4/30
 
   tasks:
 
